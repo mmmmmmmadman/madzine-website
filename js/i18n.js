@@ -180,10 +180,6 @@ const I18N = {
           vcvrack: {
             title: '從零開始 VCV Rack',
             desc: 'VCV Rack 從零開始入門教學，共 8 集'
-          },
-          handout: {
-            title: '聲音設計講義',
-            desc: '模組合成器聲音設計講義下載'
           }
         },
         interactive: {
@@ -228,7 +224,8 @@ const I18N = {
         desc: '歡迎合作提案、演出邀約或任何交流',
         course: {
           title: '課程',
-          modular: '模組合成器聲音設計線上課程報名'
+          modular: '模組合成器聲音設計線上課程報名',
+          handout: '課程講義下載（Dropbox）'
         },
         email: '電子郵件',
         social: '社群連結',
@@ -242,6 +239,10 @@ const I18N = {
       },
       footer: {
         copyright: '\u00A9 2025 MADZINE. 保留所有權利。'
+      },
+      tutorial: {
+        handout: '模組合成器聲音設計',
+        handoutDesc: '課程講義下載（Dropbox）'
       },
       common: {
         back: '返回',
@@ -430,10 +431,6 @@ const I18N = {
           vcvrack: {
             title: 'VCV Rack from Scratch',
             desc: 'VCV Rack beginner tutorial series, 8 episodes'
-          },
-          handout: {
-            title: 'Sound Design Handout',
-            desc: 'Modular synth sound design handout download'
           }
         },
         interactive: {
@@ -478,7 +475,8 @@ const I18N = {
         desc: 'Open to collaborations, performance invitations, and any exchange',
         course: {
           title: 'Course',
-          modular: 'Modular Synth Sound Design Online Course Registration'
+          modular: 'Modular Synth Sound Design Online Course Registration',
+          handout: 'Course handout download (Dropbox)'
         },
         email: 'Email',
         social: 'Social',
@@ -492,6 +490,10 @@ const I18N = {
       },
       footer: {
         copyright: '\u00A9 2025 MADZINE. All rights reserved.'
+      },
+      tutorial: {
+        handout: 'Modular Synth Sound Design',
+        handoutDesc: 'Course handout download (Dropbox)'
       },
       common: {
         back: 'Back',
@@ -680,10 +682,6 @@ const I18N = {
           vcvrack: {
             title: 'ゼロから始める VCV Rack',
             desc: 'VCV Rack 入門チュートリアルシリーズ、全8回'
-          },
-          handout: {
-            title: 'サウンドデザイン資料',
-            desc: 'モジュラーシンセ サウンドデザイン資料ダウンロード'
           }
         },
         interactive: {
@@ -728,7 +726,8 @@ const I18N = {
         desc: 'コラボレーション、パフォーマンスへの招待、その他のお問い合わせ',
         course: {
           title: 'コース',
-          modular: 'モジュラーシンセ サウンドデザイン オンラインコース申し込み'
+          modular: 'モジュラーシンセ サウンドデザイン オンラインコース申し込み',
+          handout: 'コース講義ダウンロード（Dropbox）'
         },
         email: 'メール',
         social: 'ソーシャル',
@@ -742,6 +741,10 @@ const I18N = {
       },
       footer: {
         copyright: '\u00A9 2025 MADZINE. All rights reserved.'
+      },
+      tutorial: {
+        handout: 'モジュラーシンセ サウンドデザイン',
+        handoutDesc: 'コース講義ダウンロード（Dropbox）'
       },
       common: {
         back: '戻る',
