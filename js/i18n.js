@@ -225,7 +225,7 @@ const I18N = {
         course: {
           title: '課程',
           modular: '模組合成器聲音設計線上課程報名',
-          handout: '課程講義下載（Dropbox）'
+          handout: '課程講義下載'
         },
         email: '電子郵件',
         social: '社群連結',
@@ -242,7 +242,7 @@ const I18N = {
       },
       tutorial: {
         handout: '模組合成器聲音設計',
-        handoutDesc: '課程講義下載（Dropbox）'
+        handoutDesc: '課程講義下載'
       },
       common: {
         back: '返回',
@@ -476,7 +476,7 @@ const I18N = {
         course: {
           title: 'Course',
           modular: 'Modular Synth Sound Design Online Course Registration',
-          handout: 'Course handout download (Dropbox)'
+          handout: 'Course handout download'
         },
         email: 'Email',
         social: 'Social',
@@ -493,7 +493,7 @@ const I18N = {
       },
       tutorial: {
         handout: 'Modular Synth Sound Design',
-        handoutDesc: 'Course handout download (Dropbox)'
+        handoutDesc: 'Course handout download'
       },
       common: {
         back: 'Back',
@@ -727,7 +727,7 @@ const I18N = {
         course: {
           title: 'コース',
           modular: 'モジュラーシンセ サウンドデザイン オンラインコース申し込み',
-          handout: 'コース講義ダウンロード（Dropbox）'
+          handout: 'コース講義ダウンロード'
         },
         email: 'メール',
         social: 'ソーシャル',
@@ -744,7 +744,7 @@ const I18N = {
       },
       tutorial: {
         handout: 'モジュラーシンセ サウンドデザイン',
-        handoutDesc: 'コース講義ダウンロード（Dropbox）'
+        handoutDesc: 'コース講義ダウンロード'
       },
       common: {
         back: '戻る',
