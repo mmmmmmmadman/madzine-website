@@ -35,3 +35,21 @@
 
 - 透過 GitHub Settings → Pages 重新設定自訂域名，觸發 SSL 憑證簽發
 - 啟用 Enforce HTTPS，http 自動導向 https
+
+### 新增作品：Utsurobune
+
+- works.html 新增 Utsurobune（2025）作為獨立作品項目，連結至 YouTube
+- 新增三語翻譯（zh-TW / en / ja）至 i18n.js
+- hover 預覽圖使用 YouTube 縮圖
+
+### 右側年份標籤
+
+- works.html、works-music.html、works-performance.html 新增右對齊年份標籤
+- 音樂作品頁：年份從標題內 `<small>` 移至右側獨立 span
+- 現場演出頁：全部 35 筆演出加上年份標籤
+- 作品總覽頁：各分類加上年份範圍，Utsurobune 年份移至右側
+- 手機版（640px 以下）隱藏年份標籤
+
+### 現場演出排序
+
+- works-performance.html 依時間倒序重新排列（最新在前）
