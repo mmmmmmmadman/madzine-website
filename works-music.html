@@ -146,6 +146,24 @@
       opacity: 1;
     }
 
+    /* ── Year Label ── */
+
+    .works-v1__row-year {
+      font-family: var(--font-display);
+      font-size: var(--text-sm);
+      font-weight: var(--weight-extralight);
+      color: var(--text-tertiary);
+      letter-spacing: var(--tracking-wider);
+      flex-shrink: 0;
+      margin-left: auto;
+      transition: color var(--duration-normal) var(--ease-default);
+    }
+
+    .works-v1__row:hover .works-v1__row-year {
+      color: var(--color-primary);
+      opacity: 0.5;
+    }
+
     /* ── Bottom Bar ── */
     .bottom-bar {
       flex-shrink: 0;
@@ -208,6 +226,10 @@
       .works-v1__row-desc {
         width: 100%;
       }
+
+      .works-v1__row-year {
+        display: none;
+      }
     }
   </style>
 </head>
@@ -226,45 +248,52 @@
 
       <div class="works-v1__list">
         <a href="https://madzine.bandcamp.com/album/dissolving-sounds-remastered" class="works-v1__row" target="_blank" rel="noopener" data-preview="dissolvingSounds">
-          <span class="works-v1__row-title">Dissolving Sounds (Remastered) <small>2015/2024 · with Chiaya</small></span>
+          <span class="works-v1__row-title">Dissolving Sounds (Remastered) <small>· with Chiaya</small></span>
           <span class="works-v1__row-sep">/</span>
           <span class="works-v1__row-desc" data-i18n="works.music.albums.dissolvingSounds.desc">在古典音樂底蘊下結合電子聲響，完美平衡電子樂器與真實樂器。合成器與鋼琴互為主角，帶來有別於以往的聆聽經驗。</span>
+          <span class="works-v1__row-year">2015 / 2024</span>
         </a>
 
         <a href="https://madzine.bandcamp.com/album/fragrance-liang-remastered" class="works-v1__row" target="_blank" rel="noopener" data-preview="fragranceLiang">
-          <span class="works-v1__row-title">Fragrance Liang (Remastered) <small>2015/2024 · with Alfa</small></span>
+          <span class="works-v1__row-title">Fragrance Liang (Remastered) <small>· with Alfa</small></span>
           <span class="works-v1__row-sep">/</span>
           <span class="works-v1__row-desc" data-i18n="works.music.albums.fragranceLiang.desc">虛構角色梁香，從過去記憶中顯現，依據每個人內心的渴望以不同形態現身。由 MAD 與歌手 Alfa 共同打造，以水為媒介，試圖淨化並溶解人與非人之間的羈絆。</span>
+          <span class="works-v1__row-year">2015 / 2024</span>
         </a>
 
         <a href="https://madzine.bandcamp.com/album/helsinki-sapporo" class="works-v1__row" target="_blank" rel="noopener" data-preview="helsinkiSapporo">
-          <span class="works-v1__row-title">Helsinki / Sapporo <small>2023</small></span>
+          <span class="works-v1__row-title">Helsinki / Sapporo</span>
           <span class="works-v1__row-sep">/</span>
           <span class="works-v1__row-desc" data-i18n="works.music.albums.helsinkiSapporo.desc">札幌的 3D 列印機與合成器的對話記錄，以及延續《STARMAN RETURNs》概念的赫爾辛基科技音樂現場演奏。這兩首曲目代表了在數位與物理領域學習後，對模組合成器世界兩種不同的探索方式。</span>
+          <span class="works-v1__row-year">2023</span>
         </a>
 
         <a href="https://madzine.bandcamp.com/album/ov-oct" class="works-v1__row" target="_blank" rel="noopener" data-preview="ovOct">
-          <span class="works-v1__row-title">ov/oct <small>2020</small></span>
+          <span class="works-v1__row-title">ov/oct</span>
           <span class="works-v1__row-sep">/</span>
           <span class="works-v1__row-desc" data-i18n="works.music.albums.ovOct.desc">結合機器人鼓手（Polyend Perc）、Buchla、環境取樣拼貼，從音樂人轉型到新媒體藝術家的分水嶺，也是開啟不從音符創作的起點。</span>
+          <span class="works-v1__row-year">2020</span>
         </a>
 
         <a href="https://madzine.bandcamp.com/album/starman-returns" class="works-v1__row" target="_blank" rel="noopener" data-preview="starmanReturns">
-          <span class="works-v1__row-title">STARMAN RETURNs <small>2017</small></span>
+          <span class="works-v1__row-title">STARMAN RETURNs</span>
           <span class="works-v1__row-sep">/</span>
           <span class="works-v1__row-desc" data-i18n="works.music.albums.starmanReturns.desc">有機呼吸的科技音樂，揭示個人對宇宙的回饋。</span>
+          <span class="works-v1__row-year">2017</span>
         </a>
 
         <a href="https://madzine.bandcamp.com/album/matsu-2" class="works-v1__row" target="_blank" rel="noopener" data-preview="matsu">
-          <span class="works-v1__row-title">MATSU <small>2018</small></span>
+          <span class="works-v1__row-title">MATSU</span>
           <span class="works-v1__row-sep">/</span>
           <span class="works-v1__row-desc" data-i18n="works.music.albums.matsu.desc">受柏林 techno 與 Synth Wave 影響，凝視松樹時所創作，將無機的科技音樂與有機的生命感受及情感融合。</span>
+          <span class="works-v1__row-year">2018</span>
         </a>
 
         <a href="https://madzine.bandcamp.com/album/monologue-in-analogue" class="works-v1__row" target="_blank" rel="noopener" data-preview="monologueInAnalogue">
-          <span class="works-v1__row-title">Monologue in Analogue <small>2019</small></span>
+          <span class="works-v1__row-title">Monologue in Analogue</span>
           <span class="works-v1__row-sep">/</span>
           <span class="works-v1__row-desc" data-i18n="works.music.albums.monologueInAnalogue.desc">不依賴節拍所創造的新境地。表達對內在世界與不確定性的觀察，一場穿越多重宇宙的精神之旅。</span>
+          <span class="works-v1__row-year">2019</span>
         </a>
       </div>
     </div>

@@ -129,6 +129,24 @@
       opacity: 1;
     }
 
+    /* ── Year Label ── */
+
+    .works-v1__row-year {
+      font-family: var(--font-display);
+      font-size: var(--text-sm);
+      font-weight: var(--weight-extralight);
+      color: var(--text-tertiary);
+      letter-spacing: var(--tracking-wider);
+      flex-shrink: 0;
+      margin-left: auto;
+      transition: color var(--duration-normal) var(--ease-default);
+    }
+
+    .works-v1__row:hover .works-v1__row-year {
+      color: var(--color-primary);
+      opacity: 0.5;
+    }
+
     /* ── Bottom Bar ── */
     .bottom-bar {
       flex-shrink: 0;
@@ -192,6 +210,9 @@
         width: 100%;
       }
 
+      .works-v1__row-year {
+        display: none;
+      }
     }
   </style>
 </head>
@@ -206,39 +227,45 @@
 
       <div class="works-v1__list">
         <a href="https://youtube.com/watch?v=Brt_QgApj3A" class="works-v1__row" data-preview="utsurobune" target="_blank" rel="noopener">
-          <span class="works-v1__row-title">Utsurobune <small>2025</small></span>
+          <span class="works-v1__row-title">Utsurobune</span>
           <span class="works-v1__row-sep">/</span>
           <span class="works-v1__row-desc" data-i18n="works.performance.works.utsurobune.desc">與舞踏畫家AKIYO合作的舞踏作品，負責影像、聲音、舞台設計。</span>
+          <span class="works-v1__row-year">2025</span>
         </a>
 
         <a href="works-music.html" class="works-v1__row" data-preview="music">
           <span class="works-v1__row-title" data-i18n="works.music.title">音樂作品</span>
           <span class="works-v1__row-sep">/</span>
           <span class="works-v1__row-desc" data-i18n="works.music.desc">原創音樂專輯與 EP</span>
+          <span class="works-v1__row-year">2015 — 2024</span>
         </a>
 
         <a href="works-performance.html" class="works-v1__row" data-preview="performance">
           <span class="works-v1__row-title" data-i18n="works.performance.title">現場演出</span>
           <span class="works-v1__row-sep">/</span>
           <span class="works-v1__row-desc" data-i18n="works.performance.desc">模組化合成器現場演出選輯</span>
+          <span class="works-v1__row-year">2017 — 2025</span>
         </a>
 
         <a href="works-audiovisual.html" class="works-v1__row" data-preview="audiovisual">
           <span class="works-v1__row-title" data-i18n="works.audiovisual.title">Motion and Pictures and Motion Pictures</span>
           <span class="works-v1__row-sep">/</span>
           <span class="works-v1__row-desc" data-i18n="works.audiovisual.desc">聲音與影像的交織創作</span>
+          <span class="works-v1__row-year">2024</span>
         </a>
 
         <a href="works-tutorial.html" class="works-v1__row" data-preview="tutorial">
           <span class="works-v1__row-title" data-i18n="works.tutorial.title">教學</span>
           <span class="works-v1__row-sep">/</span>
           <span class="works-v1__row-desc" data-i18n="works.tutorial.desc">VCV Rack 從零開始入門教學</span>
+          <span class="works-v1__row-year">2024</span>
         </a>
 
         <a href="works-interactive.html" class="works-v1__row" data-preview="interactive">
           <span class="works-v1__row-title" data-i18n="works.interactive.title">Physical Interaction</span>
           <span class="works-v1__row-sep">/</span>
           <span class="works-v1__row-desc" data-i18n="works.interactive.desc">日常物件的聲音互動創作</span>
+          <span class="works-v1__row-year">2021 — 2023</span>
         </a>
       </div>
     </div>
