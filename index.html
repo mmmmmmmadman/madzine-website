@@ -154,6 +154,19 @@
     /* ── Responsive ── */
 
     @media (max-width: 640px) {
+      html, body {
+        height: auto;
+        overflow: auto;
+      }
+
+      .v7 {
+        min-height: 100dvh;
+      }
+
+      .v7__top {
+        padding: var(--space-12) var(--space-6);
+      }
+
       .v7__brand-svg {
         width: clamp(140px, 50vw, 260px);
       }
