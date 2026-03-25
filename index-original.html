@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MADZINE</title>
+  <meta name="description" content="MADZINE — 對藝術嚴謹，對人生溫柔">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header__inner">
+      <div class="header__logo"><a href="index.html">MADZINE</a></div>
+      <div class="header__right">
+        <nav id="main-nav" class="nav">
+          <a href="index.html" class="nav__link active" data-i18n="nav.home">首頁</a>
+          <a href="software.html" class="nav__link" data-i18n="nav.software">軟體</a>
+          <a href="works.html" class="nav__link" data-i18n="nav.works">作品</a>
+          <a href="contact.html" class="nav__link" data-i18n="nav.contact">聯絡</a>
+        </nav>
+        <div class="lang-switcher">
+          <button class="lang-btn" data-lang="zh-TW" onclick="I18N.setLang('zh-TW')">中</button>
+          <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
+          <button class="lang-btn" data-lang="ja" onclick="I18N.setLang('ja')">JP</button>
+        </div>
+        <button id="mode-toggle" class="mode-toggle" aria-label="切換深色模式">☽</button>
+        <button id="menu-toggle" class="menu-toggle" aria-label="選單" aria-expanded="false">
+          <span class="menu-toggle__line"></span>
+          <span class="menu-toggle__line"></span>
+          <span class="menu-toggle__line"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="hero">
+      <div class="container">
+        <h1 class="hero__title" data-i18n="hero.title">MADZINE</h1>
+        <p class="hero__subtitle" data-i18n="hero.subtitle">聲音・裝置・程式</p>
+        <div class="hero__line"></div>
+        <p class="hero__description" data-i18n="hero.description">對藝術嚴謹，對人生溫柔</p>
+      </div>
+    </section>
+
+    <!-- Software -->
+    <section class="section reveal">
+      <div class="container">
+        <div class="section__header">
+          <h2 class="section__title" data-i18n="section.software.title">軟體作品</h2>
+          <p class="section__subtitle" data-i18n="section.software.desc">VCV Rack 模組與自製應用程式</p>
+        </div>
+        <div class="grid grid--3">
+          <a href="modules.html" class="card">
+            <div class="card__body">
+              <h3 class="card__title" data-i18n="software.vcv.title">VCV Rack 模組</h3>
+              <span class="card__tag" data-i18n="software.vcv.count">38 個模組，6 大分類</span>
+              <p class="card__text" data-i18n="software.vcv.desc">MADZINE 系列模組，為模組化合成器帶來獨特的聲音處理工具</p>
+            </div>
+          </a>
+          <a href="software.html" class="card">
+            <div class="card__body">
+              <h3 class="card__title">WAAASAABIII</h3>
+              <span class="card__tag">macOS, Windows</span>
+              <p class="card__text" data-i18n="apps.waaasaabiii.desc">多影音同步播放器，支援多設備音訊輸出</p>
+            </div>
+          </a>
+          <a href="software.html" class="card">
+            <div class="card__body">
+              <h3 class="card__title">DECAPyramid</h3>
+              <span class="card__tag">macOS, iOS</span>
+              <p class="card__text" data-i18n="apps.decapyramid.desc">8 軌 3D VBAP 空間混音器</p>
+            </div>
+          </a>
+        </div>
+        <div class="text-center">
+          <a href="software.html" class="section__more" data-i18n="section.software.more">查看全部軟體</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Selected Works -->
+    <section class="section reveal">
+      <div class="container">
+        <div class="section__header">
+          <h2 class="section__title" data-i18n="section.works.title">精選作品</h2>
+          <p class="section__subtitle" data-i18n="section.works.desc">音樂、聲音裝置與現場演出</p>
+        </div>
+        <div class="grid grid--3">
+          <a href="works.html" class="card">
+            <div class="card__body">
+              <h3 class="card__title" data-i18n="works.music.title">音樂作品</h3>
+              <p class="card__text" data-i18n="works.music.desc">原創音樂專輯與 EP</p>
+            </div>
+          </a>
+          <a href="works.html" class="card">
+            <div class="card__body">
+              <h3 class="card__title" data-i18n="works.performance.title">現場演出</h3>
+              <p class="card__text" data-i18n="works.performance.desc">模組化合成器現場演出選輯</p>
+            </div>
+          </a>
+          <a href="works.html" class="card">
+            <div class="card__body">
+              <h3 class="card__title" data-i18n="works.interactive.title">互動裝置</h3>
+              <p class="card__text" data-i18n="works.interactive.desc">日常物件的聲音互動創作</p>
+            </div>
+          </a>
+        </div>
+        <div class="text-center">
+          <a href="works.html" class="section__more" data-i18n="section.works.more">查看全部作品</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <span data-i18n="footer.copyright">© 2025 MADZINE. 保留所有權利。</span>
+      <div class="footer__links">
+        <a href="https://github.com/mmmmmmmadman" class="footer__link" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://madzine.bandcamp.com" class="footer__link" target="_blank" rel="noopener">Bandcamp</a>
+        <a href="https://youtube.com/@madzine" class="footer__link" target="_blank" rel="noopener">YouTube</a>
+        <a href="https://instagram.com/mmmmmmmadman" class="footer__link" target="_blank" rel="noopener">Instagram</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MADZINE — Works</title>
+  <meta name="description" content="MADZINE 作品集：音樂、聲音裝置與現場演出">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ── Works V1: Text List + Floating Preview ── */
+
+    .works-v1 {
+      max-width: var(--content-width);
+      margin: 0 auto;
+      padding: 0 var(--padding-page-x);
+    }
+
+    .works-v1__header {
+      padding: var(--space-16) 0 var(--space-8);
+    }
+
+    .works-v1__title {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      font-weight: var(--weight-extralight);
+      line-height: var(--leading-tight);
+      letter-spacing: var(--tracking-wider);
+      color: #FF6B6B;
+      margin-bottom: var(--space-2);
+    }
+
+    .works-v1__subtitle {
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      font-weight: var(--weight-regular);
+      color: var(--text-secondary);
+      margin-bottom: 0;
+    }
+
+    /* ── Row ── */
+
+    .works-v1__list {
+      margin-bottom: var(--space-24);
+    }
+
+    .works-v1__row {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-4);
+      padding: var(--space-4) 0;
+      border-bottom: 1px solid var(--border-default);
+      transition: color var(--duration-normal) var(--ease-default);
+      color: var(--text-primary);
+    }
+
+    .works-v1__row:first-child {
+      border-top: 1px solid var(--border-default);
+    }
+
+    .works-v1__row:hover {
+      color: var(--color-primary);
+    }
+
+    .works-v1__row-title {
+      font-family: var(--font-display);
+      font-size: var(--text-lg);
+      font-weight: var(--weight-light);
+      line-height: var(--leading-snug);
+      letter-spacing: var(--tracking-wide);
+      white-space: nowrap;
+    }
+
+    .works-v1__row-sep {
+      font-family: var(--font-display);
+      font-size: var(--text-base);
+      font-weight: var(--weight-extralight);
+      color: var(--text-tertiary);
+      flex-shrink: 0;
+      transition: color var(--duration-normal) var(--ease-default);
+    }
+
+    .works-v1__row:hover .works-v1__row-sep {
+      color: var(--color-primary);
+      opacity: 0.5;
+    }
+
+    .works-v1__row-desc {
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      font-weight: var(--weight-regular);
+      color: var(--text-secondary);
+      line-height: var(--leading-snug);
+      transition: color var(--duration-normal) var(--ease-default);
+    }
+
+    .works-v1__row:hover .works-v1__row-desc {
+      color: var(--color-primary);
+      opacity: 0.7;
+    }
+
+    /* ── Floating Preview ── */
+
+    .works-v1__preview {
+      position: fixed;
+      top: 50%;
+      right: 6%;
+      transform: translateY(-50%);
+      width: 420px;
+      aspect-ratio: 16 / 9;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    .works-v1__preview img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      opacity: 0;
+      position: absolute;
+      top: 0;
+      left: 0;
+      transition: opacity 1s var(--ease-default);
+      border-radius: var(--radius-sm);
+    }
+
+    .works-v1__preview img.visible {
+      opacity: 1;
+    }
+
+    /* ── Bottom Bar ── */
+    .bottom-bar {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) var(--space-6);
+      border-top: 1px solid var(--border-default);
+      font-size: var(--text-sm);
+    }
+
+    .bottom-bar__copyright {
+      color: var(--text-tertiary);
+    }
+
+    .bottom-bar__nav {
+      display: flex;
+      align-items: center;
+      gap: var(--space-6);
+    }
+
+    .bottom-bar__nav a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color var(--duration-normal) var(--ease-default);
+    }
+
+    .bottom-bar__nav a:hover {
+      color: var(--color-primary);
+    }
+
+    .bottom-bar__controls {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+
+    /* ── Responsive ── */
+
+    @media (max-width: 900px) {
+      .works-v1__preview {
+        display: none;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .works-v1__header {
+        padding: var(--space-10) 0 var(--space-6);
+      }
+
+      .works-v1__row {
+        flex-wrap: wrap;
+        gap: var(--space-1);
+      }
+
+      .works-v1__row-sep {
+        display: none;
+      }
+
+      .works-v1__row-desc {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <main>
+    <div class="works-v1">
+      <div class="works-v1__header">
+        <h1 class="works-v1__title" data-i18n="works.title">作品集</h1>
+        <p class="works-v1__subtitle" data-i18n="works.desc">音樂創作、聲音裝置與現場演出的完整紀錄</p>
+      </div>
+
+      <div class="works-v1__list">
+        <a href="works-music.html" class="works-v1__row" data-preview="music">
+          <span class="works-v1__row-title" data-i18n="works.music.title">音樂作品</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc" data-i18n="works.music.desc">原創音樂專輯與 EP</span>
+        </a>
+
+        <a href="works-performance.html" class="works-v1__row" data-preview="performance">
+          <span class="works-v1__row-title" data-i18n="works.performance.title">現場演出</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc" data-i18n="works.performance.desc">模組化合成器現場演出選輯</span>
+        </a>
+
+        <a href="works-audiovisual.html" class="works-v1__row" data-preview="audiovisual">
+          <span class="works-v1__row-title" data-i18n="works.audiovisual.title">Motion and Pictures and Motion Pictures</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc" data-i18n="works.audiovisual.desc">聲音與影像的交織創作</span>
+        </a>
+
+        <a href="works-tutorial.html" class="works-v1__row" data-preview="tutorial">
+          <span class="works-v1__row-title" data-i18n="works.tutorial.title">教學</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc" data-i18n="works.tutorial.desc">VCV Rack 從零開始入門教學</span>
+        </a>
+
+        <a href="works-interactive.html" class="works-v1__row" data-preview="interactive">
+          <span class="works-v1__row-title" data-i18n="works.interactive.title">Physical Interaction</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc" data-i18n="works.interactive.desc">日常物件的聲音互動創作</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Floating Preview -->
+    <div class="works-v1__preview" id="works-preview">
+      <img data-key="music" src="assets/images/music_1.jpg" alt="">
+      <img data-key="performance" src="https://img.youtube.com/vi/v6o_zJ6g-Bs/hqdefault.jpg" alt="">
+      <img data-key="audiovisual" src="https://img.youtube.com/vi/64S8VVf8fN0/hqdefault.jpg" alt="">
+      <img data-key="tutorial" src="https://img.youtube.com/vi/QmO30HBR96A/hqdefault.jpg" alt="">
+      <img data-key="interactive" src="https://img.youtube.com/vi/c5jWg5TtOdU/hqdefault.jpg" alt="">
+    </div>
+  </main>
+
+  <!-- Bottom Bar -->
+  <div class="bottom-bar">
+    <span class="bottom-bar__copyright" data-i18n="footer.copyright">&copy; 2025 MADZINE. 保留所有權利。</span>
+    <nav class="bottom-bar__nav">
+      <a href="index.html" data-i18n="nav.home">首頁</a>
+      <a href="software.html" data-i18n="nav.software">軟體</a>
+      <a href="works.html" data-i18n="nav.works">作品</a>
+      <a href="contact.html" data-i18n="nav.contact">聯絡</a>
+    </nav>
+    <div class="bottom-bar__controls">
+      <div class="lang-switcher">
+        <button class="lang-btn" data-lang="zh-TW" onclick="I18N.setLang('zh-TW')">中</button>
+        <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
+        <button class="lang-btn" data-lang="ja" onclick="I18N.setLang('ja')">JP</button>
+      </div>
+      <button id="mode-toggle" class="mode-toggle" aria-label="切換深色模式">☽</button>
+    </div>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    /* ── Floating preview on row hover ── */
+    (function () {
+      var rows = document.querySelectorAll('.works-v1__row');
+      var imgs = document.querySelectorAll('#works-preview img');
+
+      rows.forEach(function (row) {
+        row.addEventListener('mouseenter', function () {
+          var key = row.dataset.preview;
+          imgs.forEach(function (img) {
+            img.classList.toggle('visible', img.dataset.key === key);
+          });
+        });
+        row.addEventListener('mouseleave', function () {
+          imgs.forEach(function (img) {
+            img.classList.remove('visible');
+          });
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

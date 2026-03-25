@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MADZINE — Live Performance</title>
+  <meta name="description" content="MADZINE 模組化合成器現場演出選輯">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ── Works V1: Text List + Floating Preview ── */
+
+    .works-v1 {
+      max-width: var(--content-width);
+      margin: 0 auto;
+      padding: 0 var(--padding-page-x);
+    }
+
+    .works-v1__header {
+      padding: var(--space-16) 0 var(--space-8);
+    }
+
+    .works-v1__title {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      font-weight: var(--weight-extralight);
+      line-height: var(--leading-tight);
+      letter-spacing: var(--tracking-wider);
+      color: var(--text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .works-v1__subtitle {
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      font-weight: var(--weight-regular);
+      color: var(--text-secondary);
+      margin-bottom: 0;
+    }
+
+    /* ── Row ── */
+
+    .works-v1__list {
+      margin-bottom: var(--space-24);
+    }
+
+    .works-v1__row {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-4);
+      padding: var(--space-4) 0;
+      border-bottom: 1px solid var(--border-default);
+      transition: color var(--duration-normal) var(--ease-default);
+      color: var(--text-primary);
+    }
+
+    .works-v1__row:first-child {
+      border-top: 1px solid var(--border-default);
+    }
+
+    .works-v1__row:hover {
+      color: var(--color-primary);
+    }
+
+    .works-v1__row-title {
+      font-family: var(--font-display);
+      font-size: var(--text-lg);
+      font-weight: var(--weight-light);
+      line-height: var(--leading-snug);
+      letter-spacing: var(--tracking-wide);
+      white-space: nowrap;
+    }
+
+    .works-v1__row-sep {
+      font-family: var(--font-display);
+      font-size: var(--text-base);
+      font-weight: var(--weight-extralight);
+      color: var(--text-tertiary);
+      flex-shrink: 0;
+      transition: color var(--duration-normal) var(--ease-default);
+    }
+
+    .works-v1__row:hover .works-v1__row-sep {
+      color: var(--color-primary);
+      opacity: 0.5;
+    }
+
+    .works-v1__row-desc {
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      font-weight: var(--weight-regular);
+      color: var(--text-secondary);
+      line-height: var(--leading-snug);
+      transition: color var(--duration-normal) var(--ease-default);
+    }
+
+    .works-v1__row:hover .works-v1__row-desc {
+      color: var(--color-primary);
+      opacity: 0.7;
+    }
+
+    /* ── Floating Preview ── */
+
+    .works-v1__preview {
+      position: fixed;
+      top: 50%;
+      right: 6%;
+      transform: translateY(-50%);
+      width: 420px;
+      aspect-ratio: 16 / 9;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    .works-v1__preview img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      opacity: 0;
+      position: absolute;
+      top: 0;
+      left: 0;
+      transition: opacity 1s var(--ease-default);
+      border-radius: var(--radius-sm);
+    }
+
+    .works-v1__preview img.visible {
+      opacity: 1;
+    }
+
+    /* ── Bottom Bar ── */
+    .bottom-bar {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) var(--space-6);
+      border-top: 1px solid var(--border-default);
+      font-size: var(--text-sm);
+    }
+
+    .bottom-bar__copyright {
+      color: var(--text-tertiary);
+    }
+
+    .bottom-bar__nav {
+      display: flex;
+      align-items: center;
+      gap: var(--space-6);
+    }
+
+    .bottom-bar__nav a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color var(--duration-normal) var(--ease-default);
+    }
+
+    .bottom-bar__nav a:hover {
+      color: var(--color-primary);
+    }
+
+    .bottom-bar__controls {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+
+    /* ── Responsive ── */
+
+    @media (max-width: 900px) {
+      .works-v1__preview {
+        display: none;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .works-v1__header {
+        padding: var(--space-10) 0 var(--space-6);
+      }
+
+      .works-v1__row {
+        flex-wrap: wrap;
+        gap: var(--space-1);
+      }
+
+      .works-v1__row-sep {
+        display: none;
+      }
+
+      .works-v1__row-desc {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <main>
+    <div class="works-v1">
+      <div class="works-v1__header">
+        <a href="works.html" class="section__back">
+          <span data-i18n="common.back">返回</span>
+        </a>
+        <h1 class="works-v1__title" data-i18n="works.performance.title">現場演出</h1>
+        <p class="works-v1__subtitle" data-i18n="works.performance.desc">模組化合成器現場演出選輯</p>
+      </div>
+
+      <div class="works-v1__list">
+        <a href="https://youtube.com/watch?v=C0OXfQM1N-o" class="works-v1__row" data-preview="C0OXfQM1N-o" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">2025 Osaka Festival of Modular</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">MADZINE live performance</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=rh8-7Cg21Fg" class="works-v1__row" data-preview="rh8-7Cg21Fg" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">beep 51 Sapporo</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Live Performance - Day 1099</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=Hz_CA93P-4I" class="works-v1__row" data-preview="Hz_CA93P-4I" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">beep 51 Sapporo</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Live Performance from another angle - Day 1100</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=JQtKfzCNUy0" class="works-v1__row" data-preview="JQtKfzCNUy0" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">Modular Wednesday</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">MADZINE 20241120 - Day 981</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=jxvmvkEX_YY" class="works-v1__row" data-preview="jxvmvkEX_YY" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">Osaka Conpass</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Live performance - Day 967</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=9j6QcqY1C5o" class="works-v1__row" data-preview="9j6QcqY1C5o" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">Bon Disco</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Live performance - Day 945</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=I5w02Nho6AA" class="works-v1__row" data-preview="I5w02Nho6AA" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">beep 50 Sapporo</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Live performance with AkiYo - Day 936</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=ZScJs-x3BB8" class="works-v1__row" data-preview="ZScJs-x3BB8" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">Berlin</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Specific uncertainty live performance - Day 898</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=52nSqBpCF40" class="works-v1__row" data-preview="52nSqBpCF40" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">Modular Synth with 3D Printer</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Live Performance - Day 5</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=OANteixVZGs" class="works-v1__row" data-preview="OANteixVZGs" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">Zorrow</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Live performance - Day 876</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=U-n3lFyXYk4" class="works-v1__row" data-preview="U-n3lFyXYk4" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">Sporobole</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Live performance - Day 857</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=Kb0gjVbW7nc" class="works-v1__row" data-preview="Kb0gjVbW7nc" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">Chikara Aoshima</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Modular Synth with Drum kit</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=Ab4747_SkNk" class="works-v1__row" data-preview="Ab4747_SkNk" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">Sapporo</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Live performance with Butoh by Akiyo - Day 808</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=v6o_zJ6g-Bs" class="works-v1__row" data-preview="v6o_zJ6g-Bs" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">Helsinki</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Live Performance 20240510 - Day 793</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=3yceiwXTIJ4" class="works-v1__row" data-preview="3yceiwXTIJ4" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">beep 48</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Live with Momose Yasunaga - Day 736</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=0yCaOGmuLN4" class="works-v1__row" data-preview="0yCaOGmuLN4" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">Super Dommune</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">MADZINE Live Performance 20231115</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=jJAkrtCdnkk" class="works-v1__row" data-preview="jJAkrtCdnkk" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">Taiwan Modulation Operation</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Osaka (2) - Day 641</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=E9gY_6aYax0" class="works-v1__row" data-preview="E9gY_6aYax0" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">Taiwan Modulation Operation</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Osaka (1) - Day 640</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=oZL4SwNjELw" class="works-v1__row" data-preview="oZL4SwNjELw" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">AFoM MAD_Hyper</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Live - Day 637</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=afJ5TqXBytg" class="works-v1__row" data-preview="afJ5TqXBytg" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">GIGA NOISE</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Live Performance - Day 607</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=g1NI1tzxxIQ" class="works-v1__row" data-preview="g1NI1tzxxIQ" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">Banana Cable Chess</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">A Zero Patch Duet by Mad_Hyper / AFOM Tokyo</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=Xvlqytyzy3U" class="works-v1__row" data-preview="Xvlqytyzy3U" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">Shibuya OTO</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Modular Wed Live 20230927 - Day 572</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=y6gyGsyAQxI" class="works-v1__row" data-preview="y6gyGsyAQxI" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">Modular Meetup</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Spring edition 7.6.2023</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=3gm8QQpHBUw" class="works-v1__row" data-preview="3gm8QQpHBUw" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">Shitamachi Golden Tiger Tokyo</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Live - Day 523</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=UGMgrq7JY0M" class="works-v1__row" data-preview="UGMgrq7JY0M" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">Go Go Machine Orchestra</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Full Performance (Live on KEXP)</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=OR90jNPHmiE" class="works-v1__row" data-preview="OR90jNPHmiE" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">0v/OCT</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Live Performance 20230224 - Day 355</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=Bv7QVxf00sY" class="works-v1__row" data-preview="Bv7QVxf00sY" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">Tap Dancer meandyou</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Modular Synth with Tap Dancer 20230212 - Day 348</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=qh0xQROtdoM" class="works-v1__row" data-preview="qh0xQROtdoM" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">Al Yakubouskaya X Go Go Machine Orchestra</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">2018 LWH, Kaohsiung</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=NsEC80Z9O1g" class="works-v1__row" data-preview="NsEC80Z9O1g" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">Meeting of Modular #15</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Live - Day 159</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=3vltNSIIl2g" class="works-v1__row" data-preview="3vltNSIIl2g" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">Polyend Perc</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Painting with modular 20210225</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=OCmcK7GAZf4" class="works-v1__row" data-preview="OCmcK7GAZf4" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">MADZINE Modular LiveSet</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">2019 with Polyend Perc</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=Lz7hAg4zCL4" class="works-v1__row" data-preview="Lz7hAg4zCL4" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">Drumdroid the wall</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">2019/1/13</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=sUQzgytCi1A" class="works-v1__row" data-preview="sUQzgytCi1A" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">All about Brutality</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Live performance</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=D8YLigTQjHU" class="works-v1__row" data-preview="D8YLigTQjHU" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">Powwow Spotlight</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Madzine</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=x59AZR1Qg-M" class="works-v1__row" data-preview="x59AZR1Qg-M" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">DOMMUNE Shibuya</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">MADZINE 2017/10/10</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Floating Preview -->
+    <div class="works-v1__preview" id="works-preview">
+      <img data-key="C0OXfQM1N-o" src="https://img.youtube.com/vi/C0OXfQM1N-o/hqdefault.jpg" alt="">
+      <img data-key="rh8-7Cg21Fg" src="https://img.youtube.com/vi/rh8-7Cg21Fg/hqdefault.jpg" alt="">
+      <img data-key="Hz_CA93P-4I" src="https://img.youtube.com/vi/Hz_CA93P-4I/hqdefault.jpg" alt="">
+      <img data-key="JQtKfzCNUy0" src="https://img.youtube.com/vi/JQtKfzCNUy0/hqdefault.jpg" alt="">
+      <img data-key="jxvmvkEX_YY" src="https://img.youtube.com/vi/jxvmvkEX_YY/hqdefault.jpg" alt="">
+      <img data-key="9j6QcqY1C5o" src="https://img.youtube.com/vi/9j6QcqY1C5o/hqdefault.jpg" alt="">
+      <img data-key="I5w02Nho6AA" src="https://img.youtube.com/vi/I5w02Nho6AA/hqdefault.jpg" alt="">
+      <img data-key="ZScJs-x3BB8" src="https://img.youtube.com/vi/ZScJs-x3BB8/hqdefault.jpg" alt="">
+      <img data-key="52nSqBpCF40" src="https://img.youtube.com/vi/52nSqBpCF40/hqdefault.jpg" alt="">
+      <img data-key="OANteixVZGs" src="https://img.youtube.com/vi/OANteixVZGs/hqdefault.jpg" alt="">
+      <img data-key="U-n3lFyXYk4" src="https://img.youtube.com/vi/U-n3lFyXYk4/hqdefault.jpg" alt="">
+      <img data-key="Kb0gjVbW7nc" src="https://img.youtube.com/vi/Kb0gjVbW7nc/hqdefault.jpg" alt="">
+      <img data-key="Ab4747_SkNk" src="https://img.youtube.com/vi/Ab4747_SkNk/hqdefault.jpg" alt="">
+      <img data-key="v6o_zJ6g-Bs" src="https://img.youtube.com/vi/v6o_zJ6g-Bs/hqdefault.jpg" alt="">
+      <img data-key="3yceiwXTIJ4" src="https://img.youtube.com/vi/3yceiwXTIJ4/hqdefault.jpg" alt="">
+      <img data-key="0yCaOGmuLN4" src="https://img.youtube.com/vi/0yCaOGmuLN4/hqdefault.jpg" alt="">
+      <img data-key="jJAkrtCdnkk" src="https://img.youtube.com/vi/jJAkrtCdnkk/hqdefault.jpg" alt="">
+      <img data-key="E9gY_6aYax0" src="https://img.youtube.com/vi/E9gY_6aYax0/hqdefault.jpg" alt="">
+      <img data-key="oZL4SwNjELw" src="https://img.youtube.com/vi/oZL4SwNjELw/hqdefault.jpg" alt="">
+      <img data-key="afJ5TqXBytg" src="https://img.youtube.com/vi/afJ5TqXBytg/hqdefault.jpg" alt="">
+      <img data-key="g1NI1tzxxIQ" src="https://img.youtube.com/vi/g1NI1tzxxIQ/hqdefault.jpg" alt="">
+      <img data-key="Xvlqytyzy3U" src="https://img.youtube.com/vi/Xvlqytyzy3U/hqdefault.jpg" alt="">
+      <img data-key="y6gyGsyAQxI" src="https://img.youtube.com/vi/y6gyGsyAQxI/hqdefault.jpg" alt="">
+      <img data-key="3gm8QQpHBUw" src="https://img.youtube.com/vi/3gm8QQpHBUw/hqdefault.jpg" alt="">
+      <img data-key="UGMgrq7JY0M" src="https://img.youtube.com/vi/UGMgrq7JY0M/hqdefault.jpg" alt="">
+      <img data-key="OR90jNPHmiE" src="https://img.youtube.com/vi/OR90jNPHmiE/hqdefault.jpg" alt="">
+      <img data-key="Bv7QVxf00sY" src="https://img.youtube.com/vi/Bv7QVxf00sY/hqdefault.jpg" alt="">
+      <img data-key="qh0xQROtdoM" src="https://img.youtube.com/vi/qh0xQROtdoM/hqdefault.jpg" alt="">
+      <img data-key="NsEC80Z9O1g" src="https://img.youtube.com/vi/NsEC80Z9O1g/hqdefault.jpg" alt="">
+      <img data-key="3vltNSIIl2g" src="https://img.youtube.com/vi/3vltNSIIl2g/hqdefault.jpg" alt="">
+      <img data-key="OCmcK7GAZf4" src="https://img.youtube.com/vi/OCmcK7GAZf4/hqdefault.jpg" alt="">
+      <img data-key="Lz7hAg4zCL4" src="https://img.youtube.com/vi/Lz7hAg4zCL4/hqdefault.jpg" alt="">
+      <img data-key="sUQzgytCi1A" src="https://img.youtube.com/vi/sUQzgytCi1A/hqdefault.jpg" alt="">
+      <img data-key="D8YLigTQjHU" src="https://img.youtube.com/vi/D8YLigTQjHU/hqdefault.jpg" alt="">
+      <img data-key="x59AZR1Qg-M" src="https://img.youtube.com/vi/x59AZR1Qg-M/hqdefault.jpg" alt="">
+    </div>
+  </main>
+
+  <!-- Bottom Bar -->
+  <div class="bottom-bar">
+    <span class="bottom-bar__copyright" data-i18n="footer.copyright">&copy; 2025 MADZINE. 保留所有權利。</span>
+    <nav class="bottom-bar__nav">
+      <a href="index.html" data-i18n="nav.home">首頁</a>
+      <a href="software.html" data-i18n="nav.software">軟體</a>
+      <a href="works.html" data-i18n="nav.works">作品</a>
+      <a href="contact.html" data-i18n="nav.contact">聯絡</a>
+    </nav>
+    <div class="bottom-bar__controls">
+      <div class="lang-switcher">
+        <button class="lang-btn" data-lang="zh-TW" onclick="I18N.setLang('zh-TW')">中</button>
+        <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
+        <button class="lang-btn" data-lang="ja" onclick="I18N.setLang('ja')">JP</button>
+      </div>
+      <button id="mode-toggle" class="mode-toggle" aria-label="切換深色模式">☽</button>
+    </div>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    /* ── Floating preview on row hover ── */
+    (function () {
+      var rows = document.querySelectorAll('.works-v1__row');
+      var imgs = document.querySelectorAll('#works-preview img');
+
+      rows.forEach(function (row) {
+        row.addEventListener('mouseenter', function () {
+          var key = row.dataset.preview;
+          imgs.forEach(function (img) {
+            img.classList.toggle('visible', img.dataset.key === key);
+          });
+        });
+        row.addEventListener('mouseleave', function () {
+          imgs.forEach(function (img) {
+            img.classList.remove('visible');
+          });
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

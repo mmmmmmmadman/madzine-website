@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MADZINE — Works</title>
+  <meta name="description" content="MADZINE 作品集：音樂、聲音裝置與現場演出">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header__inner">
+      <div class="header__logo"><a href="index.html">MADZINE</a></div>
+      <div class="header__right">
+        <nav id="main-nav" class="nav">
+          <a href="index.html" class="nav__link" data-i18n="nav.home">首頁</a>
+          <a href="software.html" class="nav__link" data-i18n="nav.software">軟體</a>
+          <a href="works.html" class="nav__link active" data-i18n="nav.works">作品</a>
+          <a href="contact.html" class="nav__link" data-i18n="nav.contact">聯絡</a>
+        </nav>
+        <div class="lang-switcher">
+          <button class="lang-btn" data-lang="zh-TW" onclick="I18N.setLang('zh-TW')">中</button>
+          <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
+          <button class="lang-btn" data-lang="ja" onclick="I18N.setLang('ja')">JP</button>
+        </div>
+        <button id="mode-toggle" class="mode-toggle" aria-label="切換深色模式">☽</button>
+        <button id="menu-toggle" class="menu-toggle" aria-label="選單" aria-expanded="false">
+          <span class="menu-toggle__line"></span>
+          <span class="menu-toggle__line"></span>
+          <span class="menu-toggle__line"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="container">
+        <div class="section__header">
+          <h1 class="section__title" data-i18n="works.title">作品集</h1>
+          <p class="section__subtitle" data-i18n="works.desc">音樂創作、聲音裝置與現場演出的完整紀錄</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 音樂作品 -->
+    <section class="section--compact reveal">
+      <div class="container">
+        <div class="works-category">
+          <div class="works-category__info">
+            <h2 class="section__title" data-i18n="works.music.title">音樂作品</h2>
+            <p class="section__subtitle" data-i18n="works.music.desc">原創音樂專輯與 EP</p>
+            <div class="works-embed">
+              <a href="works-music.html" class="works-link">
+                <span class="works-link__icon">♫</span>
+                <span class="works-link__text" data-i18n="common.more">查看更多</span>
+                <span class="works-link__arrow">→</span>
+              </a>
+            </div>
+          </div>
+          <div class="works-category__slideshow">
+            <img src="assets/images/music_1.jpg" alt="Dissolving Sounds" loading="lazy" class="active">
+            <img src="assets/images/music_2.jpg" alt="Fragrance Liang" loading="lazy">
+            <img src="assets/images/music_3.jpg" alt="Helsinki / Sapporo" loading="lazy">
+            <img src="assets/images/music_4.jpg" alt="ov/oct" loading="lazy">
+            <img src="assets/images/music_5.jpg" alt="STARMAN RETURNs" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- 現場演出 -->
+    <section class="section--compact reveal">
+      <div class="container">
+        <div class="works-category">
+          <div class="works-category__info">
+            <h2 class="section__title" data-i18n="works.performance.title">現場演出</h2>
+            <p class="section__subtitle" data-i18n="works.performance.desc">模組化合成器現場演出選輯</p>
+            <div class="works-embed">
+              <a href="works-performance.html" class="works-link">
+                <span class="works-link__icon">▶</span>
+                <span class="works-link__text" data-i18n="common.more">查看更多</span>
+                <span class="works-link__arrow">→</span>
+              </a>
+            </div>
+          </div>
+          <div class="works-category__slideshow" data-slideshow="performance">
+            <img src="https://img.youtube.com/vi/v6o_zJ6g-Bs/hqdefault.jpg" alt="" loading="lazy" class="active">
+            <img src="https://img.youtube.com/vi/0yCaOGmuLN4/hqdefault.jpg" alt="" loading="lazy">
+            <img src="https://img.youtube.com/vi/Ab4747_SkNk/hqdefault.jpg" alt="" loading="lazy">
+            <img src="https://img.youtube.com/vi/UGMgrq7JY0M/hqdefault.jpg" alt="" loading="lazy">
+            <img src="https://img.youtube.com/vi/C0OXfQM1N-o/hqdefault.jpg" alt="" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- 影像作品 -->
+    <section class="section--compact reveal">
+      <div class="container">
+        <div class="works-category">
+          <div class="works-category__info">
+            <h2 class="section__title" data-i18n="works.audiovisual.title">影像作品</h2>
+            <p class="section__subtitle" data-i18n="works.audiovisual.desc">聲音與影像的交織創作</p>
+            <div class="works-embed">
+              <a href="works-audiovisual.html" class="works-link">
+                <span class="works-link__icon">▶</span>
+                <span class="works-link__text" data-i18n="common.more">查看更多</span>
+                <span class="works-link__arrow">→</span>
+              </a>
+            </div>
+          </div>
+          <div class="works-category__slideshow" data-slideshow="audiovisual">
+            <img src="https://img.youtube.com/vi/64S8VVf8fN0/hqdefault.jpg" alt="" loading="lazy" class="active">
+            <img src="https://img.youtube.com/vi/hzAtWOs5uyA/hqdefault.jpg" alt="" loading="lazy">
+            <img src="https://img.youtube.com/vi/b6EXu0FSbqE/hqdefault.jpg" alt="" loading="lazy">
+            <img src="https://img.youtube.com/vi/a5UCscZ0qyE/hqdefault.jpg" alt="" loading="lazy">
+            <img src="https://img.youtube.com/vi/UJD3ta21J7g/hqdefault.jpg" alt="" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- 教學 -->
+    <section class="section--compact reveal">
+      <div class="container">
+        <div class="works-category">
+          <div class="works-category__info">
+            <h2 class="section__title" data-i18n="works.tutorial.title">教學</h2>
+            <p class="section__subtitle" data-i18n="works.tutorial.desc">VCV Rack 從零開始入門教學</p>
+            <div class="works-embed">
+              <a href="works-tutorial.html" class="works-link">
+                <span class="works-link__icon">▶</span>
+                <span class="works-link__text" data-i18n="common.more">查看更多</span>
+                <span class="works-link__arrow">→</span>
+              </a>
+            </div>
+          </div>
+          <div class="works-category__slideshow" data-slideshow="tutorial">
+            <img src="https://img.youtube.com/vi/QmO30HBR96A/hqdefault.jpg" alt="" loading="lazy" class="active">
+            <img src="https://img.youtube.com/vi/mRehu9j1a8g/hqdefault.jpg" alt="" loading="lazy">
+            <img src="https://img.youtube.com/vi/Bobq-JbKVpM/hqdefault.jpg" alt="" loading="lazy">
+            <img src="https://img.youtube.com/vi/FHNt0H8tq1Q/hqdefault.jpg" alt="" loading="lazy">
+            <img src="https://img.youtube.com/vi/jpqU-kYhEzk/hqdefault.jpg" alt="" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider"></div>
+
+    <!-- 互動裝置 -->
+    <section class="section--compact reveal">
+      <div class="container">
+        <div class="works-category">
+          <div class="works-category__info">
+            <h2 class="section__title" data-i18n="works.interactive.title">互動裝置</h2>
+            <p class="section__subtitle" data-i18n="works.interactive.desc">日常物件的聲音互動創作</p>
+            <div class="works-embed">
+              <a href="works-interactive.html" class="works-link">
+                <span class="works-link__icon">▶</span>
+                <span class="works-link__text" data-i18n="common.more">查看更多</span>
+                <span class="works-link__arrow">→</span>
+              </a>
+            </div>
+          </div>
+          <div class="works-category__slideshow" data-slideshow="interactive">
+            <img src="https://img.youtube.com/vi/c5jWg5TtOdU/hqdefault.jpg" alt="" loading="lazy" class="active">
+            <img src="https://img.youtube.com/vi/IumjRNZI-Ys/hqdefault.jpg" alt="" loading="lazy">
+            <img src="https://img.youtube.com/vi/J_xVCN8Ihk4/hqdefault.jpg" alt="" loading="lazy">
+            <img src="https://img.youtube.com/vi/HK49yymGpiY/hqdefault.jpg" alt="" loading="lazy">
+            <img src="https://img.youtube.com/vi/Cg4jsth07FQ/hqdefault.jpg" alt="" loading="lazy">
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <span data-i18n="footer.copyright">© 2025 MADZINE. 保留所有權利。</span>
+      <div class="footer__links">
+        <a href="https://github.com/mmmmmmmadman" class="footer__link" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://madzine.bandcamp.com" class="footer__link" target="_blank" rel="noopener">Bandcamp</a>
+        <a href="https://youtube.com/@madzine" class="footer__link" target="_blank" rel="noopener">YouTube</a>
+        <a href="https://instagram.com/mmmmmmmadman" class="footer__link" target="_blank" rel="noopener">Instagram</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

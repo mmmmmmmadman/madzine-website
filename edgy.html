@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MADZINE — Edgy</title>
+  <meta name="description" content="手勢偵測影像處理，MIDI/OSC 輸出">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .bg-hero {
+      position: relative;
+      height: 50vh;
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+    }
+    .bg-hero__img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.1;
+    }
+    .bg-hero__gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 30%, var(--surface-base) 100%);
+    }
+    .bg-hero__content {
+      position: relative;
+      z-index: 1;
+      padding: var(--space-16) var(--padding-page-x) var(--space-8);
+      max-width: var(--content-narrow);
+      margin: 0 auto;
+      width: 100%;
+    }
+    .bg-hero__content h1 {
+      font-size: var(--text-4xl);
+      margin-bottom: var(--space-3);
+    }
+    .bg-hero__content .card__tag {
+      margin-bottom: var(--space-4);
+    }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-12);
+      align-items: start;
+    }
+    .col-text {
+      position: sticky;
+      top: var(--space-16);
+    }
+    .col-right {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-8);
+    }
+    .col-right > img {
+      width: 100%;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-default);
+      transition: opacity var(--duration-slow) var(--ease-default);
+      cursor: pointer;
+    }
+    .thumb-strip {
+      display: flex;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+    .thumb-strip__item {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      flex-shrink: 0;
+      border-radius: var(--radius-sm);
+      border: 2px solid var(--border-default);
+      cursor: pointer;
+      opacity: 0.6;
+      transition:
+        opacity var(--duration-normal) var(--ease-default),
+        border-color var(--duration-normal) var(--ease-default);
+    }
+    .thumb-strip__item:hover {
+      opacity: 0.85;
+    }
+    .thumb-strip__item.active {
+      opacity: 1;
+      border-color: var(--color-primary);
+    }
+    .feature-list {
+      padding-left: var(--space-6);
+      margin-top: var(--space-4);
+    }
+    .feature-list li {
+      margin-bottom: var(--space-2);
+      font-size: var(--text-base);
+      color: var(--text-secondary);
+    }
+    .tech-table {
+      margin-top: var(--space-4);
+      font-size: var(--text-base);
+    }
+    .tech-table dt {
+      color: var(--text-tertiary);
+      margin-top: var(--space-3);
+    }
+    .tech-table dd {
+      margin-left: 0;
+      color: var(--text-primary);
+    }
+    @media (max-width: 768px) {
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+      .col-text {
+        position: static;
+      }
+      .thumb-strip {
+        flex-wrap: wrap;
+      }
+      .thumb-strip__item {
+        width: 80px;
+        height: 80px;
+      }
+    }
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      background: oklch(0.10 0.005 55 / 0.92);
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .lightbox.is-open {
+      display: flex;
+    }
+    .lightbox img {
+      max-width: 90vw;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: var(--radius-sm);
+    }
+    .bottom-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) var(--space-6);
+      border-top: 1px solid var(--border-default);
+      font-size: var(--text-sm);
+    }
+    .bottom-bar__copyright { color: var(--text-tertiary); }
+    .bottom-bar__nav { display: flex; align-items: center; gap: var(--space-6); }
+    .bottom-bar__nav a { color: var(--text-secondary); text-decoration: none; transition: color var(--duration-normal) var(--ease-default); }
+    .bottom-bar__nav a:hover { color: var(--color-primary); }
+    .bottom-bar__controls { display: flex; align-items: center; gap: var(--space-4); }
+  </style>
+</head>
+<body>
+
+  <!-- Hero background -->
+  <div class="bg-hero">
+    <img class="bg-hero__img" src="assets/images/software/Edgy_home.png" alt="Edgy Home">
+    <div class="bg-hero__gradient"></div>
+    <div class="bg-hero__content">
+      <a href="software.html" class="section__back" style="color: var(--text-primary);">
+        <span data-i18n="common.back">返回</span>
+      </a>
+      <h1>Edgy</h1>
+      <p class="card__tag">macOS, iOS</p>
+      <p data-i18n="apps.edgy.desc">手勢偵測影像處理，MIDI/OSC 輸出</p>
+    </div>
+  </div>
+
+  <!-- Two-column: text + selected large image -->
+  <main>
+    <section class="section">
+      <div class="container">
+        <div class="two-col">
+          <div class="col-text">
+            <h2 data-i18n="common.intro">功能介紹</h2>
+            <p class="intro-text" data-i18n-html="apps.edgy.intro">Edgy 是一款 MIDI/OSC 控制器應用程式，支援 macOS 與 iOS。程式的主要功能是將實體設備的照片轉換為可操作的控制面板。使用者透過相機拍攝合成器、混音器或其他音訊設備，將照片設為背景後，在影像上方自由放置滑桿、旋鈕、按鈕等觸控控制元件，每個元件可獨立設定對應的 MIDI CC 編號或 OSC 位址。<br><br>程式整合 MediaPipe 手勢偵測引擎，支援即時的手部地標追蹤與手勢辨識，可將偵測到的手勢動作映射為 MIDI 訊號輸出。多點觸控功能允許同時操作多個控制元件。Grid 模式提供最多 200 個訊號的網格控制介面，每格可獨立設定為 Continuous（連續值）、Trigger（單次觸發）或 Gate（持續觸發）模式。Grid 的 X 軸與 Y 軸可分別設定不同的控制行為，實現二維控制映射。<br><br>所有控制訊號透過 MIDI 或 OSC 協定輸出至外部軟體與硬體裝置。預設檔管理系統支援儲存與載入不同的控制配置，透過 iCloud Drive 在裝置間同步預設檔。程式提供 10 種色彩主題供切換。支援 macOS 與 iOS 雙平台，使用 Swift/SwiftUI 開發。</p>
+          </div>
+
+          <div class="col-right">
+            <img id="main-image" src="assets/images/software/Edgy_home.png" alt="Edgy Home">
+            <!-- Thumbnail strip under main image -->
+            <div class="thumb-strip">
+              <img class="thumb-strip__item active"
+                   src="assets/images/software/Edgy_home.png"
+                   alt="Edgy Home"
+                   data-full="assets/images/software/Edgy_home.png"
+                   onclick="switchImage(this)">
+              <img class="thumb-strip__item"
+                   src="assets/images/software/Edgy_edit.png"
+                   alt="Edgy Edit"
+                   data-full="assets/images/software/Edgy_edit.png"
+                   onclick="switchImage(this)">
+              <img class="thumb-strip__item"
+                   src="assets/images/software/Edgy_grid.png"
+                   alt="Edgy Grid"
+                   data-full="assets/images/software/Edgy_grid.png"
+                   onclick="switchImage(this)">
+              <img class="thumb-strip__item"
+                   src="assets/images/software/Edgy_perform2.png"
+                   alt="Edgy Perform"
+                   data-full="assets/images/software/Edgy_perform2.png"
+                   onclick="switchImage(this)">
+            </div>
+
+            <div>
+              <h2 data-i18n="common.features">特色一覽</h2>
+              <ul class="feature-list">
+                <li data-i18n="apps.edgy.features.gesture">Real-time gesture analysis</li>
+                <li data-i18n="apps.edgy.features.canvas">Multi-touch canvas</li>
+                <li data-i18n="apps.edgy.features.grid">Customizable grid controller (sliders, circular fill)</li>
+                <li data-i18n="apps.edgy.features.midi">MIDI / OSC output mapping</li>
+                <li data-i18n="apps.edgy.features.preset">Preset management</li>
+                <li data-i18n="apps.edgy.features.gridxy">Grid X/Y independent mode</li>
+                <li data-i18n="apps.edgy.features.icloud">iCloud Drive preset sync</li>
+                <li data-i18n="apps.edgy.features.themes">10 color themes</li>
+              </ul>
+            </div>
+
+            <div>
+              <h2 data-i18n="common.tech">技術資訊</h2>
+              <dl class="tech-table">
+                <dt data-i18n="common.language">開發語言</dt>
+                <dd>Swift / SwiftUI</dd>
+                <dt data-i18n="common.platform">平台</dt>
+                <dd>macOS, iOS</dd>
+                <dt data-i18n="common.version">版本</dt>
+                <dd>v1.2.4</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <img id="lightbox-img" src="" alt="">
+  </div>
+
+  <!-- Bottom Bar -->
+  <div class="bottom-bar">
+    <span class="bottom-bar__copyright" data-i18n="footer.copyright">&copy; 2025 MADZINE. 保留所有權利。</span>
+    <nav class="bottom-bar__nav">
+      <a href="index.html" data-i18n="nav.home">首頁</a>
+      <a href="software.html" data-i18n="nav.software">軟體</a>
+      <a href="works.html" data-i18n="nav.works">作品</a>
+      <a href="contact.html" data-i18n="nav.contact">聯絡</a>
+    </nav>
+    <div class="bottom-bar__controls">
+      <div class="lang-switcher">
+        <button class="lang-btn" data-lang="zh-TW" onclick="I18N.setLang('zh-TW')">中</button>
+        <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
+        <button class="lang-btn" data-lang="ja" onclick="I18N.setLang('ja')">JP</button>
+      </div>
+      <button id="mode-toggle" class="mode-toggle" aria-label="切換深色模式">☽</button>
+    </div>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    function switchImage(thumb) {
+      var mainImg = document.getElementById('main-image');
+      mainImg.src = thumb.dataset.full;
+      mainImg.alt = thumb.alt;
+      var allThumbs = document.querySelectorAll('.thumb-strip__item');
+      for (var i = 0; i < allThumbs.length; i++) {
+        allThumbs[i].classList.remove('active');
+      }
+      thumb.classList.add('active');
+    }
+
+    document.getElementById('main-image').addEventListener('click', function() {
+      var lb = document.getElementById('lightbox');
+      document.getElementById('lightbox-img').src = this.src;
+      document.getElementById('lightbox-img').alt = this.alt;
+      lb.classList.add('is-open');
+    });
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('is-open');
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeLightbox();
+    });
+  </script>
+</body>
+</html>

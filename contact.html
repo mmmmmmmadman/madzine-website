@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MADZINE — Contact</title>
+  <meta name="description" content="MADZINE 聯絡與合作">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .bottom-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) var(--space-6);
+      border-top: 1px solid var(--border-default);
+      font-size: var(--text-sm);
+    }
+    .bottom-bar__copyright { color: var(--text-tertiary); }
+    .bottom-bar__nav { display: flex; align-items: center; gap: var(--space-6); }
+    .bottom-bar__nav a { color: var(--text-secondary); text-decoration: none; transition: color var(--duration-normal) var(--ease-default); }
+    .bottom-bar__nav a:hover { color: var(--color-primary); }
+    .bottom-bar__controls { display: flex; align-items: center; gap: var(--space-4); }
+    .section__title { color: #FF6B6B; }
+  </style>
+</head>
+<body>
+
+
+  <main>
+    <section class="section">
+      <div class="container container--narrow">
+        <div class="section__header">
+          <h1 class="section__title" data-i18n="contact.title">聯絡與合作</h1>
+          <p class="section__subtitle" data-i18n="contact.desc">歡迎合作提案、演出邀約或任何交流</p>
+        </div>
+
+        <div class="contact-grid">
+          <div>
+            <h2 class="contact-section__title" data-i18n="contact.email">電子郵件</h2>
+            <a href="mailto:madzinetw@gmail.com" class="contact-link">madzinetw@gmail.com</a>
+          </div>
+          <div>
+            <h2 class="contact-section__title" data-i18n="contact.social">社群連結</h2>
+            <a href="https://github.com/mmmmmmmadman" class="contact-link" target="_blank" rel="noopener">GitHub</a>
+            <a href="https://madzine.bandcamp.com" class="contact-link" target="_blank" rel="noopener">Bandcamp</a>
+            <a href="https://youtube.com/@madzine" class="contact-link" target="_blank" rel="noopener">YouTube</a>
+            <a href="https://instagram.com/mmmmmmmadman" class="contact-link" target="_blank" rel="noopener">Instagram</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Bottom Bar -->
+  <div class="bottom-bar">
+    <span class="bottom-bar__copyright" data-i18n="footer.copyright">&copy; 2025 MADZINE. 保留所有權利。</span>
+    <nav class="bottom-bar__nav">
+      <a href="index.html" data-i18n="nav.home">首頁</a>
+      <a href="software.html" data-i18n="nav.software">軟體</a>
+      <a href="works.html" data-i18n="nav.works">作品</a>
+      <a href="contact.html" data-i18n="nav.contact">聯絡</a>
+    </nav>
+    <div class="bottom-bar__controls">
+      <div class="lang-switcher">
+        <button class="lang-btn" data-lang="zh-TW" onclick="I18N.setLang('zh-TW')">中</button>
+        <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
+        <button class="lang-btn" data-lang="ja" onclick="I18N.setLang('ja')">JP</button>
+      </div>
+      <button id="mode-toggle" class="mode-toggle" aria-label="切換深色模式">☽</button>
+    </div>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

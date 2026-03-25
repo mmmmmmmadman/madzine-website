@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MADZINE — WatchNext</title>
+  <meta name="description" content="跨串流平台影視搜尋工具">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .bg-hero {
+      position: relative;
+      height: 50vh;
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+    }
+    .bg-hero__img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.1;
+    }
+    .bg-hero__gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 30%, var(--surface-base) 100%);
+    }
+    .bg-hero__content {
+      position: relative;
+      z-index: 1;
+      padding: var(--space-16) var(--padding-page-x) var(--space-8);
+      max-width: var(--content-narrow);
+      margin: 0 auto;
+      width: 100%;
+    }
+    .bg-hero__content h1 {
+      font-size: var(--text-4xl);
+      margin-bottom: var(--space-3);
+    }
+    .bg-hero__content .card__tag {
+      margin-bottom: var(--space-4);
+    }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-12);
+      align-items: start;
+    }
+    .col-text {
+      position: sticky;
+      top: var(--space-16);
+    }
+    .col-right {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-8);
+    }
+    .col-right > img {
+      width: 100%;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-default);
+      transition: opacity var(--duration-slow) var(--ease-default);
+      cursor: pointer;
+    }
+    .thumb-strip {
+      display: flex;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+    .thumb-strip__item {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      flex-shrink: 0;
+      border-radius: var(--radius-sm);
+      border: 2px solid var(--border-default);
+      cursor: pointer;
+      opacity: 0.6;
+      transition:
+        opacity var(--duration-normal) var(--ease-default),
+        border-color var(--duration-normal) var(--ease-default);
+    }
+    .thumb-strip__item:hover {
+      opacity: 0.85;
+    }
+    .thumb-strip__item.active {
+      opacity: 1;
+      border-color: var(--color-primary);
+    }
+    .feature-list {
+      padding-left: var(--space-6);
+      margin-top: var(--space-4);
+    }
+    .feature-list li {
+      margin-bottom: var(--space-2);
+      font-size: var(--text-base);
+      color: var(--text-secondary);
+    }
+    .tech-table {
+      margin-top: var(--space-4);
+      font-size: var(--text-base);
+    }
+    .tech-table dt {
+      color: var(--text-tertiary);
+      margin-top: var(--space-3);
+    }
+    .tech-table dd {
+      margin-left: 0;
+      color: var(--text-primary);
+    }
+    @media (max-width: 768px) {
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+      .col-text {
+        position: static;
+      }
+      .thumb-strip {
+        flex-wrap: wrap;
+      }
+      .thumb-strip__item {
+        width: 80px;
+        height: 80px;
+      }
+    }
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      background: oklch(0.10 0.005 55 / 0.92);
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .lightbox.is-open {
+      display: flex;
+    }
+    .lightbox img {
+      max-width: 90vw;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: var(--radius-sm);
+    }
+    .bottom-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) var(--space-6);
+      border-top: 1px solid var(--border-default);
+      font-size: var(--text-sm);
+    }
+    .bottom-bar__copyright { color: var(--text-tertiary); }
+    .bottom-bar__nav { display: flex; align-items: center; gap: var(--space-6); }
+    .bottom-bar__nav a { color: var(--text-secondary); text-decoration: none; transition: color var(--duration-normal) var(--ease-default); }
+    .bottom-bar__nav a:hover { color: var(--color-primary); }
+    .bottom-bar__controls { display: flex; align-items: center; gap: var(--space-4); }
+  </style>
+</head>
+<body>
+
+  <!-- Hero background -->
+  <div class="bg-hero">
+    <img class="bg-hero__img" src="assets/images/software/WatchNext_1.png" alt="WatchNext">
+    <div class="bg-hero__gradient"></div>
+    <div class="bg-hero__content">
+      <a href="software.html" class="section__back" style="color: var(--text-primary);">
+        <span data-i18n="common.back">返回</span>
+      </a>
+      <h1>WatchNext</h1>
+      <p class="card__tag">macOS, iOS</p>
+      <p data-i18n="apps.watchnext.desc">跨串流平台影視搜尋工具</p>
+    </div>
+  </div>
+
+  <!-- Two-column: text + single image -->
+  <main>
+    <section class="section">
+      <div class="container">
+        <div class="two-col">
+          <div class="col-text">
+            <h2 data-i18n="common.intro">功能介紹</h2>
+            <p class="intro-text" data-i18n-html="apps.watchnext.intro">WatchNext 是一款跨串流平台的電影與電視節目搜尋工具，支援 macOS 與 iOS。程式整合 TMDB API 的 Watch Providers 介面，可同時查詢 Apple TV、Netflix、Prime Video、Disney+ 等主要串流平台的內容目錄。使用者選擇特定平台與地區後，系統自動列出該平台在該地區可供觀看的所有電影與節目，支援依熱門度、評分、上映日期等多種維度排序。<br><br>搜尋結果同時顯示 TMDB 評分資訊，並透過 OMDb API 整合 IMDb 評分與 Rotten Tomatoes 新鮮度指數，提供三個評分來源的並列比較。Genre 分類篩選功能可將結果限定至特定類型。區域選擇支援全球 120 個地區，系統依據所選地區自動過濾各平台的可用內容，並將最近使用的地區置頂以加速切換。支援以電影名稱、演員或導演進行關鍵字搜尋。<br><br>收藏功能允許使用者標記有興趣的電影與節目，收藏資料透過 iCloud 在裝置間同步。介面支援英文、日文與繁體中文三種語言。程式使用 Swift/SwiftUI 開發，資料層採用 SwiftData。開源專案，以 MIT 授權於 GitHub 釋出。</p>
+
+          </div>
+
+          <div class="col-right">
+            <img id="main-image" src="assets/images/software/WatchNext_1.png" alt="WatchNext">
+
+            <div>
+              <h2 data-i18n="common.features">特色一覽</h2>
+              <ul class="feature-list">
+                <li data-i18n="apps.watchnext.features.search">Multi-platform search (Apple TV, Netflix, Prime Video, Disney+)</li>
+                <li data-i18n="apps.watchnext.features.rating">IMDb / Rotten Tomatoes rating comparison</li>
+                <li data-i18n="apps.watchnext.features.genre">Genre filtering</li>
+                <li data-i18n="apps.watchnext.features.region">Region selection (120 regions)</li>
+                <li data-i18n="apps.watchnext.features.favorites">Favorites collection (iCloud sync)</li>
+                <li data-i18n="apps.watchnext.features.multilang">Multi-language interface (EN / JA / ZH)</li>
+              </ul>
+            </div>
+
+            <div>
+              <h2 data-i18n="common.tech">技術資訊</h2>
+              <dl class="tech-table">
+                <dt data-i18n="common.language">開發語言</dt>
+                <dd>Swift / SwiftUI</dd>
+                <dt data-i18n="common.platform">平台</dt>
+                <dd>macOS 14+, iOS 17+</dd>
+                <dt data-i18n="common.version">版本</dt>
+                <dd>v1.4.8</dd>
+                <dt data-i18n="common.license">授權</dt>
+                <dd>MIT License</dd>
+                <dt>Frameworks</dt>
+                <dd>SwiftUI, SwiftData, CloudKit, TMDB API, OMDb API</dd>
+              </dl>
+
+              <p style="margin-top: var(--space-8);"><a href="https://github.com/mmmmmmmadman/WatchNext" class="section__more" target="_blank" rel="noopener">GitHub Repository</a></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <img id="lightbox-img" src="" alt="">
+  </div>
+
+  <!-- Bottom Bar -->
+  <div class="bottom-bar">
+    <span class="bottom-bar__copyright" data-i18n="footer.copyright">&copy; 2025 MADZINE. 保留所有權利。</span>
+    <nav class="bottom-bar__nav">
+      <a href="index.html" data-i18n="nav.home">首頁</a>
+      <a href="software.html" data-i18n="nav.software">軟體</a>
+      <a href="works.html" data-i18n="nav.works">作品</a>
+      <a href="contact.html" data-i18n="nav.contact">聯絡</a>
+    </nav>
+    <div class="bottom-bar__controls">
+      <div class="lang-switcher">
+        <button class="lang-btn" data-lang="zh-TW" onclick="I18N.setLang('zh-TW')">中</button>
+        <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
+        <button class="lang-btn" data-lang="ja" onclick="I18N.setLang('ja')">JP</button>
+      </div>
+      <button id="mode-toggle" class="mode-toggle" aria-label="切換深色模式">☽</button>
+    </div>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    document.getElementById('main-image').addEventListener('click', function() {
+      var lb = document.getElementById('lightbox');
+      document.getElementById('lightbox-img').src = this.src;
+      document.getElementById('lightbox-img').alt = this.alt;
+      lb.classList.add('is-open');
+    });
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('is-open');
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeLightbox();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MADZINE — Software</title>
+  <meta name="description" content="MADZINE 軟體作品：VCV Rack 模組與自製應用程式">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ── Works V1: Text List + Floating Preview ── */
+
+    .works-v1 {
+      max-width: var(--content-width);
+      margin: 0 auto;
+      padding: 0 var(--padding-page-x);
+    }
+
+    .works-v1__header {
+      padding: var(--space-16) 0 var(--space-8);
+    }
+
+    .works-v1__title {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      font-weight: var(--weight-extralight);
+      line-height: var(--leading-tight);
+      letter-spacing: var(--tracking-wider);
+      color: #FF6B6B;
+      margin-bottom: var(--space-2);
+    }
+
+    .works-v1__subtitle {
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      font-weight: var(--weight-regular);
+      color: var(--text-secondary);
+      margin-bottom: 0;
+    }
+
+    /* ── Row ── */
+
+    .works-v1__list {
+      margin-bottom: var(--space-24);
+    }
+
+    .works-v1__row {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-4);
+      padding: var(--space-4) 0;
+      border-bottom: 1px solid var(--border-default);
+      transition: color var(--duration-normal) var(--ease-default);
+      color: var(--text-primary);
+    }
+
+    .works-v1__row:first-child {
+      border-top: 1px solid var(--border-default);
+    }
+
+    .works-v1__row:hover {
+      color: var(--color-primary);
+    }
+
+    .works-v1__row-title {
+      font-family: var(--font-display);
+      font-size: var(--text-lg);
+      font-weight: var(--weight-light);
+      line-height: var(--leading-snug);
+      letter-spacing: var(--tracking-wide);
+      white-space: nowrap;
+    }
+
+    .works-v1__row-sep {
+      font-family: var(--font-display);
+      font-size: var(--text-base);
+      font-weight: var(--weight-extralight);
+      color: var(--text-tertiary);
+      flex-shrink: 0;
+      transition: color var(--duration-normal) var(--ease-default);
+    }
+
+    .works-v1__row:hover .works-v1__row-sep {
+      color: var(--color-primary);
+      opacity: 0.5;
+    }
+
+    .works-v1__row-desc {
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      font-weight: var(--weight-regular);
+      color: var(--text-secondary);
+      line-height: var(--leading-snug);
+      transition: color var(--duration-normal) var(--ease-default);
+    }
+
+    .works-v1__row:hover .works-v1__row-desc {
+      color: var(--color-primary);
+      opacity: 0.7;
+    }
+
+    .works-v1__row-platform {
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      font-weight: var(--weight-regular);
+      color: var(--text-tertiary);
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: color var(--duration-normal) var(--ease-default);
+    }
+
+    .works-v1__row:hover .works-v1__row-platform {
+      color: var(--color-primary);
+      opacity: 0.5;
+    }
+
+    /* ── Floating Preview ── */
+
+    .works-v1__preview {
+      position: fixed;
+      top: 50%;
+      right: 6%;
+      transform: translateY(-50%);
+      width: 420px;
+      aspect-ratio: 16 / 9;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    .works-v1__preview img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      opacity: 0;
+      position: absolute;
+      top: 0;
+      left: 0;
+      transition: opacity 1s var(--ease-default);
+      border-radius: var(--radius-sm);
+    }
+
+    .works-v1__preview img.visible {
+      opacity: 1;
+    }
+
+    /* ── Bottom Bar ── */
+    .bottom-bar {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) var(--space-6);
+      border-top: 1px solid var(--border-default);
+      font-size: var(--text-sm);
+    }
+
+    .bottom-bar__copyright {
+      color: var(--text-tertiary);
+    }
+
+    .bottom-bar__nav {
+      display: flex;
+      align-items: center;
+      gap: var(--space-6);
+    }
+
+    .bottom-bar__nav a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color var(--duration-normal) var(--ease-default);
+    }
+
+    .bottom-bar__nav a:hover {
+      color: var(--color-primary);
+    }
+
+    .bottom-bar__controls {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+
+    /* ── Responsive ── */
+
+    @media (max-width: 900px) {
+      .works-v1__preview {
+        display: none;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .works-v1__header {
+        padding: var(--space-10) 0 var(--space-6);
+      }
+
+      .works-v1__row {
+        flex-wrap: wrap;
+        gap: var(--space-1);
+      }
+
+      .works-v1__row-sep {
+        display: none;
+      }
+
+      .works-v1__row-desc {
+        width: 100%;
+      }
+
+      .works-v1__row-platform {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <main>
+    <div class="works-v1">
+      <div class="works-v1__header">
+        <h1 class="works-v1__title" data-i18n="section.software.title">軟體作品</h1>
+        <p class="works-v1__subtitle" data-i18n="section.software.desc">VCV Rack 模組與自製應用程式</p>
+      </div>
+
+      <div class="works-v1__list">
+        <a href="modules.html" class="works-v1__row" data-preview="vcv">
+          <span class="works-v1__row-title">VCV Rack Module Manual</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc" data-i18n="software.vcv.desc">MADZINE 系列模組，為模組化合成器帶來獨特的聲音處理工具</span>
+          <span class="works-v1__row-platform">macOS, Windows, Linux</span>
+        </a>
+
+        <a href="waaasaabiii.html" class="works-v1__row" data-preview="waaasaabiii">
+          <span class="works-v1__row-title">WAAASAABIII</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc" data-i18n="apps.waaasaabiii.desc">多影音同步播放器，支援多設備音訊輸出</span>
+          <span class="works-v1__row-platform">macOS, Windows</span>
+        </a>
+
+        <a href="decapyramid.html" class="works-v1__row" data-preview="decapyramid">
+          <span class="works-v1__row-title">DECAPyramid</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc" data-i18n="apps.decapyramid.desc">8 軌 3D VBAP 空間混音器</span>
+          <span class="works-v1__row-platform">macOS, iOS</span>
+        </a>
+
+        <a href="jazzarchitect.html" class="works-v1__row" data-preview="jazzarchitect">
+          <span class="works-v1__row-title">JazzArchitect</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc" data-i18n="apps.jazzarchitect.desc">爵士和弦分析與音樂生成 AU 插件</span>
+          <span class="works-v1__row-platform">macOS, iOS</span>
+        </a>
+
+        <a href="complexrhythmer.html" class="works-v1__row" data-preview="complexrhythmer">
+          <span class="works-v1__row-title">ComplexRhythmer</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc" data-i18n="apps.complexrhythmer.desc">8 軌多拍號複合節奏機</span>
+          <span class="works-v1__row-platform">macOS, iOS</span>
+        </a>
+
+        <a href="edgy.html" class="works-v1__row" data-preview="edgy">
+          <span class="works-v1__row-title">Edgy</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc" data-i18n="apps.edgy.desc">手勢偵測影像處理，MIDI/OSC 輸出</span>
+          <span class="works-v1__row-platform">macOS, iOS</span>
+        </a>
+
+        <a href="watchnext.html" class="works-v1__row" data-preview="watchnext">
+          <span class="works-v1__row-title">WatchNext</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc" data-i18n="apps.watchnext.desc">跨串流平台影視搜尋工具</span>
+          <span class="works-v1__row-platform">macOS, iOS</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Floating Preview -->
+    <div class="works-v1__preview" id="works-preview">
+      <img data-key="vcv" src="assets/images/software/VCV.png" alt="VCV Rack Modules">
+      <img data-key="waaasaabiii" src="assets/images/software/wasabi_full.png" alt="WAAASAABIII">
+      <img data-key="decapyramid" src="assets/images/software/deca_full.png" alt="DECAPyramid">
+      <img data-key="jazzarchitect" src="assets/images/software/Jazz_full.png" alt="JazzArchitect">
+      <img data-key="complexrhythmer" src="assets/images/software/Complex_Rhy_full.png" alt="ComplexRhythmer">
+      <img data-key="edgy" src="assets/images/software/Edgy_home.png" alt="Edgy">
+      <img data-key="watchnext" src="assets/images/software/WatchNext_1.png" alt="WatchNext">
+    </div>
+  </main>
+
+  <!-- Bottom Bar -->
+  <div class="bottom-bar">
+    <span class="bottom-bar__copyright" data-i18n="footer.copyright">&copy; 2025 MADZINE. 保留所有權利。</span>
+    <nav class="bottom-bar__nav">
+      <a href="index.html" data-i18n="nav.home">首頁</a>
+      <a href="software.html" data-i18n="nav.software">軟體</a>
+      <a href="works.html" data-i18n="nav.works">作品</a>
+      <a href="contact.html" data-i18n="nav.contact">聯絡</a>
+    </nav>
+    <div class="bottom-bar__controls">
+      <div class="lang-switcher">
+        <button class="lang-btn" data-lang="zh-TW" onclick="I18N.setLang('zh-TW')">中</button>
+        <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
+        <button class="lang-btn" data-lang="ja" onclick="I18N.setLang('ja')">JP</button>
+      </div>
+      <button id="mode-toggle" class="mode-toggle" aria-label="切換深色模式">☽</button>
+    </div>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    /* ── Floating preview on row hover ── */
+    (function () {
+      var rows = document.querySelectorAll('.works-v1__row');
+      var imgs = document.querySelectorAll('#works-preview img');
+
+      rows.forEach(function (row) {
+        row.addEventListener('mouseenter', function () {
+          var key = row.dataset.preview;
+          imgs.forEach(function (img) {
+            img.classList.toggle('visible', img.dataset.key === key);
+          });
+        });
+        row.addEventListener('mouseleave', function () {
+          imgs.forEach(function (img) {
+            img.classList.remove('visible');
+          });
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

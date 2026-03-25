@@ -1,0 +1,29 @@
+<svg width="100%" viewBox="0 0 900 200" xmlns="http://www.w3.org/2000/svg">
+<style>
+  .logo { stroke: #FF6B6B; stroke-width: 3.5; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+</style>
+
+<!-- M -->
+<path class="logo" d="M20,155 L20,47 Q20,45 22,45 Q24,45 26,48 L80,130 L134,48 Q136,45 138,45 Q140,45 140,47 L140,155"/>
+
+<!-- A: no crossbar -->
+<path class="logo" d="M188,155 L233,46 Q234,45 235,46 L280,155"/>
+
+<!-- D -->
+<line class="logo" x1="326" y1="45" x2="326" y2="155"/>
+<path class="logo" d="M326,45 L396,45 Q399,45 400,47 L430,100 L400,153"/>
+
+<!-- Z -->
+<path class="logo" d="M478,45 L558,45 Q562,46 560,50 L486,150 Q484,155 488,155 L568,155"/>
+
+<!-- I -->
+<line class="logo" x1="616" y1="45" x2="616" y2="155"/>
+
+<!-- N -->
+<path class="logo" d="M664,155 L664,47 Q664,45 666,45 Q668,45 669,47 L754,153 L754,45"/>
+
+<!-- E -->
+<path class="logo" d="M884,45 L802,45 Q800,45 800,47 L800,153 Q800,155 802,155 L884,155"/>
+<line class="logo" x1="800" y1="100" x2="884" y2="100"/>
+
+</svg>

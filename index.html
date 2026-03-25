@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MADZINE</title>
+  <meta name="description" content="MADZINE — 對藝術嚴謹，對人生溫柔">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ── V7: Horizontal Split (Top/Bottom) ── */
+
+    html, body {
+      height: 100dvh;
+      overflow: hidden;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .v7 {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    /* ── Top Half ── */
+
+    .v7__top {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid var(--border-default);
+      padding: var(--space-6);
+    }
+
+    .v7__brand-svg {
+      width: clamp(200px, 40vw, 500px);
+      height: auto;
+    }
+
+    .v7__subtitle {
+      font-family: var(--font-body);
+      font-size: var(--text-md);
+      font-weight: var(--weight-light);
+      letter-spacing: 0.15em;
+      color: var(--text-secondary);
+      margin-top: var(--space-4);
+    }
+
+    .v7__description {
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      font-weight: var(--weight-light);
+      color: var(--text-tertiary);
+      margin-top: var(--space-2);
+    }
+
+    /* ── Bottom Half ── */
+
+    .v7__bottom {
+      flex: 1;
+      display: flex;
+      min-height: 0;
+    }
+
+    .v7__col {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: var(--space-8) var(--space-6);
+      text-decoration: none;
+      color: inherit;
+      transition:
+        background-color var(--duration-normal) var(--ease-default),
+        color var(--duration-normal) var(--ease-default);
+    }
+
+    .v7__col:hover {
+      background: var(--surface-raised);
+    }
+
+    .v7__col + .v7__col {
+      border-left: 1px solid var(--border-default);
+    }
+
+    .v7__col-title {
+      font-family: var(--font-display);
+      font-size: var(--text-lg);
+      font-weight: var(--weight-light);
+      letter-spacing: var(--tracking-wider);
+      color: var(--text-primary);
+      margin-bottom: var(--space-3);
+      line-height: var(--leading-tight);
+    }
+
+    .v7__col-desc {
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      font-weight: var(--weight-regular);
+      color: var(--text-secondary);
+      line-height: var(--leading-relaxed);
+    }
+
+    .v7__col-arrow {
+      font-family: var(--font-display);
+      font-size: var(--text-sm);
+      color: var(--text-tertiary);
+      margin-top: var(--space-4);
+      transition: transform var(--duration-normal) var(--ease-default);
+      display: inline-block;
+    }
+
+    .v7__col:hover .v7__col-arrow {
+      transform: translateX(6px);
+      color: var(--color-primary);
+    }
+
+    /* ── Bottom Bar ── */
+
+    .bottom-bar {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) var(--space-6);
+      border-top: 1px solid var(--border-default);
+      font-size: var(--text-sm);
+    }
+
+    .bottom-bar__copyright {
+      color: var(--text-tertiary);
+    }
+
+    .bottom-bar__controls {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+
+    /* ── Responsive ── */
+
+    @media (max-width: 640px) {
+      .v7__brand-svg {
+        width: clamp(140px, 50vw, 260px);
+      }
+
+      .v7__subtitle {
+        font-size: var(--text-sm);
+      }
+
+      .v7__bottom {
+        flex-direction: column;
+      }
+
+      .v7__col + .v7__col {
+        border-left: none;
+        border-top: 1px solid var(--border-default);
+      }
+
+      .v7__col {
+        padding: var(--space-4) var(--space-6);
+      }
+
+      .v7__col-title {
+        font-size: var(--text-base);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <main>
+    <div class="v7">
+      <!-- Top Half: Brand -->
+      <div class="v7__top">
+        <img src="assets/MADZINE_logo_coral.svg" alt="MADZINE" class="v7__brand-svg">
+        <span class="v7__subtitle" data-i18n="hero.subtitle">媒體藝術・軟體開發</span>
+        <span class="v7__description" data-i18n="hero.description">對藝術嚴謹，對人生溫柔</span>
+      </div>
+
+      <!-- Bottom Half: Three Columns -->
+      <div class="v7__bottom">
+        <a href="software.html" class="v7__col">
+          <span class="v7__col-title" data-i18n="nav.software">軟體</span>
+          <span class="v7__col-desc" data-i18n="section.software.desc">VCV Rack 模組與自製應用程式</span>
+          <span class="v7__col-arrow">&rarr;</span>
+        </a>
+        <a href="works.html" class="v7__col">
+          <span class="v7__col-title" data-i18n="nav.works">作品</span>
+          <span class="v7__col-desc" data-i18n="section.works.desc">音樂、聲音裝置與現場演出</span>
+          <span class="v7__col-arrow">&rarr;</span>
+        </a>
+        <a href="contact.html" class="v7__col">
+          <span class="v7__col-title" data-i18n="nav.contact">聯絡</span>
+          <span class="v7__col-desc">合作洽談與社群連結</span>
+          <span class="v7__col-arrow">&rarr;</span>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Bottom Bar -->
+  <div class="bottom-bar">
+    <span class="bottom-bar__copyright" data-i18n="footer.copyright">&copy; 2025 MADZINE. 保留所有權利。</span>
+    <div class="bottom-bar__controls">
+      <div class="lang-switcher">
+        <button class="lang-btn" data-lang="zh-TW" onclick="I18N.setLang('zh-TW')">中</button>
+        <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
+        <button class="lang-btn" data-lang="ja" onclick="I18N.setLang('ja')">JP</button>
+      </div>
+      <button id="mode-toggle" class="mode-toggle" aria-label="切換深色模式">☽</button>
+    </div>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+  </script>
+</body>
+</html>

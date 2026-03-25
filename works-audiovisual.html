@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MADZINE — Motion and Pictures and Motion Pictures</title>
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ── Works V1: Text List + Floating Preview ── */
+
+    .works-v1 {
+      max-width: var(--content-width);
+      margin: 0 auto;
+      padding: 0 var(--padding-page-x);
+    }
+
+    .works-v1__header {
+      padding: var(--space-16) 0 var(--space-8);
+    }
+
+    .works-v1__title {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      font-weight: var(--weight-extralight);
+      line-height: var(--leading-tight);
+      letter-spacing: var(--tracking-wider);
+      color: var(--text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .works-v1__subtitle {
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      font-weight: var(--weight-regular);
+      color: var(--text-secondary);
+      margin-bottom: 0;
+    }
+
+    /* ── Row ── */
+
+    .works-v1__list {
+      margin-bottom: var(--space-24);
+    }
+
+    .works-v1__row {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-4);
+      padding: var(--space-4) 0;
+      border-bottom: 1px solid var(--border-default);
+      transition: color var(--duration-normal) var(--ease-default);
+      color: var(--text-primary);
+    }
+
+    .works-v1__row:first-child {
+      border-top: 1px solid var(--border-default);
+    }
+
+    .works-v1__row:hover {
+      color: var(--color-primary);
+    }
+
+    .works-v1__row-title {
+      font-family: var(--font-display);
+      font-size: var(--text-lg);
+      font-weight: var(--weight-light);
+      line-height: var(--leading-snug);
+      letter-spacing: var(--tracking-wide);
+      white-space: nowrap;
+    }
+
+    .works-v1__row-sep {
+      font-family: var(--font-display);
+      font-size: var(--text-base);
+      font-weight: var(--weight-extralight);
+      color: var(--text-tertiary);
+      flex-shrink: 0;
+      transition: color var(--duration-normal) var(--ease-default);
+    }
+
+    .works-v1__row:hover .works-v1__row-sep {
+      color: var(--color-primary);
+      opacity: 0.5;
+    }
+
+    .works-v1__row-desc {
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      font-weight: var(--weight-regular);
+      color: var(--text-secondary);
+      line-height: var(--leading-snug);
+      transition: color var(--duration-normal) var(--ease-default);
+    }
+
+    .works-v1__row:hover .works-v1__row-desc {
+      color: var(--color-primary);
+      opacity: 0.7;
+    }
+
+    /* ── Floating Preview ── */
+
+    .works-v1__preview {
+      position: fixed;
+      top: 50%;
+      right: 6%;
+      transform: translateY(-50%);
+      width: 420px;
+      aspect-ratio: 16 / 9;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    .works-v1__preview img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      opacity: 0;
+      position: absolute;
+      top: 0;
+      left: 0;
+      transition: opacity 1s var(--ease-default);
+      border-radius: var(--radius-sm);
+    }
+
+    .works-v1__preview img.visible {
+      opacity: 1;
+    }
+
+    /* ── Bottom Bar ── */
+    .bottom-bar {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) var(--space-6);
+      border-top: 1px solid var(--border-default);
+      font-size: var(--text-sm);
+    }
+
+    .bottom-bar__copyright {
+      color: var(--text-tertiary);
+    }
+
+    .bottom-bar__nav {
+      display: flex;
+      align-items: center;
+      gap: var(--space-6);
+    }
+
+    .bottom-bar__nav a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color var(--duration-normal) var(--ease-default);
+    }
+
+    .bottom-bar__nav a:hover {
+      color: var(--color-primary);
+    }
+
+    .bottom-bar__controls {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+
+    /* ── Responsive ── */
+
+    @media (max-width: 900px) {
+      .works-v1__preview {
+        display: none;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .works-v1__header {
+        padding: var(--space-10) 0 var(--space-6);
+      }
+
+      .works-v1__row {
+        flex-wrap: wrap;
+        gap: var(--space-1);
+      }
+
+      .works-v1__row-sep {
+        display: none;
+      }
+
+      .works-v1__row-desc {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <main>
+    <div class="works-v1">
+      <div class="works-v1__header">
+        <a href="works.html" class="section__back">
+          <span data-i18n="common.back">返回</span>
+        </a>
+        <h1 class="works-v1__title" data-i18n="works.audiovisual.title">Motion and Pictures and Motion Pictures</h1>
+        <p class="works-v1__subtitle" data-i18n="works.audiovisual.desc">聲音與影像的交織創作</p>
+      </div>
+
+      <div class="works-v1__list">
+        <a href="https://youtube.com/watch?v=64S8VVf8fN0" class="works-v1__row" data-preview="64S8VVf8fN0" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">Early spring, outside of my window</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=hzAtWOs5uyA" class="works-v1__row" data-preview="hzAtWOs5uyA" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">Toyohira River I</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Body movement: Akiyo</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=cnqRRwFROS8" class="works-v1__row" data-preview="cnqRRwFROS8" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">Toyohira River II</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Body movement: Akiyo</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=lo6SovNg9c4" class="works-v1__row" data-preview="lo6SovNg9c4" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">Tree I</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Body movement: Akiyo</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=b6EXu0FSbqE" class="works-v1__row" data-preview="b6EXu0FSbqE" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">Rainy</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Paint: Frédéric Lacroix-Loiselle (Capsule 406)</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=UJD3ta21J7g" class="works-v1__row" data-preview="UJD3ta21J7g" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">in Tenjinyama Studio I</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Paint: Tomoe Higashi</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=qlQFpn2M7tI" class="works-v1__row" data-preview="qlQFpn2M7tI" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">in Tenjinyama Studio II</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Paint: Tomoe Higashi</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=M4cIEst_0e8" class="works-v1__row" data-preview="M4cIEst_0e8" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">in Tenjinyama Studio III</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Paint: Tomoe Higashi</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=szeXUSxi9mI" class="works-v1__row" data-preview="szeXUSxi9mI" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">2.5D FKK Gallery</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Movement / Photo: Sharol</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=a5UCscZ0qyE" class="works-v1__row" data-preview="a5UCscZ0qyE" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">Sakura</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Paint: Frédéric Lacroix-Loiselle (Capsule 406)</span>
+        </a>
+
+        <a href="https://youtube.com/watch?v=Jlw1kgrnFiY" class="works-v1__row" data-preview="Jlw1kgrnFiY" target="_blank" rel="noopener">
+          <span class="works-v1__row-title">Motions and Pictures and Motion Pictures (2024 Sep)</span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc">Collaboration with AkiYo, AI paintings to animation</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Floating Preview -->
+    <div class="works-v1__preview" id="works-preview">
+      <img data-key="64S8VVf8fN0" src="https://img.youtube.com/vi/64S8VVf8fN0/hqdefault.jpg" alt="">
+      <img data-key="hzAtWOs5uyA" src="https://img.youtube.com/vi/hzAtWOs5uyA/hqdefault.jpg" alt="">
+      <img data-key="cnqRRwFROS8" src="https://img.youtube.com/vi/cnqRRwFROS8/hqdefault.jpg" alt="">
+      <img data-key="lo6SovNg9c4" src="https://img.youtube.com/vi/lo6SovNg9c4/hqdefault.jpg" alt="">
+      <img data-key="b6EXu0FSbqE" src="https://img.youtube.com/vi/b6EXu0FSbqE/hqdefault.jpg" alt="">
+      <img data-key="UJD3ta21J7g" src="https://img.youtube.com/vi/UJD3ta21J7g/hqdefault.jpg" alt="">
+      <img data-key="qlQFpn2M7tI" src="https://img.youtube.com/vi/qlQFpn2M7tI/hqdefault.jpg" alt="">
+      <img data-key="M4cIEst_0e8" src="https://img.youtube.com/vi/M4cIEst_0e8/hqdefault.jpg" alt="">
+      <img data-key="szeXUSxi9mI" src="https://img.youtube.com/vi/szeXUSxi9mI/hqdefault.jpg" alt="">
+      <img data-key="a5UCscZ0qyE" src="https://img.youtube.com/vi/a5UCscZ0qyE/hqdefault.jpg" alt="">
+      <img data-key="Jlw1kgrnFiY" src="https://img.youtube.com/vi/Jlw1kgrnFiY/hqdefault.jpg" alt="">
+    </div>
+  </main>
+
+  <!-- Bottom Bar -->
+  <div class="bottom-bar">
+    <span class="bottom-bar__copyright" data-i18n="footer.copyright">&copy; 2025 MADZINE. 保留所有權利。</span>
+    <nav class="bottom-bar__nav">
+      <a href="index.html" data-i18n="nav.home">首頁</a>
+      <a href="software.html" data-i18n="nav.software">軟體</a>
+      <a href="works.html" data-i18n="nav.works">作品</a>
+      <a href="contact.html" data-i18n="nav.contact">聯絡</a>
+    </nav>
+    <div class="bottom-bar__controls">
+      <div class="lang-switcher">
+        <button class="lang-btn" data-lang="zh-TW" onclick="I18N.setLang('zh-TW')">中</button>
+        <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
+        <button class="lang-btn" data-lang="ja" onclick="I18N.setLang('ja')">JP</button>
+      </div>
+      <button id="mode-toggle" class="mode-toggle" aria-label="切換深色模式">☽</button>
+    </div>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    /* ── Floating preview on row hover ── */
+    (function () {
+      var rows = document.querySelectorAll('.works-v1__row');
+      var imgs = document.querySelectorAll('#works-preview img');
+
+      rows.forEach(function (row) {
+        row.addEventListener('mouseenter', function () {
+          var key = row.dataset.preview;
+          imgs.forEach(function (img) {
+            img.classList.toggle('visible', img.dataset.key === key);
+          });
+        });
+        row.addEventListener('mouseleave', function () {
+          imgs.forEach(function (img) {
+            img.classList.remove('visible');
+          });
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

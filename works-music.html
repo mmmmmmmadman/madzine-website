@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MADZINE — Music</title>
+  <meta name="description" content="MADZINE 音樂作品：原創音樂專輯與 EP">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ── Works V1: Text List + Floating Preview ── */
+
+    .works-v1 {
+      max-width: var(--content-width);
+      margin: 0 auto;
+      padding: 0 var(--padding-page-x);
+    }
+
+    .works-v1__header {
+      padding: var(--space-16) 0 var(--space-8);
+    }
+
+    .works-v1__title {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      font-weight: var(--weight-extralight);
+      line-height: var(--leading-tight);
+      letter-spacing: var(--tracking-wider);
+      color: var(--text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .works-v1__subtitle {
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      font-weight: var(--weight-regular);
+      color: var(--text-secondary);
+      margin-bottom: 0;
+    }
+
+    /* ── Back Link ── */
+
+    .works-v1__back {
+      display: inline-block;
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: var(--space-4) 0 0;
+      transition: color var(--duration-normal) var(--ease-default);
+    }
+
+    .works-v1__back:hover {
+      color: var(--color-primary);
+    }
+
+    /* ── Row ── */
+
+    .works-v1__list {
+      margin-bottom: var(--space-24);
+    }
+
+    .works-v1__row {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-4);
+      padding: var(--space-4) 0;
+      border-bottom: 1px solid var(--border-default);
+      transition: color var(--duration-normal) var(--ease-default);
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .works-v1__row:first-child {
+      border-top: 1px solid var(--border-default);
+    }
+
+    .works-v1__row:hover {
+      color: var(--color-primary);
+    }
+
+    .works-v1__row-title {
+      font-family: var(--font-display);
+      font-size: var(--text-lg);
+      font-weight: var(--weight-light);
+      line-height: var(--leading-snug);
+      letter-spacing: var(--tracking-wide);
+      white-space: nowrap;
+    }
+
+    .works-v1__row-sep {
+      font-family: var(--font-display);
+      font-size: var(--text-base);
+      font-weight: var(--weight-extralight);
+      color: var(--text-tertiary);
+      flex-shrink: 0;
+      transition: color var(--duration-normal) var(--ease-default);
+    }
+
+    .works-v1__row:hover .works-v1__row-sep {
+      color: var(--color-primary);
+      opacity: 0.5;
+    }
+
+    .works-v1__row-desc {
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      font-weight: var(--weight-regular);
+      color: var(--text-secondary);
+      line-height: var(--leading-snug);
+      transition: color var(--duration-normal) var(--ease-default);
+    }
+
+    .works-v1__row:hover .works-v1__row-desc {
+      color: var(--color-primary);
+      opacity: 0.7;
+    }
+
+    /* ── Floating Preview ── */
+
+    .works-v1__preview {
+      position: fixed;
+      top: 50%;
+      right: 6%;
+      transform: translateY(-50%);
+      width: 420px;
+      aspect-ratio: 1 / 1;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    .works-v1__preview img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      opacity: 0;
+      position: absolute;
+      top: 0;
+      left: 0;
+      transition: opacity 1s var(--ease-default);
+      border-radius: var(--radius-sm);
+    }
+
+    .works-v1__preview img.visible {
+      opacity: 1;
+    }
+
+    /* ── Bottom Bar ── */
+    .bottom-bar {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) var(--space-6);
+      border-top: 1px solid var(--border-default);
+      font-size: var(--text-sm);
+    }
+
+    .bottom-bar__copyright {
+      color: var(--text-tertiary);
+    }
+
+    .bottom-bar__nav {
+      display: flex;
+      align-items: center;
+      gap: var(--space-6);
+    }
+
+    .bottom-bar__nav a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color var(--duration-normal) var(--ease-default);
+    }
+
+    .bottom-bar__nav a:hover {
+      color: var(--color-primary);
+    }
+
+    .bottom-bar__controls {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+
+    /* ── Responsive ── */
+
+    @media (max-width: 900px) {
+      .works-v1__preview {
+        display: none;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .works-v1__header {
+        padding: var(--space-10) 0 var(--space-6);
+      }
+
+      .works-v1__row {
+        flex-wrap: wrap;
+        gap: var(--space-1);
+      }
+
+      .works-v1__row-sep {
+        display: none;
+      }
+
+      .works-v1__row-desc {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <main>
+    <div class="works-v1">
+      <a href="works.html" class="works-v1__back">
+        <span data-i18n="common.back">&#8592; 返回</span>
+      </a>
+
+      <div class="works-v1__header">
+        <h1 class="works-v1__title" data-i18n="works.music.title">音樂作品</h1>
+        <p class="works-v1__subtitle" data-i18n="works.music.desc">原創音樂專輯與 EP</p>
+      </div>
+
+      <div class="works-v1__list">
+        <a href="https://madzine.bandcamp.com/album/dissolving-sounds-remastered" class="works-v1__row" target="_blank" rel="noopener" data-preview="dissolvingSounds">
+          <span class="works-v1__row-title">Dissolving Sounds (Remastered) <small>2015/2024 · with Chiaya</small></span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc" data-i18n="works.music.albums.dissolvingSounds.desc">在古典音樂底蘊下結合電子聲響，完美平衡電子樂器與真實樂器。合成器與鋼琴互為主角，帶來有別於以往的聆聽經驗。</span>
+        </a>
+
+        <a href="https://madzine.bandcamp.com/album/fragrance-liang-remastered" class="works-v1__row" target="_blank" rel="noopener" data-preview="fragranceLiang">
+          <span class="works-v1__row-title">Fragrance Liang (Remastered) <small>2015/2024 · with Alfa</small></span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc" data-i18n="works.music.albums.fragranceLiang.desc">虛構角色梁香，從過去記憶中顯現，依據每個人內心的渴望以不同形態現身。由 MAD 與歌手 Alfa 共同打造，以水為媒介，試圖淨化並溶解人與非人之間的羈絆。</span>
+        </a>
+
+        <a href="https://madzine.bandcamp.com/album/helsinki-sapporo" class="works-v1__row" target="_blank" rel="noopener" data-preview="helsinkiSapporo">
+          <span class="works-v1__row-title">Helsinki / Sapporo <small>2023</small></span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc" data-i18n="works.music.albums.helsinkiSapporo.desc">札幌的 3D 列印機與合成器的對話記錄，以及延續《STARMAN RETURNs》概念的赫爾辛基科技音樂現場演奏。這兩首曲目代表了在數位與物理領域學習後，對模組合成器世界兩種不同的探索方式。</span>
+        </a>
+
+        <a href="https://madzine.bandcamp.com/album/ov-oct" class="works-v1__row" target="_blank" rel="noopener" data-preview="ovOct">
+          <span class="works-v1__row-title">ov/oct <small>2020</small></span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc" data-i18n="works.music.albums.ovOct.desc">結合機器人鼓手（Polyend Perc）、Buchla、環境取樣拼貼，從音樂人轉型到新媒體藝術家的分水嶺，也是開啟不從音符創作的起點。</span>
+        </a>
+
+        <a href="https://madzine.bandcamp.com/album/starman-returns" class="works-v1__row" target="_blank" rel="noopener" data-preview="starmanReturns">
+          <span class="works-v1__row-title">STARMAN RETURNs <small>2017</small></span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc" data-i18n="works.music.albums.starmanReturns.desc">有機呼吸的科技音樂，揭示個人對宇宙的回饋。</span>
+        </a>
+
+        <a href="https://madzine.bandcamp.com/album/matsu-2" class="works-v1__row" target="_blank" rel="noopener" data-preview="matsu">
+          <span class="works-v1__row-title">MATSU <small>2018</small></span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc" data-i18n="works.music.albums.matsu.desc">受柏林 techno 與 Synth Wave 影響，凝視松樹時所創作，將無機的科技音樂與有機的生命感受及情感融合。</span>
+        </a>
+
+        <a href="https://madzine.bandcamp.com/album/monologue-in-analogue" class="works-v1__row" target="_blank" rel="noopener" data-preview="monologueInAnalogue">
+          <span class="works-v1__row-title">Monologue in Analogue <small>2019</small></span>
+          <span class="works-v1__row-sep">/</span>
+          <span class="works-v1__row-desc" data-i18n="works.music.albums.monologueInAnalogue.desc">不依賴節拍所創造的新境地。表達對內在世界與不確定性的觀察，一場穿越多重宇宙的精神之旅。</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Floating Preview -->
+    <div class="works-v1__preview" id="works-preview">
+      <img data-key="dissolvingSounds" src="https://f4.bcbits.com/img/a2380868185_16.jpg" alt="">
+      <img data-key="fragranceLiang" src="https://f4.bcbits.com/img/a2449620648_16.jpg" alt="">
+      <img data-key="helsinkiSapporo" src="https://f4.bcbits.com/img/a2371137729_16.jpg" alt="">
+      <img data-key="ovOct" src="https://f4.bcbits.com/img/a0263991850_16.jpg" alt="">
+      <img data-key="starmanReturns" src="https://f4.bcbits.com/img/a0598553462_16.jpg" alt="">
+      <img data-key="matsu" src="https://f4.bcbits.com/img/a2858661072_16.jpg" alt="">
+      <img data-key="monologueInAnalogue" src="https://f4.bcbits.com/img/a1376174806_16.jpg" alt="">
+    </div>
+  </main>
+
+  <!-- Bottom Bar -->
+  <div class="bottom-bar">
+    <span class="bottom-bar__copyright" data-i18n="footer.copyright">&copy; 2025 MADZINE. 保留所有權利。</span>
+    <nav class="bottom-bar__nav">
+      <a href="index.html" data-i18n="nav.home">首頁</a>
+      <a href="software.html" data-i18n="nav.software">軟體</a>
+      <a href="works.html" data-i18n="nav.works">作品</a>
+      <a href="contact.html" data-i18n="nav.contact">聯絡</a>
+    </nav>
+    <div class="bottom-bar__controls">
+      <div class="lang-switcher">
+        <button class="lang-btn" data-lang="zh-TW" onclick="I18N.setLang('zh-TW')">中</button>
+        <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
+        <button class="lang-btn" data-lang="ja" onclick="I18N.setLang('ja')">JP</button>
+      </div>
+      <button id="mode-toggle" class="mode-toggle" aria-label="切換深色模式">☽</button>
+    </div>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    /* ── Floating preview on row hover ── */
+    (function () {
+      var rows = document.querySelectorAll('.works-v1__row');
+      var imgs = document.querySelectorAll('#works-preview img');
+
+      rows.forEach(function (row) {
+        row.addEventListener('mouseenter', function () {
+          var key = row.dataset.preview;
+          imgs.forEach(function (img) {
+            img.classList.toggle('visible', img.dataset.key === key);
+          });
+        });
+        row.addEventListener('mouseleave', function () {
+          imgs.forEach(function (img) {
+            img.classList.remove('visible');
+          });
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
