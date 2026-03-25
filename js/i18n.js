@@ -180,6 +180,10 @@ const I18N = {
           vcvrack: {
             title: '從零開始 VCV Rack',
             desc: 'VCV Rack 從零開始入門教學，共 8 集'
+          },
+          handout: {
+            title: '聲音設計講義',
+            desc: '模組合成器聲音設計講義下載'
           }
         },
         interactive: {
@@ -222,6 +226,8 @@ const I18N = {
       contact: {
         title: '聯絡與合作',
         desc: '歡迎合作提案、演出邀約或任何交流',
+        course: '課程',
+        'course.modular': '模組合成器聲音設計線上課程報名',
         email: '電子郵件',
         social: '社群連結',
         bandcamp: 'Bandcamp',
@@ -422,6 +428,10 @@ const I18N = {
           vcvrack: {
             title: 'VCV Rack from Scratch',
             desc: 'VCV Rack beginner tutorial series, 8 episodes'
+          },
+          handout: {
+            title: 'Sound Design Handout',
+            desc: 'Modular synth sound design handout download'
           }
         },
         interactive: {
@@ -464,6 +474,8 @@ const I18N = {
       contact: {
         title: 'Contact',
         desc: 'Open to collaborations, performance invitations, and any exchange',
+        course: 'Course',
+        'course.modular': 'Modular Synth Sound Design Online Course Registration',
         email: 'Email',
         social: 'Social',
         bandcamp: 'Bandcamp',
@@ -664,6 +676,10 @@ const I18N = {
           vcvrack: {
             title: 'ゼロから始める VCV Rack',
             desc: 'VCV Rack 入門チュートリアルシリーズ、全8回'
+          },
+          handout: {
+            title: 'サウンドデザイン資料',
+            desc: 'モジュラーシンセ サウンドデザイン資料ダウンロード'
           }
         },
         interactive: {
@@ -706,6 +722,8 @@ const I18N = {
       contact: {
         title: 'お問い合わせ',
         desc: 'コラボレーション、パフォーマンスへの招待、その他のお問い合わせ',
+        course: 'コース',
+        'course.modular': 'モジュラーシンセ サウンドデザイン オンラインコース申し込み',
         email: 'メール',
         social: 'ソーシャル',
         bandcamp: 'Bandcamp',
