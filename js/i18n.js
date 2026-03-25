@@ -171,7 +171,7 @@ const I18N = {
           desc: '模組化合成器現場演出選輯',
           works: {
             utsurobune: {
-              desc: '編舞、舞踏、繪畫、道具、虛舟題字：AKIYO / AI 影像、互動視覺、舞台設計、聲音設計：MADZINE / 後期影片剪輯：Sabiwa / 製作：AKIYO / 製作支援：天神山藝術工作室'
+              desc: '與舞踏畫家AKIYO合作的舞踏作品，負責影像、聲音、舞台設計。'
             }
           }
         },
@@ -427,7 +427,7 @@ const I18N = {
           desc: 'Modular synthesizer live performance selections',
           works: {
             utsurobune: {
-              desc: 'Choreography, Butoh, Painting, Props, Utsurobune Title Calligraphy: AKIYO / AI Imagery, Interactive Visuals, Stage Design, Sound Design: MADZINE / Post-production Video Editing: Sabiwa / Production: AKIYO / Production Support: Tenjinyama Art Studio'
+              desc: 'A Butoh piece in collaboration with Butoh painter AKIYO. Responsible for visuals, sound, and stage design.'
             }
           }
         },
@@ -683,7 +683,7 @@ const I18N = {
           desc: 'モジュラーシンセサイザー ライブパフォーマンス選集',
           works: {
             utsurobune: {
-              desc: '振付・舞踏・絵画・小道具・虚舟題字：AKIYO / AI映像・インタラクティブビジュアル・舞台デザイン・サウンドデザイン：MADZINE / ポストプロダクション映像編集：Sabiwa / プロダクション：AKIYO / 制作協力：天神山アートスタジオ'
+              desc: '舞踏画家AKIYOとのコラボレーションによる舞踏作品。映像、サウンド、舞台デザインを担当。'
             }
           }
         },
