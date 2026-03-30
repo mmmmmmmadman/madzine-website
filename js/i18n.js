@@ -43,20 +43,6 @@ const I18N = {
         }
       },
       apps: {
-        waaasaabiii: {
-          name: 'WAAASAABIII',
-          desc: '多影音同步播放器，支援多設備音訊輸出',
-          platform: 'macOS, Windows',
-          intro: 'WAAASAABIII 是一款以 Rust 開發的多影音同步播放器，設計用於現場演出與多螢幕裝置藝術。程式的核心是多軌時間軸系統，每一軌可載入獨立的影片檔案，所有軌道在統一時間軸上進行同步播放。每軌提供獨立的透明度、位置與縮放控制，並支援三種混合模式，可將多個影像層疊合成為單一輸出畫面。<br><br>輸出端配備多邊形遮罩功能，使用者可對每個輸出畫面定義多邊形區域，進行伸縮、裁切與邊緣平滑處理，適用於非標準形狀的投影表面。音訊方面，程式透過 RtAudio C++ 封裝實現多音訊裝置的同時輸出，採用 callback-driven 架構搭配 lock-free ring buffer，每軌可獨立指定輸出裝置與聲道偏移，支援多聲道音訊介面如 Expert Sleepers ES-8 的 16 聲道輸出。<br><br>程式支援 Ableton Link 協定，在 audio callback 內處理同步邏輯，可與其他 Link 相容的音樂軟體或硬體進行節拍對齊。影片解碼使用 ffmpeg-next，支援包含 H.264、HEVC 與 PCM/AAC 等常見格式。程式同時支援 macOS 與 Windows 雙平台。',
-          features: {
-            timeline: '多軌時間軸同步播放',
-            multidevice: '多設備音訊輸出',
-            adjust: '每軌透明度 / 位置 / 縮放調整',
-            blend: '3 種混合模式',
-            mask: '每輸出多邊形遮罩（伸縮 / 裁切 + 平滑）',
-            link: 'Ableton Link 同步'
-          }
-        },
         decapyramid: {
           name: 'DECAPyramid',
           desc: '8 軌 3D VBAP 空間混音器',
@@ -299,20 +285,6 @@ const I18N = {
         }
       },
       apps: {
-        waaasaabiii: {
-          name: 'WAAASAABIII',
-          desc: 'Multi-video synchronized player with multi-device audio output',
-          platform: 'macOS, Windows',
-          intro: 'WAAASAABIII is a multi-video synchronized player built in Rust, designed for live performance and multi-screen installation art. At its core is a multi-track timeline system where each track loads an independent video file, with all tracks playing in sync on a unified timeline. Each track provides independent opacity, position, and zoom controls, with three blend modes available for compositing multiple video layers into a single output.<br><br>The output stage features polygon masking, allowing users to define polygonal regions per output for stretching, cropping, and edge smoothing—suitable for non-standard projection surfaces. On the audio side, the application uses an RtAudio C++ wrapper for simultaneous multi-device output with a callback-driven architecture and lock-free ring buffers. Each track can independently specify its output device and channel offset, supporting multi-channel audio interfaces such as the Expert Sleepers ES-8 with 16-channel output.<br><br>The application supports the Ableton Link protocol, processing synchronization logic within the audio callback for beat alignment with other Link-compatible music software and hardware. Video decoding uses ffmpeg-next, supporting common formats including H.264, HEVC, and PCM/AAC audio. The application runs on both macOS and Windows.',
-          features: {
-            timeline: 'Multi-track timeline with synchronized playback',
-            multidevice: 'Multi-device audio output',
-            adjust: 'Opacity / position / zoom adjustment per track',
-            blend: '3 blend modes',
-            mask: 'Per-output polygon mask (stretch / crop + smoothing)',
-            link: 'Ableton Link synchronization'
-          }
-        },
         decapyramid: {
           name: 'DECAPyramid',
           desc: '8-track 3D VBAP spatial mixer',
@@ -555,20 +527,6 @@ const I18N = {
         }
       },
       apps: {
-        waaasaabiii: {
-          name: 'WAAASAABIII',
-          desc: 'マルチ映像同期プレーヤー、複数デバイスオーディオ出力対応',
-          platform: 'macOS, Windows',
-          intro: 'WAAASAABIII は Rust で開発されたマルチ映像同期プレーヤーで、ライブパフォーマンスやマルチスクリーンインスタレーションアート向けに設計されています。コアとなるのはマルチトラックタイムラインシステムで、各トラックに独立した映像ファイルを読み込み、統一タイムライン上で同期再生します。各トラックは透明度、位置、ズームを個別に制御でき、3種類のブレンドモードにより複数の映像レイヤーを単一出力に合成できます。<br><br>出力段にはポリゴンマスク機能を搭載し、出力ごとにポリゴン領域を定義してストレッチ、クロップ、エッジスムージングを適用でき、非標準形状のプロジェクション面に対応します。オーディオ面では RtAudio C++ ラッパーにより複数デバイスへの同時出力を実現し、callback-driven アーキテクチャと lock-free ring buffer を採用。各トラックは出力デバイスとチャンネルオフセットを個別に指定でき、Expert Sleepers ES-8 の 16チャンネル出力などのマルチチャンネルオーディオインターフェースに対応します。<br><br>Ableton Link プロトコルに対応し、audio callback 内で同期ロジックを処理して他の Link 対応音楽ソフトウェア・ハードウェアとのビート同期が可能です。映像デコードには ffmpeg-next を使用し、H.264、HEVC、PCM/AAC など一般的なフォーマットに対応。macOS と Windows の両プラットフォームで動作します。',
-          features: {
-            timeline: 'マルチトラックタイムライン同期再生',
-            multidevice: 'マルチデバイスオーディオ出力',
-            adjust: 'トラック別の透明度・位置・ズーム調整',
-            blend: '3種ブレンドモード',
-            mask: '出力別ポリゴンマスク（ストレッチ / クロップ + スムージング）',
-            link: 'Ableton Link 同期'
-          }
-        },
         decapyramid: {
           name: 'DECAPyramid',
           desc: '8トラック 3D VBAP 空間ミキサー',
