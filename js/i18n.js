@@ -114,6 +114,21 @@ const I18N = {
             favorites: '收藏清單（iCloud 同步）',
             multilang: '多語言介面（EN / JA / ZH）'
           }
+        },
+        anyani: {
+          name: 'AnyAni',
+          desc: '定格動畫製作工具，AI 超解析與補幀',
+          platform: 'macOS, Windows',
+          intro: 'AnyAni 是一款定格動畫製作工具，將圖片序列轉換為影片。支援逐幀縮放、位移、旋轉與色鍵去背，內建 Fade/Dissolve 轉場效果。<br><br>AI 超解析功能使用 Real-ESRGAN 模型，macOS 版透過 CoreML 驅動 Apple Neural Engine 加速（比傳統 Vulkan 快 2-6 倍），採用 512x512 分塊處理搭配重疊混合，保持原始畫面比例不變形。Windows 版使用 ncnn-vulkan，支援 NVIDIA、AMD、Intel 顯示卡。<br><br>RIFE AI 補幀可將影格數提升 2-16 倍，與轉場效果可同時運作。硬體影片編碼優先使用 VideoToolbox（macOS）或 NVENC/AMF/QSV（Windows），軟體回退使用 OpenH264（BSD 授權，無 GPL 依賴）。<br><br>介面使用 Rust + egui 開發，GPU 合成透過 wgpu compute shader 加速。支援英文、日文、繁體中文三語介面。',
+          features: {
+            upscale: 'AI 超解析（Real-ESRGAN，2x/4x，Photo/Anime 模型）',
+            rife: 'AI 補幀（RIFE，2x/4x/8x/16x）',
+            transition: '轉場效果（Fade / Dissolve）',
+            chromakey: '色鍵去背（點擊選色 + 容差調整）',
+            transform: '逐幀變形（縮放 / 位移 / 旋轉）',
+            batch: '多選批次操作',
+            multilang: '三語介面（EN / JP / TW）'
+          }
         }
       },
       works: {
@@ -356,6 +371,21 @@ const I18N = {
             favorites: 'Favorites collection (iCloud sync)',
             multilang: 'Multi-language interface (EN / JA / ZH)'
           }
+        },
+        anyani: {
+          name: 'AnyAni',
+          desc: 'Stop motion animation maker with AI upscale and interpolation',
+          platform: 'macOS, Windows',
+          intro: 'AnyAni is a stop motion animation maker that converts image sequences into video. It supports per-frame scale, offset, rotation, and chroma key background removal, with built-in Fade/Dissolve transitions.<br><br>AI upscaling uses Real-ESRGAN models. On macOS, CoreML drives the Apple Neural Engine for 2-6x faster processing compared to traditional Vulkan, using 512x512 tiling with overlap blending to preserve original aspect ratios. On Windows, ncnn-vulkan supports NVIDIA, AMD, and Intel GPUs.<br><br>RIFE AI interpolation boosts frame count by 2-16x and works simultaneously with transitions. Hardware video encoding prioritizes VideoToolbox (macOS) or NVENC/AMF/QSV (Windows), with OpenH264 (BSD licensed, no GPL dependencies) as software fallback.<br><br>Built with Rust + egui, GPU compositing via wgpu compute shader. Interface supports English, Japanese, and Traditional Chinese.',
+          features: {
+            upscale: 'AI Upscale (Real-ESRGAN, 2x/4x, Photo/Anime models)',
+            rife: 'AI Interpolation (RIFE, 2x/4x/8x/16x)',
+            transition: 'Transitions (Fade / Dissolve)',
+            chromakey: 'Chroma Key (click-to-pick color + tolerance)',
+            transform: 'Per-frame transforms (Scale / Offset / Rotation)',
+            batch: 'Multi-select batch operations',
+            multilang: 'Trilingual interface (EN / JP / TW)'
+          }
         }
       },
       works: {
@@ -597,6 +627,21 @@ const I18N = {
             region: '地域選択（120地域）',
             favorites: 'お気に入りコレクション（iCloud 同期）',
             multilang: '多言語インターフェース（EN / JA / ZH）'
+          }
+        },
+        anyani: {
+          name: 'AnyAni',
+          desc: 'ストップモーションアニメーション制作ツール、AI超解像・補間',
+          platform: 'macOS, Windows',
+          intro: 'AnyAni は画像シーケンスを動画に変換するストップモーションアニメーション制作ツールです。フレームごとのスケール、オフセット、回転、クロマキー背景除去に対応し、Fade/Dissolve トランジション効果を内蔵しています。<br><br>AI 超解像機能は Real-ESRGAN モデルを使用。macOS 版では CoreML が Apple Neural Engine を駆動し、従来の Vulkan と比べ 2-6 倍高速に処理します。512x512 タイル分割とオーバーラップブレンディングにより、元のアスペクト比を維持します。Windows 版は ncnn-vulkan を使用し、NVIDIA、AMD、Intel GPU に対応。<br><br>RIFE AI 補間でフレーム数を 2-16 倍に増加でき、トランジション効果と同時に動作します。ハードウェアエンコードは VideoToolbox（macOS）または NVENC/AMF/QSV（Windows）を優先使用し、ソフトウェアフォールバックには OpenH264（BSD ライセンス、GPL 依存なし）を使用します。<br><br>Rust + egui で開発、wgpu compute shader による GPU 合成。英語、日本語、繁体字中国語の 3 言語インターフェースに対応。',
+          features: {
+            upscale: 'AI 超解像（Real-ESRGAN、2x/4x、Photo/Anime モデル）',
+            rife: 'AI フレーム補間（RIFE、2x/4x/8x/16x）',
+            transition: 'トランジション（Fade / Dissolve）',
+            chromakey: 'クロマキー（クリックで色選択 + 許容範囲調整）',
+            transform: 'フレームごとの変形（スケール / オフセット / 回転）',
+            batch: '複数選択バッチ操作',
+            multilang: '3 言語インターフェース（EN / JP / TW）'
           }
         }
       },
