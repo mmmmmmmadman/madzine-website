@@ -62,6 +62,7 @@ assets/                 圖片、Logo
 - card hover shadow 從粉紅色 `rgba(255,107,157,0.25)` 改為藤色半透明 `oklch(0.65 0.06 295 / 0.20)`
 - 新增 UniRhythm（32HP 寬卡）和 Portal（8HP）模組卡片至 Signature 分類
 - i18n.js 新增 UniRhythm 和 Portal 三語翻譯（zh-TW / en / ja）
+- modules.html 新增返回連結（← 返回），與其他軟體分頁一致
 
 ---
 
