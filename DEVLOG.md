@@ -53,6 +53,18 @@ assets/                 圖片、Logo
 
 ---
 
+## 2026-04-03
+
+### modules.html 配色更新與模組新增
+
+- 配色從狐色 Kitsune `oklch(0.64 0.09 70)` 改為藤色 Fuji `oklch(0.65 0.06 295)`，與 Edo Twilight 設計語言更協調
+- 分類 header 漸層終點更新為 `oklch(0.72 0.07 295)`
+- card hover shadow 從粉紅色 `rgba(255,107,157,0.25)` 改為藤色半透明 `oklch(0.65 0.06 295 / 0.20)`
+- 新增 UniRhythm（32HP 寬卡）和 Portal（8HP）模組卡片至 Signature 分類
+- i18n.js 新增 UniRhythm 和 Portal 三語翻譯（zh-TW / en / ja）
+
+---
+
 ## 2026-03-25
 
 ### 網站上線
