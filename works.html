@@ -184,6 +184,84 @@
       gap: var(--space-4);
     }
 
+    /* ── Residency Section ── */
+
+    .residency__section {
+      max-width: var(--content-width);
+      margin: 0 auto;
+      padding: 0 var(--padding-page-x);
+    }
+
+    .residency__header {
+      padding: var(--space-8) 0 var(--space-8);
+    }
+
+    .residency__title {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      font-weight: var(--weight-extralight);
+      line-height: var(--leading-tight);
+      letter-spacing: var(--tracking-wider);
+      color: #FF6B6B;
+      margin-bottom: 0;
+    }
+
+    .residency__list {
+      margin-bottom: var(--space-24);
+    }
+
+    .residency__row {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-4);
+      padding: var(--space-3) 0;
+      border-bottom: 1px solid var(--border-default);
+      color: var(--text-primary);
+    }
+
+    .residency__row:first-child {
+      border-top: 1px solid var(--border-default);
+    }
+
+    .residency__year {
+      font-family: var(--font-display);
+      font-size: var(--text-base);
+      font-weight: var(--weight-extralight);
+      color: var(--text-tertiary);
+      letter-spacing: var(--tracking-wider);
+      flex-shrink: 0;
+      width: 4rem;
+    }
+
+    .residency__month {
+      font-family: var(--font-display);
+      font-size: var(--text-base);
+      font-weight: var(--weight-light);
+      color: var(--text-secondary);
+      letter-spacing: var(--tracking-wide);
+      flex-shrink: 0;
+      width: 7rem;
+    }
+
+    .residency__venue {
+      font-family: var(--font-display);
+      font-size: var(--text-base);
+      font-weight: var(--weight-light);
+      letter-spacing: var(--tracking-wide);
+      color: var(--text-primary);
+      flex: 1;
+      min-width: 0;
+    }
+
+    .residency__city {
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      font-weight: var(--weight-regular);
+      color: var(--text-secondary);
+      flex-shrink: 0;
+      margin-left: auto;
+    }
+
     /* ── Responsive ── */
 
     @media (max-width: 900px) {
@@ -213,12 +291,95 @@
       .works-v1__row-year {
         display: none;
       }
+
+      .residency__row {
+        flex-wrap: wrap;
+        gap: var(--space-1);
+      }
+
+      .residency__year {
+        width: 3.5rem;
+      }
+
+      .residency__month {
+        width: auto;
+        flex: 1;
+      }
+
+      .residency__venue {
+        width: 100%;
+        flex: none;
+        padding-left: 3.5rem;
+      }
+
+      .residency__city {
+        width: 100%;
+        padding-left: 3.5rem;
+      }
     }
   </style>
 </head>
 <body>
 
   <main>
+    <!-- Residency Section -->
+    <div class="residency__section">
+      <div class="residency__header">
+        <h2 class="residency__title" data-i18n="works.residency.title">駐村經驗</h2>
+      </div>
+
+      <div class="residency__list">
+        <div class="residency__row">
+          <span class="residency__year">2019</span>
+          <span class="residency__month">July</span>
+          <span class="residency__venue">Torhaus Wehlen Gallery (Outsideininsideoutinsideoutoutsidein)</span>
+          <span class="residency__city">Stadt Wehlen, Germany</span>
+        </div>
+
+        <div class="residency__row">
+          <span class="residency__year">2022</span>
+          <span class="residency__month">September</span>
+          <span class="residency__venue">Nanjo Art Museum</span>
+          <span class="residency__city">Okinawa, Japan</span>
+        </div>
+
+        <div class="residency__row">
+          <span class="residency__year">2023</span>
+          <span class="residency__month">March</span>
+          <span class="residency__venue">Sapporo Tenjinyama Art Studio</span>
+          <span class="residency__city">Sapporo, Japan</span>
+        </div>
+
+        <div class="residency__row">
+          <span class="residency__year">2024</span>
+          <span class="residency__month">March, September</span>
+          <span class="residency__venue">Sapporo Tenjinyama Art Studio</span>
+          <span class="residency__city">Sapporo, Japan</span>
+        </div>
+
+        <div class="residency__row">
+          <span class="residency__year">2024</span>
+          <span class="residency__month">November</span>
+          <span class="residency__venue">The Tobichi Museum</span>
+          <span class="residency__city">Tatsuno, Japan</span>
+        </div>
+
+        <div class="residency__row">
+          <span class="residency__year">2025</span>
+          <span class="residency__month">March, September</span>
+          <span class="residency__venue">Sapporo Tenjinyama Art Studio</span>
+          <span class="residency__city">Sapporo, Japan</span>
+        </div>
+
+        <div class="residency__row">
+          <span class="residency__year">2026</span>
+          <span class="residency__month">March</span>
+          <span class="residency__venue">Sapporo Tenjinyama Art Studio</span>
+          <span class="residency__city">Sapporo, Japan</span>
+        </div>
+      </div>
+    </div>
+
     <div class="works-v1">
       <div class="works-v1__header">
         <h1 class="works-v1__title" data-i18n="works.title">作品集</h1>

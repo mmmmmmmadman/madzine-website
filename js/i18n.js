@@ -137,6 +137,9 @@ const I18N = {
       works: {
         title: '作品集',
         desc: '音樂創作、聲音裝置與現場演出的完整紀錄',
+        residency: {
+          title: '駐村經驗'
+        },
         filter: {
           all: '全部',
           music: '音樂',
@@ -421,6 +424,9 @@ const I18N = {
       works: {
         title: 'Works',
         desc: 'A complete archive of music, sound installations, and live performances',
+        residency: {
+          title: 'Residency'
+        },
         filter: {
           all: 'All',
           music: 'Music',
@@ -705,6 +711,9 @@ const I18N = {
       works: {
         title: '作品集',
         desc: '音楽制作、サウンドインスタレーション、ライブパフォーマンスの記録',
+        residency: {
+          title: 'レジデンス'
+        },
         filter: {
           all: 'すべて',
           music: '音楽',
