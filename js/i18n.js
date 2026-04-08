@@ -28,6 +28,9 @@ const I18N = {
           title: '軟體作品',
           desc: 'VCV Rack 模組與自製應用程式',
           more: '查看全部軟體'
+        },
+        contact: {
+          desc: '合作洽談與社群連結'
         }
       },
       software: {
@@ -309,6 +312,9 @@ const I18N = {
           title: 'Software',
           desc: 'VCV Rack modules and original applications',
           more: 'View All Software'
+        },
+        contact: {
+          desc: 'Collaboration inquiries and social links'
         }
       },
       software: {
@@ -590,6 +596,9 @@ const I18N = {
           title: 'ソフトウェア',
           desc: 'VCV Rack モジュールとオリジナルアプリケーション',
           more: 'すべてのソフトウェアを見る'
+        },
+        contact: {
+          desc: 'コラボレーションのお問い合わせとソーシャルリンク'
         }
       },
       software: {
