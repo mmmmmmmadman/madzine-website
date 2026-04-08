@@ -244,7 +244,11 @@ const I18N = {
         bandcamp: 'Bandcamp',
         youtube: 'YouTube',
         instagram: 'Instagram',
-        github: 'GitHub'
+        github: 'GitHub',
+        about: {
+          title: 'About',
+          bio: 'MADZINE 是一位旅居歐洲與日本、來自台灣高雄的多媒體藝術家。他以獨特的風格深入探討自然的數學基礎，透過自然、電子、聲學和數位元素的即興和平衡進行創作。他的藝術生涯始於東京和柏林的地下藝術界，生活在這兩個充滿活力的文化之間，塑造了他成為一位跨界藝術家的特質。MADZINE 曾在歐洲和亞洲進行現場表演和展覽，包括與台灣樂團 Go Go Machine Orchestra 在 KEXP 的合作演出，以及在東京的 Super Dommune 的獨奏表演，同時也參與了歐洲和日本的多個展覽和駐地計劃。他的活動足跡遍及德國、捷克、義大利、芬蘭、加拿大、美國和日本。十多年來，MADZINE 透過教學分享他靈活自由的聲音設計手法，並成為 EMS 官方授權 Soundfreak 模組合成器品牌的推薦人。此外，他於 2025 年開始進行程式開發，除了以 VCV Rack 為平台的三十餘種數位模組合成器之外，目前已為各國藝術家和展覽開發了十數種個人專用的音像程式。'
+        }
       },
       brand: {
         tagline: '台灣聲音設計師，現居東京'
@@ -531,7 +535,11 @@ const I18N = {
         bandcamp: 'Bandcamp',
         youtube: 'YouTube',
         instagram: 'Instagram',
-        github: 'GitHub'
+        github: 'GitHub',
+        about: {
+          title: 'About',
+          bio: 'MADZINE is a multimedia artist from Kaohsiung, Taiwan, based between Europe and Japan. With a distinctive approach, he explores the mathematical foundations of nature, creating through improvisation and balance of natural, electronic, acoustic, and digital elements. His artistic career began in the underground art scenes of Tokyo and Berlin, and living between these two vibrant cultures shaped his identity as a cross-disciplinary artist. MADZINE has performed and exhibited across Europe and Asia, including a collaborative performance with Taiwanese band Go Go Machine Orchestra at KEXP, a solo performance at Super Dommune in Tokyo, and participation in numerous exhibitions and residency programs in Europe and Japan. His activities span Germany, Czech Republic, Italy, Finland, Canada, the United States, and Japan. For over a decade, MADZINE has shared his flexible and inventive approach to sound design through teaching, and serves as an endorsed artist for the EMS-authorized Soundfreak modular synthesizer brand. Additionally, he began software development in 2025, creating over thirty digital modules for the VCV Rack platform, and has developed more than a dozen custom audiovisual applications for artists and exhibitions worldwide.'
+        }
       },
       brand: {
         tagline: 'Taiwanese Sound Designer based in Tokyo'
@@ -818,7 +826,11 @@ const I18N = {
         bandcamp: 'Bandcamp',
         youtube: 'YouTube',
         instagram: 'Instagram',
-        github: 'GitHub'
+        github: 'GitHub',
+        about: {
+          title: 'About',
+          bio: 'MADZINEは台湾・高雄出身、ヨーロッパと日本を拠点に活動するマルチメディアアーティスト。自然の数学的基盤を独自のスタイルで探求し、自然・電子・音響・デジタルの要素を即興的にバランスさせながら制作を行う。東京とベルリンのアンダーグラウンドアートシーンでキャリアをスタートさせ、この二つの活気ある文化圏での生活が、分野横断的なアーティストとしての資質を形成した。ヨーロッパとアジア各地で公演・展示を行い、台湾のバンド Go Go Machine Orchestra との KEXP でのコラボレーション、東京 Super Dommune でのソロパフォーマンス、ヨーロッパと日本での複数の展覧会やレジデンスプログラムに参加。活動はドイツ、チェコ、イタリア、フィンランド、カナダ、アメリカ、日本に及ぶ。10年以上にわたり、自由で柔軟なサウンドデザイン手法を教育活動を通じて共有し、EMS公認Soundfreakモジュラーシンセサイザーブランドのエンドースアーティストを務める。2025年よりソフトウェア開発を開始し、VCV Rackプラットフォーム向けに30種以上のデジタルモジュールを制作したほか、世界各国のアーティストや展覧会向けに十数種のカスタムオーディオビジュアルアプリケーションを開発している。'
+        }
       },
       brand: {
         tagline: '東京在住の台湾人サウンドデザイナー'
