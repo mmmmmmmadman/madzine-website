@@ -247,7 +247,7 @@ const I18N = {
         github: 'GitHub',
         about: {
           title: 'About',
-          bio: 'MADZINE 是一位旅居歐洲與日本、來自台灣高雄的多媒體藝術家。他以獨特的風格深入探討自然的數學基礎，透過自然、電子、聲學和數位元素的即興和平衡進行創作。他的藝術生涯始於東京和柏林的地下藝術界，延伸到歐洲和日本的多個展覽和駐地計劃。十多年來透過教學分享他靈活自由的聲音設計手法，並成為Soundfreak 模組合成器品牌的推薦人。此外，他於 2025 年開始進行程式開發，目前已開發了十數種個人專用的音像程式與三十幾種數位模組合成器。'
+          bio: 'MADZINE 是一位旅居歐洲與日本、來自台灣高雄的多媒體藝術家。他透過自然、電子、聲學和數位元素的即興和平衡進行創作。藝術生涯始於東京和柏林，延伸到歐洲和日本的多個展覽和駐地計劃。聲音設計的教育經驗超過十年，並成為Soundfreak 模組合成器品牌的推薦人。此外，他於 2025 年開始進行程式開發，目前已開發了十數種個人專用的音像程式與三十幾種數位模組合成器。'
         }
       },
       brand: {
@@ -538,7 +538,7 @@ const I18N = {
         github: 'GitHub',
         about: {
           title: 'About',
-          bio: 'MADZINE is a multimedia artist from Kaohsiung, Taiwan, based between Europe and Japan. With a distinctive approach, he explores the mathematical foundations of nature, creating through improvisation and balance of natural, electronic, acoustic, and digital elements. His artistic career began in the underground art scenes of Tokyo and Berlin, extending to numerous exhibitions and residency programs across Europe and Japan. For over a decade, he has shared his flexible and inventive approach to sound design through teaching, and serves as an endorsed artist for the Soundfreak modular synthesizer brand. Additionally, he began software development in 2025, and has since developed more than a dozen custom audiovisual applications and over thirty digital modular synthesizers.'
+          bio: 'MADZINE is a multimedia artist from Kaohsiung, Taiwan, based between Europe and Japan. He creates through improvisation and balance of natural, electronic, acoustic, and digital elements. His artistic career began in Tokyo and Berlin, extending to numerous exhibitions and residency programs across Europe and Japan. With over a decade of experience in sound design education, he serves as an endorsed artist for the Soundfreak modular synthesizer brand. Additionally, he began software development in 2025, and has since developed more than a dozen custom audiovisual applications and over thirty digital modular synthesizers.'
         }
       },
       brand: {
@@ -829,7 +829,7 @@ const I18N = {
         github: 'GitHub',
         about: {
           title: 'About',
-          bio: 'MADZINEは台湾・高雄出身、ヨーロッパと日本を拠点に活動するマルチメディアアーティスト。自然の数学的基盤を独自のスタイルで探求し、自然・電子・音響・デジタルの要素を即興的にバランスさせながら制作を行う。東京とベルリンのアンダーグラウンドアートシーンでキャリアをスタートさせ、ヨーロッパと日本の複数の展覧会やレジデンスプログラムへと活動を広げている。10年以上にわたり、自由で柔軟なサウンドデザイン手法を教育活動を通じて共有し、Soundfreakモジュラーシンセサイザーブランドのエンドースアーティストを務める。2025年よりソフトウェア開発を開始し、十数種のカスタムオーディオビジュアルアプリケーションと30種以上のデジタルモジュラーシンセサイザーを開発している。'
+          bio: 'MADZINEは台湾・高雄出身、ヨーロッパと日本を拠点に活動するマルチメディアアーティスト。自然・電子・音響・デジタルの要素を即興的にバランスさせながら制作を行う。東京とベルリンでキャリアをスタートさせ、ヨーロッパと日本の複数の展覧会やレジデンスプログラムへと活動を広げている。サウンドデザインの教育経験は10年以上に及び、Soundfreakモジュラーシンセサイザーブランドのエンドースアーティストを務める。2025年よりソフトウェア開発を開始し、十数種のカスタムオーディオビジュアルアプリケーションと30種以上のデジタルモジュラーシンセサイザーを開発している。'
         }
       },
       brand: {
