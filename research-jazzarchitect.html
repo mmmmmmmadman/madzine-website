@@ -806,5 +806,23 @@ cmake --build . --config Release</pre>
 
   <script src="js/i18n.js"></script>
   <script src="js/main.js"></script>
+
+  <script>
+    // Override language buttons to navigate to translated page
+    document.addEventListener('DOMContentLoaded', function() {
+      var langMap = {"zh-TW": "research-jazzarchitect-zh.html", "en": "research-jazzarchitect.html", "ja": "research-jazzarchitect-ja.html"};
+      document.querySelectorAll('.lang-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          var lang = this.getAttribute('data-lang');
+          if (langMap[lang] && langMap[lang] !== window.location.pathname.split('/').pop()) {
+            window.location.href = langMap[lang];
+          }
+        });
+      });
+    });
+  </script>
+
 </body>
 </html>
