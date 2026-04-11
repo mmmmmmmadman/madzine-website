@@ -53,6 +53,44 @@ assets/                 圖片、Logo
 
 ---
 
+## 2026-04-11
+
+### 新增 Dance Sound Design 頁面與區塊
+
+- 新增 works-dance.html：14 件舞蹈聲音設計作品（2017-2026），含雲門 2、施旻雯、Cristina Negucioiu、AKIYO、工藤丈輝合作
+- works.html 新增 Dance Sound Design 獨立區塊（與 Residency 同格式），11 件作品
+- 高美館演出拆分為三場具體紀錄：造音（2021 獨演）、虎來跳舞（2022 舞蹈音樂設計）、無聲to有聲（2023 與雲門舞者邱怡文＋施旻雯）
+- i18n.js 新增 dance 三語翻譯
+
+### 新增 Research 區塊與三篇論文 HTML 頁面
+
+- works.html 新增 Research 獨立區塊，列出三篇研究論文
+- research-worldrhythm.html：WorldRhythm 跨文化節奏生成論文（英文）
+- research-worldrhythm-ja.html：日文版
+- research-worldrhythm-zh.html：中文版
+- research-jazzarchitect.html：JazzArchitect 爵士和聲生成論文（英文）
+- research-jazzarchitect-ja.html：日文版
+- research-jazzarchitect-zh.html：中文版
+- research-microtuning.html：世界微分音系統研究（中文原文）
+- research-microtuning-ja.html：日文翻譯版
+- i18n.js 新增 research 三語翻譯
+- 論文頁面使用 paper__ 系列 CSS class，content-narrow 寬度，適合長文閱讀
+
+### 論文頁面語言切換
+
+- 底部語言按鈕（中 EN JP）點擊後跳轉到對應語言版本的論文頁面
+- 頁面載入時自動偵測 localStorage 中的語言設定，若與當前頁面語言不符則自動跳轉
+- 解決「在日文模式下點進英文版論文需手動切換兩次」的問題
+
+### 修正
+
+- research-jazzarchitect 三個語言版本缺少 bottom-bar CSS，導致底部欄位靠左
+- works.html Dance 區塊時間排序修正（2023 年兩筆排在一起）
+- works.html Dance 區塊 data-i18n 屬性位置修正（從 `<a>` 移到 `<h2>`）
+- research-microtuning.html title 從英文改為中文
+
+---
+
 ## 2026-04-03
 
 ### modules.html 配色更新與模組新增
