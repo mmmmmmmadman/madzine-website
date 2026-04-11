@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MADZINE — JazzArchitect 研究論文</title>
+  <meta name="description" content="JazzArchitect: 基於遞歸機率文法的爵士和聲生成系統">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .paper {
+      max-width: var(--content-narrow);
+      margin: 0 auto;
+      padding: var(--space-16) var(--padding-page-x) var(--space-12);
+    }
+
+    .paper__back {
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: var(--space-8);
+      font-size: var(--text-sm);
+      color: var(--color-primary);
+      transition: color var(--duration-normal) var(--ease-default);
+    }
+    .paper__back:hover {
+      color: var(--text-primary);
+    }
+
+    .paper__title {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      line-height: var(--leading-snug);
+      font-weight: var(--weight-regular);
+      color: var(--text-primary);
+      margin-bottom: var(--space-6);
+    }
+
+    .paper__meta {
+      font-size: var(--text-sm);
+      color: var(--text-tertiary);
+      margin-bottom: var(--space-8);
+    }
+
+    .paper__abstract {
+      border-left: 2px solid var(--border-default);
+      padding-left: var(--space-6);
+      margin-bottom: var(--space-10);
+    }
+    .paper__abstract-label {
+      font-family: var(--font-display);
+      font-size: var(--text-md);
+      font-weight: var(--weight-medium);
+      color: var(--text-primary);
+      margin-bottom: var(--space-3);
+    }
+    .paper__abstract p {
+      font-size: var(--text-base);
+      color: var(--text-secondary);
+      line-height: var(--leading-relaxed);
+    }
+    .paper__keywords {
+      font-size: var(--text-sm);
+      color: var(--text-tertiary);
+      margin-top: var(--space-4);
+    }
+
+    .paper__divider {
+      width: 40px;
+      height: 1px;
+      background: var(--border-default);
+      margin: var(--space-10) 0;
+    }
+
+    .paper h2 {
+      font-family: var(--font-display);
+      font-size: var(--text-xl);
+      line-height: var(--leading-tight);
+      font-weight: var(--weight-regular);
+      color: var(--text-primary);
+      margin-top: var(--space-12);
+      margin-bottom: var(--space-6);
+    }
+
+    .paper h3 {
+      font-family: var(--font-display);
+      font-size: var(--text-md);
+      font-weight: var(--weight-medium);
+      color: var(--text-primary);
+      margin-top: var(--space-8);
+      margin-bottom: var(--space-4);
+    }
+
+    .paper h4 {
+      font-size: var(--text-base);
+      font-weight: var(--weight-medium);
+      color: var(--text-primary);
+      margin-top: var(--space-6);
+      margin-bottom: var(--space-3);
+    }
+
+    .paper p {
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      line-height: var(--leading-relaxed);
+      color: var(--text-primary);
+      margin-bottom: var(--space-4);
+    }
+
+    .paper ol,
+    .paper ul {
+      padding-left: var(--space-6);
+      margin-bottom: var(--space-4);
+    }
+    .paper ol {
+      list-style: decimal;
+    }
+    .paper ul {
+      list-style: disc;
+    }
+    .paper li {
+      font-size: var(--text-base);
+      line-height: var(--leading-relaxed);
+      color: var(--text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .paper strong {
+      font-weight: var(--weight-medium);
+    }
+
+    .paper table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: var(--space-4) 0 var(--space-6);
+      font-size: var(--text-sm);
+    }
+    .paper th,
+    .paper td {
+      text-align: left;
+      padding: var(--space-2) var(--space-3);
+      border-bottom: 1px solid var(--border-default);
+      color: var(--text-primary);
+    }
+    .paper th {
+      color: var(--text-secondary);
+      font-weight: var(--weight-medium);
+      border-bottom: 2px solid var(--border-strong);
+    }
+
+    .paper pre {
+      background: var(--surface-sunken);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-sm);
+      padding: var(--space-4) var(--space-5);
+      overflow-x: auto;
+      margin: var(--space-4) 0 var(--space-6);
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      line-height: var(--leading-normal);
+      color: var(--text-primary);
+    }
+
+    .paper .references {
+      margin-top: var(--space-8);
+    }
+    .paper .references ol {
+      list-style: decimal;
+      padding-left: var(--space-6);
+    }
+    .paper .references li {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      margin-bottom: var(--space-3);
+      line-height: var(--leading-relaxed);
+    }
+
+    .paper__version {
+      font-size: var(--text-sm);
+      color: var(--text-tertiary);
+      font-style: italic;
+      margin-top: var(--space-8);
+    }
+
+    @media (max-width: 480px) {
+      .paper {
+        padding-top: var(--space-10);
+      }
+      .paper__title {
+        font-size: var(--text-xl);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <article class="paper">
+
+    <a href="works.html" class="paper__back">&larr; 返回</a>
+
+    <h1 class="paper__title">JazzArchitect: 基於遞歸機率文法的爵士和聲生成系統</h1>
+
+    <div class="paper__meta">MADZINE &middot; 2026 年 1 月 2 日</div>
+
+    <!-- 摘要 -->
+    <div class="paper__abstract">
+      <div class="paper__abstract-label">摘要</div>
+      <p>本文介紹 JazzArchitect，一個基於 Rohrmeier (2020) 遞歸機率上下文無關文法 (PCFG) 框架的爵士和聲進行生成系統。系統以 C++ 實作，整合 JUCE 音訊框架，提供即時音訊合成與 MIDI 輸出功能。透過 15 參數風格向量控制，系統可生成 9 種不同爵士風格的和聲進行，包括 Bebop、Cool Jazz、Modal Jazz 等。系統實作三種主要替代規則（三全音替代、Backdoor dominant、Coltrane changes）及 Smither (2019) guide-tone 聲部導進優化。本文詳述系統架構、演算法設計與實作細節。</p>
+      <p class="paper__keywords"><strong>關鍵詞：</strong>爵士和聲、機率上下文無關文法、和弦進行生成、聲部導進、音樂資訊檢索</p>
+    </div>
+
+    <div class="paper__divider"></div>
+
+    <!-- 1. 緒論 -->
+    <h2>1. 緒論</h2>
+
+    <h3>1.1 研究動機</h3>
+    <p>爵士和聲以其複雜的和弦進行與豐富的替代規則著稱。傳統的爵士即興演奏者透過長期學習掌握這些規則，但對於電腦音樂生成系統而言，如何模擬這種音樂知識仍是一大挑戰。</p>
+    <p>現有的音樂生成方法大致分為兩類：</p>
+    <ol>
+      <li><strong>資料驅動方法：</strong>使用深度學習（如 LSTM、Transformer）從語料庫學習和聲模式</li>
+      <li><strong>規則式方法：</strong>基於音樂理論規則進行生成</li>
+    </ol>
+    <p>資料驅動方法雖能產生流暢的結果，但缺乏可解釋性與可控性。規則式方法則能精確控制生成過程，但傳統實作往往過於僵化。</p>
+
+    <h3>1.2 研究目標</h3>
+    <p>本研究旨在結合兩種方法的優點：</p>
+    <ol>
+      <li>採用 Rohrmeier (2020) 提出的遞歸文法框架，提供理論基礎</li>
+      <li>透過機率權重控制規則選擇，增加生成多樣性</li>
+      <li>實作風格參數系統，允許跨時代爵士風格生成</li>
+      <li>提供完整的音訊合成與 MIDI 輸出功能</li>
+    </ol>
+
+    <h3>1.3 貢獻</h3>
+    <p>本研究主要貢獻如下：</p>
+    <ul>
+      <li>完整實作 Rohrmeier (2020) PCFG 框架於 C++ 環境</li>
+      <li>設計 15 參數風格向量系統，支援 9 種爵士風格預設</li>
+      <li>整合三種主要替代規則與 guide-tone 聲部導進優化</li>
+      <li>開發具有圖形介面的獨立應用程式</li>
+    </ul>
+
+    <div class="paper__divider"></div>
+
+    <!-- 2. 相關研究 -->
+    <h2>2. 相關研究</h2>
+
+    <h3>2.1 爵士和聲的形式文法</h3>
+    <p>Steedman (1984) 首先提出以形式文法分析爵士和弦序列，將爵士和聲視為一種語言結構。該研究定義了基本的生成規則，但未處理機率權重問題。</p>
+    <p>Rohrmeier (2020) 擴展此框架，提出包含以下核心概念的遞歸文法：</p>
+    <ul>
+      <li><strong>Prolongation（延長）：</strong>同功能和弦的重複或展開</li>
+      <li><strong>Preparation（準備）：</strong>屬功能和弦對目標和弦的準備</li>
+      <li><strong>Substitution（替代）：</strong>功能等價和弦的替換</li>
+    </ul>
+
+    <h3>2.2 機率上下文無關文法</h3>
+    <p>Harasim et al. (2018, 2020) 將 PCFG 應用於 Jazz Harmony Treebank (JHT)，從 150 首 jazz standards 萃取規則權重。此方法結合了形式文法的結構性與統計方法的靈活性。</p>
+
+    <h3>2.3 聲部導進理論</h3>
+    <p>Smither (2019) 針對爵士和聲提出 guide-tone 聲部導進理論。核心概念為：</p>
+    <ul>
+      <li><strong>Guide tones：</strong>每個和弦的第三音與第七音</li>
+      <li><strong>平滑導進：</strong>相鄰和弦的 guide tones 應以最小音程移動</li>
+      <li><strong>目標成本：</strong>理想的聲部導進成本 &le; 2 半音</li>
+    </ul>
+
+    <h3>2.4 替代規則</h3>
+    <p>爵士和聲中常見的替代規則包括：</p>
+    <table>
+      <thead>
+        <tr>
+          <th>替代類型</th>
+          <th>原和弦</th>
+          <th>替代和弦</th>
+          <th>理論基礎</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>三全音替代</td><td>V7</td><td>bII7</td><td>共享三全音 (3rd-7th)</td></tr>
+        <tr><td>Backdoor dominant</td><td>V7</td><td>bVII7</td><td>小調借用</td></tr>
+        <tr><td>Coltrane changes</td><td>I</td><td>III7-bVI7-bII7-V7</td><td>大三度循環</td></tr>
+      </tbody>
+    </table>
+
+    <div class="paper__divider"></div>
+
+    <!-- 3. 系統架構 -->
+    <h2>3. 系統架構</h2>
+
+    <h3>3.1 整體架構</h3>
+    <p>JazzArchitect 採用分層架構設計：</p>
+<pre>使用者介面層
+├── JUCE GUI
+└── 參數控制
+
+生成層
+├── PCFG 引擎
+│   ├── 生成器
+│   └── 規則庫
+└── 風格引擎
+    ├── 替代處理
+    ├── 聲部導進優化
+    └── 風格參數
+
+核心層
+├── 和弦符號
+├── 音高類
+└── 音程計算
+
+輸出層
+├── 和弦合成器（8 複音）
+└── MIDI 匯出器</pre>
+
+    <h3>3.2 模組說明</h3>
+
+    <h4>Core 模組</h4>
+    <ul>
+      <li><strong>PitchClass：</strong>音高類表示 (0-11, C=0)</li>
+      <li><strong>ChordQuality：</strong>和弦品質列舉 (maj7, min7, dom7, hdim7, dim7, aug)</li>
+      <li><strong>ChordSymbol：</strong>完整和弦符號，包含根音、品質、延伸音與變化音</li>
+    </ul>
+
+    <h4>Grammar 模組</h4>
+    <ul>
+      <li><strong>NonTerminal：</strong>非終端符號 (S, T, D, SD, PREP, PROL)</li>
+      <li><strong>GrammarRule：</strong>生成規則定義</li>
+      <li><strong>PCFG：</strong>機率上下文無關文法引擎</li>
+      <li><strong>Generator：</strong>自頂向下推導器</li>
+    </ul>
+
+    <h4>Style 模組</h4>
+    <ul>
+      <li><strong>StyleVector：</strong>15 參數風格向量</li>
+      <li><strong>StylePresets：</strong>9 種風格預設</li>
+      <li><strong>StyleEngine：</strong>整合生成與後處理</li>
+    </ul>
+
+    <h4>Substitution 模組</h4>
+    <ul>
+      <li><strong>TritoneSubstitution：</strong>三全音替代</li>
+      <li><strong>BackdoorSubstitution：</strong>Backdoor dominant</li>
+      <li><strong>ColtraneSubstitution：</strong>Coltrane changes</li>
+      <li><strong>SubstitutionEngine：</strong>統一替代引擎</li>
+    </ul>
+
+    <h4>VoiceLeading 模組</h4>
+    <ul>
+      <li><strong>GuideTone：</strong>Guide-tone 分析</li>
+      <li><strong>VoiceLeadingOptimizer：</strong>聲部導進優化</li>
+    </ul>
+
+    <h4>Synthesis 模組</h4>
+    <ul>
+      <li><strong>ChordSynth：</strong>8 複音和弦合成器</li>
+      <li><strong>ADSREnvelope：</strong>ADSR 包絡</li>
+      <li><strong>SynthVoice：</strong>單一合成聲部</li>
+    </ul>
+
+    <h4>MIDI 模組</h4>
+    <ul>
+      <li><strong>MIDIExporter：</strong>Standard MIDI File 匯出</li>
+    </ul>
+
+    <div class="paper__divider"></div>
+
+    <!-- 4. 文法引擎 -->
+    <h2>4. 文法引擎</h2>
+
+    <h3>4.1 非終端符號</h3>
+    <p>系統定義以下非終端符號：</p>
+    <table>
+      <thead>
+        <tr><th>符號</th><th>名稱</th><th>功能</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>S</td><td>Start</td><td>起始符號（整首曲子）</td></tr>
+        <tr><td>T</td><td>Tonic</td><td>主和弦區域</td></tr>
+        <tr><td>D</td><td>Dominant</td><td>屬和弦區域</td></tr>
+        <tr><td>SD</td><td>Subdominant</td><td>下屬和弦區域</td></tr>
+        <tr><td>PREP</td><td>Preparation</td><td>準備區域</td></tr>
+        <tr><td>PROL</td><td>Prolongation</td><td>延長區域</td></tr>
+      </tbody>
+    </table>
+
+    <h3>4.2 核心生成規則</h3>
+
+    <h4>Prolongation 規則</h4>
+    <p>延長規則透過重複或展開同功能和弦：</p>
+    <ul>
+      <li>主和弦延長：T 產生 T T</li>
+      <li>屬和弦延長：D 產生 D D</li>
+      <li>右側延長：T 產生 T PROL</li>
+      <li>左側延長：T 產生 PROL T</li>
+    </ul>
+
+    <h4>Preparation 規則</h4>
+    <p>準備規則插入屬功能和弦：</p>
+    <ul>
+      <li>正格終止：T 產生 D T</li>
+      <li>變格終止：T 產生 SD T</li>
+      <li>ii-V 模式：D 產生 PREP D</li>
+      <li>副屬和弦準備：PREP 產生 ii</li>
+      <li>重屬準備：PREP 產生 V/V</li>
+    </ul>
+
+    <h4>Substitution 規則</h4>
+    <p>替代規則為單一生成規則：</p>
+    <ul>
+      <li>三全音替代：V7 產生 bII7</li>
+      <li>Backdoor dominant：V7 產生 bVII7</li>
+      <li>Coltrane changes：I 產生大三度循環</li>
+    </ul>
+
+    <h3>4.3 規則機率</h3>
+    <p>規則機率由 StyleVector 控制。以 ii-V 進行為例：</p>
+    <ul>
+      <li>選擇準備規則的機率 = StyleVector.iiVPreference</li>
+      <li>選擇延長規則的機率 = 1 - iiVPreference</li>
+    </ul>
+
+    <h3>4.4 推導演算法</h3>
+    <p>系統採用自頂向下遞歸推導：</p>
+    <ol>
+      <li>以起始符號 S 初始化推導樹</li>
+      <li>當推導樹中仍包含非終端符號時：
+        <ul>
+          <li>選擇最左側的非終端符號 N</li>
+          <li>取得適用於 N 的規則</li>
+          <li>根據風格參數加權規則</li>
+          <li>依機率取樣規則 r</li>
+          <li>套用 r，以右側符號取代 N</li>
+        </ul>
+      </li>
+      <li>將終端符號映射至該調性的和弦符號</li>
+      <li>回傳和弦進行</li>
+    </ol>
+
+    <div class="paper__divider"></div>
+
+    <!-- 5. 風格系統 -->
+    <h2>5. 風格系統</h2>
+
+    <h3>5.1 StyleVector 參數</h3>
+    <p>StyleVector 包含 15 個參數，控制生成行為：</p>
+    <table>
+      <thead>
+        <tr><th>參數</th><th>範圍</th><th>說明</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>tritoneSubProb</td><td>0.0-1.0</td><td>三全音替代機率</td></tr>
+        <tr><td>iiVPreference</td><td>0.0-1.0</td><td>ii-V 進行偏好</td></tr>
+        <tr><td>modalInterchange</td><td>0.0-1.0</td><td>調式互換頻率</td></tr>
+        <tr><td>chromaticApproach</td><td>0.0-1.0</td><td>半音趨近頻率</td></tr>
+        <tr><td>dominantChainDepth</td><td>1-5</td><td>屬和弦鏈最大深度</td></tr>
+        <tr><td>rhythmDensity</td><td>0.0-1.0</td><td>和弦密度</td></tr>
+        <tr><td>extensionLevel</td><td>0.0-1.0</td><td>延伸音使用程度</td></tr>
+        <tr><td>backdoorProb</td><td>0.0-1.0</td><td>Backdoor dominant 機率</td></tr>
+        <tr><td>coltraneProb</td><td>0.0-1.0</td><td>Coltrane changes 機率</td></tr>
+        <tr><td>minorBorrowing</td><td>0.0-1.0</td><td>小調借用頻率</td></tr>
+        <tr><td>diminishedUsage</td><td>0.0-1.0</td><td>減和弦使用頻率</td></tr>
+        <tr><td>deceptiveResolution</td><td>0.0-1.0</td><td>假終止機率</td></tr>
+        <tr><td>plagalCadence</td><td>0.0-1.0</td><td>變格終止機率</td></tr>
+        <tr><td>suspensionUsage</td><td>0.0-1.0</td><td>掛留音使用</td></tr>
+        <tr><td>pedalPointProb</td><td>0.0-1.0</td><td>持續低音機率</td></tr>
+      </tbody>
+    </table>
+
+    <h3>5.2 風格預設</h3>
+    <p>系統提供 9 種風格預設：</p>
+    <table>
+      <thead>
+        <tr><th>風格</th><th>Tritone</th><th>ii-V</th><th>Modal</th><th>Extension</th><th>特徵</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Bebop</td><td>0.30</td><td>0.90</td><td>0.20</td><td>0.70</td><td>快速 ii-V，豐富延伸音</td></tr>
+        <tr><td>Cool</td><td>0.20</td><td>0.70</td><td>0.30</td><td>0.50</td><td>較慢節奏，空間感</td></tr>
+        <tr><td>Modal</td><td>0.10</td><td>0.30</td><td>0.70</td><td>0.30</td><td>少功能進行，調式色彩</td></tr>
+        <tr><td>Hard Bop</td><td>0.35</td><td>0.85</td><td>0.25</td><td>0.60</td><td>Blues 影響，強烈節奏</td></tr>
+        <tr><td>Post-Bop</td><td>0.40</td><td>0.60</td><td>0.60</td><td>0.80</td><td>現代和聲，複雜結構</td></tr>
+        <tr><td>Swing</td><td>0.15</td><td>0.80</td><td>0.10</td><td>0.40</td><td>傳統進行，簡潔</td></tr>
+        <tr><td>Fusion</td><td>0.30</td><td>0.50</td><td>0.50</td><td>0.90</td><td>延伸音豐富，調式混合</td></tr>
+        <tr><td>Contemporary</td><td>0.35</td><td>0.40</td><td>0.70</td><td>0.85</td><td>現代技法，自由結構</td></tr>
+        <tr><td>Blues</td><td>0.20</td><td>0.60</td><td>0.40</td><td>0.50</td><td>Blues 進行，平行和弦</td></tr>
+      </tbody>
+    </table>
+
+    <h3>5.3 風格引擎</h3>
+    <p>StyleEngine 整合生成流程：</p>
+    <ol>
+      <li>使用 PCFG 生成基礎進行</li>
+      <li>套用替代引擎處理替代規則</li>
+      <li>使用聲部導進優化器進行優化</li>
+      <li>回傳最終進行</li>
+    </ol>
+
+    <div class="paper__divider"></div>
+
+    <!-- 6. 替代規則 -->
+    <h2>6. 替代規則</h2>
+
+    <h3>6.1 三全音替代</h3>
+    <p>三全音替代 (Tritone Substitution) 基於 V7 與 bII7 共享相同的三全音音程：</p>
+    <ul>
+      <li>G7 的三全音：B-F (3rd-7th)</li>
+      <li>Db7 的三全音：F-Cb (3rd-7th)</li>
+    </ul>
+    <p>兩者共享 B/Cb 與 F，因此可互換。</p>
+    <p>實作時，系統以 tritoneSubProb 機率將 V7 替換為 bII7。新根音的計算方式為原根音加 6 個半音（三全音音程）。</p>
+
+    <h3>6.2 Backdoor Dominant</h3>
+    <p>Backdoor dominant 來自小調借用，以 bVII7 取代 V7：</p>
+    <ul>
+      <li>傳統：G7 解決至 Cmaj7</li>
+      <li>Backdoor：Bb7 解決至 Cmaj7</li>
+    </ul>
+    <p>實作以 backdoorProb 控制。新根音為原根音加 3 個半音（小三度上行）。</p>
+
+    <h3>6.3 Coltrane Changes</h3>
+    <p>Coltrane changes 源自 John Coltrane 的 "Giant Steps"，以大三度循環取代簡單進行：</p>
+    <ul>
+      <li>傳統：I 和弦</li>
+      <li>Coltrane：III7 - bVImaj7 - bII7 - V7 - I</li>
+    </ul>
+    <p>實作時將單一 I 和弦擴展為 5 個和弦的序列。</p>
+
+    <div class="paper__divider"></div>
+
+    <!-- 7. 聲部導進優化 -->
+    <h2>7. 聲部導進優化</h2>
+
+    <h3>7.1 Guide-Tone 分析</h3>
+    <p>根據 Smither (2019)，guide tones 為和弦的第三音與第七音：</p>
+    <table>
+      <thead>
+        <tr><th>和弦類型</th><th>第三音</th><th>第七音</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Cmaj7</td><td>E (4)</td><td>B (11)</td></tr>
+        <tr><td>Dm7</td><td>F (5)</td><td>C (0)</td></tr>
+        <tr><td>G7</td><td>B (11)</td><td>F (5)</td></tr>
+      </tbody>
+    </table>
+
+    <h3>7.2 聲部導進成本</h3>
+    <p>兩和弦間的聲部導進成本定義為 guide tones 的最小移動量：</p>
+    <p>成本 = |third1 - third2| + |seventh1 - seventh2|</p>
+    <p>其中音程以最小值計算（考慮八度等價）。</p>
+
+    <h3>7.3 優化演算法</h3>
+    <p>VoiceLeadingOptimizer 檢查每對相鄰和弦，若成本過高則嘗試替代：</p>
+    <ol>
+      <li>對每對相鄰和弦</li>
+      <li>計算聲部導進成本</li>
+      <li>若成本 &gt; 2：
+        <ul>
+          <li>嘗試對第一個和弦進行三全音替代</li>
+          <li>計算新成本</li>
+          <li>若新成本較低，則套用替代</li>
+        </ul>
+      </li>
+      <li>回傳優化後的進行</li>
+    </ol>
+
+    <div class="paper__divider"></div>
+
+    <!-- 8. 音訊合成 -->
+    <h2>8. 音訊合成</h2>
+
+    <h3>8.1 合成器架構</h3>
+    <p>ChordSynth 為 8 複音和弦合成器，支援三種音色：</p>
+    <table>
+      <thead>
+        <tr><th>音色</th><th>合成方式</th><th>特徵</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Electric Piano</td><td>FM 合成</td><td>Rhodes 風格，衰減調變</td></tr>
+        <tr><td>Organ</td><td>加法合成</td><td>Hammond 風格，泛音疊加</td></tr>
+        <tr><td>Pad</td><td>減法合成</td><td>鋸齒波 + 低通濾波</td></tr>
+      </tbody>
+    </table>
+
+    <h3>8.2 ADSR 包絡</h3>
+    <p>每個 SynthVoice 包含獨立 ADSR 包絡：</p>
+    <table>
+      <thead>
+        <tr><th>音色</th><th>Attack</th><th>Decay</th><th>Sustain</th><th>Release</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Electric Piano</td><td>5ms</td><td>300ms</td><td>0.3</td><td>400ms</td></tr>
+        <tr><td>Organ</td><td>10ms</td><td>50ms</td><td>0.9</td><td>100ms</td></tr>
+        <tr><td>Pad</td><td>200ms</td><td>500ms</td><td>0.7</td><td>800ms</td></tr>
+      </tbody>
+    </table>
+
+    <h3>8.3 和弦配置</h3>
+    <p>ChordSymbol.getMIDINotes() 產生 MIDI 音符：</p>
+    <ol>
+      <li>計算根音 MIDI 值 = baseOctave * 12 + root</li>
+      <li>加入根音</li>
+      <li>依和弦品質的各音程加入對應音符</li>
+      <li>依各延伸音加入對應音符</li>
+      <li>回傳音符列表</li>
+    </ol>
+
+    <div class="paper__divider"></div>
+
+    <!-- 9. 實作細節 -->
+    <h2>9. 實作細節</h2>
+
+    <h3>9.1 開發環境</h3>
+    <ul>
+      <li><strong>語言：</strong>C++17</li>
+      <li><strong>框架：</strong>JUCE 7.x</li>
+      <li><strong>建構系統：</strong>CMake 3.22+</li>
+      <li><strong>平台：</strong>macOS (ARM64/x86_64)</li>
+    </ul>
+
+    <h3>9.2 檔案結構</h3>
+<pre>cpp/
+├── Source/
+│   ├── Core/           # 核心類別
+│   ├── Grammar/        # 文法引擎
+│   ├── Style/          # 風格系統
+│   ├── Substitution/   # 替代規則
+│   ├── VoiceLeading/   # 聲部導進
+│   ├── Synthesis/      # 音訊合成
+│   ├── MIDI/           # MIDI 輸出
+│   ├── Main.cpp
+│   ├── MainComponent.h
+│   └── MainComponent.cpp
+├── JUCE/               # JUCE 子模組
+├── CMakeLists.txt
+└── build/</pre>
+
+    <h3>9.3 編譯方式</h3>
+<pre>cd cpp
+mkdir build &amp;&amp; cd build
+cmake ..
+cmake --build . --config Release</pre>
+
+    <h3>9.4 應用程式規格</h3>
+    <ul>
+      <li><strong>檔案大小：</strong>約 11 MB</li>
+      <li><strong>最低需求：</strong>macOS 10.13+</li>
+      <li><strong>音訊引擎：</strong>CoreAudio, 48 kHz</li>
+      <li><strong>CPU 使用率：</strong>極低（&lt; 1%）</li>
+    </ul>
+
+    <div class="paper__divider"></div>
+
+    <!-- 10. 使用者介面 -->
+    <h2>10. 使用者介面</h2>
+
+    <h3>10.1 介面配置</h3>
+<pre>┌─────────────────────────────────────────────────────────────┐
+│ Jazz Architect                                              │
+├─────────────────────────────────────────────────────────────┤
+│ Style: [Bebop   v]  Key: [C      v]  Sound: [E.Piano  v]   │
+│ BPM: [===120===]    Length: [===8===]                      │
+│                                                             │
+│ [Generate]  [Play]  [Stop]  [Export MIDI]                  │
+├─────────────────────────────────────────────────────────────┤
+│                    CHORD PROGRESSION                        │
+│  ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐     │
+│  │Dm7   │ │G7    │ │Cmaj7 │ │A7    │ │Dm7   │ │G7    │     │
+│  └──────┘ └──────┘ └──────┘ └──────┘ └──────┘ └──────┘     │
+├─────────────────────────────────────────────────────────────┤
+│ Tritone [═══○═══]  ii-V [═══════○]  Modal [═○═══════]      │
+│ Ext     [═════○═]                                          │
+└─────────────────────────────────────────────────────────────┘</pre>
+
+    <h3>10.2 操作流程</h3>
+    <ol>
+      <li>選擇風格預設（或調整參數滑桿）</li>
+      <li>選擇調性與長度</li>
+      <li>點擊 Generate 生成新進行</li>
+      <li>點擊 Play 播放（可選擇音色）</li>
+      <li>點擊 Export MIDI 匯出檔案</li>
+    </ol>
+
+    <div class="paper__divider"></div>
+
+    <!-- 11. 結論與未來工作 -->
+    <h2>11. 結論與未來工作</h2>
+
+    <h3>11.1 成果總結</h3>
+    <p>本研究成功實作 JazzArchitect 系統，達成以下目標：</p>
+    <ol>
+      <li><strong>理論整合：</strong>完整實作 Rohrmeier (2020) PCFG 框架</li>
+      <li><strong>風格控制：</strong>15 參數風格向量與 9 種預設</li>
+      <li><strong>替代規則：</strong>三全音、Backdoor、Coltrane 替代</li>
+      <li><strong>聲部優化：</strong>Smither (2019) guide-tone 導進</li>
+      <li><strong>實用工具：</strong>圖形介面、音訊合成、MIDI 輸出</li>
+    </ol>
+
+    <h3>11.2 未來工作</h3>
+    <ol>
+      <li><strong>語料庫訓練：</strong>從 Jazz Harmony Treebank 萃取規則機率</li>
+      <li><strong>評估整合：</strong>加入 MusDr 評估指標</li>
+      <li><strong>聽覺實驗：</strong>進行 A/B 比較測試</li>
+      <li><strong>樂譜顯示：</strong>加入五線譜視覺化</li>
+      <li><strong>即時 MIDI：</strong>連接外部合成器</li>
+      <li><strong>跨平台：</strong>Windows/Linux 版本</li>
+    </ol>
+
+    <div class="paper__divider"></div>
+
+    <!-- 參考文獻 -->
+    <h2>參考文獻</h2>
+    <div class="references">
+      <ol>
+        <li>Rohrmeier, M. (2020). Towards a Syntax of Jazz Harmony. <em>Music Theory and Analysis</em>, 7(1), 1-62.</li>
+        <li>Steedman, M. J. (1984). A generative grammar for jazz chord sequences. <em>Music Perception</em>, 2(1), 52-77.</li>
+        <li>Smither, S. (2019). Guide-tone voice leading in jazz. <em>Music Theory Online</em>, 25(2).</li>
+        <li>Harasim, D., Finkensiep, C., Ericson, P., O'Donnell, T. J., &amp; Rohrmeier, M. (2020). The jazz harmony treebank. <em>Proceedings of ISMIR 2020</em>.</li>
+        <li>Tymoczko, D. (2006). The geometry of musical chords. <em>Science</em>, 313(5783), 72-74.</li>
+        <li>Wu, S. L., &amp; Yang, Y. H. (2020). The jazz transformer on the front line: Exploring the shortcomings of AI-composed music through quantitative measures. <em>Proceedings of ISMIR 2020</em>.</li>
+        <li>Granroth-Wilding, M., &amp; Steedman, M. (2014). A robust parser-interpreter for jazz chord sequences. <em>Journal of New Music Research</em>, 43(4), 355-374.</li>
+      </ol>
+    </div>
+
+    <div class="paper__divider"></div>
+
+    <!-- 附錄 A -->
+    <h2>附錄 A：和弦品質音程表</h2>
+    <table>
+      <thead>
+        <tr><th>和弦品質</th><th>音程（半音）</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>MAJ7</td><td>0, 4, 7, 11</td></tr>
+        <tr><td>MIN7</td><td>0, 3, 7, 10</td></tr>
+        <tr><td>DOM7</td><td>0, 4, 7, 10</td></tr>
+        <tr><td>HDIM7</td><td>0, 3, 6, 10</td></tr>
+        <tr><td>DIM7</td><td>0, 3, 6, 9</td></tr>
+        <tr><td>AUG</td><td>0, 4, 8</td></tr>
+        <tr><td>MAJ6</td><td>0, 4, 7, 9</td></tr>
+        <tr><td>MIN6</td><td>0, 3, 7, 9</td></tr>
+      </tbody>
+    </table>
+
+    <!-- 附錄 B -->
+    <h2>附錄 B：非終端符號終端映射</h2>
+    <table>
+      <thead>
+        <tr><th>非終端</th><th>功能</th><th>常見終端</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>T</td><td>Tonic</td><td>Imaj7, vi7, iii7</td></tr>
+        <tr><td>D</td><td>Dominant</td><td>V7, vii-7</td></tr>
+        <tr><td>SD</td><td>Subdominant</td><td>IV, ii7</td></tr>
+        <tr><td>PREP</td><td>Preparation</td><td>ii7, IV</td></tr>
+      </tbody>
+    </table>
+
+    <p class="paper__version">JazzArchitect v1.0 - 2026 年 1 月 2 日</p>
+
+  </article>
+
+  <!-- Bottom Bar -->
+  <div class="bottom-bar">
+    <span class="bottom-bar__copyright">&copy; 2025 MADZINE. All rights reserved.</span>
+    <nav class="bottom-bar__nav">
+      <a href="index.html">Home</a>
+      <a href="software.html">Software</a>
+      <a href="works.html">Works</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="bottom-bar__controls">
+      <div class="lang-switcher">
+        <button class="lang-btn" data-lang="zh-TW" onclick="I18N.setLang('zh-TW')">中</button>
+        <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
+        <button class="lang-btn" data-lang="ja" onclick="I18N.setLang('ja')">JP</button>
+      </div>
+      <button id="mode-toggle" class="mode-toggle" aria-label="Toggle dark mode">☽</button>
+    </div>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MADZINE — WorldRhythm：異文化リズム生成の統一フレームワーク</title>
+  <meta name="description" content="統一アーキテクチャ内で10の異なる音楽文化にわたるリズムパターンを生成するルールベースのアルゴリズムフレームワーク。">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Paper layout */
+    .paper {
+      max-width: var(--content-narrow);
+      margin: 0 auto;
+      padding: var(--space-16) var(--padding-page-x) var(--space-12);
+    }
+
+    .paper__back {
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: var(--space-8);
+      font-size: var(--text-sm);
+      color: var(--color-primary);
+      letter-spacing: 0.025em;
+      transition: color var(--duration-normal) var(--ease-default);
+    }
+    .paper__back:hover {
+      color: var(--text-primary);
+    }
+
+    .paper__title {
+      font-family: var(--font-display);
+      font-size: var(--text-3xl);
+      line-height: var(--leading-tight);
+      font-weight: var(--weight-regular);
+      color: var(--text-primary);
+      margin-bottom: var(--space-6);
+    }
+
+    .paper__keywords {
+      font-size: var(--text-sm);
+      color: var(--text-tertiary);
+      margin-bottom: var(--space-8);
+      line-height: var(--leading-relaxed);
+    }
+
+    .paper__abstract {
+      border-left: 2px solid var(--border-default);
+      padding-left: var(--space-6);
+      margin-bottom: var(--space-10);
+      color: var(--text-secondary);
+      font-size: var(--text-base);
+      line-height: var(--leading-relaxed);
+    }
+
+    .paper__hr {
+      width: 40px;
+      height: 1px;
+      background: var(--border-default);
+      margin: var(--space-10) 0;
+      border: none;
+    }
+
+    /* Section headings */
+    .paper h2 {
+      font-family: var(--font-display);
+      font-size: var(--text-xl);
+      font-weight: var(--weight-regular);
+      color: var(--text-primary);
+      margin-top: var(--space-10);
+      margin-bottom: var(--space-4);
+    }
+
+    .paper h3 {
+      font-family: var(--font-display);
+      font-size: var(--text-md);
+      font-weight: var(--weight-regular);
+      color: var(--text-primary);
+      margin-top: var(--space-8);
+      margin-bottom: var(--space-3);
+    }
+
+    /* Body text */
+    .paper p {
+      font-size: var(--text-base);
+      line-height: var(--leading-relaxed);
+      margin-bottom: var(--space-4);
+      color: var(--text-primary);
+    }
+
+    .paper ol, .paper ul {
+      margin-bottom: var(--space-4);
+      padding-left: var(--space-6);
+    }
+
+    .paper ol {
+      list-style: decimal;
+    }
+
+    .paper ul {
+      list-style: disc;
+    }
+
+    .paper li {
+      font-size: var(--text-base);
+      line-height: var(--leading-relaxed);
+      margin-bottom: var(--space-2);
+      color: var(--text-primary);
+    }
+
+    /* Tables */
+    .paper table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: var(--space-6);
+      font-size: var(--text-sm);
+    }
+
+    .paper th, .paper td {
+      text-align: left;
+      padding: var(--space-2) var(--space-3);
+      border-bottom: 1px solid var(--border-default);
+      line-height: var(--leading-normal);
+    }
+
+    .paper th {
+      color: var(--text-secondary);
+      font-weight: var(--weight-regular);
+      border-bottom: 2px solid var(--border-strong);
+    }
+
+    .paper td {
+      color: var(--text-primary);
+    }
+
+    /* Code blocks */
+    .paper pre {
+      background: var(--surface-sunken);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-sm);
+      padding: var(--space-4);
+      overflow-x: auto;
+      margin-bottom: var(--space-6);
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      line-height: var(--leading-normal);
+      color: var(--text-primary);
+    }
+
+    .paper code {
+      font-family: var(--font-mono);
+      font-size: 0.92em;
+    }
+
+    /* Inline code */
+    .paper p code, .paper li code {
+      background: var(--surface-sunken);
+      padding: 0.1em 0.3em;
+      border-radius: var(--radius-sm);
+    }
+
+    /* Strong text */
+    .paper strong {
+      font-weight: var(--weight-bold);
+      color: var(--text-primary);
+    }
+
+    /* Emphasis */
+    .paper em {
+      font-style: italic;
+    }
+
+    /* References */
+    .paper__references {
+      margin-top: var(--space-8);
+    }
+
+    .paper__references ol {
+      list-style: decimal;
+      padding-left: var(--space-6);
+    }
+
+    .paper__references li {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      margin-bottom: var(--space-3);
+      line-height: var(--leading-relaxed);
+    }
+
+    /* Appendix tables — allow horizontal scroll on mobile */
+    .table-wrap {
+      overflow-x: auto;
+      margin-bottom: var(--space-6);
+    }
+
+    .table-wrap table {
+      min-width: 600px;
+    }
+
+    /* Bottom bar (same as other pages) */
+    .bottom-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) var(--space-6);
+      border-top: 1px solid var(--border-default);
+      font-size: var(--text-sm);
+    }
+    .bottom-bar__copyright { color: var(--text-tertiary); }
+    .bottom-bar__nav { display: flex; align-items: center; gap: var(--space-6); }
+    .bottom-bar__nav a { color: var(--text-secondary); text-decoration: none; transition: color var(--duration-normal) var(--ease-default); }
+    .bottom-bar__nav a:hover { color: var(--color-primary); }
+    .bottom-bar__controls { display: flex; align-items: center; gap: var(--space-4); }
+
+    /* Colophon line */
+    .paper__colophon {
+      font-size: var(--text-sm);
+      color: var(--text-tertiary);
+      font-style: italic;
+      margin-top: var(--space-6);
+    }
+
+    @media (max-width: 768px) {
+      .paper__title {
+        font-size: var(--text-2xl);
+      }
+      .bottom-bar {
+        flex-direction: column;
+        gap: var(--space-3);
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <main class="paper">
+    <a href="works.html" class="paper__back">&larr; Back</a>
+
+    <h1 class="paper__title">WorldRhythm：異文化リズム生成の統一フレームワーク</h1>
+
+    <p class="paper__keywords"><strong>キーワード</strong>：リズム生成、計算民族音楽学、異文化音楽、インターロックパターン、ポリリズム、アルゴリズム作曲、装飾技法</p>
+
+    <div class="paper__abstract">
+      <p>本論文では、統一アーキテクチャ内で10の異なる音楽文化にわたるリズムパターンを生成するルールベースのアルゴリズムフレームワーク、WorldRhythmを紹介する。単一の文化的伝統に焦点を当てるか、西洋偏重のデータセットに依存する機械学習に頼る既存のアプローチとは異なり、WorldRhythmは4層の役割階層を採用し、文化固有の優先度マトリクス、独自のリズム概念のための専門エンジン、およびスタイル固有の装飾のためのArticulation Profileシステムを組み合わせている。このシステムは、西アフリカのポリリズム、アフロキューバンのクラーベ、ジャワのガムラン、バリのコテカン、インドのターラ、バルカンのアクサクの伝統に関する民族音楽学研究を、パラメータ化された解釈可能な生成システムに統合している。本論文では、フレームワークのコアアーキテクチャ、アルゴリズムプロセス、専門エンジン、ヒューマナイゼーションメカニズム、および理論的基盤について説明する。</p>
+    </div>
+
+    <hr class="paper__hr">
+
+    <!-- 1. 序論 -->
+    <h2>1. 序論</h2>
+
+    <h3>1.1 背景</h3>
+    <p>計算リズム生成は主に西洋のポピュラー音楽スタイルに焦点を当ててきた。Groove MIDIデータセットやMagentaのドラム転写コーパスなどの主要な公開データセットは、ロック、ポップ、ファンク、ジャズを含む西洋のジャンルでほぼ完全に構成されている。最近の研究（Mehta et al., 2024）は100万時間以上のオーディオデータセットを分析し、86%がグローバルノースの音楽に集中し、93%の研究者が主に西洋音楽を研究していることを発見した。GrooVAEやDrum RNNなどの機械学習アプローチは、表現力豊かなドラム演奏生成で成功しているが、主にこれらの西洋中心のデータセットで訓練されており、文化固有のリズム原則の明示的なモデリングが欠けている。</p>
+    <p>リズムは音楽の基礎要素であり、世界各地の音楽伝統は独自のリズムシステムを発展させてきた。西アフリカのポリフォニック打楽器、キューバのClaveシステム、ブラジルのサンバグルーヴから、ジャワガムランのColotomic構造まで、これらのリズム伝統はそれぞれ独自の時間組織原理と美的概念を持っている。</p>
+    <p>グローバリゼーションと電子音楽の発展に伴い、異文化リズムの融合は現代音楽創作の重要なトレンドとなっている。しかし、各伝統の特性を維持しながら有機的な融合を実現する方法は、クリエイターが直面する課題であり続けている。従来のドラムマシンやリズムプログラミングツールは西洋の4/4拍子を基礎としており、非西洋リズムの微妙な質を自然に表現することが難しい。</p>
+
+    <h3>1.2 研究目的</h3>
+    <p>本研究は以下を可能にするアルゴリズムシステムを開発することを目的とする：</p>
+    <ol>
+      <li>10の主要な世界音楽リズムスタイルのコア特性を忠実に表現</li>
+      <li>単一スタイル内でのバリエーション生成をサポート</li>
+      <li>スタイル固有の特性を維持しながら全体的な調和を保つインテリジェントなクロススタイルミキシングを実現</li>
+      <li>自然な演奏特性に合わせたヒューマナイゼーション処理を提供</li>
+      <li>Articulation Profileシステムを通じて文化固有の装飾技法を実装</li>
+    </ol>
+
+    <hr class="paper__hr">
+
+    <!-- 2. 関連研究 -->
+    <h2>2. 関連研究</h2>
+
+    <h3>2.1 異文化リズム研究</h3>
+    <p>Simha Arom（1991）は、中央アフリカ共和国のBanda Linda族およびAka Pygmiesの音楽研究において、アフリカのポリフォニック打楽器の複雑なインターロック構造を明らかにした。彼が提唱した「最小周期」の概念は、非西洋リズムを分析する重要なツールとなった。注目すべきは、Aromの研究は主に中央アフリカ（Central Africa）地域に焦点を当てており、タイムラインパターン（timeline patterns）が最も顕著な西アフリカ（West Africa）地域ではないことである。これら2つの地域のリズム伝統は共通原則を持つが、具体的な実践においては異なる。</p>
+    <p>Gerhard Kubik（2010）は、アフリカリズムの「タイムライン」（timeline）概念をさらに詳述した。これは、アンサンブル全体に浸透する参照リズムパターンであり、他のパートはこのタイムラインを中心に組織される。この概念は、本研究の役割階層アーキテクチャに直接的なインスピレーションを与えた。</p>
+    <p>Fernando Benadon（2006）のジャズマイクロタイミング研究は、人間の演奏におけるタイミングのずれはランダムなエラーではなく、スタイル固有の表現手段であることを示した。これは、本研究のヒューマナイゼーションメカニズムの理論的基盤を提供した。</p>
+
+    <h3>2.2 アルゴリズムリズム生成</h3>
+    <p>Godfried Toussaint（2013）の研究は、ユークリッドアルゴリズムと世界音楽リズムの間の数学的関連を確立し、多くの伝統的リズムパターンがユークリッドアルゴリズムの特定パラメータで生成できることを発見した。本研究は、この方法を基本リズム生成のコアとして採用している。</p>
+    <p>Jeff Pressing（1983）は、リズムの難易度を定量化するための認知複雑度モデルを提唱した。本研究は、密度制御とバリエーション生成においてこの概念を参照している。</p>
+
+    <h3>2.3 既存システムの限界</h3>
+    <p>Ableton LiveのBeat RepeatやNative InstrumentsのMaschineなどの既存のリズム生成ツールは強力だが、主に電子音楽とヒップホップスタイル向けに設計されている。それらには以下が欠けている：</p>
+    <ul>
+      <li>非西洋リズムのタイムライン概念のサポート</li>
+      <li>スタイル固有のスウィングとマイクロタイミング処理</li>
+      <li>異文化スタイルミキシングのためのインテリジェントなメカニズム</li>
+    </ul>
+
+    <hr class="paper__hr">
+
+    <!-- 3. システムアーキテクチャ -->
+    <h2>3. システムアーキテクチャ</h2>
+
+    <h3>3.1 全体設計</h3>
+    <p>WorldRhythmはモジュラーアーキテクチャを採用し、コアコンポーネントには以下が含まれる：</p>
+<pre>
+&#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;
+&#9474;                   RhythmEngine                       &#9474;
+&#9474;  &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;  &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;  &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;   &#9474;
+&#9474;  &#9474;  Pattern  &#9474;  &#9474;  Interlock &#9474;  &#9474;   Humanize    &#9474;   &#9474;
+&#9474;  &#9474; Generator &#9474;&#9472;&#9472;&#9474;  Manager   &#9474;&#9472;&#9472;&#9474;    Engine     &#9474;   &#9474;
+&#9474;  &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;  &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;  &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;   &#9474;
+&#9474;        &#9474;              &#9474;               &#9474;             &#9474;
+&#9474;  &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;  &#9484;&#9472;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9488;   &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;       &#9474;
+&#9474;  &#9474; Euclidean &#9474;  &#9474;  Style   &#9474;   &#9474;  Timing   &#9474;       &#9474;
+&#9474;  &#9474; Generator &#9474;  &#9474;Compat.   &#9474;   &#9474;  Profile  &#9474;       &#9474;
+&#9474;  &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;  &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;   &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;       &#9474;
+&#9474;                                                     &#9474;
+&#9474;  &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;   &#9474;
+&#9474;  &#9474;            Style-Specific Engines            &#9474;   &#9474;
+&#9474;  &#9474;  Clave &#9474; Batucada &#9474; Kotekan &#9474; Jazz &#9474; Amen   &#9474;   &#9474;
+&#9474;  &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;   &#9474;
+&#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;
+</pre>
+
+    <h3>3.2 4層役割階層</h3>
+    <p>アフリカとアジアの打楽器伝統に触発され、システムはリズムパートを4つの役割に分割する：</p>
+    <table>
+      <thead>
+        <tr><th>役割</th><th>機能</th><th>音楽的類比</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Timeline</td><td>一定の参照フレームワークを提供</td><td>西アフリカのベル、キューバのClave</td></tr>
+        <tr><td>Foundation</td><td>低周波基盤を確立</td><td>バスドラム、Surdo</td></tr>
+        <tr><td>Groove</td><td>中周波空間を埋める</td><td>コンガ、スネア</td></tr>
+        <tr><td>Lead</td><td>即興と装飾</td><td>ソロ楽器</td></tr>
+      </tbody>
+    </table>
+    <p>この階層化は、打楽器アンサンブルの機能分析に関する民族音楽学に基づいており、ほとんどの伝統に存在する「参照-基盤-充填-装飾」の階層構造を反映している。</p>
+
+    <h3>3.3 スタイルのパラメータ化</h3>
+    <p>システムは10のリズムスタイルをサポートし、各スタイルは以下のパラメータで定義される：</p>
+<pre>
+struct StyleProfile {
+    // 基本パラメータ
+    float baseDensity;          // 基本音符密度
+    float swingAmount;          // スウィング度
+    int preferredSubdivision;   // 好ましい細分（8, 12, 16）
+
+    // リズムパターンの好み
+    std::vector&lt;int&gt; clavePattern;     // タイムラインリズムパターン
+    std::vector&lt;int&gt; accentPattern;    // アクセントパターン
+
+    // インターロックルール
+    float avoidanceStrength;    // 回避強度
+    float complementBoost;      // 補完ブースト
+
+    // ヒューマナイゼーションパラメータ
+    float timingVariance;       // タイミング分散（ミリ秒）
+    float velocityRange;        // ベロシティ範囲
+    float ghostNoteRatio;       // ゴーストノート比率
+};
+</pre>
+
+    <p>10のスタイルのコア特性（タイミング分散はPolak &amp; London 2014、Friberg &amp; Sundstr&ouml;m 2002、Danielsen et al. 2015などの学術研究に基づく）：</p>
+    <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>スタイル</th><th>細分</th><th>スウィング</th><th>タイミング分散</th><th>特徴</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>西アフリカ</td><td>12</td><td>中</td><td>&plusmn;22ms</td><td>12/8ポリリズム、強いインターロック</td></tr>
+        <tr><td>アフロキューバン</td><td>16</td><td>中</td><td>&plusmn;16ms</td><td>Clave指向、豊富なシンコペーション</td></tr>
+        <tr><td>ブラジル</td><td>16</td><td>高</td><td>&plusmn;14ms</td><td>サンバスウィング、Surdo対話</td></tr>
+        <tr><td>バルカン</td><td>混合</td><td>低</td><td>&plusmn;10ms</td><td>不規則拍子、非対称アクセント</td></tr>
+        <tr><td>インド</td><td>16</td><td>低</td><td>&plusmn;18ms</td><td>Talaサイクル、Tihai終止</td></tr>
+        <tr><td>ガムラン</td><td>可変</td><td>なし</td><td>&plusmn;12ms</td><td>Colotomic構造、Iramaレベル</td></tr>
+        <tr><td>ジャズ</td><td>12</td><td>高</td><td>&plusmn;12ms</td><td>三連符グルーヴ、BPM依存スウィング</td></tr>
+        <tr><td>エレクトロニック</td><td>16</td><td>なし</td><td>&plusmn;5ms</td><td>機械的精度、フォーオンザフロア</td></tr>
+        <tr><td>ブレイクビーツ</td><td>16</td><td>中</td><td>&plusmn;15ms</td><td>サンプルスライス、リズムブレイク</td></tr>
+        <tr><td>テクノ</td><td>16</td><td>なし</td><td>&plusmn;2ms</td><td>ミニマル、催眠的反復</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <hr class="paper__hr">
+
+    <!-- 4. コアアルゴリズム -->
+    <h2>4. コアアルゴリズム</h2>
+
+    <h3>4.1 ユークリッドリズム生成</h3>
+    <p>基本リズムパターンは、Bjorklund（2003）のユークリッドアルゴリズムを使用して生成される。総ステップ数<em>n</em>とヒット数<em>k</em>が与えられると、アルゴリズムは<em>n</em>ステップ内の<em>k</em>個のヒットの最大均等分布を生成する：</p>
+<pre>
+std::vector&lt;bool&gt; euclidean(int hits, int steps) {
+    std::vector&lt;int&gt; pattern(steps, 0);
+    int bucket = 0;
+
+    for (int i = 0; i &lt; steps; i++) {
+        bucket += hits;
+        if (bucket &gt;= steps) {
+            bucket -= steps;
+            pattern[i] = 1;
+        }
+    }
+    return pattern;
+}
+</pre>
+
+    <p>このアルゴリズムは多くの伝統的リズムパターンを生成できる：</p>
+    <ul>
+      <li>E(3,8) = Tresillo（キューバ）</li>
+      <li>E(5,8) = Cinquillo（キューバ）</li>
+      <li>E(7,12) = 西アフリカ標準ベルリズム</li>
+      <li>E(5,16) = Bossa Nova</li>
+    </ul>
+
+    <h3>4.2 インターロック生成アルゴリズム</h3>
+    <p>インターロック（Interlocking）は、マルチパートの調和を確保する重要なメカニズムである。システムは3つのインターロック戦略を実装する：</p>
+
+    <p><strong>回避戦略</strong>：FoundationはTimelineの強拍位置を避ける</p>
+<pre>
+float calculateAvoidance(int step, const Pattern&amp; timeline,
+                         float avoidanceStrength) {
+    if (timeline.hasHit(step)) {
+        // Timelineにヒットがある場合、この位置の確率を減少
+        return 1.0f - avoidanceStrength;
+    }
+    return 1.0f;
+}
+</pre>
+
+    <p><strong>補完戦略</strong>：GrooveはTimelineとFoundationの間のギャップを埋める</p>
+<pre>
+float calculateComplement(int step, const Pattern&amp; timeline,
+                          const Pattern&amp; foundation, float boost) {
+    bool hasTimelineHit = timeline.hasHit(step);
+    bool hasFoundationHit = foundation.hasHit(step);
+
+    if (!hasTimelineHit &amp;&amp; !hasFoundationHit) {
+        // 空白位置はブーストを受ける
+        return boost;
+    }
+    return 1.0f;
+}
+</pre>
+
+    <p><strong>交渉戦略</strong>：Leadボイスは他のすべてのボイスを考慮</p>
+<pre>
+float calculateLeadProbability(int step, const Pattern patterns[3],
+                               float baseProb) {
+    int activeVoices = 0;
+    for (int i = 0; i &lt; 3; i++) {
+        if (patterns[i].hasHit(step)) activeVoices++;
+    }
+
+    // アクティブなボイスが多いほど、Leadは休む傾向
+    return baseProb * (1.0f - activeVoices * 0.2f);
+}
+</pre>
+
+    <h3>4.3 スタイル互換性マトリクス</h3>
+    <p>クロススタイルミキシング時、システムは事前定義された互換性マトリクスを参照してインターロック強度を決定する：</p>
+<pre>
+static const float compatibilityMatrix[10][10] = {
+    //    WA    AC    BR    BK    IN    GM    JZ    EL    BB    TC
+    {1.00, 0.80, 0.70, 0.40, 0.50, 0.60, 0.60, 0.50, 0.60, 0.40}, // 西アフリカ
+    {0.80, 1.00, 0.85, 0.45, 0.50, 0.55, 0.70, 0.60, 0.65, 0.50}, // アフロキューバン
+    {0.70, 0.85, 1.00, 0.40, 0.45, 0.50, 0.75, 0.55, 0.70, 0.45}, // ブラジル
+    {0.40, 0.45, 0.40, 1.00, 0.60, 0.35, 0.50, 0.45, 0.45, 0.40}, // バルカン
+    {0.50, 0.50, 0.45, 0.60, 1.00, 0.55, 0.55, 0.40, 0.45, 0.35}, // インド
+    {0.60, 0.55, 0.50, 0.35, 0.55, 1.00, 0.50, 0.50, 0.45, 0.50}, // ガムラン
+    {0.60, 0.70, 0.75, 0.50, 0.55, 0.50, 1.00, 0.70, 0.75, 0.60}, // ジャズ
+    {0.50, 0.60, 0.55, 0.45, 0.40, 0.50, 0.70, 1.00, 0.80, 0.85}, // エレクトロニック
+    {0.60, 0.65, 0.70, 0.45, 0.45, 0.45, 0.75, 0.80, 1.00, 0.75}, // ブレイクビーツ
+    {0.40, 0.50, 0.45, 0.40, 0.35, 0.50, 0.60, 0.85, 0.75, 1.00}  // テクノ
+};
+</pre>
+
+    <p>互換性は以下の原則に基づいて計算される：</p>
+    <ol>
+      <li><strong>パルスファミリー</strong>：同じ基本細分を共有するスタイルは互換性が高い（例：12/8ファミリー：西アフリカ、キューバ、ブラジル）</li>
+      <li><strong>歴史的関連</strong>：歴史的つながりのあるスタイルは互換性が高い（例：キューバとジャズ）</li>
+      <li><strong>タイミング特性</strong>：類似したヒューマナイゼーション度のスタイルは混合しやすい（例：エレクトロニックとテクノ）</li>
+    </ol>
+
+    <p>互換性が低い場合、システムは自動的にインターロックを強化する：</p>
+<pre>
+float getInterlockStrength(int styleA, int styleB) {
+    float compatibility = getCompatibility(styleA, styleB);
+    // 互換性が低いほど、インターロックが強くなり、全体的な調和を維持
+    return 1.0f + (1.0f - compatibility) * 0.5f;
+}
+</pre>
+
+    <h3>4.4 ヒューマナイゼーション処理</h3>
+    <p>ヒューマナイゼーションエンジンは、人間の演奏におけるタイミングとベロシティの変動をシミュレートし、スタイル固有の特性を持つ：</p>
+
+    <p><strong>タイミング変動</strong></p>
+<pre>
+float getTimingOffset(int step, int styleIndex, float amount) {
+    const StyleTimingProfile&amp; profile = profiles[styleIndex];
+
+    // 基本分散
+    float variance = profile.baseVariance * amount;
+
+    // 役割補正（Timelineが最も安定、Leadが最も自由）
+    variance *= profile.roleMultipliers[currentRole];
+
+    // ガウス分布のオフセットを生成
+    return gaussianRandom(0, variance);
+}
+</pre>
+
+    <p><strong>BPM依存スウィング</strong></p>
+    <p>Friberg &amp; Sundstr&ouml;m（2002）の研究によると、ジャズのスウィング比率はテンポによって変化する：</p>
+    <ul>
+      <li>低速（~120 BPM）：最大3.5:1</li>
+      <li>中速：約2:1（三連符感、67%）</li>
+      <li>高速（300+ BPM）：1:1に近づく（ストレート）</li>
+    </ul>
+    <p>この現象は生体力学的制限に由来する&mdash;&mdash;高速では大きな不均等細分を維持することが困難である。</p>
+<pre>
+float getSwingRatio(int styleIndex, float bpm) {
+    const StyleTimingProfile&amp; profile = profiles[styleIndex];
+
+    float slowRatio = profile.swingRatioSlow;  // 低速時のスウィング
+    float fastRatio = profile.swingRatioFast;  // 高速時のスウィング
+
+    // 線形補間、100-180 BPMが遷移ゾーン
+    float t = clamp((bpm - 100.0f) / 80.0f, 0.0f, 1.0f);
+    return lerp(slowRatio, fastRatio, t);
+}
+</pre>
+
+    <p><strong>相対的ゴーストノートベロシティ</strong></p>
+    <p>ゴーストノート（ghost notes）のベロシティは、絶対値ではなく前のメイン音に対して相対的に計算される。学術研究によると：</p>
+    <ul>
+      <li>Matsuo &amp; Sakaguchi（2024）：1:4振幅比 = 25%</li>
+      <li>Cheng et al.（2022）：10dB差 = ~32%</li>
+    </ul>
+    <p>したがって、ゴーストノートベロシティ範囲は25-32%に設定される。</p>
+<pre>
+float getGhostVelocity(float previousVelocity, int styleIndex) {
+    const StyleTimingProfile&amp; profile = profiles[styleIndex];
+    // ghostVelocityMin = 0.25, ghostVelocityMax = 0.32 (査読済み)
+    float ratio = randomRange(profile.ghostVelocityMin,
+                              profile.ghostVelocityMax);
+    return previousVelocity * ratio;
+}
+</pre>
+
+    <h3>4.5 アーティキュレーション・プロファイル・システム</h3>
+    <p>スタイル固有の装飾技法を実現するため、システムは民族音楽学研究に基づくArticulation Profile参照テーブルを採用している。各スタイルと役割の組み合わせには専用の装飾技法設定がある。</p>
+
+    <p><strong>装飾技法タイプ</strong></p>
+<pre>
+enum class ArticulationType {
+    None,   // 装飾なし
+    Flam,   // ダブルストライク（前打音）
+    Drag,   // ダブル前打音
+    Ruff,   // トリプル前打音
+    Buzz    // バズロール（連続細かいストローク）
+};
+</pre>
+
+    <p><strong>プロファイル構造</strong></p>
+<pre>
+struct ArticulationEntry {
+    ArticulationType type;      // 装飾技法タイプ
+    float baseProbability;      // 基本発生確率
+    bool onAccentsOnly;         // アクセント時のみトリガー
+    bool onStrongBeats;         // 強拍時のみトリガー
+};
+
+// 10スタイル &times; 4役割 = 40プロファイルセット
+static const ArticulationEntry profiles[10][4];
+</pre>
+
+    <p><strong>スタイル固有の設計</strong></p>
+    <p>各スタイルのArticulation設計は民族音楽学文献に基づく：</p>
+    <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>スタイル</th><th>Timeline</th><th>Foundation</th><th>Groove</th><th>Lead</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>西アフリカ</td><td>Flam中確率</td><td>Drag低確率</td><td>Flam高確率</td><td>Ruff中確率</td></tr>
+        <tr><td>アフロキューバン</td><td>Flam低確率</td><td>なし</td><td>Flam中確率</td><td>Drag高確率</td></tr>
+        <tr><td>ブラジル</td><td>Flam中確率</td><td>Drag低確率</td><td>Ruff高確率</td><td>Buzz中確率</td></tr>
+        <tr><td>ジャズ</td><td>Flam低確率</td><td>Drag低確率</td><td>Buzz中確率</td><td>Ruff高確率</td></tr>
+        <tr><td>エレクトロニック</td><td>なし</td><td>なし</td><td>Flam低確率</td><td>Flam低確率</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <p><strong>選択アルゴリズム</strong></p>
+<pre>
+ArticulationType selectArticulation(int styleIndex, int roleIndex,
+                                    float amount, bool isAccent,
+                                    bool isStrongBeat) {
+    const ArticulationEntry&amp; entry = profiles[styleIndex][roleIndex];
+
+    // 条件チェック
+    if (entry.onAccentsOnly &amp;&amp; !isAccent) return None;
+    if (entry.onStrongBeats &amp;&amp; !isStrongBeat) return None;
+
+    // 確率計算：基本確率 &times; ユーザー制御量
+    float probability = entry.baseProbability * amount;
+
+    if (randomFloat() &lt; probability) {
+        return entry.type;
+    }
+    return None;
+}
+</pre>
+
+    <p><strong>民族音楽学参照</strong></p>
+    <p>Articulation Profileの設計は以下の研究を参照している：</p>
+    <ul>
+      <li>Afrodrumming.com：西アフリカ打楽器のFlamとDrag技法</li>
+      <li>Marc D&eacute;douvan：アフロキューバン打楽器の装飾音伝統</li>
+      <li>Gamelan.org.nz：ガムラン音楽のKotekan交織技法</li>
+      <li>ジャズドラム文献：BrushとStickの装飾音の違い</li>
+    </ul>
+
+    <hr class="paper__hr">
+
+    <!-- 5. スタイル固有のエンジン -->
+    <h2>5. スタイル固有のエンジン</h2>
+    <p>汎用アルゴリズムに加えて、システムは特定の伝統のための専門エンジンを含む：</p>
+
+    <h3>5.1 ClaveEngine（キューバ）</h3>
+    <p>Son Clave、Rumba Claveの3-2/2-3方向切り替えとBossa Nova Claveを実装：</p>
+<pre>
+enum ClaveType { SON, RUMBA, BOSSA };
+enum Direction { THREE_TWO, TWO_THREE };
+
+Pattern generateClave(ClaveType type, Direction dir);
+void flipDirection();  // リアルタイム方向切り替え
+</pre>
+
+    <h3>5.2 BatucadaEngine（ブラジル）</h3>
+    <p>サンバスクール打楽器のSurdoトリオインターロックをシミュレート：</p>
+    <ul>
+      <li><strong>Primeira</strong>：第2拍強アクセント</li>
+      <li><strong>Segunda</strong>：第1拍レスポンス</li>
+      <li><strong>Terceira</strong>：フィルとバリエーション</li>
+    </ul>
+<pre>
+struct SurdoInterlock {
+    Pattern primeira;  // リードボイス
+    Pattern segunda;   // レスポンスボイス
+    Pattern terceira;  // 装飾ボイス
+};
+
+SurdoInterlock generateSurdos(SambaStyle style, float swing);
+</pre>
+
+    <h3>5.3 KotekanEngine（バリ）</h3>
+    <p>ガムラン音楽のKotekanインターロック技法を実装：</p>
+    <ul>
+      <li><strong>Polos</strong>：下降メロディライン</li>
+      <li><strong>Sangsih</strong>：補完上昇ライン</li>
+      <li><strong>Combined</strong>：完全な連続サウンドストリーム</li>
+    </ul>
+<pre>
+enum KotekanType { NYOG_CAG, NOROT, TELU, EMPAT, UBIT };
+
+KotekanPair generateKotekan(KotekanType type, int steps);
+</pre>
+
+    <h3>5.4 JazzBrushEngine（ジャズ）</h3>
+    <p>ジャズドラマーのブラシとスティック技法をシミュレート：</p>
+<pre>
+enum PlayingStyle { BRUSHES, STICKS };
+enum TempoFeel { BALLAD, MEDIUM, UP_TEMPO, BEBOP };
+
+JazzKit generateComping(PlayingStyle style, TempoFeel feel, float bpm);
+</pre>
+
+    <h3>5.5 AmenBreakEngine（ブレイクビーツ）</h3>
+    <p>クラシックBreakbeatサンプルのスライスと再構成を実装：</p>
+<pre>
+enum BreakType { AMEN, THINK, FUNKY_DRUMMER, APACHE };
+enum ChopStyle { ORIGINAL, REVERSE, JUNGLE_1, JUNGLE_2 };
+
+BreakPattern generateBreak(BreakType type);
+BreakPattern chopBreak(const BreakPattern&amp; original, ChopStyle style);
+</pre>
+
+    <hr class="paper__hr">
+
+    <!-- 6. 実験と評価 -->
+    <h2>6. 実験と評価</h2>
+
+    <h3>6.1 実験設計</h3>
+    <p>アルゴリズムの有効性を検証するため、3つの混合スタイルテストを設計した：</p>
+
+    <p><strong>テスト1：ワールドミュージック/ハウス融合</strong></p>
+    <ul>
+      <li>Timeline：西アフリカスタイル</li>
+      <li>Foundation：エレクトロニックスタイル</li>
+      <li>Groove：アフロキューバンスタイル</li>
+      <li>Lead：ジャズスタイル</li>
+    </ul>
+
+    <p><strong>テスト2：Drum'n'Bassとサンバのミックス</strong></p>
+    <ul>
+      <li>Timeline：ブラジルスタイル</li>
+      <li>Foundation：ブレイクビーツスタイル</li>
+      <li>Groove：ブラジルスタイル</li>
+      <li>Lead：ジャズスタイル</li>
+    </ul>
+
+    <p><strong>テスト3：実験的低互換性組み合わせ</strong></p>
+    <ul>
+      <li>Timeline：テクノスタイル</li>
+      <li>Foundation：テクノスタイル</li>
+      <li>Groove：ガムランスタイル</li>
+      <li>Lead：ガムランスタイル</li>
+    </ul>
+
+    <h3>6.2 結果分析</h3>
+    <p><strong>インターロック有効性</strong></p>
+    <p>TimelineとFoundationの重複率、およびGrooveのギャップ充填率を測定：</p>
+    <table>
+      <thead>
+        <tr><th>テスト</th><th>TL-FD重複</th><th>Groove充填率</th><th>全体密度</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>テスト1</td><td>12.5%</td><td>68.7%</td><td>62.5%</td></tr>
+        <tr><td>テスト2</td><td>18.7%</td><td>71.9%</td><td>68.7%</td></tr>
+        <tr><td>テスト3</td><td>6.2%</td><td>75.0%</td><td>59.4%</td></tr>
+      </tbody>
+    </table>
+    <p>結果は以下を示す：</p>
+    <ul>
+      <li>低互換性組み合わせ（テスト3）のTL-FD重複が最も低く、強化されたインターロックメカニズムが有効に機能していることを示す</li>
+      <li>Groove充填率はすべてのテストで65-75%を維持し、リズムの流動性を確保</li>
+    </ul>
+
+    <p><strong>スタイル特徴の保持</strong></p>
+    <p>各ボイスのリズム特性（細分の好み、アクセント位置、スウィング度）を分析することで、各スタイルのコア品質が維持されていることを確認：</p>
+    <table>
+      <thead>
+        <tr><th>ボイス</th><th>割り当てスタイル</th><th>細分一致</th><th>アクセント一致</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Timeline（西アフリカ）</td><td>西アフリカ</td><td>91.6%</td><td>87.5%</td></tr>
+        <tr><td>Foundation（エレクトロニック）</td><td>エレクトロニック</td><td>100%</td><td>100%</td></tr>
+        <tr><td>Groove（アフロキューバン）</td><td>アフロキューバン</td><td>85.4%</td><td>79.2%</td></tr>
+        <tr><td>Lead（ジャズ）</td><td>ジャズ</td><td>83.3%</td><td>75.0%</td></tr>
+      </tbody>
+    </table>
+
+    <h3>6.3 限界</h3>
+    <ol>
+      <li><strong>文化的簡略化</strong>：複雑な音楽伝統をパラメータに簡略化することで、不可避的に一部の詳細が失われる</li>
+      <li><strong>静的互換性</strong>：互換性マトリクスはプリセット値であり、特定の音楽コンテキストを反映できない</li>
+      <li><strong>ピッチ次元の欠如</strong>：システムはリズムに焦点を当てており、メロディとハーモニーの異文化融合を扱っていない</li>
+    </ol>
+
+    <hr class="paper__hr">
+
+    <!-- 7. 結論と今後の課題 -->
+    <h2>7. 結論と今後の課題</h2>
+
+    <h3>7.1 結論</h3>
+    <p>本研究で提案したWorldRhythmアルゴリズムは以下を成功裏に実現した：</p>
+    <ol>
+      <li><strong>マルチスタイルサポート</strong>：10の主要世界音楽リズム伝統をカバー</li>
+      <li><strong>インテリジェントミキシング</strong>：互換性マトリクスと可変強度インターロックを通じてクロススタイル融合を実現</li>
+      <li><strong>ヒューマナイゼーション処理</strong>：スタイル固有のタイミングとベロシティ変動により音楽性を向上</li>
+      <li><strong>Articulation Profile</strong>：民族音楽学に基づく装飾技法システムで、各スタイル×役割の組み合わせに専用設定</li>
+      <li><strong>モジュラーアーキテクチャ</strong>：新しいスタイルと機能の拡張が容易</li>
+    </ol>
+    <p>このシステムは、各伝統への敬意と理解を維持しながら、音楽クリエイターに異文化リズム融合を探求するツールを提供する。</p>
+
+    <h3>7.2 今後の課題</h3>
+    <ol>
+      <li><strong>機械学習統合</strong>：実際の演奏データを使用してスタイルモデルを訓練し、リアリズムを向上</li>
+      <li><strong>動的互換性</strong>：実際の生成結果に基づいて互換性判断を動的に調整</li>
+      <li><strong>ユーザー研究</strong>：リスニングテストを実施し、生成されたリズムの音楽性と文化的適切性を評価</li>
+      <li><strong>ピッチ拡張</strong>：メロディとハーモニーの異文化生成能力を追加</li>
+    </ol>
+
+    <hr class="paper__hr">
+
+    <!-- 参考文献 -->
+    <h2>参考文献</h2>
+    <div class="paper__references">
+    <ol>
+      <li>Arom, S. (1991). <em>African Polyphony and Polyrhythm: Musical Structure and Methodology</em>. Cambridge University Press.</li>
+      <li>Benadon, F. (2006). Slicing the Beat: Jazz Eighth-Notes as Expressive Microrhythm. <em>Ethnomusicology</em>, 50(1), 73-98.</li>
+      <li>Bjorklund, E. (2003). The Theory of Rep-Rate Pattern Generation in the SNS Timing System. <em>SNS ASD Technical Note</em>.</li>
+      <li>Cheng, T.Z., Creel, S.C., &amp; Iversen, J.R. (2022). How Do You Feel the Rhythm: Dynamic Motor-Auditory Interactions Are Involved in the Imagination of Hierarchical Timing. <em>Journal of Neuroscience</em>, 42(3), 500-512.</li>
+      <li>Danielsen, A., et al. (2015). Effects of instructed timing and tempo on snare drum sound in drum kit performance. <em>Journal of the Acoustical Society of America</em>, 138(4), 2301-2316.</li>
+      <li>Friberg, A., &amp; Sundstr&ouml;m, A. (2002). Swing Ratios and Ensemble Timing in Jazz Performance: Evidence for a Common Rhythmic Pattern. <em>Music Perception</em>, 19(3), 333-349.</li>
+      <li>Kubik, G. (2010). <em>Theory of African Music</em>, Volume I. University of Chicago Press.</li>
+      <li>Locke, D. (1982). Principles of Offbeat Timing and Cross-Rhythm in Southern Eve Drumming. <em>Ethnomusicology</em>, 26(2), 217-246.</li>
+      <li>Matsuo, H., &amp; Sakaguchi, Y. (2024). Effects of Rhythm and Accent Patterns on Tempo-Keeping Property of Finger Tapping. <em>i-Perception</em>. DOI: 10.1177/20592043241276959</li>
+      <li>Mehta, A., et al. (2024). Missing Melodies: AI Music Generation and the Need for Diverse Training Data. <em>arXiv preprint</em>.</li>
+      <li>Polak, R., &amp; London, J. (2014). Timing and Meter in Mande Drumming from Mali. <em>Music Theory Online</em>, 20(1).</li>
+      <li>Pressing, J. (1983). Cognitive Isomorphisms between Pitch and Rhythm in World Musics. <em>Studies in Music</em>, 17, 38-61.</li>
+      <li>Temperley, D. (2000). Meter and Grouping in African Music: A View from Music Theory. <em>Ethnomusicology</em>, 44(1), 65-96.</li>
+      <li>Tenzer, M. (2000). <em>Gamelan Gong Kebyar: The Art of Twentieth-Century Balinese Music</em>. University of Chicago Press.</li>
+      <li>Toussaint, G. T. (2013). <em>The Geometry of Musical Rhythm</em>. CRC Press.</li>
+    </ol>
+    </div>
+
+    <hr class="paper__hr">
+
+    <!-- 付録A -->
+    <h2>付録A：スタイル互換性完全マトリクス</h2>
+    <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th></th><th>西アフリカ</th><th>アフロキューバン</th><th>ブラジル</th><th>バルカン</th><th>インド</th><th>ガムラン</th><th>ジャズ</th><th>エレクトロニック</th><th>ブレイクビーツ</th><th>テクノ</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>西アフリカ</strong></td><td>100%</td><td>80%</td><td>70%</td><td>40%</td><td>50%</td><td>60%</td><td>60%</td><td>50%</td><td>60%</td><td>40%</td></tr>
+        <tr><td><strong>アフロキューバン</strong></td><td>80%</td><td>100%</td><td>85%</td><td>45%</td><td>50%</td><td>55%</td><td>70%</td><td>60%</td><td>65%</td><td>50%</td></tr>
+        <tr><td><strong>ブラジル</strong></td><td>70%</td><td>85%</td><td>100%</td><td>40%</td><td>45%</td><td>50%</td><td>75%</td><td>55%</td><td>70%</td><td>45%</td></tr>
+        <tr><td><strong>バルカン</strong></td><td>40%</td><td>45%</td><td>40%</td><td>100%</td><td>60%</td><td>35%</td><td>50%</td><td>45%</td><td>45%</td><td>40%</td></tr>
+        <tr><td><strong>インド</strong></td><td>50%</td><td>50%</td><td>45%</td><td>60%</td><td>100%</td><td>55%</td><td>55%</td><td>40%</td><td>45%</td><td>35%</td></tr>
+        <tr><td><strong>ガムラン</strong></td><td>60%</td><td>55%</td><td>50%</td><td>35%</td><td>55%</td><td>100%</td><td>50%</td><td>50%</td><td>45%</td><td>50%</td></tr>
+        <tr><td><strong>ジャズ</strong></td><td>60%</td><td>70%</td><td>75%</td><td>50%</td><td>55%</td><td>50%</td><td>100%</td><td>70%</td><td>75%</td><td>60%</td></tr>
+        <tr><td><strong>エレクトロニック</strong></td><td>50%</td><td>60%</td><td>55%</td><td>45%</td><td>40%</td><td>50%</td><td>70%</td><td>100%</td><td>80%</td><td>85%</td></tr>
+        <tr><td><strong>ブレイクビーツ</strong></td><td>60%</td><td>65%</td><td>70%</td><td>45%</td><td>45%</td><td>45%</td><td>75%</td><td>80%</td><td>100%</td><td>75%</td></tr>
+        <tr><td><strong>テクノ</strong></td><td>40%</td><td>50%</td><td>45%</td><td>40%</td><td>35%</td><td>50%</td><td>60%</td><td>85%</td><td>75%</td><td>100%</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <!-- 付録B -->
+    <h2>付録B：スタイルファミリー分類</h2>
+
+    <p><strong>12/8パルスファミリー</strong></p>
+    <ul>
+      <li>西アフリカ（Standard Bell: E(7,12)）</li>
+      <li>アフロキューバン（Claveシステム）</li>
+      <li>ブラジル（サンバスウィング）</li>
+    </ul>
+
+    <p><strong>4/4パルスファミリー</strong></p>
+    <ul>
+      <li>ジャズ（三連符細分）</li>
+      <li>エレクトロニック（ストレート16分音符）</li>
+      <li>ブレイクビーツ（スライス再構成）</li>
+      <li>テクノ（ミニマルループ）</li>
+    </ul>
+
+    <p><strong>不規則拍子ファミリー</strong></p>
+    <ul>
+      <li>バルカン（7/8, 9/8, 11/8）</li>
+      <li>インド（Talaサイクル）</li>
+    </ul>
+
+    <p><strong>コロトミックファミリー</strong></p>
+    <ul>
+      <li>ガムラン（階層的ゴング句読点構造）</li>
+    </ul>
+
+    <hr class="paper__hr">
+
+    <p class="paper__colophon">本研究はWorldRhythm v0.20アルゴリズムのドキュメントであり、VCV Rackモジュール環境で実装されている。</p>
+
+  </main>
+
+  <!-- Bottom Bar -->
+  <div class="bottom-bar">
+    <span class="bottom-bar__copyright" data-i18n="footer.copyright">&copy; 2025 MADZINE. All rights reserved.</span>
+    <nav class="bottom-bar__nav">
+      <a href="index.html" data-i18n="nav.home">Home</a>
+      <a href="software.html" data-i18n="nav.software">Software</a>
+      <a href="works.html" data-i18n="nav.works">Works</a>
+      <a href="contact.html" data-i18n="nav.contact">Contact</a>
+    </nav>
+    <div class="bottom-bar__controls">
+      <div class="lang-switcher">
+        <button class="lang-btn" data-lang="zh-TW" onclick="I18N.setLang('zh-TW')">中</button>
+        <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
+        <button class="lang-btn" data-lang="ja" onclick="I18N.setLang('ja')">JP</button>
+      </div>
+      <button id="mode-toggle" class="mode-toggle" aria-label="Toggle dark mode">&#9789;</button>
+    </div>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

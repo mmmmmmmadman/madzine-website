@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MADZINE — JazzArchitect 研究論文</title>
+  <meta name="description" content="JazzArchitect：再帰的確率文法に基づくジャズ和声生成システム">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .paper {
+      max-width: var(--content-narrow);
+      margin: 0 auto;
+      padding: var(--space-16) var(--padding-page-x) var(--space-12);
+    }
+
+    .paper__back {
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: var(--space-8);
+      font-size: var(--text-sm);
+      color: var(--color-primary);
+      transition: color var(--duration-normal) var(--ease-default);
+    }
+    .paper__back:hover {
+      color: var(--text-primary);
+    }
+
+    .paper__title {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      line-height: var(--leading-snug);
+      font-weight: var(--weight-regular);
+      color: var(--text-primary);
+      margin-bottom: var(--space-6);
+    }
+
+    .paper__meta {
+      font-size: var(--text-sm);
+      color: var(--text-tertiary);
+      margin-bottom: var(--space-8);
+    }
+
+    .paper__abstract {
+      border-left: 2px solid var(--border-default);
+      padding-left: var(--space-6);
+      margin-bottom: var(--space-10);
+    }
+    .paper__abstract-label {
+      font-family: var(--font-display);
+      font-size: var(--text-md);
+      font-weight: var(--weight-medium);
+      color: var(--text-primary);
+      margin-bottom: var(--space-3);
+    }
+    .paper__abstract p {
+      font-size: var(--text-base);
+      color: var(--text-secondary);
+      line-height: var(--leading-relaxed);
+    }
+    .paper__keywords {
+      font-size: var(--text-sm);
+      color: var(--text-tertiary);
+      margin-top: var(--space-4);
+    }
+
+    .paper__divider {
+      width: 40px;
+      height: 1px;
+      background: var(--border-default);
+      margin: var(--space-10) 0;
+    }
+
+    .paper h2 {
+      font-family: var(--font-display);
+      font-size: var(--text-xl);
+      line-height: var(--leading-tight);
+      font-weight: var(--weight-regular);
+      color: var(--text-primary);
+      margin-top: var(--space-12);
+      margin-bottom: var(--space-6);
+    }
+
+    .paper h3 {
+      font-family: var(--font-display);
+      font-size: var(--text-md);
+      font-weight: var(--weight-medium);
+      color: var(--text-primary);
+      margin-top: var(--space-8);
+      margin-bottom: var(--space-4);
+    }
+
+    .paper h4 {
+      font-size: var(--text-base);
+      font-weight: var(--weight-medium);
+      color: var(--text-primary);
+      margin-top: var(--space-6);
+      margin-bottom: var(--space-3);
+    }
+
+    .paper p {
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      line-height: var(--leading-relaxed);
+      color: var(--text-primary);
+      margin-bottom: var(--space-4);
+    }
+
+    .paper ol,
+    .paper ul {
+      padding-left: var(--space-6);
+      margin-bottom: var(--space-4);
+    }
+    .paper ol {
+      list-style: decimal;
+    }
+    .paper ul {
+      list-style: disc;
+    }
+    .paper li {
+      font-size: var(--text-base);
+      line-height: var(--leading-relaxed);
+      color: var(--text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .paper strong {
+      font-weight: var(--weight-medium);
+    }
+
+    .paper table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: var(--space-4) 0 var(--space-6);
+      font-size: var(--text-sm);
+    }
+    .paper th,
+    .paper td {
+      text-align: left;
+      padding: var(--space-2) var(--space-3);
+      border-bottom: 1px solid var(--border-default);
+      color: var(--text-primary);
+    }
+    .paper th {
+      color: var(--text-secondary);
+      font-weight: var(--weight-medium);
+      border-bottom: 2px solid var(--border-strong);
+    }
+
+    .paper pre {
+      background: var(--surface-sunken);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-sm);
+      padding: var(--space-4) var(--space-5);
+      overflow-x: auto;
+      margin: var(--space-4) 0 var(--space-6);
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      line-height: var(--leading-normal);
+      color: var(--text-primary);
+    }
+
+    .paper .references {
+      margin-top: var(--space-8);
+    }
+    .paper .references ol {
+      list-style: decimal;
+      padding-left: var(--space-6);
+    }
+    .paper .references li {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      margin-bottom: var(--space-3);
+      line-height: var(--leading-relaxed);
+    }
+
+    .paper__version {
+      font-size: var(--text-sm);
+      color: var(--text-tertiary);
+      font-style: italic;
+      margin-top: var(--space-8);
+    }
+
+    @media (max-width: 480px) {
+      .paper {
+        padding-top: var(--space-10);
+      }
+      .paper__title {
+        font-size: var(--text-xl);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <article class="paper">
+
+    <a href="works.html" class="paper__back">&larr; Back</a>
+
+    <h1 class="paper__title">JazzArchitect：再帰的確率文法に基づくジャズ和声生成システム</h1>
+
+    <div class="paper__meta">MADZINE &middot; 2026年1月2日</div>
+
+    <!-- 概要 -->
+    <div class="paper__abstract">
+      <div class="paper__abstract-label">概要</div>
+      <p>本論文では、Rohrmeier (2020) の再帰的確率文脈自由文法フレームワークに基づくジャズコード進行生成システム JazzArchitect を紹介する。本システムは C++ で実装され、JUCE オーディオフレームワークと統合することで、リアルタイムオーディオ合成と MIDI 出力機能を提供する。15 パラメータのスタイルベクトルを通じて、ビバップ、クールジャズ、モーダルジャズなど 9 種類の異なるジャズスタイルのコード進行を生成できる。システムは 3 つの主要な代理規則（トライトーン代理、バックドアドミナント、コルトレーンチェンジ）および Smither (2019) のガイドトーンボイスリーディング最適化を実装している。本論文ではシステムアーキテクチャ、アルゴリズム設計、実装の詳細について述べる。</p>
+      <p class="paper__keywords"><strong>キーワード：</strong>ジャズ和声、確率文脈自由文法、コード進行生成、ボイスリーディング、音楽情報検索</p>
+    </div>
+
+    <div class="paper__divider"></div>
+
+    <!-- 1. 序論 -->
+    <h2>1. 序論</h2>
+
+    <h3>1.1 研究動機</h3>
+    <p>ジャズ和声は、その複雑なコード進行と豊富な代理規則で知られている。伝統的なジャズ即興演奏者は長年の学習を通じてこれらの規則を習得するが、コンピュータ音楽生成システムにとって、この音楽知識をシミュレートすることは依然として大きな課題である。</p>
+    <p>既存の音楽生成手法は主に 2 つのカテゴリに分類される：</p>
+    <ol>
+      <li><strong>データ駆動型手法：</strong>深層学習（LSTM、Transformer など）を使用してコーパスから和声パターンを学習</li>
+      <li><strong>ルールベース手法：</strong>音楽理論の規則に基づいて生成</li>
+    </ol>
+    <p>データ駆動型手法は滑らかな結果を生成できるが、解釈可能性と制御可能性に欠ける。ルールベース手法は生成プロセスを正確に制御できるが、従来の実装は硬直しがちである。</p>
+
+    <h3>1.2 研究目的</h3>
+    <p>本研究は両アプローチの利点を組み合わせることを目的とする：</p>
+    <ol>
+      <li>Rohrmeier (2020) が提案した再帰文法フレームワークを採用し、理論的基盤を提供</li>
+      <li>確率的重み付けにより規則選択を制御し、生成の多様性を増加</li>
+      <li>スタイルパラメータシステムを実装し、時代を超えたジャズスタイル生成を可能に</li>
+      <li>完全なオーディオ合成と MIDI 出力機能を提供</li>
+    </ol>
+
+    <h3>1.3 貢献</h3>
+    <p>本研究の主な貢献は以下の通り：</p>
+    <ul>
+      <li>Rohrmeier (2020) PCFG フレームワークの C++ での完全実装</li>
+      <li>9 種類のジャズスタイルプリセットをサポートする 15 パラメータスタイルベクトルシステムの設計</li>
+      <li>3 つの主要な代理規則とガイドトーンボイスリーディング最適化の統合</li>
+      <li>グラフィカルユーザーインターフェースを備えたスタンドアロンアプリケーションの開発</li>
+    </ul>
+
+    <div class="paper__divider"></div>
+
+    <!-- 2. 関連研究 -->
+    <h2>2. 関連研究</h2>
+
+    <h3>2.1 ジャズ和声の形式文法</h3>
+    <p>Steedman (1984) は最初にジャズコードシーケンスを形式文法を用いて分析し、ジャズ和声を言語構造として扱うことを提案した。この研究は基本的な生成規則を定義したが、確率的重み付けには対処しなかった。</p>
+    <p>Rohrmeier (2020) はこのフレームワークを拡張し、以下のコア概念を含む再帰文法を提案した：</p>
+    <ul>
+      <li><strong>延長（Prolongation）：</strong>機能的に等価なコードの繰り返しまたは展開</li>
+      <li><strong>準備（Preparation）：</strong>ターゲットコードを準備するドミナント機能コード</li>
+      <li><strong>代理（Substitution）：</strong>機能的に等価なコードの置換</li>
+    </ul>
+
+    <h3>2.2 確率文脈自由文法</h3>
+    <p>Harasim ら (2018, 2020) は PCFG を Jazz Harmony Treebank (JHT) に適用し、150 曲のジャズスタンダードから規則重みを抽出した。この手法は形式文法の構造性と統計手法の柔軟性を組み合わせている。</p>
+
+    <h3>2.3 ボイスリーディング理論</h3>
+    <p>Smither (2019) はジャズ和声のためのガイドトーンボイスリーディング理論を提案した。コア概念は以下の通り：</p>
+    <ul>
+      <li><strong>ガイドトーン：</strong>各コードの第 3 音と第 7 音</li>
+      <li><strong>スムーズなボイスリーディング：</strong>隣接するコードのガイドトーンは最小音程で移動すべき</li>
+      <li><strong>目標コスト：</strong>理想的なボイスリーディングコストは 2 半音以下</li>
+    </ul>
+
+    <h3>2.4 代理規則</h3>
+    <p>ジャズ和声における一般的な代理規則：</p>
+    <table>
+      <thead>
+        <tr>
+          <th>代理タイプ</th>
+          <th>元のコード</th>
+          <th>代理コード</th>
+          <th>理論的根拠</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>トライトーン代理</td><td>V7</td><td>bII7</td><td>共有されるトライトーン音程</td></tr>
+        <tr><td>バックドアドミナント</td><td>V7</td><td>bVII7</td><td>短調からの借用</td></tr>
+        <tr><td>コルトレーンチェンジ</td><td>I</td><td>長 3 度サイクル</td><td>コルトレーンスタイル</td></tr>
+      </tbody>
+    </table>
+
+    <div class="paper__divider"></div>
+
+    <!-- 3. システムアーキテクチャ -->
+    <h2>3. システムアーキテクチャ</h2>
+
+    <h3>3.1 全体アーキテクチャ</h3>
+    <p>JazzArchitect は階層化アーキテクチャ設計を採用：</p>
+<pre>ユーザーインターフェース層
+├── JUCE GUI
+└── パラメータコントロール
+
+生成層
+├── PCFG エンジン
+│   ├── ジェネレータ
+│   └── ルールライブラリ
+└── スタイルエンジン
+    ├── 代理処理
+    ├── ボイスリーディング最適化
+    └── スタイルパラメータ
+
+コア層
+├── コードシンボル
+├── ピッチクラス
+└── 音程計算
+
+出力層
+├── コードシンセサイザー（8 ボイスポリフォニー）
+└── MIDI エクスポーター</pre>
+
+    <h3>3.2 モジュール説明</h3>
+
+    <h4>コアモジュール</h4>
+    <ul>
+      <li><strong>PitchClass：</strong>ピッチクラス表現（0-11、C=0）</li>
+      <li><strong>ChordQuality：</strong>コード品質列挙（maj7、min7、dom7、hdim7、dim7、aug）</li>
+      <li><strong>ChordSymbol：</strong>ルート、品質、テンション、オルタレーションを含む完全なコードシンボル</li>
+    </ul>
+
+    <h4>文法モジュール</h4>
+    <ul>
+      <li><strong>NonTerminal：</strong>非終端記号（S、T、D、SD、PREP、PROL）</li>
+      <li><strong>GrammarRule：</strong>生成規則定義</li>
+      <li><strong>PCFG：</strong>確率文脈自由文法エンジン</li>
+      <li><strong>Generator：</strong>トップダウン導出エンジン</li>
+    </ul>
+
+    <h4>スタイルモジュール</h4>
+    <ul>
+      <li><strong>StyleVector：</strong>15 パラメータスタイルベクトル</li>
+      <li><strong>StylePresets：</strong>9 種類のスタイルプリセット</li>
+      <li><strong>StyleEngine：</strong>生成と後処理の統合</li>
+    </ul>
+
+    <h4>代理モジュール</h4>
+    <ul>
+      <li><strong>TritoneSubstitution：</strong>V7 から bII7</li>
+      <li><strong>BackdoorSubstitution：</strong>V7 から bVII7</li>
+      <li><strong>ColtraneSubstitution：</strong>長 3 度サイクル代理</li>
+      <li><strong>SubstitutionEngine：</strong>統一代理プロセッサ</li>
+    </ul>
+
+    <h4>ボイスリーディングモジュール</h4>
+    <ul>
+      <li><strong>GuideTone：</strong>第 3 音と第 7 音の分析</li>
+      <li><strong>VoiceLeadingOptimizer：</strong>ボイスリーディングコストの最小化</li>
+    </ul>
+
+    <h4>合成モジュール</h4>
+    <ul>
+      <li><strong>ChordSynth：</strong>8 ボイスポリフォニックコードシンセサイザー</li>
+      <li><strong>ADSREnvelope：</strong>ADSR エンベロープ</li>
+      <li><strong>SynthVoice：</strong>単一合成ボイス</li>
+    </ul>
+
+    <h4>MIDI モジュール</h4>
+    <ul>
+      <li><strong>MIDIExporter：</strong>標準 MIDI ファイルエクスポート</li>
+    </ul>
+
+    <div class="paper__divider"></div>
+
+    <!-- 4. 文法エンジン -->
+    <h2>4. 文法エンジン</h2>
+
+    <h3>4.1 非終端記号</h3>
+    <p>システムは以下の非終端記号を定義：</p>
+    <table>
+      <thead>
+        <tr><th>記号</th><th>名前</th><th>機能</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>S</td><td>開始</td><td>開始記号（曲全体）</td></tr>
+        <tr><td>T</td><td>トニック</td><td>トニック領域</td></tr>
+        <tr><td>D</td><td>ドミナント</td><td>ドミナント領域</td></tr>
+        <tr><td>SD</td><td>サブドミナント</td><td>サブドミナント領域</td></tr>
+        <tr><td>PREP</td><td>準備</td><td>準備領域</td></tr>
+        <tr><td>PROL</td><td>延長</td><td>延長領域</td></tr>
+      </tbody>
+    </table>
+
+    <h3>4.2 コア生成規則</h3>
+
+    <h4>延長規則</h4>
+    <p>延長規則は機能的に等価なコードを繰り返しまたは展開：</p>
+    <ul>
+      <li>トニック延長：T は T T を生成</li>
+      <li>ドミナント延長：D は D D を生成</li>
+      <li>右延長：T は T PROL を生成</li>
+      <li>左延長：T は PROL T を生成</li>
+    </ul>
+
+    <h4>準備規則</h4>
+    <p>準備規則はドミナント機能コードを挿入：</p>
+    <ul>
+      <li>完全終止：T は D T を生成</li>
+      <li>変格終止：T は SD T を生成</li>
+      <li>ii-V パターン：D は PREP D を生成</li>
+      <li>副属和音準備：PREP は ii を生成</li>
+      <li>重属準備：PREP は V/V を生成</li>
+    </ul>
+
+    <h4>代理規則</h4>
+    <p>代理規則は単項生成：</p>
+    <ul>
+      <li>トライトーン代理：V7 は bII7 を生成</li>
+      <li>バックドアドミナント：V7 は bVII7 を生成</li>
+      <li>コルトレーンチェンジ：I は長 3 度サイクルを生成</li>
+    </ul>
+
+    <h3>4.3 規則確率</h3>
+    <p>規則確率は StyleVector によって制御される。ii-V パターンの場合：</p>
+    <ul>
+      <li>準備を選択する確率 = StyleVector.iiVPreference</li>
+      <li>延長を選択する確率 = 1 - iiVPreference</li>
+    </ul>
+
+    <h3>4.4 導出アルゴリズム</h3>
+    <p>システムはトップダウン再帰導出を採用：</p>
+    <ol>
+      <li>開始記号 S で導出木を初期化</li>
+      <li>木に非終端記号が含まれている間：
+        <ul>
+          <li>最左の非終端記号 N を選択</li>
+          <li>N に適用可能な規則を取得</li>
+          <li>スタイルパラメータに従って規則を重み付け</li>
+          <li>確率に従って規則 r をサンプリング</li>
+          <li>r を適用し、N を RHS 記号で置換</li>
+        </ul>
+      </li>
+      <li>終端記号をキーのコードシンボルにマッピング</li>
+      <li>コード進行を返す</li>
+    </ol>
+
+    <div class="paper__divider"></div>
+
+    <!-- 5. スタイルシステム -->
+    <h2>5. スタイルシステム</h2>
+
+    <h3>5.1 StyleVector パラメータ</h3>
+    <p>StyleVector は生成動作を制御する 15 のパラメータを含む：</p>
+    <table>
+      <thead>
+        <tr><th>パラメータ</th><th>範囲</th><th>説明</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>tritoneSubProb</td><td>0.0-1.0</td><td>トライトーン代理確率</td></tr>
+        <tr><td>iiVPreference</td><td>0.0-1.0</td><td>ii-V 進行優先度</td></tr>
+        <tr><td>modalInterchange</td><td>0.0-1.0</td><td>モーダルインターチェンジ頻度</td></tr>
+        <tr><td>chromaticApproach</td><td>0.0-1.0</td><td>クロマチックアプローチ頻度</td></tr>
+        <tr><td>dominantChainDepth</td><td>1-5</td><td>ドミナントチェーン最大深度</td></tr>
+        <tr><td>rhythmDensity</td><td>0.0-1.0</td><td>コードチェンジ密度</td></tr>
+        <tr><td>extensionLevel</td><td>0.0-1.0</td><td>テンション使用レベル</td></tr>
+        <tr><td>backdoorProb</td><td>0.0-1.0</td><td>バックドアドミナント確率</td></tr>
+        <tr><td>coltraneProb</td><td>0.0-1.0</td><td>コルトレーンチェンジ確率</td></tr>
+        <tr><td>minorBorrowing</td><td>0.0-1.0</td><td>短調借用頻度</td></tr>
+        <tr><td>diminishedUsage</td><td>0.0-1.0</td><td>ディミニッシュコード使用頻度</td></tr>
+        <tr><td>deceptiveResolution</td><td>0.0-1.0</td><td>偽終止確率</td></tr>
+        <tr><td>plagalCadence</td><td>0.0-1.0</td><td>変格終止確率</td></tr>
+        <tr><td>suspensionUsage</td><td>0.0-1.0</td><td>サスペンション使用頻度</td></tr>
+        <tr><td>pedalPointProb</td><td>0.0-1.0</td><td>ペダルポイント確率</td></tr>
+      </tbody>
+    </table>
+
+    <h3>5.2 スタイルプリセット</h3>
+    <p>システムは 9 種類のスタイルプリセットを提供：</p>
+    <table>
+      <thead>
+        <tr><th>スタイル</th><th>トライトーン</th><th>ii-V</th><th>モーダル</th><th>テンション</th><th>特徴</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>ビバップ</td><td>0.30</td><td>0.90</td><td>0.20</td><td>0.70</td><td>高速 ii-V、豊富なテンション</td></tr>
+        <tr><td>クール</td><td>0.20</td><td>0.70</td><td>0.30</td><td>0.50</td><td>遅いテンポ、空間的</td></tr>
+        <tr><td>モーダル</td><td>0.10</td><td>0.30</td><td>0.70</td><td>0.30</td><td>少ない機能進行、モーダルカラー</td></tr>
+        <tr><td>ハードバップ</td><td>0.35</td><td>0.85</td><td>0.25</td><td>0.60</td><td>ブルースの影響、強いリズム</td></tr>
+        <tr><td>ポストバップ</td><td>0.40</td><td>0.60</td><td>0.60</td><td>0.80</td><td>モダン和声、複雑な構造</td></tr>
+        <tr><td>スウィング</td><td>0.15</td><td>0.80</td><td>0.10</td><td>0.40</td><td>伝統的進行、簡潔</td></tr>
+        <tr><td>フュージョン</td><td>0.30</td><td>0.50</td><td>0.50</td><td>0.90</td><td>豊富なテンション、モーダルミックス</td></tr>
+        <tr><td>コンテンポラリー</td><td>0.35</td><td>0.40</td><td>0.70</td><td>0.85</td><td>モダンテクニック、自由な構造</td></tr>
+        <tr><td>ブルース</td><td>0.20</td><td>0.60</td><td>0.40</td><td>0.50</td><td>ブルース進行、パラレルコード</td></tr>
+      </tbody>
+    </table>
+
+    <h3>5.3 スタイルエンジン</h3>
+    <p>StyleEngine は生成ワークフローを統合：</p>
+    <ol>
+      <li>PCFG を使用して基本進行を生成</li>
+      <li>代理エンジンを適用して代理規則を処理</li>
+      <li>ボイスリーディングオプティマイザーで最適化</li>
+      <li>最終進行を返す</li>
+    </ol>
+
+    <div class="paper__divider"></div>
+
+    <!-- 6. 代理規則 -->
+    <h2>6. 代理規則</h2>
+
+    <h3>6.1 トライトーン代理</h3>
+    <p>トライトーン代理は V7 と bII7 が同じトライトーン音程を共有することに基づく：</p>
+    <ul>
+      <li>G7 のトライトーン：B-F（第 3 音と第 7 音）</li>
+      <li>Db7 のトライトーン：F-Cb（第 3 音と第 7 音）</li>
+    </ul>
+    <p>両者は B/Cb と F を共有するため、互換可能である。</p>
+    <p>実装では、tritoneSubProb に従って V7 を bII7 に置換する。新しいルートは元のルートに 6 半音（トライトーン音程）を加えて計算。</p>
+
+    <h3>6.2 バックドアドミナント</h3>
+    <p>バックドアドミナントは短調借用に由来し、V7 を bVII7 に置換：</p>
+    <ul>
+      <li>伝統的：G7 は Cmaj7 に解決</li>
+      <li>バックドア：Bb7 は Cmaj7 に解決</li>
+    </ul>
+    <p>実装は backdoorProb で制御。新しいルートは元のルートに 3 半音（短 3 度上行）を加算。</p>
+
+    <h3>6.3 コルトレーンチェンジ</h3>
+    <p>コルトレーンチェンジはジョン・コルトレーンの「ジャイアント・ステップス」に由来し、単純な進行を長 3 度サイクルに置換：</p>
+    <ul>
+      <li>伝統的：I コード</li>
+      <li>コルトレーン：III7 - bVImaj7 - bII7 - V7 - I</li>
+    </ul>
+    <p>実装では単一の I コードを 5 つのコードのシーケンスに展開。</p>
+
+    <div class="paper__divider"></div>
+
+    <!-- 7. ボイスリーディング最適化 -->
+    <h2>7. ボイスリーディング最適化</h2>
+
+    <h3>7.1 ガイドトーン分析</h3>
+    <p>Smither (2019) によると、ガイドトーンは各コードの第 3 音と第 7 音：</p>
+    <table>
+      <thead>
+        <tr><th>コードタイプ</th><th>第 3 音</th><th>第 7 音</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Cmaj7</td><td>E (4)</td><td>B (11)</td></tr>
+        <tr><td>Dm7</td><td>F (5)</td><td>C (0)</td></tr>
+        <tr><td>G7</td><td>B (11)</td><td>F (5)</td></tr>
+      </tbody>
+    </table>
+
+    <h3>7.2 ボイスリーディングコスト</h3>
+    <p>2 つのコード間のボイスリーディングコストはガイドトーンの最小移動量として定義：</p>
+    <p>コスト = |第3音1 - 第3音2| + |第7音1 - 第7音2|</p>
+    <p>音程はオクターブ等価を考慮して最小値で計算。</p>
+
+    <h3>7.3 最適化アルゴリズム</h3>
+    <p>VoiceLeadingOptimizer は隣接するコードの各ペアをチェックし、コストが高すぎる場合は代理を試行：</p>
+    <ol>
+      <li>隣接するコードの各ペアについて</li>
+      <li>ボイスリーディングコストを計算</li>
+      <li>コスト &gt; 2 の場合：
+        <ul>
+          <li>最初のコードにトライトーン代理を試行</li>
+          <li>新しいコストを計算</li>
+          <li>新しいコストが低ければ代理を適用</li>
+        </ul>
+      </li>
+      <li>最適化された進行を返す</li>
+    </ol>
+
+    <div class="paper__divider"></div>
+
+    <!-- 8. オーディオ合成 -->
+    <h2>8. オーディオ合成</h2>
+
+    <h3>8.1 シンセサイザーアーキテクチャ</h3>
+    <p>ChordSynth は 3 種類の音色をサポートする 8 ボイスポリフォニックコードシンセサイザー：</p>
+    <table>
+      <thead>
+        <tr><th>音色</th><th>合成方式</th><th>特徴</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>エレクトリックピアノ</td><td>FM 合成</td><td>ローズスタイル、減衰変調</td></tr>
+        <tr><td>オルガン</td><td>加算合成</td><td>ハモンドスタイル、倍音積層</td></tr>
+        <tr><td>パッド</td><td>減算合成</td><td>鋸歯状波 + ローパスフィルター</td></tr>
+      </tbody>
+    </table>
+
+    <h3>8.2 エンベロープ設定</h3>
+    <p>各 SynthVoice は独立した ADSR エンベロープを含む：</p>
+    <table>
+      <thead>
+        <tr><th>音色</th><th>アタック</th><th>ディケイ</th><th>サステイン</th><th>リリース</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>エレクトリックピアノ</td><td>5ms</td><td>300ms</td><td>0.3</td><td>400ms</td></tr>
+        <tr><td>オルガン</td><td>10ms</td><td>50ms</td><td>0.9</td><td>100ms</td></tr>
+        <tr><td>パッド</td><td>200ms</td><td>500ms</td><td>0.7</td><td>800ms</td></tr>
+      </tbody>
+    </table>
+
+    <h3>8.3 コードボイシング</h3>
+    <p>ChordSymbol.getMIDINotes() は MIDI ノートを生成：</p>
+    <ol>
+      <li>ルート MIDI 値を計算 = baseOctave * 12 + root</li>
+      <li>ルートノートを追加</li>
+      <li>コード品質の各音程について、対応するノートを追加</li>
+      <li>各テンションについて、対応するノートを追加</li>
+      <li>ノートリストを返す</li>
+    </ol>
+
+    <div class="paper__divider"></div>
+
+    <!-- 9. 実装詳細 -->
+    <h2>9. 実装詳細</h2>
+
+    <h3>9.1 開発環境</h3>
+    <ul>
+      <li><strong>言語：</strong>C++17</li>
+      <li><strong>フレームワーク：</strong>JUCE 7.x</li>
+      <li><strong>ビルドシステム：</strong>CMake 3.22+</li>
+      <li><strong>プラットフォーム：</strong>macOS（ARM64/x86_64）</li>
+    </ul>
+
+    <h3>9.2 ファイル構造</h3>
+<pre>cpp/
+├── Source/
+│   ├── Core/           # コアクラス
+│   ├── Grammar/        # 文法エンジン
+│   ├── Style/          # スタイルシステム
+│   ├── Substitution/   # 代理規則
+│   ├── VoiceLeading/   # ボイスリーディング
+│   ├── Synthesis/      # オーディオ合成
+│   ├── MIDI/           # MIDI 出力
+│   ├── Main.cpp
+│   ├── MainComponent.h
+│   └── MainComponent.cpp
+├── JUCE/               # JUCE サブモジュール
+├── CMakeLists.txt
+└── build/</pre>
+
+    <h3>9.3 ビルド手順</h3>
+<pre>cd cpp
+mkdir build &amp;&amp; cd build
+cmake ..
+cmake --build . --config Release</pre>
+
+    <h3>9.4 アプリケーション仕様</h3>
+    <ul>
+      <li><strong>ファイルサイズ：</strong>約 11 MB</li>
+      <li><strong>最小要件：</strong>macOS 10.13+</li>
+      <li><strong>オーディオエンジン：</strong>CoreAudio、48 kHz</li>
+      <li><strong>CPU 使用率：</strong>非常に低い（&lt; 1%）</li>
+    </ul>
+
+    <div class="paper__divider"></div>
+
+    <!-- 10. ユーザーインターフェース -->
+    <h2>10. ユーザーインターフェース</h2>
+
+    <h3>10.1 インターフェースレイアウト</h3>
+<pre>┌─────────────────────────────────────────────────────────────┐
+│ Jazz Architect                                              │
+├─────────────────────────────────────────────────────────────┤
+│ スタイル: [ビバップ v]  キー: [C    v]  音色: [E.Piano  v]  │
+│ BPM: [===120===]    長さ: [===8===]                        │
+│                                                             │
+│ [生成]  [再生]  [停止]  [MIDI エクスポート]                 │
+├─────────────────────────────────────────────────────────────┤
+│                    コード進行                               │
+│  ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐     │
+│  │Dm7   │ │G7    │ │Cmaj7 │ │A7    │ │Dm7   │ │G7    │     │
+│  └──────┘ └──────┘ └──────┘ └──────┘ └──────┘ └──────┘     │
+├─────────────────────────────────────────────────────────────┤
+│ トライトーン [═══○═══]  ii-V [═══════○]  モーダル [═○════]  │
+│ テンション   [═════○═]                                      │
+└─────────────────────────────────────────────────────────────┘</pre>
+
+    <h3>10.2 操作フロー</h3>
+    <ol>
+      <li>スタイルプリセットを選択（またはパラメータスライダーを調整）</li>
+      <li>キーと長さを選択</li>
+      <li>「生成」をクリックして新しい進行を作成</li>
+      <li>「再生」をクリックして再生（音色を選択）</li>
+      <li>「MIDI エクスポート」をクリックしてファイルをエクスポート</li>
+    </ol>
+
+    <div class="paper__divider"></div>
+
+    <!-- 11. 結論と今後の課題 -->
+    <h2>11. 結論と今後の課題</h2>
+
+    <h3>11.1 成果のまとめ</h3>
+    <p>本研究は JazzArchitect システムの実装に成功し、以下の目標を達成：</p>
+    <ol>
+      <li><strong>理論統合：</strong>Rohrmeier (2020) PCFG フレームワークの完全実装</li>
+      <li><strong>スタイル制御：</strong>15 パラメータスタイルベクトルと 9 種類のプリセット</li>
+      <li><strong>代理規則：</strong>トライトーン、バックドア、コルトレーン代理</li>
+      <li><strong>ボイス最適化：</strong>Smither (2019) ガイドトーンボイスリーディング</li>
+      <li><strong>実用ツール：</strong>GUI、オーディオ合成、MIDI 出力</li>
+    </ol>
+
+    <h3>11.2 今後の課題</h3>
+    <ol>
+      <li><strong>コーパストレーニング：</strong>Jazz Harmony Treebank から規則確率を抽出</li>
+      <li><strong>評価統合：</strong>MusDr 評価指標を追加</li>
+      <li><strong>聴取実験：</strong>A/B 比較テストの実施</li>
+      <li><strong>楽譜表示：</strong>五線譜視覚化の追加</li>
+      <li><strong>リアルタイム MIDI：</strong>外部シンセサイザーへの接続</li>
+      <li><strong>クロスプラットフォーム：</strong>Windows/Linux バージョン</li>
+    </ol>
+
+    <div class="paper__divider"></div>
+
+    <!-- 参考文献 -->
+    <h2>参考文献</h2>
+    <div class="references">
+      <ol>
+        <li>Rohrmeier, M. (2020). Towards a Syntax of Jazz Harmony. <em>Music Theory and Analysis</em>, 7(1), 1-62.</li>
+        <li>Steedman, M. J. (1984). A generative grammar for jazz chord sequences. <em>Music Perception</em>, 2(1), 52-77.</li>
+        <li>Smither, S. (2019). Guide-tone voice leading in jazz. <em>Music Theory Online</em>, 25(2).</li>
+        <li>Harasim, D., Finkensiep, C., Ericson, P., O'Donnell, T. J., &amp; Rohrmeier, M. (2020). The jazz harmony treebank. <em>Proceedings of ISMIR 2020</em>.</li>
+        <li>Tymoczko, D. (2006). The geometry of musical chords. <em>Science</em>, 313(5783), 72-74.</li>
+        <li>Wu, S. L., &amp; Yang, Y. H. (2020). The jazz transformer on the front line: Exploring the shortcomings of AI-composed music through quantitative measures. <em>Proceedings of ISMIR 2020</em>.</li>
+        <li>Granroth-Wilding, M., &amp; Steedman, M. (2014). A robust parser-interpreter for jazz chord sequences. <em>Journal of New Music Research</em>, 43(4), 355-374.</li>
+      </ol>
+    </div>
+
+    <div class="paper__divider"></div>
+
+    <!-- 付録 A -->
+    <h2>付録 A：コード品質音程表</h2>
+    <table>
+      <thead>
+        <tr><th>コード品質</th><th>音程（半音）</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>MAJ7</td><td>0, 4, 7, 11</td></tr>
+        <tr><td>MIN7</td><td>0, 3, 7, 10</td></tr>
+        <tr><td>DOM7</td><td>0, 4, 7, 10</td></tr>
+        <tr><td>HDIM7</td><td>0, 3, 6, 10</td></tr>
+        <tr><td>DIM7</td><td>0, 3, 6, 9</td></tr>
+        <tr><td>AUG</td><td>0, 4, 8</td></tr>
+        <tr><td>MAJ6</td><td>0, 4, 7, 9</td></tr>
+        <tr><td>MIN6</td><td>0, 3, 7, 9</td></tr>
+      </tbody>
+    </table>
+
+    <!-- 付録 B -->
+    <h2>付録 B：非終端記号から終端記号へのマッピング</h2>
+    <table>
+      <thead>
+        <tr><th>非終端</th><th>機能</th><th>一般的な終端</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>T</td><td>トニック</td><td>Imaj7、vi7、iii7</td></tr>
+        <tr><td>D</td><td>ドミナント</td><td>V7、vii-7</td></tr>
+        <tr><td>SD</td><td>サブドミナント</td><td>IV、ii7</td></tr>
+        <tr><td>PREP</td><td>準備</td><td>ii7、IV</td></tr>
+      </tbody>
+    </table>
+
+    <p class="paper__version">JazzArchitect v1.0 - 2026 年 1 月 2 日</p>
+
+  </article>
+
+  <!-- Bottom Bar -->
+  <div class="bottom-bar">
+    <span class="bottom-bar__copyright">&copy; 2025 MADZINE. All rights reserved.</span>
+    <nav class="bottom-bar__nav">
+      <a href="index.html">Home</a>
+      <a href="software.html">Software</a>
+      <a href="works.html">Works</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="bottom-bar__controls">
+      <div class="lang-switcher">
+        <button class="lang-btn" data-lang="zh-TW" onclick="I18N.setLang('zh-TW')">中</button>
+        <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
+        <button class="lang-btn" data-lang="ja" onclick="I18N.setLang('ja')">JP</button>
+      </div>
+      <button id="mode-toggle" class="mode-toggle" aria-label="Toggle dark mode">☽</button>
+    </div>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

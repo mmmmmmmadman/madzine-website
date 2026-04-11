@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MADZINE — WorldRhythm：一個跨文化節奏生成演算法</title>
+  <meta name="description" content="一個基於規則的演算法框架，能夠在統一架構內生成十種不同音樂文化的節奏型態。">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Paper layout */
+    .paper {
+      max-width: var(--content-narrow);
+      margin: 0 auto;
+      padding: var(--space-16) var(--padding-page-x) var(--space-12);
+    }
+
+    .paper__back {
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: var(--space-8);
+      font-size: var(--text-sm);
+      color: var(--color-primary);
+      letter-spacing: 0.025em;
+      transition: color var(--duration-normal) var(--ease-default);
+    }
+    .paper__back:hover {
+      color: var(--text-primary);
+    }
+
+    .paper__title {
+      font-family: var(--font-display);
+      font-size: var(--text-3xl);
+      line-height: var(--leading-tight);
+      font-weight: var(--weight-regular);
+      color: var(--text-primary);
+      margin-bottom: var(--space-6);
+    }
+
+    .paper__keywords {
+      font-size: var(--text-sm);
+      color: var(--text-tertiary);
+      margin-bottom: var(--space-8);
+      line-height: var(--leading-relaxed);
+    }
+
+    .paper__abstract {
+      border-left: 2px solid var(--border-default);
+      padding-left: var(--space-6);
+      margin-bottom: var(--space-10);
+      color: var(--text-secondary);
+      font-size: var(--text-base);
+      line-height: var(--leading-relaxed);
+    }
+
+    .paper__hr {
+      width: 40px;
+      height: 1px;
+      background: var(--border-default);
+      margin: var(--space-10) 0;
+      border: none;
+    }
+
+    /* Section headings */
+    .paper h2 {
+      font-family: var(--font-display);
+      font-size: var(--text-xl);
+      font-weight: var(--weight-regular);
+      color: var(--text-primary);
+      margin-top: var(--space-10);
+      margin-bottom: var(--space-4);
+    }
+
+    .paper h3 {
+      font-family: var(--font-display);
+      font-size: var(--text-md);
+      font-weight: var(--weight-regular);
+      color: var(--text-primary);
+      margin-top: var(--space-8);
+      margin-bottom: var(--space-3);
+    }
+
+    /* Body text */
+    .paper p {
+      font-size: var(--text-base);
+      line-height: var(--leading-relaxed);
+      margin-bottom: var(--space-4);
+      color: var(--text-primary);
+    }
+
+    .paper ol, .paper ul {
+      margin-bottom: var(--space-4);
+      padding-left: var(--space-6);
+    }
+
+    .paper ol {
+      list-style: decimal;
+    }
+
+    .paper ul {
+      list-style: disc;
+    }
+
+    .paper li {
+      font-size: var(--text-base);
+      line-height: var(--leading-relaxed);
+      margin-bottom: var(--space-2);
+      color: var(--text-primary);
+    }
+
+    /* Tables */
+    .paper table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: var(--space-6);
+      font-size: var(--text-sm);
+    }
+
+    .paper th, .paper td {
+      text-align: left;
+      padding: var(--space-2) var(--space-3);
+      border-bottom: 1px solid var(--border-default);
+      line-height: var(--leading-normal);
+    }
+
+    .paper th {
+      color: var(--text-secondary);
+      font-weight: var(--weight-regular);
+      border-bottom: 2px solid var(--border-strong);
+    }
+
+    .paper td {
+      color: var(--text-primary);
+    }
+
+    /* Code blocks */
+    .paper pre {
+      background: var(--surface-sunken);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-sm);
+      padding: var(--space-4);
+      overflow-x: auto;
+      margin-bottom: var(--space-6);
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      line-height: var(--leading-normal);
+      color: var(--text-primary);
+    }
+
+    .paper code {
+      font-family: var(--font-mono);
+      font-size: 0.92em;
+    }
+
+    /* Inline code */
+    .paper p code, .paper li code {
+      background: var(--surface-sunken);
+      padding: 0.1em 0.3em;
+      border-radius: var(--radius-sm);
+    }
+
+    /* Strong text */
+    .paper strong {
+      font-weight: var(--weight-bold);
+      color: var(--text-primary);
+    }
+
+    /* Emphasis */
+    .paper em {
+      font-style: italic;
+    }
+
+    /* References */
+    .paper__references {
+      margin-top: var(--space-8);
+    }
+
+    .paper__references ol {
+      list-style: decimal;
+      padding-left: var(--space-6);
+    }
+
+    .paper__references li {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      margin-bottom: var(--space-3);
+      line-height: var(--leading-relaxed);
+    }
+
+    /* Appendix tables — allow horizontal scroll on mobile */
+    .table-wrap {
+      overflow-x: auto;
+      margin-bottom: var(--space-6);
+    }
+
+    .table-wrap table {
+      min-width: 600px;
+    }
+
+    /* Bottom bar (same as other pages) */
+    .bottom-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) var(--space-6);
+      border-top: 1px solid var(--border-default);
+      font-size: var(--text-sm);
+    }
+    .bottom-bar__copyright { color: var(--text-tertiary); }
+    .bottom-bar__nav { display: flex; align-items: center; gap: var(--space-6); }
+    .bottom-bar__nav a { color: var(--text-secondary); text-decoration: none; transition: color var(--duration-normal) var(--ease-default); }
+    .bottom-bar__nav a:hover { color: var(--color-primary); }
+    .bottom-bar__controls { display: flex; align-items: center; gap: var(--space-4); }
+
+    /* Colophon line */
+    .paper__colophon {
+      font-size: var(--text-sm);
+      color: var(--text-tertiary);
+      font-style: italic;
+      margin-top: var(--space-6);
+    }
+
+    @media (max-width: 768px) {
+      .paper__title {
+        font-size: var(--text-2xl);
+      }
+      .bottom-bar {
+        flex-direction: column;
+        gap: var(--space-3);
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <main class="paper">
+    <a href="works.html" class="paper__back">&larr; 返回</a>
+
+    <h1 class="paper__title">WorldRhythm：一個跨文化節奏生成演算法</h1>
+
+    <p class="paper__keywords"><strong>關鍵詞</strong>：節奏生成、世界音樂、演算法作曲、跨文化音樂、互鎖節奏、裝飾技法</p>
+
+    <div class="paper__abstract">
+      <p>本文提出 WorldRhythm，一個能夠生成多種世界音樂風格節奏並支援跨風格混合的演算法系統。該系統基於民族音樂學研究，將十種主要節奏傳統的核心特徵參數化，並透過角色分層、互鎖生成、風格相容性矩陣、人性化處理以及 Articulation Profile 系統等機制，實現既保有各風格特色又能相互協調的混合節奏生成。Articulation Profile 系統為每種風格的每個角色定義專屬的裝飾技法（Flam、Drag、Ruff、Buzz），使生成的節奏更具文化特異性。實驗結果顯示，此演算法能有效產生具有音樂性的跨文化節奏組合。</p>
+    </div>
+
+    <hr class="paper__hr">
+
+    <!-- 一、緒論 -->
+    <h2>一、緒論</h2>
+
+    <h3>1.1 研究背景</h3>
+    <p>節奏是音樂的基礎元素，而世界各地的音樂傳統發展出各具特色的節奏系統。從西非的多聲部打擊樂、古巴的 Clave 系統、巴西的 Samba 律動，到爪哇甘美朗的 Colotomic 結構，這些節奏傳統各有其獨特的時間組織原則與美學觀念。</p>
+    <p>計算節奏生成主要集中在西方流行音樂風格。主要公開資料集如 Groove MIDI Dataset 和 Magenta 的鼓轉錄語料庫幾乎完全由西方類型組成，包括搖滾、流行、放克和爵士。近期研究（Mehta et al., 2024）分析了超過一百萬小時的音訊資料集，發現 86% 集中在全球北方音樂，93% 的研究者主要研究西方音樂。機器學習方法如 GrooVAE 和 Drum RNN，雖然在表達性鼓演奏生成方面取得成功，但主要在這些以西方為中心的資料集上訓練，缺乏對文化特定節奏原則的明確建模。</p>
+    <p>隨著全球化與電子音樂的發展，跨文化節奏融合成為當代音樂創作的重要趨勢。然而，如何在保持各傳統特色的同時實現有機的融合，一直是創作者面臨的挑戰。傳統的鼓機與節奏程式設計工具多以西方 4/4 拍為基礎，難以自然呈現非西方節奏的微妙特質。</p>
+
+    <h3>1.2 研究目的</h3>
+    <p>本研究旨在開發一個演算法系統，能夠：</p>
+    <ol>
+      <li>忠實呈現十種主要世界音樂節奏風格的核心特徵</li>
+      <li>支援單一風格內的變奏生成</li>
+      <li>實現跨風格的智慧混合，在保持各風格特色的同時維持整體協調性</li>
+      <li>提供符合人類演奏特質的人性化處理</li>
+      <li>透過 Articulation Profile 系統實現文化特定的裝飾技法</li>
+    </ol>
+
+    <hr class="paper__hr">
+
+    <!-- 二、相關研究 -->
+    <h2>二、相關研究</h2>
+
+    <h3>2.1 節奏的跨文化研究</h3>
+    <p>Simha Arom（1991）對中非共和國 Banda Linda 族及阿卡俾格米人（Aka Pygmies）音樂的研究，揭示了非洲多聲部打擊樂的複雜互鎖結構。他提出的「最小週期」概念，成為分析非西方節奏的重要工具。需要注意的是，Arom 的研究主要聚焦於中非（Central Africa）地區，而非時間線型態（timeline patterns）最為突出的西非（West Africa）地區，這兩個區域的節奏傳統雖有共通原則，但在具體實踐上有所差異。</p>
+    <p>Gerhard Kubik（2010）進一步闡述了非洲節奏的「時間線」（timeline）概念&mdash;&mdash;一個貫穿整個合奏的參考節奏型，其他聲部圍繞此時間線組織。這個概念對本研究的角色分層架構有直接啟發。</p>
+    <p>Fernando Benadon（2006）對爵士樂微時序的研究顯示，人類演奏的時間偏差並非隨機誤差，而是具有風格特異性的表達手段。這為本研究的人性化機制提供了理論基礎。</p>
+
+    <h3>2.2 演算法節奏生成</h3>
+    <p>Godfried Toussaint（2013）的研究建立了歐幾里得演算法與世界音樂節奏之間的數學聯繫，發現許多傳統節奏型可用歐幾里得演算法的特定參數生成。本研究採用此方法作為基礎節奏生成的核心。</p>
+    <p>Jeff Pressing（1983）提出的認知複雜度模型，為節奏難度的量化提供了框架。本研究在密度控制與變奏生成中參考了此概念。</p>
+
+    <h3>2.3 現有系統的局限</h3>
+    <p>現有的節奏生成工具，如 Ableton Live 的 Beat Repeat、Native Instruments 的 Maschine，雖然功能強大，但主要針對電子音樂與嘻哈風格設計。它們缺乏：</p>
+    <ul>
+      <li>對非西方節奏時間線概念的支援</li>
+      <li>風格特異性的搖擺與微時序處理</li>
+      <li>跨文化風格混合的智慧機制</li>
+    </ul>
+
+    <hr class="paper__hr">
+
+    <!-- 三、系統架構 -->
+    <h2>三、系統架構</h2>
+
+    <h3>3.1 整體設計</h3>
+    <p>WorldRhythm 採用模組化架構，核心元件包括：</p>
+<pre>
+&#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;
+&#9474;                   RhythmEngine                       &#9474;
+&#9474;  &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;  &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;  &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;   &#9474;
+&#9474;  &#9474;  Pattern  &#9474;  &#9474;  Interlock &#9474;  &#9474;   Humanize    &#9474;   &#9474;
+&#9474;  &#9474; Generator &#9474;&#9472;&#9472;&#9474;  Manager   &#9474;&#9472;&#9472;&#9474;    Engine     &#9474;   &#9474;
+&#9474;  &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;  &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;  &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;   &#9474;
+&#9474;        &#9474;              &#9474;               &#9474;             &#9474;
+&#9474;  &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;  &#9484;&#9472;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9488;   &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;       &#9474;
+&#9474;  &#9474; Euclidean &#9474;  &#9474;  Style   &#9474;   &#9474;  Timing   &#9474;       &#9474;
+&#9474;  &#9474; Generator &#9474;  &#9474;Compat.   &#9474;   &#9474;  Profile  &#9474;       &#9474;
+&#9474;  &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;  &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;   &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;       &#9474;
+&#9474;                                                     &#9474;
+&#9474;  &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;   &#9474;
+&#9474;  &#9474;            Style-Specific Engines            &#9474;   &#9474;
+&#9474;  &#9474;  Clave &#9474; Batucada &#9474; Kotekan &#9474; Jazz &#9474; Amen   &#9474;   &#9474;
+&#9474;  &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;   &#9474;
+&#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;
+</pre>
+
+    <h3>3.2 角色分層系統</h3>
+    <p>受非洲與亞洲打擊樂傳統啟發，本系統將節奏聲部分為四個角色：</p>
+    <table>
+      <thead>
+        <tr><th>角色</th><th>功能</th><th>音樂類比</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Timeline</td><td>提供恆定參考框架</td><td>西非鐵鈴、古巴 Clave</td></tr>
+        <tr><td>Foundation</td><td>建立低頻基礎</td><td>大鼓、Surdo</td></tr>
+        <tr><td>Groove</td><td>填充中頻空間</td><td>康加、小鼓</td></tr>
+        <tr><td>Lead</td><td>即興與裝飾</td><td>獨奏樂器</td></tr>
+      </tbody>
+    </table>
+    <p>此分層基於民族音樂學對打擊樂合奏的功能分析，反映了多數傳統中存在的「參考-基礎-填充-裝飾」階層結構。</p>
+
+    <h3>3.3 風格參數化</h3>
+    <p>系統支援十種節奏風格，每種風格由以下參數定義：</p>
+<pre>
+struct StyleProfile {
+    // 基本參數
+    float baseDensity;          // 基礎音符密度
+    float swingAmount;          // 搖擺程度
+    int preferredSubdivision;   // 偏好細分（8, 12, 16）
+
+    // 節奏型偏好
+    std::vector&lt;int&gt; clavePattern;     // 時間線節奏型
+    std::vector&lt;int&gt; accentPattern;    // 重音模式
+
+    // 互鎖規則
+    float avoidanceStrength;    // 閃避強度
+    float complementBoost;      // 補位加成
+
+    // 人性化參數
+    float timingVariance;       // 時序變異量（毫秒）
+    float velocityRange;        // 力度範圍
+    float ghostNoteRatio;       // 裝飾音比例
+};
+</pre>
+
+    <p>十種風格的核心特徵如下表（時序變異數基於 Polak &amp; London 2014、Friberg &amp; Sundstr&ouml;m 2002、Danielsen et al. 2015 等學術研究）：</p>
+    <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>風格</th><th>細分</th><th>搖擺</th><th>時序變異</th><th>特色</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>西非</td><td>12</td><td>中</td><td>&plusmn;22ms</td><td>12/8 複節奏、強互鎖</td></tr>
+        <tr><td>古巴</td><td>16</td><td>中</td><td>&plusmn;16ms</td><td>Clave 導向、切分豐富</td></tr>
+        <tr><td>巴西</td><td>16</td><td>高</td><td>&plusmn;14ms</td><td>Samba 搖擺、Surdo 對話</td></tr>
+        <tr><td>巴爾幹</td><td>混合</td><td>低</td><td>&plusmn;10ms</td><td>不規則拍、非對稱重音</td></tr>
+        <tr><td>印度</td><td>16</td><td>低</td><td>&plusmn;18ms</td><td>Tala 循環、Tihai 終止式</td></tr>
+        <tr><td>甘美朗</td><td>可變</td><td>無</td><td>&plusmn;12ms</td><td>Colotomic 結構、Irama 層次</td></tr>
+        <tr><td>爵士</td><td>12</td><td>高</td><td>&plusmn;12ms</td><td>三連音律動、BPM 相依搖擺</td></tr>
+        <tr><td>電子</td><td>16</td><td>無</td><td>&plusmn;5ms</td><td>機械精準、四拍底鼓</td></tr>
+        <tr><td>碎拍</td><td>16</td><td>中</td><td>&plusmn;15ms</td><td>取樣切片、節奏斷裂</td></tr>
+        <tr><td>Techno</td><td>16</td><td>無</td><td>&plusmn;2ms</td><td>極簡、催眠式重複</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <hr class="paper__hr">
+
+    <!-- 四、核心演算法 -->
+    <h2>四、核心演算法</h2>
+
+    <h3>4.1 歐幾里得節奏生成</h3>
+    <p>基礎節奏型採用 Bjorklund（2003）的歐幾里得演算法生成。給定總步數 <em>n</em> 與擊點數 <em>k</em>，演算法產生 <em>k</em> 個擊點在 <em>n</em> 步中的最大均勻分布：</p>
+<pre>
+std::vector&lt;bool&gt; euclidean(int hits, int steps) {
+    std::vector&lt;int&gt; pattern(steps, 0);
+    int bucket = 0;
+
+    for (int i = 0; i &lt; steps; i++) {
+        bucket += hits;
+        if (bucket &gt;= steps) {
+            bucket -= steps;
+            pattern[i] = 1;
+        }
+    }
+    return pattern;
+}
+</pre>
+
+    <p>此演算法能生成許多傳統節奏型：</p>
+    <ul>
+      <li>E(3,8) = Tresillo（古巴）</li>
+      <li>E(5,8) = Cinquillo（古巴）</li>
+      <li>E(7,12) = 西非標準鈴鐺節奏</li>
+      <li>E(5,16) = Bossa Nova</li>
+    </ul>
+
+    <h3>4.2 互鎖生成演算法</h3>
+    <p>互鎖（Interlocking）是確保多聲部協調的關鍵機制。本系統實作三種互鎖策略：</p>
+
+    <p><strong>閃避策略</strong>：Foundation 避開 Timeline 的強拍位置</p>
+<pre>
+float calculateAvoidance(int step, const Pattern&amp; timeline,
+                         float avoidanceStrength) {
+    if (timeline.hasHit(step)) {
+        // Timeline 有擊點時，降低此位置的機率
+        return 1.0f - avoidanceStrength;
+    }
+    return 1.0f;
+}
+</pre>
+
+    <p><strong>補位策略</strong>：Groove 填補 Timeline 與 Foundation 之間的空隙</p>
+<pre>
+float calculateComplement(int step, const Pattern&amp; timeline,
+                          const Pattern&amp; foundation, float boost) {
+    bool hasTimelineHit = timeline.hasHit(step);
+    bool hasFoundationHit = foundation.hasHit(step);
+
+    if (!hasTimelineHit &amp;&amp; !hasFoundationHit) {
+        // 空白位置獲得加成
+        return boost;
+    }
+    return 1.0f;
+}
+</pre>
+
+    <p><strong>協商策略</strong>：Lead 聲部綜合考量所有其他聲部</p>
+<pre>
+float calculateLeadProbability(int step, const Pattern patterns[3],
+                               float baseProb) {
+    int activeVoices = 0;
+    for (int i = 0; i &lt; 3; i++) {
+        if (patterns[i].hasHit(step)) activeVoices++;
+    }
+
+    // 其他聲部越活躍，Lead 越傾向休息
+    return baseProb * (1.0f - activeVoices * 0.2f);
+}
+</pre>
+
+    <h3>4.3 風格相容性矩陣</h3>
+    <p>跨風格混合時，系統參考預定義的相容性矩陣決定互鎖強度：</p>
+<pre>
+static const float compatibilityMatrix[10][10] = {
+    //    WA    AC    BR    BK    IN    GM    JZ    EL    BB    TC
+    {1.00, 0.80, 0.70, 0.40, 0.50, 0.60, 0.60, 0.50, 0.60, 0.40}, // 西非
+    {0.80, 1.00, 0.85, 0.45, 0.50, 0.55, 0.70, 0.60, 0.65, 0.50}, // 古巴
+    {0.70, 0.85, 1.00, 0.40, 0.45, 0.50, 0.75, 0.55, 0.70, 0.45}, // 巴西
+    {0.40, 0.45, 0.40, 1.00, 0.60, 0.35, 0.50, 0.45, 0.45, 0.40}, // 巴爾幹
+    {0.50, 0.50, 0.45, 0.60, 1.00, 0.55, 0.55, 0.40, 0.45, 0.35}, // 印度
+    {0.60, 0.55, 0.50, 0.35, 0.55, 1.00, 0.50, 0.50, 0.45, 0.50}, // 甘美朗
+    {0.60, 0.70, 0.75, 0.50, 0.55, 0.50, 1.00, 0.70, 0.75, 0.60}, // 爵士
+    {0.50, 0.60, 0.55, 0.45, 0.40, 0.50, 0.70, 1.00, 0.80, 0.85}, // 電子
+    {0.60, 0.65, 0.70, 0.45, 0.45, 0.45, 0.75, 0.80, 1.00, 0.75}, // 碎拍
+    {0.40, 0.50, 0.45, 0.40, 0.35, 0.50, 0.60, 0.85, 0.75, 1.00}  // Techno
+};
+</pre>
+
+    <p>相容性基於以下原則計算：</p>
+    <ol>
+      <li><strong>脈動家族</strong>：共享相同基礎細分的風格相容性較高（如 12/8 家族：西非、古巴、巴西）</li>
+      <li><strong>歷史關聯</strong>：有歷史淵源的風格相容性較高（如古巴與爵士）</li>
+      <li><strong>時序特質</strong>：相似人性化程度的風格較易混合（如電子與 Techno）</li>
+    </ol>
+
+    <p>當相容性低時，系統自動增強互鎖：</p>
+<pre>
+float getInterlockStrength(int styleA, int styleB) {
+    float compatibility = getCompatibility(styleA, styleB);
+    // 相容性越低，互鎖越強，以維持整體協調
+    return 1.0f + (1.0f - compatibility) * 0.5f;
+}
+</pre>
+
+    <h3>4.4 人性化處理</h3>
+    <p>人性化引擎模擬人類演奏的時間與力度變異，且具風格特異性：</p>
+
+    <p><strong>時序變異</strong></p>
+<pre>
+float getTimingOffset(int step, int styleIndex, float amount) {
+    const StyleTimingProfile&amp; profile = profiles[styleIndex];
+
+    // 基礎變異量
+    float variance = profile.baseVariance * amount;
+
+    // 角色修正（Timeline 最穩定，Lead 最自由）
+    variance *= profile.roleMultipliers[currentRole];
+
+    // 生成高斯分布的偏移
+    return gaussianRandom(0, variance);
+}
+</pre>
+
+    <p><strong>BPM 相依搖擺</strong></p>
+    <p>根據 Friberg &amp; Sundstr&ouml;m（2002）的研究，爵士樂的搖擺比例隨速度變化：</p>
+    <ul>
+      <li>慢速（~120 BPM）：最高可達 3.5:1</li>
+      <li>中速：約 2:1（triplet feel，67%）</li>
+      <li>快速（300+ BPM）：趨近 1:1（直拍）</li>
+    </ul>
+    <p>此現象源於人體運動學的限制&mdash;&mdash;高速時難以維持大幅度的不等長細分。</p>
+<pre>
+float getSwingRatio(int styleIndex, float bpm) {
+    const StyleTimingProfile&amp; profile = profiles[styleIndex];
+
+    float slowRatio = profile.swingRatioSlow;  // 低速時的搖擺
+    float fastRatio = profile.swingRatioFast;  // 高速時的搖擺
+
+    // 線性內插，100-180 BPM 為過渡區
+    float t = clamp((bpm - 100.0f) / 80.0f, 0.0f, 1.0f);
+    return lerp(slowRatio, fastRatio, t);
+}
+</pre>
+
+    <p><strong>相對裝飾音力度</strong></p>
+    <p>裝飾音（ghost notes）的力度相對於前一主音計算，而非絕對值。根據學術研究：</p>
+    <ul>
+      <li>Matsuo &amp; Sakaguchi（2024）：1:4 振幅比 = 25%</li>
+      <li>Cheng et al.（2022）：10dB 差異 = ~32%</li>
+    </ul>
+    <p>因此，ghost note 力度範圍設定為 25-32%。</p>
+<pre>
+float getGhostVelocity(float previousVelocity, int styleIndex) {
+    const StyleTimingProfile&amp; profile = profiles[styleIndex];
+    // ghostVelocityMin = 0.25, ghostVelocityMax = 0.32 (peer-reviewed)
+    float ratio = randomRange(profile.ghostVelocityMin,
+                              profile.ghostVelocityMax);
+    return previousVelocity * ratio;
+}
+</pre>
+
+    <h3>4.5 Articulation Profile 系統</h3>
+    <p>為了實現風格特異性的裝飾技法，系統採用基於民族音樂學研究的 Articulation Profile 對照表。每種風格的每個角色都有專屬的裝飾技法設定。</p>
+
+    <p><strong>裝飾技法類型</strong></p>
+<pre>
+enum class ArticulationType {
+    None,   // 無裝飾
+    Flam,   // 雙擊（前置裝飾音）
+    Drag,   // 拖曳（雙前置音）
+    Ruff,   // 滾奏（三前置音）
+    Buzz    // 蜂鳴滾奏（連續細碎擊點）
+};
+</pre>
+
+    <p><strong>Profile 結構</strong></p>
+<pre>
+struct ArticulationEntry {
+    ArticulationType type;      // 裝飾技法類型
+    float baseProbability;      // 基礎發生機率
+    bool onAccentsOnly;         // 僅在重音時觸發
+    bool onStrongBeats;         // 僅在強拍時觸發
+};
+
+// 10 種風格 &times; 4 種角色 = 40 組 Profile
+static const ArticulationEntry profiles[10][4];
+</pre>
+
+    <p><strong>風格特異性設計</strong></p>
+    <p>各風格的 Articulation 設計基於民族音樂學文獻：</p>
+    <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>風格</th><th>Timeline</th><th>Foundation</th><th>Groove</th><th>Lead</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>西非</td><td>Flam 中機率</td><td>Drag 低機率</td><td>Flam 高機率</td><td>Ruff 中機率</td></tr>
+        <tr><td>古巴</td><td>Flam 低機率</td><td>None</td><td>Flam 中機率</td><td>Drag 高機率</td></tr>
+        <tr><td>巴西</td><td>Flam 中機率</td><td>Drag 低機率</td><td>Ruff 高機率</td><td>Buzz 中機率</td></tr>
+        <tr><td>爵士</td><td>Flam 低機率</td><td>Drag 低機率</td><td>Buzz 中機率</td><td>Ruff 高機率</td></tr>
+        <tr><td>電子</td><td>None</td><td>None</td><td>Flam 低機率</td><td>Flam 低機率</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <p><strong>選擇演算法</strong></p>
+<pre>
+ArticulationType selectArticulation(int styleIndex, int roleIndex,
+                                    float amount, bool isAccent,
+                                    bool isStrongBeat) {
+    const ArticulationEntry&amp; entry = profiles[styleIndex][roleIndex];
+
+    // 條件檢查
+    if (entry.onAccentsOnly &amp;&amp; !isAccent) return None;
+    if (entry.onStrongBeats &amp;&amp; !isStrongBeat) return None;
+
+    // 機率計算：基礎機率 &times; 使用者控制量
+    float probability = entry.baseProbability * amount;
+
+    if (randomFloat() &lt; probability) {
+        return entry.type;
+    }
+    return None;
+}
+</pre>
+
+    <p><strong>民族音樂學參考</strong></p>
+    <p>Articulation Profile 的設計參考以下研究：</p>
+    <ul>
+      <li>Afrodrumming.com：西非打擊樂的 Flam 與 Drag 技法</li>
+      <li>Marc D&eacute;douvan：古巴打擊樂的裝飾音傳統</li>
+      <li>Gamelan.org.nz：甘美朗音樂的 Kotekan 交織技法</li>
+      <li>Jazz 鼓法文獻：Brush 與 Stick 的裝飾音差異</li>
+    </ul>
+
+    <hr class="paper__hr">
+
+    <!-- 五、風格特定引擎 -->
+    <h2>五、風格特定引擎</h2>
+    <p>除了通用演算法，系統包含針對特定傳統的專門引擎：</p>
+
+    <h3>5.1 ClaveEngine（古巴）</h3>
+    <p>實作 Son Clave、Rumba Clave 的 3-2/2-3 方向切換，以及 Bossa Nova Clave：</p>
+<pre>
+enum ClaveType { SON, RUMBA, BOSSA };
+enum Direction { THREE_TWO, TWO_THREE };
+
+Pattern generateClave(ClaveType type, Direction dir);
+void flipDirection();  // 即時切換方向
+</pre>
+
+    <h3>5.2 BatucadaEngine（巴西）</h3>
+    <p>模擬 Samba 學校打擊樂的 Surdo 三重奏互鎖：</p>
+    <ul>
+      <li><strong>Primeira</strong>：第二拍強音</li>
+      <li><strong>Segunda</strong>：第一拍回應</li>
+      <li><strong>Terceira</strong>：填充與變奏</li>
+    </ul>
+<pre>
+struct SurdoInterlock {
+    Pattern primeira;  // 主導聲部
+    Pattern segunda;   // 回應聲部
+    Pattern terceira;  // 裝飾聲部
+};
+
+SurdoInterlock generateSurdos(SambaStyle style, float swing);
+</pre>
+
+    <h3>5.3 KotekanEngine（峇里島）</h3>
+    <p>實作甘美朗音樂的 Kotekan 互鎖技法：</p>
+    <ul>
+      <li><strong>Polos</strong>：下行旋律線</li>
+      <li><strong>Sangsih</strong>：互補上行線</li>
+      <li><strong>Combined</strong>：完整連續音流</li>
+    </ul>
+<pre>
+enum KotekanType { NYOG_CAG, NOROT, TELU, EMPAT, UBIT };
+
+KotekanPair generateKotekan(KotekanType type, int steps);
+</pre>
+
+    <h3>5.4 JazzBrushEngine（爵士）</h3>
+    <p>模擬爵士鼓手的刷法與鼓棒技法：</p>
+<pre>
+enum PlayingStyle { BRUSHES, STICKS };
+enum TempoFeel { BALLAD, MEDIUM, UP_TEMPO, BEBOP };
+
+JazzKit generateComping(PlayingStyle style, TempoFeel feel, float bpm);
+</pre>
+
+    <h3>5.5 AmenBreakEngine（碎拍）</h3>
+    <p>實作經典 Breakbeat 取樣的切片與重組：</p>
+<pre>
+enum BreakType { AMEN, THINK, FUNKY_DRUMMER, APACHE };
+enum ChopStyle { ORIGINAL, REVERSE, JUNGLE_1, JUNGLE_2 };
+
+BreakPattern generateBreak(BreakType type);
+BreakPattern chopBreak(const BreakPattern&amp; original, ChopStyle style);
+</pre>
+
+    <hr class="paper__hr">
+
+    <!-- 六、實驗與評估 -->
+    <h2>六、實驗與評估</h2>
+
+    <h3>6.1 實驗設計</h3>
+    <p>為驗證演算法效果，我們設計了三組混合風格測試：</p>
+
+    <p><strong>測試一：世界音樂/浩室融合</strong></p>
+    <ul>
+      <li>Timeline：西非風格</li>
+      <li>Foundation：電子風格</li>
+      <li>Groove：古巴風格</li>
+      <li>Lead：爵士風格</li>
+    </ul>
+
+    <p><strong>測試二：Drum'n'Bass 遇見 Samba</strong></p>
+    <ul>
+      <li>Timeline：巴西風格</li>
+      <li>Foundation：碎拍風格</li>
+      <li>Groove：巴西風格</li>
+      <li>Lead：爵士風格</li>
+    </ul>
+
+    <p><strong>測試三：實驗性低相容度組合</strong></p>
+    <ul>
+      <li>Timeline：Techno 風格</li>
+      <li>Foundation：Techno 風格</li>
+      <li>Groove：甘美朗風格</li>
+      <li>Lead：甘美朗風格</li>
+    </ul>
+
+    <h3>6.2 結果分析</h3>
+    <p><strong>互鎖有效性</strong></p>
+    <p>測量 Timeline 與 Foundation 的重疊率，以及 Groove 對空白位置的填補率：</p>
+    <table>
+      <thead>
+        <tr><th>測試</th><th>TL-FD 重疊</th><th>Groove 補位率</th><th>整體密度</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>測試一</td><td>12.5%</td><td>68.7%</td><td>62.5%</td></tr>
+        <tr><td>測試二</td><td>18.7%</td><td>71.9%</td><td>68.7%</td></tr>
+        <tr><td>測試三</td><td>6.2%</td><td>75.0%</td><td>59.4%</td></tr>
+      </tbody>
+    </table>
+    <p>結果顯示：</p>
+    <ul>
+      <li>低相容度組合（測試三）的 TL-FD 重疊最低，顯示強化互鎖機制有效運作</li>
+      <li>Groove 補位率在所有測試中維持在 65-75%，確保節奏流動性</li>
+    </ul>
+
+    <p><strong>風格特徵保持</strong></p>
+    <p>透過分析各聲部的節奏特徵（細分偏好、重音位置、搖擺程度），確認各風格的核心特質得以保持：</p>
+    <table>
+      <thead>
+        <tr><th>聲部</th><th>指定風格</th><th>細分符合度</th><th>重音符合度</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Timeline（西非）</td><td>西非</td><td>91.6%</td><td>87.5%</td></tr>
+        <tr><td>Foundation（電子）</td><td>電子</td><td>100%</td><td>100%</td></tr>
+        <tr><td>Groove（古巴）</td><td>古巴</td><td>85.4%</td><td>79.2%</td></tr>
+        <tr><td>Lead（爵士）</td><td>爵士</td><td>83.3%</td><td>75.0%</td></tr>
+      </tbody>
+    </table>
+
+    <h3>6.3 局限性</h3>
+    <ol>
+      <li><strong>文化簡化</strong>：將複雜的音樂傳統簡化為參數，不可避免地遺失部分細節</li>
+      <li><strong>靜態相容性</strong>：相容性矩陣為預設值，未能反映特定音樂脈絡</li>
+      <li><strong>缺乏音高維度</strong>：系統專注於節奏，未處理旋律與和聲的跨文化融合</li>
+    </ol>
+
+    <hr class="paper__hr">
+
+    <!-- 七、結論與未來工作 -->
+    <h2>七、結論與未來工作</h2>
+
+    <h3>7.1 結論</h3>
+    <p>本研究提出的 WorldRhythm 演算法成功實現了：</p>
+    <ol>
+      <li><strong>多風格支援</strong>：涵蓋十種主要世界音樂節奏傳統</li>
+      <li><strong>智慧混合</strong>：透過相容性矩陣與可變強度互鎖，實現跨風格融合</li>
+      <li><strong>人性化處理</strong>：風格特異性的時序與力度變異，提升音樂性</li>
+      <li><strong>Articulation Profile</strong>：基於民族音樂學的裝飾技法系統，每種風格×角色組合都有專屬設定</li>
+      <li><strong>模組化架構</strong>：易於擴展新風格與新功能</li>
+    </ol>
+    <p>此系統為音樂創作者提供了一個探索跨文化節奏融合的工具，同時保持對各傳統的尊重與理解。</p>
+
+    <h3>7.2 未來工作</h3>
+    <ol>
+      <li><strong>機器學習整合</strong>：使用真實演奏數據訓練風格模型，提升真實感</li>
+      <li><strong>動態相容性</strong>：根據實際生成結果動態調整相容性判斷</li>
+      <li><strong>使用者研究</strong>：進行聽覺測試，評估生成節奏的音樂性與文化適切性</li>
+      <li><strong>音高擴展</strong>：加入旋律與和聲的跨文化生成能力</li>
+    </ol>
+
+    <hr class="paper__hr">
+
+    <!-- 參考文獻 -->
+    <h2>參考文獻</h2>
+    <div class="paper__references">
+    <ol>
+      <li>Arom, S. (1991). <em>African Polyphony and Polyrhythm: Musical Structure and Methodology</em>. Cambridge University Press.</li>
+      <li>Benadon, F. (2006). Slicing the Beat: Jazz Eighth-Notes as Expressive Microrhythm. <em>Ethnomusicology</em>, 50(1), 73-98.</li>
+      <li>Bjorklund, E. (2003). The Theory of Rep-Rate Pattern Generation in the SNS Timing System. <em>SNS ASD Technical Note</em>.</li>
+      <li>Cheng, T.Z., Creel, S.C., &amp; Iversen, J.R. (2022). How Do You Feel the Rhythm: Dynamic Motor-Auditory Interactions Are Involved in the Imagination of Hierarchical Timing. <em>Journal of Neuroscience</em>, 42(3), 500-512.</li>
+      <li>Danielsen, A., et al. (2015). Effects of instructed timing and tempo on snare drum sound in drum kit performance. <em>Journal of the Acoustical Society of America</em>, 138(4), 2301-2316.</li>
+      <li>Friberg, A., &amp; Sundstr&ouml;m, A. (2002). Swing Ratios and Ensemble Timing in Jazz Performance: Evidence for a Common Rhythmic Pattern. <em>Music Perception</em>, 19(3), 333-349.</li>
+      <li>Kubik, G. (2010). <em>Theory of African Music</em>, Volume I. University of Chicago Press.</li>
+      <li>Locke, D. (1982). Principles of Offbeat Timing and Cross-Rhythm in Southern Eve Drumming. <em>Ethnomusicology</em>, 26(2), 217-246.</li>
+      <li>Matsuo, H., &amp; Sakaguchi, Y. (2024). Effects of Rhythm and Accent Patterns on Tempo-Keeping Property of Finger Tapping. <em>i-Perception</em>. DOI: 10.1177/20592043241276959</li>
+      <li>Mehta, A., et al. (2024). Missing Melodies: AI Music Generation and the Need for Diverse Training Data. <em>arXiv preprint</em>.</li>
+      <li>Naveda, L., &amp; Leman, M. (2010). The Spatiotemporal Representation of Dance and Music Gestures using Topological Gesture Analysis. <em>Music Perception</em>, 28(1), 93-111.</li>
+      <li>Polak, R., &amp; London, J. (2014). Timing and Meter in Mande Drumming from Mali. <em>Music Theory Online</em>, 20(1).</li>
+      <li>Pressing, J. (1983). Cognitive Isomorphisms between Pitch and Rhythm in World Musics. <em>Studies in Music</em>, 17, 38-61.</li>
+      <li>Temperley, D. (2000). Meter and Grouping in African Music: A View from Music Theory. <em>Ethnomusicology</em>, 44(1), 65-96.</li>
+      <li>Tenzer, M. (2000). <em>Gamelan Gong Kebyar: The Art of Twentieth-Century Balinese Music</em>. University of Chicago Press.</li>
+      <li>Toussaint, G. T. (2013). <em>The Geometry of Musical Rhythm</em>. CRC Press.</li>
+    </ol>
+    </div>
+
+    <hr class="paper__hr">
+
+    <!-- 附錄 A -->
+    <h2>附錄 A：風格相容性完整矩陣</h2>
+    <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th></th><th>西非</th><th>古巴</th><th>巴西</th><th>巴爾幹</th><th>印度</th><th>甘美朗</th><th>爵士</th><th>電子</th><th>碎拍</th><th>Techno</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>西非</strong></td><td>100%</td><td>80%</td><td>70%</td><td>40%</td><td>50%</td><td>60%</td><td>60%</td><td>50%</td><td>60%</td><td>40%</td></tr>
+        <tr><td><strong>古巴</strong></td><td>80%</td><td>100%</td><td>85%</td><td>45%</td><td>50%</td><td>55%</td><td>70%</td><td>60%</td><td>65%</td><td>50%</td></tr>
+        <tr><td><strong>巴西</strong></td><td>70%</td><td>85%</td><td>100%</td><td>40%</td><td>45%</td><td>50%</td><td>75%</td><td>55%</td><td>70%</td><td>45%</td></tr>
+        <tr><td><strong>巴爾幹</strong></td><td>40%</td><td>45%</td><td>40%</td><td>100%</td><td>60%</td><td>35%</td><td>50%</td><td>45%</td><td>45%</td><td>40%</td></tr>
+        <tr><td><strong>印度</strong></td><td>50%</td><td>50%</td><td>45%</td><td>60%</td><td>100%</td><td>55%</td><td>55%</td><td>40%</td><td>45%</td><td>35%</td></tr>
+        <tr><td><strong>甘美朗</strong></td><td>60%</td><td>55%</td><td>50%</td><td>35%</td><td>55%</td><td>100%</td><td>50%</td><td>50%</td><td>45%</td><td>50%</td></tr>
+        <tr><td><strong>爵士</strong></td><td>60%</td><td>70%</td><td>75%</td><td>50%</td><td>55%</td><td>50%</td><td>100%</td><td>70%</td><td>75%</td><td>60%</td></tr>
+        <tr><td><strong>電子</strong></td><td>50%</td><td>60%</td><td>55%</td><td>45%</td><td>40%</td><td>50%</td><td>70%</td><td>100%</td><td>80%</td><td>85%</td></tr>
+        <tr><td><strong>碎拍</strong></td><td>60%</td><td>65%</td><td>70%</td><td>45%</td><td>45%</td><td>45%</td><td>75%</td><td>80%</td><td>100%</td><td>75%</td></tr>
+        <tr><td><strong>Techno</strong></td><td>40%</td><td>50%</td><td>45%</td><td>40%</td><td>35%</td><td>50%</td><td>60%</td><td>85%</td><td>75%</td><td>100%</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <!-- 附錄 B -->
+    <h2>附錄 B：風格家族分類</h2>
+
+    <p><strong>12/8 脈動家族</strong></p>
+    <ul>
+      <li>西非（Standard Bell: E(7,12)）</li>
+      <li>古巴（Clave 系統）</li>
+      <li>巴西（Samba 搖擺）</li>
+    </ul>
+
+    <p><strong>4/4 脈動家族</strong></p>
+    <ul>
+      <li>爵士（三連音細分）</li>
+      <li>電子（直拍 16 分）</li>
+      <li>碎拍（切片重組）</li>
+      <li>Techno（極簡循環）</li>
+    </ul>
+
+    <p><strong>不規則拍家族</strong></p>
+    <ul>
+      <li>巴爾幹（7/8, 9/8, 11/8）</li>
+      <li>印度（Tala 循環）</li>
+    </ul>
+
+    <p><strong>Colotomic 家族</strong></p>
+    <ul>
+      <li>甘美朗（階層式鑼點結構）</li>
+    </ul>
+
+    <hr class="paper__hr">
+
+    <p class="paper__colophon">本研究為 WorldRhythm v0.20 演算法文件，實作於 VCV Rack 模組環境。</p>
+
+  </main>
+
+  <!-- Bottom Bar -->
+  <div class="bottom-bar">
+    <span class="bottom-bar__copyright" data-i18n="footer.copyright">&copy; 2025 MADZINE. All rights reserved.</span>
+    <nav class="bottom-bar__nav">
+      <a href="index.html" data-i18n="nav.home">Home</a>
+      <a href="software.html" data-i18n="nav.software">Software</a>
+      <a href="works.html" data-i18n="nav.works">Works</a>
+      <a href="contact.html" data-i18n="nav.contact">Contact</a>
+    </nav>
+    <div class="bottom-bar__controls">
+      <div class="lang-switcher">
+        <button class="lang-btn" data-lang="zh-TW" onclick="I18N.setLang('zh-TW')">中</button>
+        <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
+        <button class="lang-btn" data-lang="ja" onclick="I18N.setLang('ja')">JP</button>
+      </div>
+      <button id="mode-toggle" class="mode-toggle" aria-label="Toggle dark mode">&#9789;</button>
+    </div>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

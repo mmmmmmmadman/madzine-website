@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="ja">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MADZINE — 世界微分音系統研究</title>
-  <meta name="description" content="世界微分音系統研究：數位實現的技術分析">
+  <title>MADZINE — 世界の微分音システム研究</title>
+  <meta name="description" content="世界の微分音システム研究：デジタル実装のための技術分析">
   <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/style.css">
   <style>
@@ -347,7 +347,7 @@
 
     <!-- Header -->
     <header class="paper__header">
-      <h1 class="paper__title">世界微分音系統研究</h1>
+      <h1 class="paper__title">世界の微分音システム研究</h1>
       <p class="paper__subtitle">Microtuning Systems of the World: A Technical Analysis for Digital Implementation</p>
       <div class="paper__meta">
         <span>MADZINE</span>
@@ -359,61 +359,61 @@
     <!-- Abstract -->
     <div class="paper__abstract">
       <h2 class="paper__abstract-title" style="margin-top: 0; border: none; padding: 0;">Abstract</h2>
-      <p>本論文研究世界各地傳統音樂中的微分音（microtuning）系統，分析其音程結構、文化背景，以及在數位音樂合成器中實現的技術考量。特別關注哪些系統需要兩個八度的獨立微分音設定，以及上行/下行音階的差異性。</p>
+      <p>本論文は、世界各地の伝統音楽における微分音（microtuning）システムを研究し、その音程構造、文化的背景、およびデジタル音楽シンセサイザーでの実装に関する技術的考察を行う。特に、2オクターブの独立した微分音設定が必要なシステム、および上行・下行音階の差異に焦点を当てる。</p>
     </div>
 
     <!-- Table of Contents -->
     <nav class="paper__toc">
       <h2 class="paper__toc-title" style="margin-top: 0; border: none; padding: 0;">Table of Contents</h2>
       <ol>
-        <li><a href="#sec-1">導論</a></li>
-        <li><a href="#sec-2">西方調音系統</a></li>
-        <li><a href="#sec-3">中東音階系統</a></li>
-        <li><a href="#sec-4">南亞音階系統</a></li>
-        <li><a href="#sec-5">東亞音階系統</a></li>
-        <li><a href="#sec-6">東南亞音階系統</a></li>
-        <li><a href="#sec-7">技術實現分析</a></li>
-        <li><a href="#sec-8">結論與建議</a></li>
-        <li><a href="#sec-9">參考資料</a></li>
+        <li><a href="#sec-1">序論</a></li>
+        <li><a href="#sec-2">西洋の調律システム</a></li>
+        <li><a href="#sec-3">中東の音階システム</a></li>
+        <li><a href="#sec-4">南アジアの音階システム</a></li>
+        <li><a href="#sec-5">東アジアの音階システム</a></li>
+        <li><a href="#sec-6">東南アジアの音階システム</a></li>
+        <li><a href="#sec-7">技術的実装の分析</a></li>
+        <li><a href="#sec-8">結論と提言</a></li>
+        <li><a href="#sec-9">参考資料</a></li>
       </ol>
     </nav>
 
     <!-- Section 1 -->
-    <h2 id="sec-1">1. 導論</h2>
+    <h2 id="sec-1">1. 序論</h2>
 
-    <h3>1.1 什麼是微分音？</h3>
-    <p>微分音（Microtone）指的是小於西方十二平均律（12-TET）半音（100 音分/cents）的音程。在世界各地的傳統音樂中，許多文化發展出獨特的音階系統，其音程並不符合西方標準。</p>
+    <h3>1.1 微分音とは</h3>
+    <p>微分音（Microtone）とは、西洋の十二平均律（12-TET）の半音（100セント/cents）よりも小さい音程を指す。世界各地の伝統音楽において、多くの文化が独自の音階システムを発展させており、その音程は西洋の標準に従わない。</p>
 
-    <h3>1.2 音分（Cents）系統</h3>
-    <p>音分是測量音程的對數單位：</p>
+    <h3>1.2 セント（Cents）システム</h3>
+    <p>セントは音程を測定するための対数単位である：</p>
     <ul>
-      <li>1 八度 = 1200 cents</li>
-      <li>1 半音（12-TET）= 100 cents</li>
-      <li>1 音分 = 1/100 半音</li>
+      <li>1オクターブ = 1200 cents</li>
+      <li>1半音（12-TET）= 100 cents</li>
+      <li>1セント = 1/100 半音</li>
     </ul>
-    <p>計算公式：</p>
+    <p>計算式：</p>
     <pre>cents = 1200 × log₂(f₂/f₁)</pre>
 
     <h3>1.3 研究目的</h3>
-    <p>本研究旨在：</p>
+    <p>本研究の目的：</p>
     <ol>
-      <li>系統性整理世界主要微分音系統</li>
-      <li>分析各系統的音程結構</li>
-      <li>確定哪些系統需要兩個八度的獨立設定</li>
-      <li>為 VCV Rack Quantizer 模組提供實現依據</li>
+      <li>世界の主要な微分音システムを体系的に整理する</li>
+      <li>各システムの音程構造を分析する</li>
+      <li>2オクターブの独立設定が必要なシステムを特定する</li>
+      <li>VCV Rack Quantizer モジュールの実装根拠を提供する</li>
     </ol>
 
     <hr>
 
     <!-- Section 2 -->
-    <h2 id="sec-2">2. 西方調音系統</h2>
+    <h2 id="sec-2">2. 西洋の調律システム</h2>
 
     <h3>2.1 十二平均律 (12-TET / Equal Temperament)</h3>
-    <p>現代西方標準調音，將八度等分為 12 個半音。</p>
+    <p>現代西洋の標準調律。オクターブを12の等しい半音に分割する。</p>
 
     <table>
       <thead>
-        <tr><th>音符</th><th>Cents</th><th>頻率比</th></tr>
+        <tr><th>音名</th><th>Cents</th><th>周波数比</th></tr>
       </thead>
       <tbody>
         <tr><td>C</td><td>0</td><td>1.0000</td></tr>
@@ -430,15 +430,15 @@
         <tr><td>B</td><td>1100</td><td>1.8877</td></tr>
       </tbody>
     </table>
-    <p><strong>特點</strong>：所有調性等效，便於轉調，但犧牲了純律的和諧性。</p>
-    <p class="two-octave">需要兩個八度：否</p>
+    <p><strong>特徴</strong>：すべての調性が等価であり転調が容易だが、純正律の協和性が犠牲になる。</p>
+    <p class="two-octave">2オクターブ必要：いいえ</p>
 
-    <h3>2.2 純律 (Just Intonation)</h3>
-    <p>基於簡單整數比的調音系統，產生最和諧的音程。</p>
+    <h3>2.2 純正律 (Just Intonation)</h3>
+    <p>単純な整数比に基づく調律システムで、最も協和的な音程を生み出す。</p>
 
     <table>
       <thead>
-        <tr><th>音符</th><th>頻率比</th><th>Cents</th><th>與 12-TET 差異</th></tr>
+        <tr><th>音名</th><th>周波数比</th><th>Cents</th><th>12-TET との差異</th></tr>
       </thead>
       <tbody>
         <tr><td>C</td><td>1/1</td><td>0</td><td>0</td></tr>
@@ -455,15 +455,15 @@
         <tr><td>B</td><td>15/8</td><td>1088.3</td><td>-11.7</td></tr>
       </tbody>
     </table>
-    <p><strong>特點</strong>：和聲純淨，但不同調性間差異大。</p>
-    <p class="two-octave">需要兩個八度：否</p>
+    <p><strong>特徴</strong>：和声が純粋だが、異なる調性間の差異が大きい。</p>
+    <p class="two-octave">2オクターブ必要：いいえ</p>
 
-    <h3>2.3 畢達哥拉斯調音 (Pythagorean Tuning)</h3>
-    <p>僅使用純五度（3:2）堆疊產生的調音。</p>
+    <h3>2.3 ピタゴラス音律 (Pythagorean Tuning)</h3>
+    <p>純正五度（3:2）の積み重ねのみで生成される調律。</p>
 
     <table>
       <thead>
-        <tr><th>音符</th><th>頻率比</th><th>Cents</th><th>與 12-TET 差異</th></tr>
+        <tr><th>音名</th><th>周波数比</th><th>Cents</th><th>12-TET との差異</th></tr>
       </thead>
       <tbody>
         <tr><td>C</td><td>1/1</td><td>0</td><td>0</td></tr>
@@ -475,111 +475,111 @@
         <tr><td>B</td><td>243/128</td><td>1109.8</td><td>+9.8</td></tr>
       </tbody>
     </table>
-    <p><strong>特點</strong>：五度完美，但三度偏高（畢氏音差 Pythagorean comma = 23.46 cents）。</p>
-    <p class="two-octave">需要兩個八度：否</p>
+    <p><strong>特徴</strong>：五度は完全だが、三度が高くなる（ピタゴラスコンマ Pythagorean comma = 23.46 cents）。</p>
+    <p class="two-octave">2オクターブ必要：いいえ</p>
 
     <h3>2.4 四分音 (Quarter Tone / 24-TET)</h3>
-    <p>將八度等分為 24 個四分音。</p>
-    <p><strong>特點</strong>：常用於 20 世紀現代音樂，也是阿拉伯音樂的近似系統。</p>
-    <p class="two-octave">需要兩個八度：否</p>
+    <p>オクターブを24の四分音に等分する。</p>
+    <p><strong>特徴</strong>：20世紀の現代音楽で多用され、アラビア音楽の近似システムでもある。</p>
+    <p class="two-octave">2オクターブ必要：いいえ</p>
 
     <hr>
 
     <!-- Section 3 -->
-    <h2 id="sec-3">3. 中東音階系統</h2>
+    <h2 id="sec-3">3. 中東の音階システム</h2>
 
-    <h3>3.1 阿拉伯 Maqam 系統</h3>
+    <h3>3.1 アラビアの Maqam システム</h3>
 
-    <h4>3.1.1 概述</h4>
-    <p>Maqam（複數 Maqamat）是阿拉伯音樂的調式系統，使用 24-TET 作為近似。傳統上，24 個音符跨越兩個八度，從 Yakah（低 G）到 Ramal Tuti（高 G）。</p>
+    <h4>3.1.1 概要</h4>
+    <p>Maqam（複数形 Maqamat）はアラビア音楽の旋法システムであり、24-TET を近似として使用する。伝統的に24の音は2オクターブにまたがり、Yakah（低いG）から Ramal Tuti（高いG）までの範囲をカバーする。</p>
 
-    <h4>3.1.2 主要 Maqam 及其音程</h4>
+    <h4>3.1.2 主要な Maqam とその音程</h4>
 
-    <p><strong>Maqam Rast（拉斯特）</strong></p>
-    <pre>音符：C  D  E½♭  F  G  A  B½♭  C
+    <p><strong>Maqam Rast（ラスト）</strong></p>
+    <pre>音名：C  D  E½♭  F  G  A  B½♭  C
 音程：0  200  350  500  700  900  1050  1200</pre>
-    <p>E½♭ 和 B½♭ 表示降低約 50 cents 的音符。</p>
+    <p>E½♭ と B½♭ は約50セント低い音を表す。</p>
 
-    <p><strong>Maqam Bayati（巴亞提）</strong></p>
-    <pre>音符：D  E½♭  F  G  A  B♭  C  D
+    <p><strong>Maqam Bayati（バヤーティー）</strong></p>
+    <pre>音名：D  E½♭  F  G  A  B♭  C  D
 音程：0  150  300  500  700  850  1000  1200</pre>
 
-    <p><strong>Maqam Hijaz（希賈茲）</strong></p>
-    <pre>音符：D  E♭  F#  G  A  B♭  C  D
+    <p><strong>Maqam Hijaz（ヒジャーズ）</strong></p>
+    <pre>音名：D  E♭  F#  G  A  B♭  C  D
 音程：0  100  400  500  700  800  1000  1200</pre>
 
-    <h4>3.1.3 兩個八度的差異</h4>
-    <p>在某些 Maqam 中，<strong>上八度的音程可能與下八度不同</strong>：</p>
-    <p><strong>Maqam Sikah 示例</strong>：</p>
+    <h4>3.1.3 2オクターブ間の差異</h4>
+    <p>一部の Maqam では、<strong>上のオクターブの音程が下のオクターブと異なる場合がある</strong>：</p>
+    <p><strong>Maqam Sikah の例</strong>：</p>
     <ul>
-      <li>下八度：E½♭ - F - G - A - B½♭ - C - D</li>
-      <li>上八度：可能使用不同的四分音位置</li>
+      <li>下のオクターブ：E½♭ - F - G - A - B½♭ - C - D</li>
+      <li>上のオクターブ：異なる四分音の位置を使用する可能性がある</li>
     </ul>
-    <p class="two-octave">需要兩個八度：是（部分 Maqam）</p>
+    <p class="two-octave">2オクターブ必要：はい（一部の Maqam）</p>
 
-    <h3>3.2 土耳其 Makam 系統</h3>
+    <h3>3.2 トルコの Makam システム</h3>
 
-    <h4>3.2.1 概述</h4>
-    <p>土耳其 Makam 系統使用 53-TET（53 等分律），將八度分為 53 個 comma（逗號）。</p>
+    <h4>3.2.1 概要</h4>
+    <p>トルコの Makam システムは 53-TET（53等分律）を使用し、オクターブを53のコンマに分割する。</p>
     <ul>
-      <li>大二度 = 9 commas（約 204 cents）</li>
-      <li>小二度 = 4 commas（約 90 cents）</li>
-      <li>1 comma ≈ 22.6 cents</li>
+      <li>長二度 = 9コンマ（約204 cents）</li>
+      <li>短二度 = 4コンマ（約90 cents）</li>
+      <li>1コンマ ≈ 22.6 cents</li>
     </ul>
 
-    <h4>3.2.2 浮動音符概念</h4>
-    <p>土耳其音樂的關鍵特徵是「浮動音符」（floating notes）：</p>
+    <h4>3.2.2 浮動音の概念</h4>
+    <p>トルコ音楽の重要な特徴は「浮動音」（floating notes）である：</p>
     <ul>
-      <li><strong>上行時</strong>：某些音符會稍微升高（約 1 comma）</li>
-      <li><strong>下行時</strong>：相同音符會稍微降低</li>
+      <li><strong>上行時</strong>：特定の音がわずかに上がる（約1コンマ）</li>
+      <li><strong>下行時</strong>：同じ音がわずかに下がる</li>
     </ul>
-    <p><strong>Makam Rast 示例</strong>：</p>
+    <p><strong>Makam Rast の例</strong>：</p>
     <pre>上行：G - A - B(+1) - C - D - E - F#(Irak) - G
 下行：G - F(Acem) - E - D - C - B(-1) - A - G</pre>
-    <p>注意：上行使用 F#（Irak），下行使用 F（Acem）。</p>
+    <p>注：上行では F#（Irak）を使用し、下行では F（Acem）を使用する。</p>
 
-    <h4>3.2.3 Seyir（旋律方向）</h4>
-    <p>Makam 有三種旋律方向：</p>
+    <h4>3.2.3 Seyir（旋律の方向性）</h4>
+    <p>Makam には3種類の旋律方向がある：</p>
     <ol>
-      <li><strong>Cinici（上行型）</strong>：從主音開始向上</li>
-      <li><strong>Inici（下行型）</strong>：從高音開始向下</li>
-      <li><strong>Inici-Cinici（混合型）</strong>：結合兩者</li>
+      <li><strong>Cinici（上行型）</strong>：主音から上方へ</li>
+      <li><strong>Inici（下行型）</strong>：高音から下方へ</li>
+      <li><strong>Inici-Cinici（混合型）</strong>：両者の組み合わせ</li>
     </ol>
-    <p class="two-octave">需要兩個八度：是（上行/下行差異）</p>
+    <p class="two-octave">2オクターブ必要：はい（上行・下行の差異）</p>
 
-    <h3>3.3 波斯 Dastgah 系統</h3>
+    <h3>3.3 ペルシアの Dastgah システム</h3>
 
-    <h4>3.3.1 概述</h4>
-    <p>波斯音樂使用 Dastgah（調式系統），包含 7 個主要 Dastgah 和 5 個輔助 Avaz。</p>
+    <h4>3.3.1 概要</h4>
+    <p>ペルシア音楽は Dastgah（旋法システム）を使用し、7つの主要 Dastgah と5つの補助 Avaz を含む。</p>
 
-    <h4>3.3.2 音程特徵</h4>
-    <p>波斯音樂的特徵音程包括：</p>
+    <h4>3.3.2 音程の特徴</h4>
+    <p>ペルシア音楽の特徴的な音程：</p>
     <ul>
-      <li><strong>Koron（↓）</strong>：降低約 50-60 cents</li>
-      <li><strong>Sori（↑）</strong>：升高約 50-60 cents</li>
+      <li><strong>Koron（↓）</strong>：約50-60セント低下</li>
+      <li><strong>Sori（↑）</strong>：約50-60セント上昇</li>
     </ul>
-    <p><strong>Dastgah Shur 示例</strong>：</p>
+    <p><strong>Dastgah Shur の例</strong>：</p>
     <pre>G - A(koron) - B♭ - C - D - E♭ - F - G
 音程：0 - ~150 - 300 - 500 - 700 - 800 - 1000 - 1200</pre>
 
-    <h4>3.3.3 上行/下行差異</h4>
-    <p>類似土耳其系統，波斯音樂也有上行/下行的微妙差異。</p>
-    <p class="two-octave">需要兩個八度：是</p>
+    <h4>3.3.3 上行・下行の差異</h4>
+    <p>トルコのシステムと同様に、ペルシア音楽にも上行・下行の微妙な差異がある。</p>
+    <p class="two-octave">2オクターブ必要：はい</p>
 
     <hr>
 
     <!-- Section 4 -->
-    <h2 id="sec-4">4. 南亞音階系統</h2>
+    <h2 id="sec-4">4. 南アジアの音階システム</h2>
 
-    <h3>4.1 印度 Raga 系統</h3>
+    <h3>4.1 インドの Raga システム</h3>
 
-    <h4>4.1.1 概述</h4>
-    <p>印度古典音樂使用 Raga（旋律模式）和 22 Shruti（微分音）系統。</p>
+    <h4>4.1.1 概要</h4>
+    <p>インド古典音楽は Raga（旋律法）と 22 Shruti（微分音）システムを使用する。</p>
 
-    <h4>4.1.2 七個基本音符（Swaras）</h4>
+    <h4>4.1.2 7つの基本音（Swaras）</h4>
     <table>
       <thead>
-        <tr><th>Swara</th><th>名稱</th><th>近似西方音符</th></tr>
+        <tr><th>Swara</th><th>名称</th><th>西洋音名の近似</th></tr>
       </thead>
       <tbody>
         <tr><td>Sa</td><td>Shadja</td><td>C（固定）</td></tr>
@@ -592,11 +592,11 @@
       </tbody>
     </table>
 
-    <h4>4.1.3 Shruti 系統</h4>
-    <p>傳統上八度分為 22 個 Shruti（不等分）：</p>
+    <h4>4.1.3 Shruti システム</h4>
+    <p>伝統的にオクターブは22の Shruti（不均等分割）に分けられる：</p>
     <table>
       <thead>
-        <tr><th>Shruti</th><th>Cents（約）</th><th>對應</th></tr>
+        <tr><th>Shruti</th><th>Cents（約）</th><th>対応</th></tr>
       </thead>
       <tbody>
         <tr><td>1</td><td>0</td><td>Sa</td></tr>
@@ -624,231 +624,231 @@
       </tbody>
     </table>
 
-    <h4>4.1.4 Aroha 與 Avaroha</h4>
-    <p>印度 Raga 最重要的特徵是 <strong>Aroha（上行）和 Avaroha（下行）可以使用完全不同的音符</strong>。</p>
+    <h4>4.1.4 Aroha と Avaroha</h4>
+    <p>インドの Raga の最も重要な特徴は、<strong>Aroha（上行）と Avaroha（下行）でまったく異なる音を使用できる</strong>ことである。</p>
 
-    <p><strong>Raga Yaman 示例</strong>：</p>
+    <p><strong>Raga Yaman の例</strong>：</p>
     <pre>Aroha（上行）：N S G M# D N S'
 Avaroha（下行）：S' N D P M# G R S</pre>
-    <p>注意：上行省略 Re(R) 和 Pa(P)，下行使用所有音符。</p>
+    <p>注：上行では Re(R) と Pa(P) が省略され、下行ではすべての音が使用される。</p>
 
-    <p><strong>Raga Bhairav 示例</strong>：</p>
+    <p><strong>Raga Bhairav の例</strong>：</p>
     <pre>Aroha：S r G M P d N S'
 Avaroha：S' N d P M G r S</pre>
-    <p>使用 Komal Re(r) 和 Komal Dha(d)。</p>
+    <p>Komal Re(r) と Komal Dha(d) を使用する。</p>
 
-    <h4>4.1.5 三個八度</h4>
-    <p>印度音樂跨越三個八度：</p>
+    <h4>4.1.5 3つのオクターブ</h4>
+    <p>インド音楽は3つのオクターブにまたがる：</p>
     <ul>
-      <li><strong>Mandra Saptak</strong>（低八度）</li>
-      <li><strong>Madhya Saptak</strong>（中八度）</li>
-      <li><strong>Tar Saptak</strong>（高八度）</li>
+      <li><strong>Mandra Saptak</strong>（低オクターブ）</li>
+      <li><strong>Madhya Saptak</strong>（中オクターブ）</li>
+      <li><strong>Tar Saptak</strong>（高オクターブ）</li>
     </ul>
-    <p class="two-octave">需要兩個八度：是（Aroha/Avaroha 差異 + 不同八度可能有微妙差異）</p>
+    <p class="two-octave">2オクターブ必要：はい（Aroha/Avaroha の差異 + 異なるオクターブで微妙な差異がある可能性）</p>
 
     <hr>
 
     <!-- Section 5 -->
-    <h2 id="sec-5">5. 東亞音階系統</h2>
+    <h2 id="sec-5">5. 東アジアの音階システム</h2>
 
-    <h3>5.1 日本音階系統</h3>
+    <h3>5.1 日本の音階システム</h3>
 
-    <h4>5.1.1 上原六四郎的理論（1895）</h4>
-    <p>明治時代，上原六四郎在《俗樂旋律考》中提出：</p>
+    <h4>5.1.1 上原六四郎の理論（1895）</h4>
+    <p>明治時代、上原六四郎は『俗楽旋律考』において以下を提唱した：</p>
     <ol>
-      <li>俗樂的音階是五音音階</li>
-      <li>分為含半音的<strong>陰旋</strong>和不含半音的<strong>陽旋</strong></li>
-      <li><strong>兩者都有上行形和下行形</strong></li>
+      <li>俗楽の音階は五音音階である</li>
+      <li>半音を含む<strong>陰旋</strong>と半音を含まない<strong>陽旋</strong>に分かれる</li>
+      <li><strong>いずれも上行形と下行形を持つ</strong></li>
     </ol>
 
-    <h4>5.1.2 主要音階類型與上行/下行差異</h4>
+    <h4>5.1.2 主要な音階の種類と上行・下行の差異</h4>
 
     <p><strong>都節音階（Miyako-bushi）- 陰旋法</strong></p>
-    <p>具有<strong>下行性格</strong>，上行時音符會改變：</p>
+    <p><strong>下行的性格</strong>を持ち、上行時に音が変化する：</p>
     <pre>下行形（基本）：E - F - A - B - C - E
 上行形（異向形）：E - F - A - B - D - E
                               ↑
                      短6度(C)→短7度(D)</pre>
 
     <p><strong>律音階（Ritsu）</strong></p>
-    <p>同樣具有下行性格：</p>
-    <pre>下行形：6度音使用 A♭
-上行形：6度音上升為 B♭</pre>
+    <p>同様に下行的性格を持つ：</p>
+    <pre>下行形：6度音は A♭ を使用
+上行形：6度音が B♭ に上昇</pre>
 
     <p><strong>陽音階（Yo Scale）</strong></p>
-    <pre>音符：D - E - G - A - B
+    <pre>音名：D - E - G - A - B
 音程：0 - 200 - 500 - 700 - 900</pre>
-    <p>用於雅樂（Gagaku）。具有<strong>上行性格</strong>，較為穩定。</p>
+    <p>雅楽（Gagaku）に使用される。<strong>上行的性格</strong>を持ち、比較的安定している。</p>
 
-    <p><strong>民謠音階（Min'yo）</strong></p>
-    <p>具有<strong>上行性格</strong>，中間音浮動較少，上行/下行差異不大。</p>
+    <p><strong>民謡音階（Min'yo）</strong></p>
+    <p><strong>上行的性格</strong>を持ち、中間音の浮動が少なく、上行・下行の差異は小さい。</p>
 
-    <h4>5.1.3 小泉文夫的理論</h4>
-    <p>小泉文夫將日本音階分為：</p>
+    <h4>5.1.3 小泉文夫の理論</h4>
+    <p>小泉文夫は日本の音階を以下のように分類した：</p>
     <ul>
-      <li><strong>下行性音階</strong>：都節、律（上行時音會變化）</li>
-      <li><strong>上行性音階</strong>：民謠、琉球（較穩定）</li>
+      <li><strong>下行性音階</strong>：都節、律（上行時に音が変化する）</li>
+      <li><strong>上行性音階</strong>：民謡、琉球（比較的安定）</li>
     </ul>
-    <p>核心概念是<strong>テトラコルド（四度音列）</strong>，完全四度內的中間音會根據旋律方向浮動。</p>
+    <p>核心的な概念は<strong>テトラコルド（四度音列）</strong>であり、完全四度内の中間音が旋律の方向によって浮動する。</p>
 
-    <h4>5.1.4 微分音特徵</h4>
-    <p>箏（Koto）調音傾向使用純律：</p>
+    <h4>5.1.4 微分音の特徴</h4>
+    <p>箏（Koto）の調律は純正律を用いる傾向がある：</p>
     <ul>
-      <li>大三度：386 cents（純律）vs 400 cents（12-TET）</li>
-      <li>差異約 14 cents</li>
+      <li>長三度：386 cents（純正律） vs 400 cents（12-TET）</li>
+      <li>差異は約14セント</li>
     </ul>
-    <p class="two-octave">需要兩個八度：是（都節/律音階有上行/下行差異）</p>
+    <p class="two-octave">2オクターブ必要：はい（都節・律音階に上行・下行の差異がある）</p>
 
     <h3>5.2 琉球音階（Ryukyu Scale）</h3>
 
-    <h4>5.2.1 結構</h4>
-    <pre>五聲版：C - E - F - G - B
+    <h4>5.2.1 構造</h4>
+    <pre>五声版：C - E - F - G - B
 音程：0 - 400 - 500 - 700 - 1100
-結構：大三度 - 小二度 - 大二度 - 大三度 - 小二度
+構造：長三度 - 短二度 - 長二度 - 長三度 - 短二度
 
-六聲版：C - D - E - F - G - B
+六声版：C - D - E - F - G - B
 音程：0 - 200 - 400 - 500 - 700 - 1100</pre>
 
-    <h4>5.2.2 上行/下行差異</h4>
-    <p>根據研究，琉球音階在下行時會加入<strong>經過音「レ」（D）</strong>：</p>
-    <pre>上行：C - E - F - G - B - C（五聲）
-下行：C - B - G - F - E - D - C（加入 D 作為經過音）</pre>
-    <p>「てぃんさぐぬ花」等樂曲中，「レ」多用於<strong>下行時使旋律更滑順</strong>。</p>
+    <h4>5.2.2 上行・下行の差異</h4>
+    <p>研究によると、琉球音階は下行時に<strong>経過音「レ」（D）</strong>が加わる：</p>
+    <pre>上行：C - E - F - G - B - C（五声）
+下行：C - B - G - F - E - D - C（D を経過音として追加）</pre>
+    <p>「てぃんさぐぬ花」などの楽曲において、「レ」は主に<strong>下行時に旋律をより滑らかにする</strong>ために用いられる。</p>
 
-    <h4>5.2.3 特徵</h4>
+    <h4>5.2.3 特徴</h4>
     <ul>
-      <li>特徵音程：B→C（小二度）是識別沖繩音樂的關鍵</li>
-      <li>與陽音階相關，但音高升高</li>
-      <li>八重山民謠有微妙的音高變化</li>
-      <li>屬於小泉理論中的「上行性音階」</li>
+      <li>特徴的な音程：B→C（短二度）は沖縄音楽を識別する鍵となる</li>
+      <li>陽音階と関連するが、音高が上昇している</li>
+      <li>八重山民謡には微妙な音高の変化がある</li>
+      <li>小泉理論における「上行性音階」に属する</li>
     </ul>
-    <p class="two-octave">需要兩個八度：是（下行時加入經過音）</p>
+    <p class="two-octave">2オクターブ必要：はい（下行時に経過音が加わる）</p>
 
-    <h3>5.3 中國音階系統</h3>
+    <h3>5.3 中国の音階システム</h3>
 
-    <h4>5.3.1 五聲音階（宮商角徵羽）</h4>
+    <h4>5.3.1 五声音階（宮商角徴羽）</h4>
     <pre>宮：C - D - E - G - A
 音程：0 - 200 - 400 - 700 - 900</pre>
 
     <h4>5.3.2 微分音</h4>
-    <p>中國傳統音樂主要使用純律，特別是古琴音樂中有複雜的泛音系統。</p>
-    <p class="two-octave">需要兩個八度：否</p>
+    <p>中国の伝統音楽は主に純正律を使用しており、特に古琴音楽には複雑な倍音体系がある。</p>
+    <p class="two-octave">2オクターブ必要：いいえ</p>
 
     <hr>
 
     <!-- Section 6 -->
-    <h2 id="sec-6">6. 東南亞音階系統</h2>
+    <h2 id="sec-6">6. 東南アジアの音階システム</h2>
 
-    <h3>6.1 印尼甘美朗（Gamelan）</h3>
+    <h3>6.1 インドネシアのガムラン（Gamelan）</h3>
 
     <h4>6.1.1 Slendro 音階</h4>
-    <p>五聲音階，音程接近等分（約 240 cents 每級）：</p>
+    <p>五声音階で、音程はほぼ均等（各段約240セント）：</p>
     <pre>近似音程：0 - 240 - 480 - 720 - 960</pre>
-    <p>但實際上每組甘美朗樂器都有獨特的調音，沒有標準化。</p>
+    <p>ただし実際には、各ガムラン楽器セットが独自の調律を持ち、標準化されていない。</p>
 
     <h4>6.1.2 Pelog 音階</h4>
-    <p>七聲音階，音程不均：</p>
-    <pre>一種常見形式：0 - 120 - 270 - 540 - 670 - 800 - 1050</pre>
-    <p>特徵是包含非常窄和非常寬的音程混合。</p>
+    <p>七声音階で、音程は不均等：</p>
+    <pre>一般的な形式：0 - 120 - 270 - 540 - 670 - 800 - 1050</pre>
+    <p>非常に狭い音程と非常に広い音程が混在するのが特徴である。</p>
 
-    <h4>6.1.3 微分音特徵</h4>
+    <h4>6.1.3 微分音の特徴</h4>
     <ul>
-      <li>每組甘美朗有獨特調音</li>
-      <li>Ombak（顫音）：成對樂器故意調成微小差異產生顫動效果</li>
-      <li>與西方 12-TET 差異可達 ±50 cents</li>
+      <li>各ガムランセットが独自の調律を持つ</li>
+      <li>Ombak（うなり）：対になった楽器を意図的にわずかにずらして調律し、うなり効果を生み出す</li>
+      <li>西洋の 12-TET との差異は最大 ±50 cents に達する</li>
     </ul>
-    <p class="two-octave">需要兩個八度：否（但高度個別化）</p>
+    <p class="two-octave">2オクターブ必要：いいえ（ただし高度に個別化されている）</p>
 
-    <h3>6.2 泰國音階</h3>
+    <h3>6.2 タイの音階</h3>
 
     <h4>6.2.1 七平均律</h4>
-    <p>泰國傳統音樂使用 7-TET（七等分律）：</p>
+    <p>タイの伝統音楽は 7-TET（七等分律）を使用する：</p>
     <pre>音程：0 - 171 - 343 - 514 - 686 - 857 - 1029
-每級約 171 cents</pre>
-    <p class="two-octave">需要兩個八度：否</p>
+各段約 171 cents</pre>
+    <p class="two-octave">2オクターブ必要：いいえ</p>
 
     <hr>
 
     <!-- Section 7 -->
-    <h2 id="sec-7">7. 技術實現分析</h2>
+    <h2 id="sec-7">7. 技術的実装の分析</h2>
 
-    <h3>7.1 需要兩個八度的系統總結</h3>
+    <h3>7.1 2オクターブが必要なシステムのまとめ</h3>
     <table>
       <thead>
-        <tr><th>系統</th><th>需要兩個八度</th><th>原因</th></tr>
+        <tr><th>システム</th><th>2オクターブ必要</th><th>理由</th></tr>
       </thead>
       <tbody>
-        <tr><td>Arabic Maqam</td><td>是</td><td>上下八度音程可能不同</td></tr>
-        <tr><td>Turkish Makam</td><td>是</td><td>浮動音符（上行/下行差異）</td></tr>
-        <tr><td>Persian Dastgah</td><td>是</td><td>類似 Turkish</td></tr>
-        <tr><td>Indian Raga</td><td>是</td><td>Aroha/Avaroha 完全不同</td></tr>
-        <tr><td>Japanese 都節/律</td><td>是</td><td>上行時短6度→短7度</td></tr>
-        <tr><td>Ryukyu</td><td>是</td><td>下行時加入經過音</td></tr>
-        <tr><td>Japanese 陽/民謠</td><td>否</td><td>上行性，較穩定</td></tr>
-        <tr><td>12-TET</td><td>否</td><td>八度等價</td></tr>
-        <tr><td>Just Intonation</td><td>否</td><td>八度等價</td></tr>
-        <tr><td>Pythagorean</td><td>否</td><td>八度等價</td></tr>
-        <tr><td>Chinese</td><td>否</td><td>八度等價</td></tr>
-        <tr><td>Gamelan</td><td>否</td><td>個別化但無上下行差異</td></tr>
-        <tr><td>Thai 7-TET</td><td>否</td><td>八度等價</td></tr>
+        <tr><td>Arabic Maqam</td><td>はい</td><td>上下のオクターブで音程が異なる可能性</td></tr>
+        <tr><td>Turkish Makam</td><td>はい</td><td>浮動音（上行・下行の差異）</td></tr>
+        <tr><td>Persian Dastgah</td><td>はい</td><td>Turkish と同様</td></tr>
+        <tr><td>Indian Raga</td><td>はい</td><td>Aroha/Avaroha がまったく異なる</td></tr>
+        <tr><td>日本の都節・律</td><td>はい</td><td>上行時に短6度→短7度</td></tr>
+        <tr><td>琉球</td><td>はい</td><td>下行時に経過音が加わる</td></tr>
+        <tr><td>日本の陽・民謡</td><td>いいえ</td><td>上行的で安定</td></tr>
+        <tr><td>12-TET</td><td>いいえ</td><td>オクターブ等価</td></tr>
+        <tr><td>Just Intonation</td><td>いいえ</td><td>オクターブ等価</td></tr>
+        <tr><td>Pythagorean</td><td>いいえ</td><td>オクターブ等価</td></tr>
+        <tr><td>中国</td><td>いいえ</td><td>オクターブ等価</td></tr>
+        <tr><td>Gamelan</td><td>いいえ</td><td>個別化されているが上下行の差異なし</td></tr>
+        <tr><td>Thai 7-TET</td><td>いいえ</td><td>オクターブ等価</td></tr>
       </tbody>
     </table>
 
-    <h3>7.2 實現方案比較</h3>
+    <h3>7.2 実装方式の比較</h3>
 
-    <h4>方案 A：24 個微分音參數（兩個八度）</h4>
+    <h4>方式A：24の微分音パラメータ（2オクターブ）</h4>
     <pre>enum MicrotuneParam {
-    // 第一個八度
+    // 第1オクターブ
     C1_MICROTUNE, CS1_MICROTUNE, D1_MICROTUNE, ..., B1_MICROTUNE,
-    // 第二個八度
+    // 第2オクターブ
     C2_MICROTUNE, CS2_MICROTUNE, D2_MICROTUNE, ..., B2_MICROTUNE,
 };</pre>
-    <p><strong>優點</strong>：</p>
+    <p><strong>利点</strong>：</p>
     <ul>
-      <li>完全支援所有系統</li>
-      <li>上下八度獨立控制</li>
+      <li>すべてのシステムを完全にサポート</li>
+      <li>上下のオクターブを独立して制御</li>
     </ul>
-    <p><strong>缺點</strong>：</p>
+    <p><strong>欠点</strong>：</p>
     <ul>
-      <li>需要 24 個旋鈕（UI 空間問題）</li>
-      <li>對於不需要兩個八度的系統是多餘的</li>
+      <li>24個のノブが必要（UIスペースの問題）</li>
+      <li>2オクターブが不要なシステムでは冗長</li>
     </ul>
 
-    <h4>方案 B：12 + 12（上行/下行分開）</h4>
+    <h4>方式B：12 + 12（上行・下行を分離）</h4>
     <pre>struct MicrotunePreset {
-    float ascending[12];   // 上行微分音
-    float descending[12];  // 下行微分音
+    float ascending[12];   // 上行の微分音
+    float descending[12];  // 下行の微分音
 };</pre>
-    <p><strong>優點</strong>：</p>
+    <p><strong>利点</strong>：</p>
     <ul>
-      <li>精確對應中東/印度系統的需求</li>
-      <li>可以根據音高移動方向自動切換</li>
+      <li>中東・インドシステムの要件に正確に対応</li>
+      <li>音高の移動方向に応じて自動切り替え可能</li>
     </ul>
-    <p><strong>缺點</strong>：</p>
+    <p><strong>欠点</strong>：</p>
     <ul>
-      <li>需要追蹤音高移動方向</li>
-      <li>實現較複雜</li>
+      <li>音高の移動方向を追跡する必要がある</li>
+      <li>実装がより複雑</li>
     </ul>
 
-    <h4>方案 C：混合方案（推薦）</h4>
+    <h4>方式C：ハイブリッド方式（推奨）</h4>
     <pre>struct MicrotuneSystem {
-    float base[12];        // 基本微分音（一個八度）
-    float octave2[12];     // 第二個八度（可選）
-    bool useTwoOctaves;    // 是否啟用兩個八度
-    bool useAscDesc;       // 是否區分上行/下行
-    float ascending[12];   // 上行修正（可選）
-    float descending[12];  // 下行修正（可選）
+    float base[12];        // 基本微分音（1オクターブ）
+    float octave2[12];     // 第2オクターブ（オプション）
+    bool useTwoOctaves;    // 2オクターブを有効にするか
+    bool useAscDesc;       // 上行・下行を区別するか
+    float ascending[12];   // 上行補正（オプション）
+    float descending[12];  // 下行補正（オプション）
 };</pre>
-    <p><strong>優點</strong>：</p>
+    <p><strong>利点</strong>：</p>
     <ul>
-      <li>靈活支援所有系統</li>
-      <li>向後兼容現有的 12 音符系統</li>
-      <li>可根據預設自動配置</li>
+      <li>すべてのシステムを柔軟にサポート</li>
+      <li>既存の12音システムとの後方互換性</li>
+      <li>プリセットに応じて自動設定可能</li>
     </ul>
 
-    <h3>7.3 預設值建議</h3>
+    <h3>7.3 プリセット値の提案</h3>
 
-    <h4>中東系統預設（需要兩個八度/上下行）</h4>
+    <h4>中東システムのプリセット（2オクターブ・上下行が必要）</h4>
     <p><strong>Turkish Makam Rast</strong>：</p>
     <pre>// 上行
 float rast_asc[12] = {0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 8};
@@ -858,11 +858,11 @@ float rast_desc[12] = {0, 0, 0, 0, 8, 0, -100, 0, 0, 0, 0, 8};</pre>
     <p><strong>Arabic Maqam Bayati</strong>：</p>
     <pre>float bayati[12] = {0, 0, -50, 0, 0, 0, 0, 0, 0, -50, 0, 0};</pre>
 
-    <h4>印度系統預設</h4>
-    <p><strong>22 Shruti 近似</strong>：</p>
+    <h4>インドシステムのプリセット</h4>
+    <p><strong>22 Shruti の近似</strong>：</p>
     <pre>float shruti[12] = {0, -10, 14, -16, 14, 2, -10, -2, -14, 16, -18, 12};</pre>
 
-    <h3>7.4 音高方向追蹤算法</h3>
+    <h3>7.4 音高方向追跡アルゴリズム</h3>
     <pre>class PitchDirectionTracker {
     float lastPitch = 0.f;
     bool ascending = true;
@@ -887,33 +887,33 @@ float rast_desc[12] = {0, 0, 0, 0, 8, 0, -100, 0, 0, 0, 0, 8};</pre>
     <hr>
 
     <!-- Section 8 -->
-    <h2 id="sec-8">8. 結論與建議</h2>
+    <h2 id="sec-8">8. 結論と提言</h2>
 
-    <h3>8.1 主要發現</h3>
+    <h3>8.1 主要な発見</h3>
     <ol>
-      <li><strong>中東和南亞系統</strong>需要兩個八度或上行/下行區分</li>
-      <li><strong>東亞系統</strong>（日本、中國、琉球）不需要兩個八度</li>
-      <li><strong>實現複雜度</strong>：混合方案可以同時滿足簡單和複雜需求</li>
+      <li><strong>中東および南アジアのシステム</strong>は2オクターブまたは上行・下行の区別が必要</li>
+      <li><strong>東アジアのシステム</strong>（日本、中国、琉球）は2オクターブを必要としない</li>
+      <li><strong>実装の複雑さ</strong>：ハイブリッド方式により、単純な要件と複雑な要件の両方を同時に満たすことができる</li>
     </ol>
 
-    <h3>8.2 建議實現步驟</h3>
+    <h3>8.2 推奨する実装ステップ</h3>
     <ol>
-      <li><strong>Phase 1</strong>：保持現有 12 個微分音參數</li>
-      <li><strong>Phase 2</strong>：新增「Two-Octave Mode」開關和第二組 12 個參數</li>
-      <li><strong>Phase 3</strong>：新增「Ascending/Descending」模式和音高方向追蹤</li>
-      <li><strong>Phase 4</strong>：實現完整的預設庫</li>
+      <li><strong>Phase 1</strong>：既存の12の微分音パラメータを維持</li>
+      <li><strong>Phase 2</strong>：「Two-Octave Mode」スイッチと第2組の12パラメータを追加</li>
+      <li><strong>Phase 3</strong>：「Ascending/Descending」モードと音高方向追跡を追加</li>
+      <li><strong>Phase 4</strong>：完全なプリセットライブラリを実装</li>
     </ol>
 
-    <h3>8.3 預設庫建議</h3>
-    <p><strong>優先實現</strong>：</p>
+    <h3>8.3 プリセットライブラリの提案</h3>
+    <p><strong>優先的に実装すべきもの</strong>：</p>
     <ol>
       <li>Equal Temperament（12-TET）</li>
       <li>Just Intonation</li>
       <li>Pythagorean</li>
       <li>Arabic Maqam Rast</li>
       <li>Arabic Maqam Bayati</li>
-      <li>Turkish Makam Rast（含上下行）</li>
-      <li>Indian Shruti（22 音近似）</li>
+      <li>Turkish Makam Rast（上下行を含む）</li>
+      <li>Indian Shruti（22音の近似）</li>
       <li>Gamelan Slendro</li>
       <li>Gamelan Pelog</li>
       <li>Japanese In/Yo</li>
@@ -924,17 +924,17 @@ float rast_desc[12] = {0, 0, 0, 0, 8, 0, -100, 0, 0, 0, 0, 8};</pre>
     <hr>
 
     <!-- Section 9 -->
-    <h2 id="sec-9">9. 參考資料</h2>
+    <h2 id="sec-9">9. 参考資料</h2>
 
     <div class="paper__references">
-      <h3>學術資源</h3>
+      <h3>学術資料</h3>
       <ul>
         <li>Touma, H. H. (1996). <em>The Music of the Arabs</em></li>
         <li>Powers, H. S. (1980). "Mode" in <em>New Grove Dictionary of Music</em></li>
         <li>Zonis, E. (1973). <em>Classical Persian Music</em></li>
       </ul>
 
-      <h3>線上資源</h3>
+      <h3>オンライン資料</h3>
       <ul>
         <li><a href="https://en.wikipedia.org/wiki/Arabic_maqam">Wikipedia - Arabic maqam</a></li>
         <li><a href="https://en.wikipedia.org/wiki/Turkish_makam">Wikipedia - Turkish makam</a></li>
@@ -943,7 +943,7 @@ float rast_desc[12] = {0, 0, 0, 0, 8, 0, -100, 0, 0, 0, 0, 8};</pre>
         <li><a href="https://taqs.im/scales/">TAQS.IM Scale Guide</a></li>
       </ul>
 
-      <h3>技術參考</h3>
+      <h3>技術参考</h3>
       <ul>
         <li><a href="http://www.huygens-fokker.org/scala/">Scala Scale Archive</a></li>
         <li><a href="https://en.xen.wiki/">Xenharmonic Wiki</a></li>
@@ -953,12 +953,12 @@ float rast_desc[12] = {0, 0, 0, 0, 8, 0, -100, 0, 0, 0, 0, 8};</pre>
     <hr>
 
     <!-- Appendix A -->
-    <h2>附錄 A：完整微分音數據表</h2>
+    <h2>付録A：微分音データ完全表</h2>
 
-    <h3>A.1 Just Intonation（純律）</h3>
+    <h3>A.1 Just Intonation（純正律）</h3>
     <table>
       <thead>
-        <tr><th>音符</th><th>比率</th><th>Cents</th><th>與 12-TET 差</th></tr>
+        <tr><th>音名</th><th>比率</th><th>Cents</th><th>12-TET との差</th></tr>
       </thead>
       <tbody>
         <tr><td>C</td><td>1/1</td><td>0.00</td><td>0.00</td></tr>
@@ -976,10 +976,10 @@ float rast_desc[12] = {0, 0, 0, 0, 8, 0, -100, 0, 0, 0, 0, 8};</pre>
       </tbody>
     </table>
 
-    <h3>A.2 Pythagorean（畢達哥拉斯）</h3>
+    <h3>A.2 Pythagorean（ピタゴラス音律）</h3>
     <table>
       <thead>
-        <tr><th>音符</th><th>比率</th><th>Cents</th><th>與 12-TET 差</th></tr>
+        <tr><th>音名</th><th>比率</th><th>Cents</th><th>12-TET との差</th></tr>
       </thead>
       <tbody>
         <tr><td>C</td><td>1/1</td><td>0.00</td><td>0.00</td></tr>
@@ -997,10 +997,10 @@ float rast_desc[12] = {0, 0, 0, 0, 8, 0, -100, 0, 0, 0, 0, 8};</pre>
       </tbody>
     </table>
 
-    <h3>A.3 22 Shruti（印度）</h3>
+    <h3>A.3 22 Shruti（インド）</h3>
     <table>
       <thead>
-        <tr><th>Shruti #</th><th>名稱</th><th>Cents</th></tr>
+        <tr><th>Shruti #</th><th>名称</th><th>Cents</th></tr>
       </thead>
       <tbody>
         <tr><td>1</td><td>Chandovati</td><td>0</td></tr>
@@ -1031,40 +1031,40 @@ float rast_desc[12] = {0, 0, 0, 0, 8, 0, -100, 0, 0, 0, 0, 8};</pre>
     <hr>
 
     <!-- Appendix B -->
-    <h2>附錄 B：預設實現代碼參考</h2>
+    <h2>付録B：プリセット実装のコード参考</h2>
     <pre>// Microtuning preset data structure
 struct MicrotunePreset {
     const char* name;
     float cents[12];
     bool needsTwoOctaves;
-    float cents_octave2[12];  // 第二個八度（如需要）
+    float cents_octave2[12];  // 第2オクターブ（必要な場合）
 };
 
-// 預設定義
+// プリセット定義
 const MicrotunePreset PRESETS[] = {
     {"Equal Temperament", {0,0,0,0,0,0,0,0,0,0,0,0}, false, {}},
     {"Just Intonation", {0,11.7,3.9,15.6,-13.7,-2.0,-9.8,2.0,13.7,-15.6,17.6,-11.7}, false, {}},
     {"Pythagorean", {0,13.7,3.9,-5.9,7.8,-2.0,11.7,2.0,15.6,5.9,-3.9,9.8}, false, {}},
     {"Arabic Bayati", {0,0,-50,0,0,0,0,0,0,-50,0,0}, false, {}},
     {"Turkish Rast", {0,0,0,0,8,0,0,0,0,0,0,8}, false, {}},
-    // ... 更多預設
+    // ... その他のプリセット
 };</pre>
 
     <hr>
 
-    <p><strong>文件結束</strong></p>
-    <p><em>本研究為 MADZINE VCV Rack Quantizer 模組開發的基礎資料。</em></p>
+    <p><strong>文書終了</strong></p>
+    <p><em>本研究は MADZINE VCV Rack Quantizer モジュール開発のための基礎資料である。</em></p>
 
   </article>
 
   <!-- Bottom Bar -->
   <div class="bottom-bar">
-    <span class="bottom-bar__copyright" data-i18n="footer.copyright">&copy; 2025 MADZINE. 保留所有權利。</span>
+    <span class="bottom-bar__copyright" data-i18n="footer.copyright">&copy; 2025 MADZINE. All rights reserved.</span>
     <nav class="bottom-bar__nav">
-      <a href="index.html" data-i18n="nav.home">首頁</a>
-      <a href="software.html" data-i18n="nav.software">軟體</a>
+      <a href="index.html" data-i18n="nav.home">ホーム</a>
+      <a href="software.html" data-i18n="nav.software">ソフトウェア</a>
       <a href="works.html" data-i18n="nav.works">作品</a>
-      <a href="contact.html" data-i18n="nav.contact">聯絡</a>
+      <a href="contact.html" data-i18n="nav.contact">お問い合わせ</a>
     </nav>
     <div class="bottom-bar__controls">
       <div class="lang-switcher">
@@ -1072,7 +1072,7 @@ const MicrotunePreset PRESETS[] = {
         <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
         <button class="lang-btn" data-lang="ja" onclick="I18N.setLang('ja')">JP</button>
       </div>
-      <button id="mode-toggle" class="mode-toggle" aria-label="切換深色模式">☽</button>
+      <button id="mode-toggle" class="mode-toggle" aria-label="ダークモード切替">☽</button>
     </div>
   </div>
 
