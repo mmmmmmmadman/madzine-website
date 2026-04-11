@@ -1079,21 +1079,35 @@ const MicrotunePreset PRESETS[] = {
   <script src="js/i18n.js"></script>
   <script src="js/main.js"></script>
 
+
+
   <script>
-    // Override language buttons to navigate to translated page
-    document.addEventListener('DOMContentLoaded', function() {
+    (function() {
       var langMap = {"zh-TW": "research-microtuning.html", "en": "research-microtuning.html", "ja": "research-microtuning-ja.html"};
-      document.querySelectorAll('.lang-btn').forEach(function(btn) {
-        btn.addEventListener('click', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          var lang = this.getAttribute('data-lang');
-          if (langMap[lang] && langMap[lang] !== window.location.pathname.split('/').pop()) {
-            window.location.href = langMap[lang];
-          }
+      var currentFile = window.location.pathname.split('/').pop() || 'index.html';
+      var savedLang = localStorage.getItem('madzine-lang');
+      
+      // Auto-redirect on page load if user's language doesn't match current page
+      if (savedLang && langMap[savedLang] && langMap[savedLang] !== currentFile) {
+        window.location.replace(langMap[savedLang]);
+        return;
+      }
+      
+      // Override language buttons to navigate to translated page
+      document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.lang-btn').forEach(function(btn) {
+          btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var lang = this.getAttribute('data-lang');
+            localStorage.setItem('madzine-lang', lang);
+            if (langMap[lang] && langMap[lang] !== currentFile) {
+              window.location.href = langMap[lang];
+            }
+          });
         });
       });
-    });
+    })();
   </script>
 
 </body>
