@@ -228,6 +228,10 @@ const I18N = {
             }
           }
         },
+        dance: {
+          title: '舞蹈聲音設計',
+          desc: '現代舞與舞踏的聲音與音樂設計'
+        },
         bandcamp: '在 Bandcamp 收聽',
         youtube: '在 YouTube 觀看'
       },
@@ -519,6 +523,10 @@ const I18N = {
             }
           }
         },
+        dance: {
+          title: 'Dance Sound Design',
+          desc: 'Sound and music design for contemporary dance and butoh performance'
+        },
         bandcamp: 'Listen on Bandcamp',
         youtube: 'Watch on YouTube'
       },
@@ -809,6 +817,10 @@ const I18N = {
               desc: '粉彩筆から小刀で顔料を削り出し、小刀の音が紙を振動させる合図となり、顔料が自然に落ちて絵画となる。'
             }
           }
+        },
+        dance: {
+          title: 'ダンス・サウンドデザイン',
+          desc: 'コンテンポラリーダンスと舞踏のための音楽・サウンドデザイン'
         },
         bandcamp: 'Bandcampで聴く',
         youtube: 'YouTubeで見る'
