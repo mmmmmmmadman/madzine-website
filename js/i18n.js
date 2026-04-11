@@ -232,6 +232,9 @@ const I18N = {
           title: '舞蹈聲音設計',
           desc: '現代舞與舞踏的聲音與音樂設計'
         },
+        research: {
+          title: '研究'
+        },
         bandcamp: '在 Bandcamp 收聽',
         youtube: '在 YouTube 觀看'
       },
@@ -527,6 +530,9 @@ const I18N = {
           title: 'Dance Sound Design',
           desc: 'Sound and music design for contemporary dance and butoh performance'
         },
+        research: {
+          title: 'Research'
+        },
         bandcamp: 'Listen on Bandcamp',
         youtube: 'Watch on YouTube'
       },
@@ -821,6 +827,9 @@ const I18N = {
         dance: {
           title: 'ダンス・サウンドデザイン',
           desc: 'コンテンポラリーダンスと舞踏のための音楽・サウンドデザイン'
+        },
+        research: {
+          title: '研究'
         },
         bandcamp: 'Bandcampで聴く',
         youtube: 'YouTubeで見る'

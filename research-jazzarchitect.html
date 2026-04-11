@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MADZINE — JazzArchitect Research Paper</title>
+  <meta name="description" content="JazzArchitect: A Jazz Harmony Generation System Based on Recursive Probabilistic Grammar">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .paper {
+      max-width: var(--content-narrow);
+      margin: 0 auto;
+      padding: var(--space-16) var(--padding-page-x) var(--space-12);
+    }
+
+    .paper__back {
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: var(--space-8);
+      font-size: var(--text-sm);
+      color: var(--color-primary);
+      transition: color var(--duration-normal) var(--ease-default);
+    }
+    .paper__back:hover {
+      color: var(--text-primary);
+    }
+
+    .paper__title {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      line-height: var(--leading-snug);
+      font-weight: var(--weight-regular);
+      color: var(--text-primary);
+      margin-bottom: var(--space-6);
+    }
+
+    .paper__meta {
+      font-size: var(--text-sm);
+      color: var(--text-tertiary);
+      margin-bottom: var(--space-8);
+    }
+
+    .paper__abstract {
+      border-left: 2px solid var(--border-default);
+      padding-left: var(--space-6);
+      margin-bottom: var(--space-10);
+    }
+    .paper__abstract-label {
+      font-family: var(--font-display);
+      font-size: var(--text-md);
+      font-weight: var(--weight-medium);
+      color: var(--text-primary);
+      margin-bottom: var(--space-3);
+    }
+    .paper__abstract p {
+      font-size: var(--text-base);
+      color: var(--text-secondary);
+      line-height: var(--leading-relaxed);
+    }
+    .paper__keywords {
+      font-size: var(--text-sm);
+      color: var(--text-tertiary);
+      margin-top: var(--space-4);
+    }
+
+    .paper__divider {
+      width: 40px;
+      height: 1px;
+      background: var(--border-default);
+      margin: var(--space-10) 0;
+    }
+
+    .paper h2 {
+      font-family: var(--font-display);
+      font-size: var(--text-xl);
+      line-height: var(--leading-tight);
+      font-weight: var(--weight-regular);
+      color: var(--text-primary);
+      margin-top: var(--space-12);
+      margin-bottom: var(--space-6);
+    }
+
+    .paper h3 {
+      font-family: var(--font-display);
+      font-size: var(--text-md);
+      font-weight: var(--weight-medium);
+      color: var(--text-primary);
+      margin-top: var(--space-8);
+      margin-bottom: var(--space-4);
+    }
+
+    .paper h4 {
+      font-size: var(--text-base);
+      font-weight: var(--weight-medium);
+      color: var(--text-primary);
+      margin-top: var(--space-6);
+      margin-bottom: var(--space-3);
+    }
+
+    .paper p {
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      line-height: var(--leading-relaxed);
+      color: var(--text-primary);
+      margin-bottom: var(--space-4);
+    }
+
+    .paper ol,
+    .paper ul {
+      padding-left: var(--space-6);
+      margin-bottom: var(--space-4);
+    }
+    .paper ol {
+      list-style: decimal;
+    }
+    .paper ul {
+      list-style: disc;
+    }
+    .paper li {
+      font-size: var(--text-base);
+      line-height: var(--leading-relaxed);
+      color: var(--text-primary);
+      margin-bottom: var(--space-2);
+    }
+
+    .paper strong {
+      font-weight: var(--weight-medium);
+    }
+
+    .paper table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: var(--space-4) 0 var(--space-6);
+      font-size: var(--text-sm);
+    }
+    .paper th,
+    .paper td {
+      text-align: left;
+      padding: var(--space-2) var(--space-3);
+      border-bottom: 1px solid var(--border-default);
+      color: var(--text-primary);
+    }
+    .paper th {
+      color: var(--text-secondary);
+      font-weight: var(--weight-medium);
+      border-bottom: 2px solid var(--border-strong);
+    }
+
+    .paper pre {
+      background: var(--surface-sunken);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-sm);
+      padding: var(--space-4) var(--space-5);
+      overflow-x: auto;
+      margin: var(--space-4) 0 var(--space-6);
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      line-height: var(--leading-normal);
+      color: var(--text-primary);
+    }
+
+    .paper .references {
+      margin-top: var(--space-8);
+    }
+    .paper .references ol {
+      list-style: decimal;
+      padding-left: var(--space-6);
+    }
+    .paper .references li {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      margin-bottom: var(--space-3);
+      line-height: var(--leading-relaxed);
+    }
+
+    .paper__version {
+      font-size: var(--text-sm);
+      color: var(--text-tertiary);
+      font-style: italic;
+      margin-top: var(--space-8);
+    }
+
+    @media (max-width: 480px) {
+      .paper {
+        padding-top: var(--space-10);
+      }
+      .paper__title {
+        font-size: var(--text-xl);
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <article class="paper">
+
+    <a href="works.html" class="paper__back">&larr; Back</a>
+
+    <h1 class="paper__title">JazzArchitect: A Jazz Harmony Generation System Based on Recursive Probabilistic Grammar</h1>
+
+    <div class="paper__meta">MADZINE &middot; January 2, 2026</div>
+
+    <!-- Abstract -->
+    <div class="paper__abstract">
+      <div class="paper__abstract-label">Abstract</div>
+      <p>This paper presents JazzArchitect, a jazz chord progression generation system based on the recursive Probabilistic Context-Free Grammar (PCFG) framework proposed by Rohrmeier (2020). Implemented in C++ with the JUCE audio framework, the system provides real-time audio synthesis and MIDI output capabilities. Through a 15-parameter style vector, the system can generate chord progressions in 9 different jazz styles, including Bebop, Cool Jazz, and Modal Jazz. The system implements three major substitution rules (tritone substitution, backdoor dominant, and Coltrane changes) along with Smither (2019) guide-tone voice leading optimization. This paper details the system architecture, algorithm design, and implementation specifics.</p>
+      <p class="paper__keywords"><strong>Keywords:</strong> Jazz harmony, Probabilistic context-free grammar, Chord progression generation, Voice leading, Music information retrieval</p>
+    </div>
+
+    <div class="paper__divider"></div>
+
+    <!-- 1. Introduction -->
+    <h2>1. Introduction</h2>
+
+    <h3>1.1 Motivation</h3>
+    <p>Jazz harmony is renowned for its complex chord progressions and rich substitution rules. Traditional jazz improvisers master these rules through years of study, but for computer music generation systems, simulating this musical knowledge remains a significant challenge.</p>
+    <p>Existing music generation methods fall into two main categories:</p>
+    <ol>
+      <li><strong>Data-driven methods:</strong> Using deep learning (such as LSTM, Transformer) to learn harmonic patterns from corpora</li>
+      <li><strong>Rule-based methods:</strong> Generating based on music theory rules</li>
+    </ol>
+    <p>While data-driven methods can produce fluent results, they lack interpretability and controllability. Rule-based methods offer precise control over the generation process, but traditional implementations tend to be overly rigid.</p>
+
+    <h3>1.2 Research Objectives</h3>
+    <p>This research aims to combine the advantages of both approaches:</p>
+    <ol>
+      <li>Adopt the recursive grammar framework proposed by Rohrmeier (2020) for theoretical foundation</li>
+      <li>Use probabilistic weights to control rule selection, increasing generation diversity</li>
+      <li>Implement a style parameter system allowing cross-era jazz style generation</li>
+      <li>Provide complete audio synthesis and MIDI output functionality</li>
+    </ol>
+
+    <h3>1.3 Contributions</h3>
+    <p>The main contributions of this research are:</p>
+    <ul>
+      <li>Complete implementation of the Rohrmeier (2020) PCFG framework in C++</li>
+      <li>Design of a 15-parameter style vector system supporting 9 jazz style presets</li>
+      <li>Integration of three major substitution rules and guide-tone voice leading optimization</li>
+      <li>Development of a standalone application with graphical user interface</li>
+    </ul>
+
+    <div class="paper__divider"></div>
+
+    <!-- 2. Related Work -->
+    <h2>2. Related Work</h2>
+
+    <h3>2.1 Formal Grammar for Jazz Harmony</h3>
+    <p>Steedman (1984) first proposed analyzing jazz chord sequences using formal grammar, treating jazz harmony as a linguistic structure. This study defined basic generation rules but did not address probabilistic weighting.</p>
+    <p>Rohrmeier (2020) extended this framework, proposing a recursive grammar containing the following core concepts:</p>
+    <ul>
+      <li><strong>Prolongation:</strong> Repetition or elaboration of functionally equivalent chords</li>
+      <li><strong>Preparation:</strong> Dominant function chords preparing target chords</li>
+      <li><strong>Substitution:</strong> Replacement of functionally equivalent chords</li>
+    </ul>
+
+    <h3>2.2 Probabilistic Context-Free Grammar</h3>
+    <p>Harasim et al. (2018, 2020) applied PCFG to the Jazz Harmony Treebank (JHT), extracting rule weights from 150 jazz standards. This method combines the structural nature of formal grammar with the flexibility of statistical methods.</p>
+
+    <h3>2.3 Voice Leading Theory</h3>
+    <p>Smither (2019) proposed guide-tone voice leading theory for jazz harmony. Core concepts include:</p>
+    <ul>
+      <li><strong>Guide tones:</strong> The third and seventh of each chord</li>
+      <li><strong>Smooth voice leading:</strong> Guide tones of adjacent chords should move by minimal intervals</li>
+      <li><strong>Target cost:</strong> Ideal voice leading cost should be 2 semitones or less</li>
+    </ul>
+
+    <h3>2.4 Substitution Rules</h3>
+    <p>Common substitution rules in jazz harmony include:</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Substitution Type</th>
+          <th>Original Chord</th>
+          <th>Substitute Chord</th>
+          <th>Theoretical Basis</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Tritone substitution</td><td>V7</td><td>bII7</td><td>Shared tritone interval</td></tr>
+        <tr><td>Backdoor dominant</td><td>V7</td><td>bVII7</td><td>Minor key borrowing</td></tr>
+        <tr><td>Coltrane changes</td><td>I</td><td>Major third cycle</td><td>Coltrane style</td></tr>
+      </tbody>
+    </table>
+
+    <div class="paper__divider"></div>
+
+    <!-- 3. System Architecture -->
+    <h2>3. System Architecture</h2>
+
+    <h3>3.1 Overall Architecture</h3>
+    <p>JazzArchitect employs a layered architecture design:</p>
+<pre>User Interface Layer
+├── JUCE GUI
+└── Parameter Controls
+
+Generation Layer
+├── PCFG Engine
+│   ├── Generator
+│   └── Rule Library
+└── Style Engine
+    ├── Substitution Processing
+    ├── Voice Leading Optimization
+    └── Style Parameters
+
+Core Layer
+├── Chord Symbol
+├── Pitch Class
+└── Interval Calculation
+
+Output Layer
+├── Chord Synthesizer (8-voice polyphony)
+└── MIDI Exporter</pre>
+
+    <h3>3.2 Module Description</h3>
+
+    <h4>Core Module</h4>
+    <ul>
+      <li><strong>PitchClass:</strong> Pitch class representation (0-11, C=0)</li>
+      <li><strong>ChordQuality:</strong> Chord quality enumeration (maj7, min7, dom7, hdim7, dim7, aug)</li>
+      <li><strong>ChordSymbol:</strong> Complete chord symbol including root, quality, extensions, and alterations</li>
+    </ul>
+
+    <h4>Grammar Module</h4>
+    <ul>
+      <li><strong>NonTerminal:</strong> Non-terminal symbols (S, T, D, SD, PREP, PROL)</li>
+      <li><strong>GrammarRule:</strong> Production rule definitions</li>
+      <li><strong>PCFG:</strong> Probabilistic context-free grammar engine</li>
+      <li><strong>Generator:</strong> Top-down derivation engine</li>
+    </ul>
+
+    <h4>Style Module</h4>
+    <ul>
+      <li><strong>StyleVector:</strong> 15-parameter style vector</li>
+      <li><strong>StylePresets:</strong> 9 style presets</li>
+      <li><strong>StyleEngine:</strong> Integrates generation and post-processing</li>
+    </ul>
+
+    <h4>Substitution Module</h4>
+    <ul>
+      <li><strong>TritoneSubstitution:</strong> V7 to bII7</li>
+      <li><strong>BackdoorSubstitution:</strong> V7 to bVII7</li>
+      <li><strong>ColtraneSubstitution:</strong> Major third cycle substitution</li>
+      <li><strong>SubstitutionEngine:</strong> Unified substitution processor</li>
+    </ul>
+
+    <h4>Voice Leading Module</h4>
+    <ul>
+      <li><strong>GuideTone:</strong> Third and seventh analysis</li>
+      <li><strong>VoiceLeadingOptimizer:</strong> Minimizes voice leading cost</li>
+    </ul>
+
+    <h4>Synthesis Module</h4>
+    <ul>
+      <li><strong>ChordSynth:</strong> 8-voice polyphonic chord synthesizer</li>
+      <li><strong>ADSREnvelope:</strong> Attack-Decay-Sustain-Release envelope</li>
+      <li><strong>SynthVoice:</strong> Single synthesis voice</li>
+    </ul>
+
+    <h4>MIDI Module</h4>
+    <ul>
+      <li><strong>MIDIExporter:</strong> Standard MIDI File export</li>
+    </ul>
+
+    <div class="paper__divider"></div>
+
+    <!-- 4. Grammar Engine -->
+    <h2>4. Grammar Engine</h2>
+
+    <h3>4.1 Non-Terminal Symbols</h3>
+    <p>The system defines the following non-terminal symbols:</p>
+    <table>
+      <thead>
+        <tr><th>Symbol</th><th>Name</th><th>Function</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>S</td><td>Start</td><td>Start symbol (entire piece)</td></tr>
+        <tr><td>T</td><td>Tonic</td><td>Tonic region</td></tr>
+        <tr><td>D</td><td>Dominant</td><td>Dominant region</td></tr>
+        <tr><td>SD</td><td>Subdominant</td><td>Subdominant region</td></tr>
+        <tr><td>PREP</td><td>Preparation</td><td>Preparation region</td></tr>
+        <tr><td>PROL</td><td>Prolongation</td><td>Prolongation region</td></tr>
+      </tbody>
+    </table>
+
+    <h3>4.2 Core Production Rules</h3>
+
+    <h4>Prolongation Rules</h4>
+    <p>Prolongation rules repeat or elaborate functionally equivalent chords:</p>
+    <ul>
+      <li>Tonic prolongation: T produces T T</li>
+      <li>Dominant prolongation: D produces D D</li>
+      <li>Right prolongation: T produces T PROL</li>
+      <li>Left prolongation: T produces PROL T</li>
+    </ul>
+
+    <h4>Preparation Rules</h4>
+    <p>Preparation rules insert dominant function chords:</p>
+    <ul>
+      <li>Authentic cadence: T produces D T</li>
+      <li>Plagal cadence: T produces SD T</li>
+      <li>ii-V pattern: D produces PREP D</li>
+      <li>Secondary dominant preparation: PREP produces ii</li>
+      <li>Double dominant preparation: PREP produces V/V</li>
+    </ul>
+
+    <h4>Substitution Rules</h4>
+    <p>Substitution rules are unary productions:</p>
+    <ul>
+      <li>Tritone substitution: V7 produces bII7</li>
+      <li>Backdoor dominant: V7 produces bVII7</li>
+      <li>Coltrane changes: I produces major third cycle</li>
+    </ul>
+
+    <h3>4.3 Rule Probabilities</h3>
+    <p>Rule probabilities are controlled by the StyleVector. For the ii-V pattern:</p>
+    <ul>
+      <li>Probability of choosing preparation = StyleVector.iiVPreference</li>
+      <li>Probability of choosing prolongation = 1 - iiVPreference</li>
+    </ul>
+
+    <h3>4.4 Derivation Algorithm</h3>
+    <p>The system employs top-down recursive derivation:</p>
+    <ol>
+      <li>Initialize derivation tree with start symbol S</li>
+      <li>While tree contains non-terminals:
+        <ul>
+          <li>Select leftmost non-terminal N</li>
+          <li>Get applicable rules for N</li>
+          <li>Weight rules according to style parameters</li>
+          <li>Sample rule r according to probabilities</li>
+          <li>Apply r, replacing N with RHS symbols</li>
+        </ul>
+      </li>
+      <li>Map terminals to chord symbols in the key</li>
+      <li>Return chord progression</li>
+    </ol>
+
+    <div class="paper__divider"></div>
+
+    <!-- 5. Style System -->
+    <h2>5. Style System</h2>
+
+    <h3>5.1 StyleVector Parameters</h3>
+    <p>StyleVector contains 15 parameters controlling generation behavior:</p>
+    <table>
+      <thead>
+        <tr><th>Parameter</th><th>Range</th><th>Description</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>tritoneSubProb</td><td>0.0-1.0</td><td>Tritone substitution probability</td></tr>
+        <tr><td>iiVPreference</td><td>0.0-1.0</td><td>ii-V progression preference</td></tr>
+        <tr><td>modalInterchange</td><td>0.0-1.0</td><td>Modal interchange frequency</td></tr>
+        <tr><td>chromaticApproach</td><td>0.0-1.0</td><td>Chromatic approach frequency</td></tr>
+        <tr><td>dominantChainDepth</td><td>1-5</td><td>Maximum dominant chain depth</td></tr>
+        <tr><td>rhythmDensity</td><td>0.0-1.0</td><td>Chord change density</td></tr>
+        <tr><td>extensionLevel</td><td>0.0-1.0</td><td>Extension usage level</td></tr>
+        <tr><td>backdoorProb</td><td>0.0-1.0</td><td>Backdoor dominant probability</td></tr>
+        <tr><td>coltraneProb</td><td>0.0-1.0</td><td>Coltrane changes probability</td></tr>
+        <tr><td>minorBorrowing</td><td>0.0-1.0</td><td>Minor key borrowing frequency</td></tr>
+        <tr><td>diminishedUsage</td><td>0.0-1.0</td><td>Diminished chord usage frequency</td></tr>
+        <tr><td>deceptiveResolution</td><td>0.0-1.0</td><td>Deceptive cadence probability</td></tr>
+        <tr><td>plagalCadence</td><td>0.0-1.0</td><td>Plagal cadence probability</td></tr>
+        <tr><td>suspensionUsage</td><td>0.0-1.0</td><td>Suspension usage frequency</td></tr>
+        <tr><td>pedalPointProb</td><td>0.0-1.0</td><td>Pedal point probability</td></tr>
+      </tbody>
+    </table>
+
+    <h3>5.2 Style Presets</h3>
+    <p>The system provides 9 style presets:</p>
+    <table>
+      <thead>
+        <tr><th>Style</th><th>Tritone</th><th>ii-V</th><th>Modal</th><th>Extension</th><th>Characteristics</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Bebop</td><td>0.30</td><td>0.90</td><td>0.20</td><td>0.70</td><td>Fast ii-V, rich extensions</td></tr>
+        <tr><td>Cool</td><td>0.20</td><td>0.70</td><td>0.30</td><td>0.50</td><td>Slower tempo, spacious</td></tr>
+        <tr><td>Modal</td><td>0.10</td><td>0.30</td><td>0.70</td><td>0.30</td><td>Few functional progressions, modal color</td></tr>
+        <tr><td>Hard Bop</td><td>0.35</td><td>0.85</td><td>0.25</td><td>0.60</td><td>Blues influence, strong rhythm</td></tr>
+        <tr><td>Post-Bop</td><td>0.40</td><td>0.60</td><td>0.60</td><td>0.80</td><td>Modern harmony, complex structure</td></tr>
+        <tr><td>Swing</td><td>0.15</td><td>0.80</td><td>0.10</td><td>0.40</td><td>Traditional progressions, concise</td></tr>
+        <tr><td>Fusion</td><td>0.30</td><td>0.50</td><td>0.50</td><td>0.90</td><td>Rich extensions, modal mixture</td></tr>
+        <tr><td>Contemporary</td><td>0.35</td><td>0.40</td><td>0.70</td><td>0.85</td><td>Modern techniques, free structure</td></tr>
+        <tr><td>Blues</td><td>0.20</td><td>0.60</td><td>0.40</td><td>0.50</td><td>Blues progressions, parallel chords</td></tr>
+      </tbody>
+    </table>
+
+    <h3>5.3 Style Engine</h3>
+    <p>StyleEngine integrates the generation workflow:</p>
+    <ol>
+      <li>Generate base progression using PCFG</li>
+      <li>Apply substitution engine to process substitution rules</li>
+      <li>Optimize using voice leading optimizer</li>
+      <li>Return final progression</li>
+    </ol>
+
+    <div class="paper__divider"></div>
+
+    <!-- 6. Substitution Rules -->
+    <h2>6. Substitution Rules</h2>
+
+    <h3>6.1 Tritone Substitution</h3>
+    <p>Tritone substitution is based on V7 and bII7 sharing the same tritone interval:</p>
+    <ul>
+      <li>G7 tritone: B-F (3rd and 7th)</li>
+      <li>Db7 tritone: F-Cb (3rd and 7th)</li>
+    </ul>
+    <p>Both share B/Cb and F, making them interchangeable.</p>
+    <p>In implementation, the system replaces V7 with bII7 according to tritoneSubProb. The new root is calculated as the original root plus 6 semitones (tritone interval).</p>
+
+    <h3>6.2 Backdoor Dominant</h3>
+    <p>Backdoor dominant comes from minor key borrowing, replacing V7 with bVII7:</p>
+    <ul>
+      <li>Traditional: G7 resolves to Cmaj7</li>
+      <li>Backdoor: Bb7 resolves to Cmaj7</li>
+    </ul>
+    <p>Implementation is controlled by backdoorProb. The new root is the original root plus 3 semitones (ascending minor third).</p>
+
+    <h3>6.3 Coltrane Changes</h3>
+    <p>Coltrane changes originate from John Coltrane's "Giant Steps," replacing simple progressions with major third cycles:</p>
+    <ul>
+      <li>Traditional: I chord</li>
+      <li>Coltrane: III7 - bVImaj7 - bII7 - V7 - I</li>
+    </ul>
+    <p>Implementation expands a single I chord into a sequence of 5 chords.</p>
+
+    <div class="paper__divider"></div>
+
+    <!-- 7. Voice Leading Optimization -->
+    <h2>7. Voice Leading Optimization</h2>
+
+    <h3>7.1 Guide-Tone Analysis</h3>
+    <p>According to Smither (2019), guide tones are the third and seventh of each chord:</p>
+    <table>
+      <thead>
+        <tr><th>Chord Type</th><th>Third</th><th>Seventh</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Cmaj7</td><td>E (4)</td><td>B (11)</td></tr>
+        <tr><td>Dm7</td><td>F (5)</td><td>C (0)</td></tr>
+        <tr><td>G7</td><td>B (11)</td><td>F (5)</td></tr>
+      </tbody>
+    </table>
+
+    <h3>7.2 Voice Leading Cost</h3>
+    <p>Voice leading cost between two chords is defined as the minimum movement of guide tones:</p>
+    <p>Cost = |third1 - third2| + |seventh1 - seventh2|</p>
+    <p>Intervals are calculated as minimum values (considering octave equivalence).</p>
+
+    <h3>7.3 Optimization Algorithm</h3>
+    <p>VoiceLeadingOptimizer checks each pair of adjacent chords, attempting substitution if cost is too high:</p>
+    <ol>
+      <li>For each pair of adjacent chords</li>
+      <li>Calculate voice leading cost</li>
+      <li>If cost &gt; 2:
+        <ul>
+          <li>Try tritone substitution on the first chord</li>
+          <li>Calculate new cost</li>
+          <li>If new cost is lower, apply substitution</li>
+        </ul>
+      </li>
+      <li>Return optimized progression</li>
+    </ol>
+
+    <div class="paper__divider"></div>
+
+    <!-- 8. Audio Synthesis -->
+    <h2>8. Audio Synthesis</h2>
+
+    <h3>8.1 Synthesizer Architecture</h3>
+    <p>ChordSynth is an 8-voice polyphonic chord synthesizer supporting three timbres:</p>
+    <table>
+      <thead>
+        <tr><th>Timbre</th><th>Synthesis Method</th><th>Characteristics</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Electric Piano</td><td>FM Synthesis</td><td>Rhodes style, decaying modulation</td></tr>
+        <tr><td>Organ</td><td>Additive Synthesis</td><td>Hammond style, harmonic stacking</td></tr>
+        <tr><td>Pad</td><td>Subtractive Synthesis</td><td>Sawtooth wave + low-pass filter</td></tr>
+      </tbody>
+    </table>
+
+    <h3>8.2 Envelope Settings</h3>
+    <p>Each SynthVoice contains an independent ADSR envelope:</p>
+    <table>
+      <thead>
+        <tr><th>Timbre</th><th>Attack</th><th>Decay</th><th>Sustain</th><th>Release</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Electric Piano</td><td>5ms</td><td>300ms</td><td>0.3</td><td>400ms</td></tr>
+        <tr><td>Organ</td><td>10ms</td><td>50ms</td><td>0.9</td><td>100ms</td></tr>
+        <tr><td>Pad</td><td>200ms</td><td>500ms</td><td>0.7</td><td>800ms</td></tr>
+      </tbody>
+    </table>
+
+    <h3>8.3 Chord Voicing</h3>
+    <p>ChordSymbol.getMIDINotes() generates MIDI notes:</p>
+    <ol>
+      <li>Calculate root MIDI value = baseOctave * 12 + root</li>
+      <li>Add root note</li>
+      <li>For each interval in chord quality, add corresponding note</li>
+      <li>For each extension, add corresponding note</li>
+      <li>Return note list</li>
+    </ol>
+
+    <div class="paper__divider"></div>
+
+    <!-- 9. Implementation Details -->
+    <h2>9. Implementation Details</h2>
+
+    <h3>9.1 Development Environment</h3>
+    <ul>
+      <li><strong>Language:</strong> C++17</li>
+      <li><strong>Framework:</strong> JUCE 7.x</li>
+      <li><strong>Build System:</strong> CMake 3.22+</li>
+      <li><strong>Platform:</strong> macOS (ARM64/x86_64)</li>
+    </ul>
+
+    <h3>9.2 File Structure</h3>
+<pre>cpp/
+├── Source/
+│   ├── Core/           # Core classes
+│   ├── Grammar/        # Grammar engine
+│   ├── Style/          # Style system
+│   ├── Substitution/   # Substitution rules
+│   ├── VoiceLeading/   # Voice leading
+│   ├── Synthesis/      # Audio synthesis
+│   ├── MIDI/           # MIDI output
+│   ├── Main.cpp
+│   ├── MainComponent.h
+│   └── MainComponent.cpp
+├── JUCE/               # JUCE submodule
+├── CMakeLists.txt
+└── build/</pre>
+
+    <h3>9.3 Build Instructions</h3>
+<pre>cd cpp
+mkdir build &amp;&amp; cd build
+cmake ..
+cmake --build . --config Release</pre>
+
+    <h3>9.4 Application Specifications</h3>
+    <ul>
+      <li><strong>File Size:</strong> Approximately 11 MB</li>
+      <li><strong>Minimum Requirements:</strong> macOS 10.13+</li>
+      <li><strong>Audio Engine:</strong> CoreAudio, 48 kHz</li>
+      <li><strong>CPU Usage:</strong> Very low (&lt; 1%)</li>
+    </ul>
+
+    <div class="paper__divider"></div>
+
+    <!-- 10. User Interface -->
+    <h2>10. User Interface</h2>
+
+    <h3>10.1 Interface Layout</h3>
+<pre>┌─────────────────────────────────────────────────────────────┐
+│ Jazz Architect                                              │
+├─────────────────────────────────────────────────────────────┤
+│ Style: [Bebop   v]  Key: [C      v]  Sound: [E.Piano  v]   │
+│ BPM: [===120===]    Length: [===8===]                      │
+│                                                             │
+│ [Generate]  [Play]  [Stop]  [Export MIDI]                  │
+├─────────────────────────────────────────────────────────────┤
+│                    CHORD PROGRESSION                        │
+│  ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐     │
+│  │Dm7   │ │G7    │ │Cmaj7 │ │A7    │ │Dm7   │ │G7    │     │
+│  └──────┘ └──────┘ └──────┘ └──────┘ └──────┘ └──────┘     │
+├─────────────────────────────────────────────────────────────┤
+│ Tritone [═══○═══]  ii-V [═══════○]  Modal [═○═══════]      │
+│ Ext     [═════○═]                                          │
+└─────────────────────────────────────────────────────────────┘</pre>
+
+    <h3>10.2 Operation Flow</h3>
+    <ol>
+      <li>Select style preset (or adjust parameter sliders)</li>
+      <li>Select key and length</li>
+      <li>Click Generate to create new progression</li>
+      <li>Click Play to playback (select timbre)</li>
+      <li>Click Export MIDI to export file</li>
+    </ol>
+
+    <div class="paper__divider"></div>
+
+    <!-- 11. Conclusion and Future Work -->
+    <h2>11. Conclusion and Future Work</h2>
+
+    <h3>11.1 Summary of Results</h3>
+    <p>This research successfully implemented the JazzArchitect system, achieving the following objectives:</p>
+    <ol>
+      <li><strong>Theoretical Integration:</strong> Complete implementation of Rohrmeier (2020) PCFG framework</li>
+      <li><strong>Style Control:</strong> 15-parameter style vector and 9 presets</li>
+      <li><strong>Substitution Rules:</strong> Tritone, backdoor, and Coltrane substitutions</li>
+      <li><strong>Voice Optimization:</strong> Smither (2019) guide-tone voice leading</li>
+      <li><strong>Practical Tool:</strong> GUI, audio synthesis, MIDI output</li>
+    </ol>
+
+    <h3>11.2 Future Work</h3>
+    <ol>
+      <li><strong>Corpus Training:</strong> Extract rule probabilities from Jazz Harmony Treebank</li>
+      <li><strong>Evaluation Integration:</strong> Add MusDr evaluation metrics</li>
+      <li><strong>Listening Experiments:</strong> Conduct A/B comparison tests</li>
+      <li><strong>Score Display:</strong> Add staff notation visualization</li>
+      <li><strong>Real-time MIDI:</strong> Connect to external synthesizers</li>
+      <li><strong>Cross-platform:</strong> Windows/Linux versions</li>
+    </ol>
+
+    <div class="paper__divider"></div>
+
+    <!-- References -->
+    <h2>References</h2>
+    <div class="references">
+      <ol>
+        <li>Rohrmeier, M. (2020). Towards a Syntax of Jazz Harmony. <em>Music Theory and Analysis</em>, 7(1), 1-62.</li>
+        <li>Steedman, M. J. (1984). A generative grammar for jazz chord sequences. <em>Music Perception</em>, 2(1), 52-77.</li>
+        <li>Smither, S. (2019). Guide-tone voice leading in jazz. <em>Music Theory Online</em>, 25(2).</li>
+        <li>Harasim, D., Finkensiep, C., Ericson, P., O'Donnell, T. J., &amp; Rohrmeier, M. (2020). The jazz harmony treebank. <em>Proceedings of ISMIR 2020</em>.</li>
+        <li>Tymoczko, D. (2006). The geometry of musical chords. <em>Science</em>, 313(5783), 72-74.</li>
+        <li>Wu, S. L., &amp; Yang, Y. H. (2020). The jazz transformer on the front line: Exploring the shortcomings of AI-composed music through quantitative measures. <em>Proceedings of ISMIR 2020</em>.</li>
+        <li>Granroth-Wilding, M., &amp; Steedman, M. (2014). A robust parser-interpreter for jazz chord sequences. <em>Journal of New Music Research</em>, 43(4), 355-374.</li>
+      </ol>
+    </div>
+
+    <div class="paper__divider"></div>
+
+    <!-- Appendix A -->
+    <h2>Appendix A: Chord Quality Interval Table</h2>
+    <table>
+      <thead>
+        <tr><th>Chord Quality</th><th>Intervals (semitones)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>MAJ7</td><td>0, 4, 7, 11</td></tr>
+        <tr><td>MIN7</td><td>0, 3, 7, 10</td></tr>
+        <tr><td>DOM7</td><td>0, 4, 7, 10</td></tr>
+        <tr><td>HDIM7</td><td>0, 3, 6, 10</td></tr>
+        <tr><td>DIM7</td><td>0, 3, 6, 9</td></tr>
+        <tr><td>AUG</td><td>0, 4, 8</td></tr>
+        <tr><td>MAJ6</td><td>0, 4, 7, 9</td></tr>
+        <tr><td>MIN6</td><td>0, 3, 7, 9</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Appendix B -->
+    <h2>Appendix B: Non-Terminal to Terminal Mapping</h2>
+    <table>
+      <thead>
+        <tr><th>Non-Terminal</th><th>Function</th><th>Common Terminals</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>T</td><td>Tonic</td><td>Imaj7, vi7, iii7</td></tr>
+        <tr><td>D</td><td>Dominant</td><td>V7, vii-7</td></tr>
+        <tr><td>SD</td><td>Subdominant</td><td>IV, ii7</td></tr>
+        <tr><td>PREP</td><td>Preparation</td><td>ii7, IV</td></tr>
+      </tbody>
+    </table>
+
+    <p class="paper__version">JazzArchitect v1.0 - January 2, 2026</p>
+
+  </article>
+
+  <!-- Bottom Bar -->
+  <div class="bottom-bar">
+    <span class="bottom-bar__copyright">&copy; 2025 MADZINE. All rights reserved.</span>
+    <nav class="bottom-bar__nav">
+      <a href="index.html">Home</a>
+      <a href="software.html">Software</a>
+      <a href="works.html">Works</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+    <div class="bottom-bar__controls">
+      <div class="lang-switcher">
+        <button class="lang-btn" data-lang="zh-TW" onclick="I18N.setLang('zh-TW')">中</button>
+        <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
+        <button class="lang-btn" data-lang="ja" onclick="I18N.setLang('ja')">JP</button>
+      </div>
+      <button id="mode-toggle" class="mode-toggle" aria-label="Toggle dark mode">☽</button>
+    </div>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

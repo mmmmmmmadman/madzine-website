@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MADZINE — Microtuning Systems of the World</title>
+  <meta name="description" content="世界微分音系統研究：數位實現的技術分析">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* ── Paper Layout ── */
+
+    .paper {
+      max-width: var(--content-narrow);
+      margin: 0 auto;
+      padding: var(--space-16) var(--padding-page-x) var(--space-12);
+    }
+
+    .paper__back {
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: var(--space-6);
+      font-size: var(--text-sm);
+      color: var(--color-primary);
+      letter-spacing: 0.025em;
+      transition: color var(--duration-normal) var(--ease-default);
+    }
+
+    .paper__back:hover {
+      color: var(--text-primary);
+    }
+
+    .paper__header {
+      margin-bottom: var(--space-10);
+      padding-bottom: var(--space-8);
+      border-bottom: 1px solid var(--border-default);
+    }
+
+    .paper__title {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      line-height: var(--leading-tight);
+      font-weight: var(--weight-regular);
+      margin-bottom: var(--space-2);
+      color: var(--text-primary);
+    }
+
+    .paper__subtitle {
+      font-family: var(--font-display);
+      font-size: var(--text-lg);
+      line-height: var(--leading-snug);
+      font-weight: var(--weight-light);
+      color: var(--text-secondary);
+      margin-bottom: var(--space-4);
+    }
+
+    .paper__meta {
+      font-size: var(--text-sm);
+      color: var(--text-tertiary);
+    }
+
+    .paper__meta span + span::before {
+      content: " / ";
+    }
+
+    /* ── Abstract ── */
+
+    .paper__abstract {
+      background: var(--surface-raised);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-md);
+      padding: var(--space-6);
+      margin-bottom: var(--space-10);
+    }
+
+    .paper__abstract-title {
+      font-family: var(--font-display);
+      font-size: var(--text-md);
+      margin-bottom: var(--space-3);
+      color: var(--text-primary);
+    }
+
+    .paper__abstract p {
+      font-size: var(--text-base);
+      line-height: var(--leading-relaxed);
+      color: var(--text-secondary);
+    }
+
+    /* ── Table of Contents ── */
+
+    .paper__toc {
+      margin-bottom: var(--space-10);
+      padding-bottom: var(--space-6);
+      border-bottom: 1px solid var(--border-default);
+    }
+
+    .paper__toc-title {
+      font-family: var(--font-display);
+      font-size: var(--text-md);
+      margin-bottom: var(--space-3);
+      color: var(--text-primary);
+    }
+
+    .paper__toc ol {
+      list-style: decimal;
+      padding-left: var(--space-6);
+    }
+
+    .paper__toc li {
+      font-size: var(--text-base);
+      line-height: var(--leading-relaxed);
+      color: var(--text-secondary);
+      margin-bottom: var(--space-1);
+    }
+
+    .paper__toc a {
+      color: var(--color-primary);
+      text-decoration: none;
+      transition: color var(--duration-normal) var(--ease-default);
+    }
+
+    .paper__toc a:hover {
+      color: var(--text-primary);
+    }
+
+    /* ── Section Headings ── */
+
+    .paper h2 {
+      font-family: var(--font-display);
+      font-size: var(--text-xl);
+      line-height: var(--leading-tight);
+      font-weight: var(--weight-regular);
+      margin-top: var(--space-12);
+      margin-bottom: var(--space-4);
+      padding-bottom: var(--space-2);
+      border-bottom: 1px solid var(--border-default);
+      color: var(--text-primary);
+    }
+
+    .paper h3 {
+      font-family: var(--font-display);
+      font-size: var(--text-md);
+      font-weight: var(--weight-regular);
+      margin-top: var(--space-8);
+      margin-bottom: var(--space-3);
+      color: var(--text-primary);
+    }
+
+    .paper h4 {
+      font-size: var(--text-base);
+      font-weight: var(--weight-medium);
+      margin-top: var(--space-6);
+      margin-bottom: var(--space-2);
+      color: var(--text-primary);
+    }
+
+    /* ── Body Text ── */
+
+    .paper p {
+      font-size: var(--text-base);
+      line-height: var(--leading-relaxed);
+      margin-bottom: var(--space-4);
+      color: var(--text-primary);
+    }
+
+    .paper strong {
+      font-weight: var(--weight-bold);
+    }
+
+    .paper ul,
+    .paper ol {
+      padding-left: var(--space-6);
+      margin-bottom: var(--space-4);
+    }
+
+    .paper ul {
+      list-style: disc;
+    }
+
+    .paper ol {
+      list-style: decimal;
+    }
+
+    .paper li {
+      font-size: var(--text-base);
+      line-height: var(--leading-relaxed);
+      margin-bottom: var(--space-1);
+      color: var(--text-primary);
+    }
+
+    /* ── Tables ── */
+
+    .paper table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: var(--space-6);
+      font-size: var(--text-sm);
+    }
+
+    .paper th,
+    .paper td {
+      text-align: left;
+      padding: var(--space-2) var(--space-3);
+      border-bottom: 1px solid var(--border-default);
+    }
+
+    .paper th {
+      color: var(--text-secondary);
+      font-weight: var(--weight-medium);
+      border-bottom: 2px solid var(--border-strong);
+    }
+
+    .paper td {
+      color: var(--text-primary);
+    }
+
+    /* ── Code Blocks ── */
+
+    .paper pre {
+      background: var(--surface-sunken);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-sm);
+      padding: var(--space-4);
+      margin-bottom: var(--space-4);
+      overflow-x: auto;
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      line-height: var(--leading-normal);
+      color: var(--text-primary);
+    }
+
+    .paper code {
+      font-family: var(--font-mono);
+      font-size: 0.95em;
+    }
+
+    /* ── Inline Notation ── */
+
+    .paper .two-octave {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      margin-top: var(--space-2);
+      margin-bottom: var(--space-6);
+    }
+
+    /* ── Horizontal Rule ── */
+
+    .paper hr {
+      border: none;
+      border-top: 1px solid var(--border-default);
+      margin: var(--space-10) 0;
+    }
+
+    /* ── References ── */
+
+    .paper__references ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .paper__references li {
+      margin-bottom: var(--space-2);
+      color: var(--text-secondary);
+    }
+
+    .paper__references a {
+      color: var(--color-primary);
+      text-decoration: none;
+      transition: color var(--duration-normal) var(--ease-default);
+    }
+
+    .paper__references a:hover {
+      color: var(--text-primary);
+    }
+
+    /* ── Bottom Bar ── */
+
+    .bottom-bar {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) var(--space-6);
+      border-top: 1px solid var(--border-default);
+      font-size: var(--text-sm);
+    }
+
+    .bottom-bar__copyright {
+      color: var(--text-tertiary);
+    }
+
+    .bottom-bar__nav {
+      display: flex;
+      align-items: center;
+      gap: var(--space-6);
+    }
+
+    .bottom-bar__nav a {
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: color var(--duration-normal) var(--ease-default);
+    }
+
+    .bottom-bar__nav a:hover {
+      color: var(--color-primary);
+    }
+
+    .bottom-bar__controls {
+      display: flex;
+      align-items: center;
+      gap: var(--space-4);
+    }
+
+    /* ── Responsive ── */
+
+    @media (max-width: 640px) {
+      .paper {
+        padding-top: var(--space-10);
+      }
+
+      .paper__title {
+        font-size: var(--text-xl);
+      }
+
+      .paper__subtitle {
+        font-size: var(--text-md);
+      }
+
+      .paper table {
+        display: block;
+        overflow-x: auto;
+      }
+
+      .bottom-bar {
+        flex-direction: column;
+        gap: var(--space-3);
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body class="page-enter">
+
+  <article class="paper">
+
+    <a href="works.html" class="paper__back">&larr; Back</a>
+
+    <!-- Header -->
+    <header class="paper__header">
+      <h1 class="paper__title">世界微分音系統研究</h1>
+      <p class="paper__subtitle">Microtuning Systems of the World: A Technical Analysis for Digital Implementation</p>
+      <div class="paper__meta">
+        <span>MADZINE</span>
+        <span>2024-12</span>
+        <span>Version 1.0</span>
+      </div>
+    </header>
+
+    <!-- Abstract -->
+    <div class="paper__abstract">
+      <h2 class="paper__abstract-title" style="margin-top: 0; border: none; padding: 0;">Abstract</h2>
+      <p>本論文研究世界各地傳統音樂中的微分音（microtuning）系統，分析其音程結構、文化背景，以及在數位音樂合成器中實現的技術考量。特別關注哪些系統需要兩個八度的獨立微分音設定，以及上行/下行音階的差異性。</p>
+    </div>
+
+    <!-- Table of Contents -->
+    <nav class="paper__toc">
+      <h2 class="paper__toc-title" style="margin-top: 0; border: none; padding: 0;">Table of Contents</h2>
+      <ol>
+        <li><a href="#sec-1">導論</a></li>
+        <li><a href="#sec-2">西方調音系統</a></li>
+        <li><a href="#sec-3">中東音階系統</a></li>
+        <li><a href="#sec-4">南亞音階系統</a></li>
+        <li><a href="#sec-5">東亞音階系統</a></li>
+        <li><a href="#sec-6">東南亞音階系統</a></li>
+        <li><a href="#sec-7">技術實現分析</a></li>
+        <li><a href="#sec-8">結論與建議</a></li>
+        <li><a href="#sec-9">參考資料</a></li>
+      </ol>
+    </nav>
+
+    <!-- Section 1 -->
+    <h2 id="sec-1">1. 導論</h2>
+
+    <h3>1.1 什麼是微分音？</h3>
+    <p>微分音（Microtone）指的是小於西方十二平均律（12-TET）半音（100 音分/cents）的音程。在世界各地的傳統音樂中，許多文化發展出獨特的音階系統，其音程並不符合西方標準。</p>
+
+    <h3>1.2 音分（Cents）系統</h3>
+    <p>音分是測量音程的對數單位：</p>
+    <ul>
+      <li>1 八度 = 1200 cents</li>
+      <li>1 半音（12-TET）= 100 cents</li>
+      <li>1 音分 = 1/100 半音</li>
+    </ul>
+    <p>計算公式：</p>
+    <pre>cents = 1200 × log₂(f₂/f₁)</pre>
+
+    <h3>1.3 研究目的</h3>
+    <p>本研究旨在：</p>
+    <ol>
+      <li>系統性整理世界主要微分音系統</li>
+      <li>分析各系統的音程結構</li>
+      <li>確定哪些系統需要兩個八度的獨立設定</li>
+      <li>為 VCV Rack Quantizer 模組提供實現依據</li>
+    </ol>
+
+    <hr>
+
+    <!-- Section 2 -->
+    <h2 id="sec-2">2. 西方調音系統</h2>
+
+    <h3>2.1 十二平均律 (12-TET / Equal Temperament)</h3>
+    <p>現代西方標準調音，將八度等分為 12 個半音。</p>
+
+    <table>
+      <thead>
+        <tr><th>音符</th><th>Cents</th><th>頻率比</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>C</td><td>0</td><td>1.0000</td></tr>
+        <tr><td>C#</td><td>100</td><td>1.0595</td></tr>
+        <tr><td>D</td><td>200</td><td>1.1225</td></tr>
+        <tr><td>D#</td><td>300</td><td>1.1892</td></tr>
+        <tr><td>E</td><td>400</td><td>1.2599</td></tr>
+        <tr><td>F</td><td>500</td><td>1.3348</td></tr>
+        <tr><td>F#</td><td>600</td><td>1.4142</td></tr>
+        <tr><td>G</td><td>700</td><td>1.4983</td></tr>
+        <tr><td>G#</td><td>800</td><td>1.5874</td></tr>
+        <tr><td>A</td><td>900</td><td>1.6818</td></tr>
+        <tr><td>A#</td><td>1000</td><td>1.7818</td></tr>
+        <tr><td>B</td><td>1100</td><td>1.8877</td></tr>
+      </tbody>
+    </table>
+    <p><strong>特點</strong>：所有調性等效，便於轉調，但犧牲了純律的和諧性。</p>
+    <p class="two-octave">需要兩個八度：否</p>
+
+    <h3>2.2 純律 (Just Intonation)</h3>
+    <p>基於簡單整數比的調音系統，產生最和諧的音程。</p>
+
+    <table>
+      <thead>
+        <tr><th>音符</th><th>頻率比</th><th>Cents</th><th>與 12-TET 差異</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>C</td><td>1/1</td><td>0</td><td>0</td></tr>
+        <tr><td>C#</td><td>16/15</td><td>111.7</td><td>+11.7</td></tr>
+        <tr><td>D</td><td>9/8</td><td>203.9</td><td>+3.9</td></tr>
+        <tr><td>D#</td><td>6/5</td><td>315.6</td><td>+15.6</td></tr>
+        <tr><td>E</td><td>5/4</td><td>386.3</td><td>-13.7</td></tr>
+        <tr><td>F</td><td>4/3</td><td>498.0</td><td>-2.0</td></tr>
+        <tr><td>F#</td><td>45/32</td><td>590.2</td><td>-9.8</td></tr>
+        <tr><td>G</td><td>3/2</td><td>702.0</td><td>+2.0</td></tr>
+        <tr><td>G#</td><td>8/5</td><td>813.7</td><td>+13.7</td></tr>
+        <tr><td>A</td><td>5/3</td><td>884.4</td><td>-15.6</td></tr>
+        <tr><td>A#</td><td>9/5</td><td>1017.6</td><td>+17.6</td></tr>
+        <tr><td>B</td><td>15/8</td><td>1088.3</td><td>-11.7</td></tr>
+      </tbody>
+    </table>
+    <p><strong>特點</strong>：和聲純淨，但不同調性間差異大。</p>
+    <p class="two-octave">需要兩個八度：否</p>
+
+    <h3>2.3 畢達哥拉斯調音 (Pythagorean Tuning)</h3>
+    <p>僅使用純五度（3:2）堆疊產生的調音。</p>
+
+    <table>
+      <thead>
+        <tr><th>音符</th><th>頻率比</th><th>Cents</th><th>與 12-TET 差異</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>C</td><td>1/1</td><td>0</td><td>0</td></tr>
+        <tr><td>D</td><td>9/8</td><td>203.9</td><td>+3.9</td></tr>
+        <tr><td>E</td><td>81/64</td><td>407.8</td><td>+7.8</td></tr>
+        <tr><td>F</td><td>4/3</td><td>498.0</td><td>-2.0</td></tr>
+        <tr><td>G</td><td>3/2</td><td>702.0</td><td>+2.0</td></tr>
+        <tr><td>A</td><td>27/16</td><td>905.9</td><td>+5.9</td></tr>
+        <tr><td>B</td><td>243/128</td><td>1109.8</td><td>+9.8</td></tr>
+      </tbody>
+    </table>
+    <p><strong>特點</strong>：五度完美，但三度偏高（畢氏音差 Pythagorean comma = 23.46 cents）。</p>
+    <p class="two-octave">需要兩個八度：否</p>
+
+    <h3>2.4 四分音 (Quarter Tone / 24-TET)</h3>
+    <p>將八度等分為 24 個四分音。</p>
+    <p><strong>特點</strong>：常用於 20 世紀現代音樂，也是阿拉伯音樂的近似系統。</p>
+    <p class="two-octave">需要兩個八度：否</p>
+
+    <hr>
+
+    <!-- Section 3 -->
+    <h2 id="sec-3">3. 中東音階系統</h2>
+
+    <h3>3.1 阿拉伯 Maqam 系統</h3>
+
+    <h4>3.1.1 概述</h4>
+    <p>Maqam（複數 Maqamat）是阿拉伯音樂的調式系統，使用 24-TET 作為近似。傳統上，24 個音符跨越兩個八度，從 Yakah（低 G）到 Ramal Tuti（高 G）。</p>
+
+    <h4>3.1.2 主要 Maqam 及其音程</h4>
+
+    <p><strong>Maqam Rast（拉斯特）</strong></p>
+    <pre>音符：C  D  E½♭  F  G  A  B½♭  C
+音程：0  200  350  500  700  900  1050  1200</pre>
+    <p>E½♭ 和 B½♭ 表示降低約 50 cents 的音符。</p>
+
+    <p><strong>Maqam Bayati（巴亞提）</strong></p>
+    <pre>音符：D  E½♭  F  G  A  B♭  C  D
+音程：0  150  300  500  700  850  1000  1200</pre>
+
+    <p><strong>Maqam Hijaz（希賈茲）</strong></p>
+    <pre>音符：D  E♭  F#  G  A  B♭  C  D
+音程：0  100  400  500  700  800  1000  1200</pre>
+
+    <h4>3.1.3 兩個八度的差異</h4>
+    <p>在某些 Maqam 中，<strong>上八度的音程可能與下八度不同</strong>：</p>
+    <p><strong>Maqam Sikah 示例</strong>：</p>
+    <ul>
+      <li>下八度：E½♭ - F - G - A - B½♭ - C - D</li>
+      <li>上八度：可能使用不同的四分音位置</li>
+    </ul>
+    <p class="two-octave">需要兩個八度：是（部分 Maqam）</p>
+
+    <h3>3.2 土耳其 Makam 系統</h3>
+
+    <h4>3.2.1 概述</h4>
+    <p>土耳其 Makam 系統使用 53-TET（53 等分律），將八度分為 53 個 comma（逗號）。</p>
+    <ul>
+      <li>大二度 = 9 commas（約 204 cents）</li>
+      <li>小二度 = 4 commas（約 90 cents）</li>
+      <li>1 comma ≈ 22.6 cents</li>
+    </ul>
+
+    <h4>3.2.2 浮動音符概念</h4>
+    <p>土耳其音樂的關鍵特徵是「浮動音符」（floating notes）：</p>
+    <ul>
+      <li><strong>上行時</strong>：某些音符會稍微升高（約 1 comma）</li>
+      <li><strong>下行時</strong>：相同音符會稍微降低</li>
+    </ul>
+    <p><strong>Makam Rast 示例</strong>：</p>
+    <pre>上行：G - A - B(+1) - C - D - E - F#(Irak) - G
+下行：G - F(Acem) - E - D - C - B(-1) - A - G</pre>
+    <p>注意：上行使用 F#（Irak），下行使用 F（Acem）。</p>
+
+    <h4>3.2.3 Seyir（旋律方向）</h4>
+    <p>Makam 有三種旋律方向：</p>
+    <ol>
+      <li><strong>Cinici（上行型）</strong>：從主音開始向上</li>
+      <li><strong>Inici（下行型）</strong>：從高音開始向下</li>
+      <li><strong>Inici-Cinici（混合型）</strong>：結合兩者</li>
+    </ol>
+    <p class="two-octave">需要兩個八度：是（上行/下行差異）</p>
+
+    <h3>3.3 波斯 Dastgah 系統</h3>
+
+    <h4>3.3.1 概述</h4>
+    <p>波斯音樂使用 Dastgah（調式系統），包含 7 個主要 Dastgah 和 5 個輔助 Avaz。</p>
+
+    <h4>3.3.2 音程特徵</h4>
+    <p>波斯音樂的特徵音程包括：</p>
+    <ul>
+      <li><strong>Koron（↓）</strong>：降低約 50-60 cents</li>
+      <li><strong>Sori（↑）</strong>：升高約 50-60 cents</li>
+    </ul>
+    <p><strong>Dastgah Shur 示例</strong>：</p>
+    <pre>G - A(koron) - B♭ - C - D - E♭ - F - G
+音程：0 - ~150 - 300 - 500 - 700 - 800 - 1000 - 1200</pre>
+
+    <h4>3.3.3 上行/下行差異</h4>
+    <p>類似土耳其系統，波斯音樂也有上行/下行的微妙差異。</p>
+    <p class="two-octave">需要兩個八度：是</p>
+
+    <hr>
+
+    <!-- Section 4 -->
+    <h2 id="sec-4">4. 南亞音階系統</h2>
+
+    <h3>4.1 印度 Raga 系統</h3>
+
+    <h4>4.1.1 概述</h4>
+    <p>印度古典音樂使用 Raga（旋律模式）和 22 Shruti（微分音）系統。</p>
+
+    <h4>4.1.2 七個基本音符（Swaras）</h4>
+    <table>
+      <thead>
+        <tr><th>Swara</th><th>名稱</th><th>近似西方音符</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Sa</td><td>Shadja</td><td>C（固定）</td></tr>
+        <tr><td>Re</td><td>Rishabh</td><td>D</td></tr>
+        <tr><td>Ga</td><td>Gandhar</td><td>E</td></tr>
+        <tr><td>Ma</td><td>Madhyam</td><td>F</td></tr>
+        <tr><td>Pa</td><td>Pancham</td><td>G（固定）</td></tr>
+        <tr><td>Dha</td><td>Dhaivat</td><td>A</td></tr>
+        <tr><td>Ni</td><td>Nishad</td><td>B</td></tr>
+      </tbody>
+    </table>
+
+    <h4>4.1.3 Shruti 系統</h4>
+    <p>傳統上八度分為 22 個 Shruti（不等分）：</p>
+    <table>
+      <thead>
+        <tr><th>Shruti</th><th>Cents（約）</th><th>對應</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>0</td><td>Sa</td></tr>
+        <tr><td>2</td><td>90</td><td>Komal Re</td></tr>
+        <tr><td>3</td><td>112</td><td></td></tr>
+        <tr><td>4</td><td>182</td><td>Shuddha Re</td></tr>
+        <tr><td>5</td><td>204</td><td></td></tr>
+        <tr><td>6</td><td>294</td><td>Komal Ga</td></tr>
+        <tr><td>7</td><td>316</td><td></td></tr>
+        <tr><td>8</td><td>386</td><td>Shuddha Ga</td></tr>
+        <tr><td>9</td><td>408</td><td></td></tr>
+        <tr><td>10</td><td>498</td><td>Shuddha Ma</td></tr>
+        <tr><td>11</td><td>520</td><td></td></tr>
+        <tr><td>12</td><td>590</td><td>Tivra Ma</td></tr>
+        <tr><td>13</td><td>612</td><td></td></tr>
+        <tr><td>14</td><td>702</td><td>Pa</td></tr>
+        <tr><td>15</td><td>792</td><td>Komal Dha</td></tr>
+        <tr><td>16</td><td>814</td><td></td></tr>
+        <tr><td>17</td><td>884</td><td>Shuddha Dha</td></tr>
+        <tr><td>18</td><td>906</td><td></td></tr>
+        <tr><td>19</td><td>996</td><td>Komal Ni</td></tr>
+        <tr><td>20</td><td>1018</td><td></td></tr>
+        <tr><td>21</td><td>1088</td><td>Shuddha Ni</td></tr>
+        <tr><td>22</td><td>1110</td><td></td></tr>
+      </tbody>
+    </table>
+
+    <h4>4.1.4 Aroha 與 Avaroha</h4>
+    <p>印度 Raga 最重要的特徵是 <strong>Aroha（上行）和 Avaroha（下行）可以使用完全不同的音符</strong>。</p>
+
+    <p><strong>Raga Yaman 示例</strong>：</p>
+    <pre>Aroha（上行）：N S G M# D N S'
+Avaroha（下行）：S' N D P M# G R S</pre>
+    <p>注意：上行省略 Re(R) 和 Pa(P)，下行使用所有音符。</p>
+
+    <p><strong>Raga Bhairav 示例</strong>：</p>
+    <pre>Aroha：S r G M P d N S'
+Avaroha：S' N d P M G r S</pre>
+    <p>使用 Komal Re(r) 和 Komal Dha(d)。</p>
+
+    <h4>4.1.5 三個八度</h4>
+    <p>印度音樂跨越三個八度：</p>
+    <ul>
+      <li><strong>Mandra Saptak</strong>（低八度）</li>
+      <li><strong>Madhya Saptak</strong>（中八度）</li>
+      <li><strong>Tar Saptak</strong>（高八度）</li>
+    </ul>
+    <p class="two-octave">需要兩個八度：是（Aroha/Avaroha 差異 + 不同八度可能有微妙差異）</p>
+
+    <hr>
+
+    <!-- Section 5 -->
+    <h2 id="sec-5">5. 東亞音階系統</h2>
+
+    <h3>5.1 日本音階系統</h3>
+
+    <h4>5.1.1 上原六四郎的理論（1895）</h4>
+    <p>明治時代，上原六四郎在《俗樂旋律考》中提出：</p>
+    <ol>
+      <li>俗樂的音階是五音音階</li>
+      <li>分為含半音的<strong>陰旋</strong>和不含半音的<strong>陽旋</strong></li>
+      <li><strong>兩者都有上行形和下行形</strong></li>
+    </ol>
+
+    <h4>5.1.2 主要音階類型與上行/下行差異</h4>
+
+    <p><strong>都節音階（Miyako-bushi）- 陰旋法</strong></p>
+    <p>具有<strong>下行性格</strong>，上行時音符會改變：</p>
+    <pre>下行形（基本）：E - F - A - B - C - E
+上行形（異向形）：E - F - A - B - D - E
+                              ↑
+                     短6度(C)→短7度(D)</pre>
+
+    <p><strong>律音階（Ritsu）</strong></p>
+    <p>同樣具有下行性格：</p>
+    <pre>下行形：6度音使用 A♭
+上行形：6度音上升為 B♭</pre>
+
+    <p><strong>陽音階（Yo Scale）</strong></p>
+    <pre>音符：D - E - G - A - B
+音程：0 - 200 - 500 - 700 - 900</pre>
+    <p>用於雅樂（Gagaku）。具有<strong>上行性格</strong>，較為穩定。</p>
+
+    <p><strong>民謠音階（Min'yo）</strong></p>
+    <p>具有<strong>上行性格</strong>，中間音浮動較少，上行/下行差異不大。</p>
+
+    <h4>5.1.3 小泉文夫的理論</h4>
+    <p>小泉文夫將日本音階分為：</p>
+    <ul>
+      <li><strong>下行性音階</strong>：都節、律（上行時音會變化）</li>
+      <li><strong>上行性音階</strong>：民謠、琉球（較穩定）</li>
+    </ul>
+    <p>核心概念是<strong>テトラコルド（四度音列）</strong>，完全四度內的中間音會根據旋律方向浮動。</p>
+
+    <h4>5.1.4 微分音特徵</h4>
+    <p>箏（Koto）調音傾向使用純律：</p>
+    <ul>
+      <li>大三度：386 cents（純律）vs 400 cents（12-TET）</li>
+      <li>差異約 14 cents</li>
+    </ul>
+    <p class="two-octave">需要兩個八度：是（都節/律音階有上行/下行差異）</p>
+
+    <h3>5.2 琉球音階（Ryukyu Scale）</h3>
+
+    <h4>5.2.1 結構</h4>
+    <pre>五聲版：C - E - F - G - B
+音程：0 - 400 - 500 - 700 - 1100
+結構：大三度 - 小二度 - 大二度 - 大三度 - 小二度
+
+六聲版：C - D - E - F - G - B
+音程：0 - 200 - 400 - 500 - 700 - 1100</pre>
+
+    <h4>5.2.2 上行/下行差異</h4>
+    <p>根據研究，琉球音階在下行時會加入<strong>經過音「レ」（D）</strong>：</p>
+    <pre>上行：C - E - F - G - B - C（五聲）
+下行：C - B - G - F - E - D - C（加入 D 作為經過音）</pre>
+    <p>「てぃんさぐぬ花」等樂曲中，「レ」多用於<strong>下行時使旋律更滑順</strong>。</p>
+
+    <h4>5.2.3 特徵</h4>
+    <ul>
+      <li>特徵音程：B→C（小二度）是識別沖繩音樂的關鍵</li>
+      <li>與陽音階相關，但音高升高</li>
+      <li>八重山民謠有微妙的音高變化</li>
+      <li>屬於小泉理論中的「上行性音階」</li>
+    </ul>
+    <p class="two-octave">需要兩個八度：是（下行時加入經過音）</p>
+
+    <h3>5.3 中國音階系統</h3>
+
+    <h4>5.3.1 五聲音階（宮商角徵羽）</h4>
+    <pre>宮：C - D - E - G - A
+音程：0 - 200 - 400 - 700 - 900</pre>
+
+    <h4>5.3.2 微分音</h4>
+    <p>中國傳統音樂主要使用純律，特別是古琴音樂中有複雜的泛音系統。</p>
+    <p class="two-octave">需要兩個八度：否</p>
+
+    <hr>
+
+    <!-- Section 6 -->
+    <h2 id="sec-6">6. 東南亞音階系統</h2>
+
+    <h3>6.1 印尼甘美朗（Gamelan）</h3>
+
+    <h4>6.1.1 Slendro 音階</h4>
+    <p>五聲音階，音程接近等分（約 240 cents 每級）：</p>
+    <pre>近似音程：0 - 240 - 480 - 720 - 960</pre>
+    <p>但實際上每組甘美朗樂器都有獨特的調音，沒有標準化。</p>
+
+    <h4>6.1.2 Pelog 音階</h4>
+    <p>七聲音階，音程不均：</p>
+    <pre>一種常見形式：0 - 120 - 270 - 540 - 670 - 800 - 1050</pre>
+    <p>特徵是包含非常窄和非常寬的音程混合。</p>
+
+    <h4>6.1.3 微分音特徵</h4>
+    <ul>
+      <li>每組甘美朗有獨特調音</li>
+      <li>Ombak（顫音）：成對樂器故意調成微小差異產生顫動效果</li>
+      <li>與西方 12-TET 差異可達 ±50 cents</li>
+    </ul>
+    <p class="two-octave">需要兩個八度：否（但高度個別化）</p>
+
+    <h3>6.2 泰國音階</h3>
+
+    <h4>6.2.1 七平均律</h4>
+    <p>泰國傳統音樂使用 7-TET（七等分律）：</p>
+    <pre>音程：0 - 171 - 343 - 514 - 686 - 857 - 1029
+每級約 171 cents</pre>
+    <p class="two-octave">需要兩個八度：否</p>
+
+    <hr>
+
+    <!-- Section 7 -->
+    <h2 id="sec-7">7. 技術實現分析</h2>
+
+    <h3>7.1 需要兩個八度的系統總結</h3>
+    <table>
+      <thead>
+        <tr><th>系統</th><th>需要兩個八度</th><th>原因</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Arabic Maqam</td><td>是</td><td>上下八度音程可能不同</td></tr>
+        <tr><td>Turkish Makam</td><td>是</td><td>浮動音符（上行/下行差異）</td></tr>
+        <tr><td>Persian Dastgah</td><td>是</td><td>類似 Turkish</td></tr>
+        <tr><td>Indian Raga</td><td>是</td><td>Aroha/Avaroha 完全不同</td></tr>
+        <tr><td>Japanese 都節/律</td><td>是</td><td>上行時短6度→短7度</td></tr>
+        <tr><td>Ryukyu</td><td>是</td><td>下行時加入經過音</td></tr>
+        <tr><td>Japanese 陽/民謠</td><td>否</td><td>上行性，較穩定</td></tr>
+        <tr><td>12-TET</td><td>否</td><td>八度等價</td></tr>
+        <tr><td>Just Intonation</td><td>否</td><td>八度等價</td></tr>
+        <tr><td>Pythagorean</td><td>否</td><td>八度等價</td></tr>
+        <tr><td>Chinese</td><td>否</td><td>八度等價</td></tr>
+        <tr><td>Gamelan</td><td>否</td><td>個別化但無上下行差異</td></tr>
+        <tr><td>Thai 7-TET</td><td>否</td><td>八度等價</td></tr>
+      </tbody>
+    </table>
+
+    <h3>7.2 實現方案比較</h3>
+
+    <h4>方案 A：24 個微分音參數（兩個八度）</h4>
+    <pre>enum MicrotuneParam {
+    // 第一個八度
+    C1_MICROTUNE, CS1_MICROTUNE, D1_MICROTUNE, ..., B1_MICROTUNE,
+    // 第二個八度
+    C2_MICROTUNE, CS2_MICROTUNE, D2_MICROTUNE, ..., B2_MICROTUNE,
+};</pre>
+    <p><strong>優點</strong>：</p>
+    <ul>
+      <li>完全支援所有系統</li>
+      <li>上下八度獨立控制</li>
+    </ul>
+    <p><strong>缺點</strong>：</p>
+    <ul>
+      <li>需要 24 個旋鈕（UI 空間問題）</li>
+      <li>對於不需要兩個八度的系統是多餘的</li>
+    </ul>
+
+    <h4>方案 B：12 + 12（上行/下行分開）</h4>
+    <pre>struct MicrotunePreset {
+    float ascending[12];   // 上行微分音
+    float descending[12];  // 下行微分音
+};</pre>
+    <p><strong>優點</strong>：</p>
+    <ul>
+      <li>精確對應中東/印度系統的需求</li>
+      <li>可以根據音高移動方向自動切換</li>
+    </ul>
+    <p><strong>缺點</strong>：</p>
+    <ul>
+      <li>需要追蹤音高移動方向</li>
+      <li>實現較複雜</li>
+    </ul>
+
+    <h4>方案 C：混合方案（推薦）</h4>
+    <pre>struct MicrotuneSystem {
+    float base[12];        // 基本微分音（一個八度）
+    float octave2[12];     // 第二個八度（可選）
+    bool useTwoOctaves;    // 是否啟用兩個八度
+    bool useAscDesc;       // 是否區分上行/下行
+    float ascending[12];   // 上行修正（可選）
+    float descending[12];  // 下行修正（可選）
+};</pre>
+    <p><strong>優點</strong>：</p>
+    <ul>
+      <li>靈活支援所有系統</li>
+      <li>向後兼容現有的 12 音符系統</li>
+      <li>可根據預設自動配置</li>
+    </ul>
+
+    <h3>7.3 預設值建議</h3>
+
+    <h4>中東系統預設（需要兩個八度/上下行）</h4>
+    <p><strong>Turkish Makam Rast</strong>：</p>
+    <pre>// 上行
+float rast_asc[12] = {0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 0, 8};
+// 下行（F# → F）
+float rast_desc[12] = {0, 0, 0, 0, 8, 0, -100, 0, 0, 0, 0, 8};</pre>
+
+    <p><strong>Arabic Maqam Bayati</strong>：</p>
+    <pre>float bayati[12] = {0, 0, -50, 0, 0, 0, 0, 0, 0, -50, 0, 0};</pre>
+
+    <h4>印度系統預設</h4>
+    <p><strong>22 Shruti 近似</strong>：</p>
+    <pre>float shruti[12] = {0, -10, 14, -16, 14, 2, -10, -2, -14, 16, -18, 12};</pre>
+
+    <h3>7.4 音高方向追蹤算法</h3>
+    <pre>class PitchDirectionTracker {
+    float lastPitch = 0.f;
+    bool ascending = true;
+
+    void update(float currentPitch) {
+        if (currentPitch > lastPitch + threshold) {
+            ascending = true;
+        } else if (currentPitch < lastPitch - threshold) {
+            ascending = false;
+        }
+        lastPitch = currentPitch;
+    }
+
+    float getMicrotune(int note, const MicrotuneSystem&amp; sys) {
+        if (sys.useAscDesc) {
+            return ascending ? sys.ascending[note] : sys.descending[note];
+        }
+        return sys.base[note];
+    }
+};</pre>
+
+    <hr>
+
+    <!-- Section 8 -->
+    <h2 id="sec-8">8. 結論與建議</h2>
+
+    <h3>8.1 主要發現</h3>
+    <ol>
+      <li><strong>中東和南亞系統</strong>需要兩個八度或上行/下行區分</li>
+      <li><strong>東亞系統</strong>（日本、中國、琉球）不需要兩個八度</li>
+      <li><strong>實現複雜度</strong>：混合方案可以同時滿足簡單和複雜需求</li>
+    </ol>
+
+    <h3>8.2 建議實現步驟</h3>
+    <ol>
+      <li><strong>Phase 1</strong>：保持現有 12 個微分音參數</li>
+      <li><strong>Phase 2</strong>：新增「Two-Octave Mode」開關和第二組 12 個參數</li>
+      <li><strong>Phase 3</strong>：新增「Ascending/Descending」模式和音高方向追蹤</li>
+      <li><strong>Phase 4</strong>：實現完整的預設庫</li>
+    </ol>
+
+    <h3>8.3 預設庫建議</h3>
+    <p><strong>優先實現</strong>：</p>
+    <ol>
+      <li>Equal Temperament（12-TET）</li>
+      <li>Just Intonation</li>
+      <li>Pythagorean</li>
+      <li>Arabic Maqam Rast</li>
+      <li>Arabic Maqam Bayati</li>
+      <li>Turkish Makam Rast（含上下行）</li>
+      <li>Indian Shruti（22 音近似）</li>
+      <li>Gamelan Slendro</li>
+      <li>Gamelan Pelog</li>
+      <li>Japanese In/Yo</li>
+      <li>Ryukyu</li>
+      <li>Quarter Tone</li>
+    </ol>
+
+    <hr>
+
+    <!-- Section 9 -->
+    <h2 id="sec-9">9. 參考資料</h2>
+
+    <div class="paper__references">
+      <h3>學術資源</h3>
+      <ul>
+        <li>Touma, H. H. (1996). <em>The Music of the Arabs</em></li>
+        <li>Powers, H. S. (1980). "Mode" in <em>New Grove Dictionary of Music</em></li>
+        <li>Zonis, E. (1973). <em>Classical Persian Music</em></li>
+      </ul>
+
+      <h3>線上資源</h3>
+      <ul>
+        <li><a href="https://en.wikipedia.org/wiki/Arabic_maqam">Wikipedia - Arabic maqam</a></li>
+        <li><a href="https://en.wikipedia.org/wiki/Turkish_makam">Wikipedia - Turkish makam</a></li>
+        <li><a href="https://en.wikipedia.org/wiki/Shruti_(music)">Wikipedia - Shruti</a></li>
+        <li><a href="https://www.maqamworld.com/">Maqam World</a></li>
+        <li><a href="https://taqs.im/scales/">TAQS.IM Scale Guide</a></li>
+      </ul>
+
+      <h3>技術參考</h3>
+      <ul>
+        <li><a href="http://www.huygens-fokker.org/scala/">Scala Scale Archive</a></li>
+        <li><a href="https://en.xen.wiki/">Xenharmonic Wiki</a></li>
+      </ul>
+    </div>
+
+    <hr>
+
+    <!-- Appendix A -->
+    <h2>附錄 A：完整微分音數據表</h2>
+
+    <h3>A.1 Just Intonation（純律）</h3>
+    <table>
+      <thead>
+        <tr><th>音符</th><th>比率</th><th>Cents</th><th>與 12-TET 差</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>C</td><td>1/1</td><td>0.00</td><td>0.00</td></tr>
+        <tr><td>C#</td><td>16/15</td><td>111.73</td><td>+11.73</td></tr>
+        <tr><td>D</td><td>9/8</td><td>203.91</td><td>+3.91</td></tr>
+        <tr><td>D#</td><td>6/5</td><td>315.64</td><td>+15.64</td></tr>
+        <tr><td>E</td><td>5/4</td><td>386.31</td><td>-13.69</td></tr>
+        <tr><td>F</td><td>4/3</td><td>498.04</td><td>-1.96</td></tr>
+        <tr><td>F#</td><td>45/32</td><td>590.22</td><td>-9.78</td></tr>
+        <tr><td>G</td><td>3/2</td><td>701.96</td><td>+1.96</td></tr>
+        <tr><td>G#</td><td>8/5</td><td>813.69</td><td>+13.69</td></tr>
+        <tr><td>A</td><td>5/3</td><td>884.36</td><td>-15.64</td></tr>
+        <tr><td>A#</td><td>9/5</td><td>1017.60</td><td>+17.60</td></tr>
+        <tr><td>B</td><td>15/8</td><td>1088.27</td><td>-11.73</td></tr>
+      </tbody>
+    </table>
+
+    <h3>A.2 Pythagorean（畢達哥拉斯）</h3>
+    <table>
+      <thead>
+        <tr><th>音符</th><th>比率</th><th>Cents</th><th>與 12-TET 差</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>C</td><td>1/1</td><td>0.00</td><td>0.00</td></tr>
+        <tr><td>C#</td><td>2187/2048</td><td>113.69</td><td>+13.69</td></tr>
+        <tr><td>D</td><td>9/8</td><td>203.91</td><td>+3.91</td></tr>
+        <tr><td>D#</td><td>32/27</td><td>294.13</td><td>-5.87</td></tr>
+        <tr><td>E</td><td>81/64</td><td>407.82</td><td>+7.82</td></tr>
+        <tr><td>F</td><td>4/3</td><td>498.04</td><td>-1.96</td></tr>
+        <tr><td>F#</td><td>729/512</td><td>611.73</td><td>+11.73</td></tr>
+        <tr><td>G</td><td>3/2</td><td>701.96</td><td>+1.96</td></tr>
+        <tr><td>G#</td><td>6561/4096</td><td>815.64</td><td>+15.64</td></tr>
+        <tr><td>A</td><td>27/16</td><td>905.87</td><td>+5.87</td></tr>
+        <tr><td>A#</td><td>16/9</td><td>996.09</td><td>-3.91</td></tr>
+        <tr><td>B</td><td>243/128</td><td>1109.78</td><td>+9.78</td></tr>
+      </tbody>
+    </table>
+
+    <h3>A.3 22 Shruti（印度）</h3>
+    <table>
+      <thead>
+        <tr><th>Shruti #</th><th>名稱</th><th>Cents</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>Chandovati</td><td>0</td></tr>
+        <tr><td>2</td><td>Dayavati</td><td>90</td></tr>
+        <tr><td>3</td><td>Ranjani</td><td>112</td></tr>
+        <tr><td>4</td><td>Ratika</td><td>182</td></tr>
+        <tr><td>5</td><td>Raudri</td><td>204</td></tr>
+        <tr><td>6</td><td>Krodha</td><td>294</td></tr>
+        <tr><td>7</td><td>Vajrika</td><td>316</td></tr>
+        <tr><td>8</td><td>Prasarini</td><td>386</td></tr>
+        <tr><td>9</td><td>Priti</td><td>408</td></tr>
+        <tr><td>10</td><td>Marjani</td><td>498</td></tr>
+        <tr><td>11</td><td>Kshiti</td><td>520</td></tr>
+        <tr><td>12</td><td>Rakta</td><td>590</td></tr>
+        <tr><td>13</td><td>Sandipani</td><td>612</td></tr>
+        <tr><td>14</td><td>Alapini</td><td>702</td></tr>
+        <tr><td>15</td><td>Madanti</td><td>792</td></tr>
+        <tr><td>16</td><td>Rohini</td><td>814</td></tr>
+        <tr><td>17</td><td>Ramya</td><td>884</td></tr>
+        <tr><td>18</td><td>Ugra</td><td>906</td></tr>
+        <tr><td>19</td><td>Kshobhini</td><td>996</td></tr>
+        <tr><td>20</td><td>Tivra</td><td>1018</td></tr>
+        <tr><td>21</td><td>Kumudvati</td><td>1088</td></tr>
+        <tr><td>22</td><td>Manda</td><td>1110</td></tr>
+      </tbody>
+    </table>
+
+    <hr>
+
+    <!-- Appendix B -->
+    <h2>附錄 B：預設實現代碼參考</h2>
+    <pre>// Microtuning preset data structure
+struct MicrotunePreset {
+    const char* name;
+    float cents[12];
+    bool needsTwoOctaves;
+    float cents_octave2[12];  // 第二個八度（如需要）
+};
+
+// 預設定義
+const MicrotunePreset PRESETS[] = {
+    {"Equal Temperament", {0,0,0,0,0,0,0,0,0,0,0,0}, false, {}},
+    {"Just Intonation", {0,11.7,3.9,15.6,-13.7,-2.0,-9.8,2.0,13.7,-15.6,17.6,-11.7}, false, {}},
+    {"Pythagorean", {0,13.7,3.9,-5.9,7.8,-2.0,11.7,2.0,15.6,5.9,-3.9,9.8}, false, {}},
+    {"Arabic Bayati", {0,0,-50,0,0,0,0,0,0,-50,0,0}, false, {}},
+    {"Turkish Rast", {0,0,0,0,8,0,0,0,0,0,0,8}, false, {}},
+    // ... 更多預設
+};</pre>
+
+    <hr>
+
+    <p><strong>文件結束</strong></p>
+    <p><em>本研究為 MADZINE VCV Rack Quantizer 模組開發的基礎資料。</em></p>
+
+  </article>
+
+  <!-- Bottom Bar -->
+  <div class="bottom-bar">
+    <span class="bottom-bar__copyright" data-i18n="footer.copyright">&copy; 2025 MADZINE. 保留所有權利。</span>
+    <nav class="bottom-bar__nav">
+      <a href="index.html" data-i18n="nav.home">首頁</a>
+      <a href="software.html" data-i18n="nav.software">軟體</a>
+      <a href="works.html" data-i18n="nav.works">作品</a>
+      <a href="contact.html" data-i18n="nav.contact">聯絡</a>
+    </nav>
+    <div class="bottom-bar__controls">
+      <div class="lang-switcher">
+        <button class="lang-btn" data-lang="zh-TW" onclick="I18N.setLang('zh-TW')">中</button>
+        <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
+        <button class="lang-btn" data-lang="ja" onclick="I18N.setLang('ja')">JP</button>
+      </div>
+      <button id="mode-toggle" class="mode-toggle" aria-label="切換深色模式">☽</button>
+    </div>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

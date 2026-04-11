@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MADZINE — WorldRhythm: A Unified Framework for Cross-Cultural Rhythm Generation</title>
+  <meta name="description" content="A rule-based algorithmic framework for generating rhythmic patterns across ten distinct musical cultures within a unified architecture.">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* Paper layout */
+    .paper {
+      max-width: var(--content-narrow);
+      margin: 0 auto;
+      padding: var(--space-16) var(--padding-page-x) var(--space-12);
+    }
+
+    .paper__back {
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: var(--space-8);
+      font-size: var(--text-sm);
+      color: var(--color-primary);
+      letter-spacing: 0.025em;
+      transition: color var(--duration-normal) var(--ease-default);
+    }
+    .paper__back:hover {
+      color: var(--text-primary);
+    }
+
+    .paper__title {
+      font-family: var(--font-display);
+      font-size: var(--text-3xl);
+      line-height: var(--leading-tight);
+      font-weight: var(--weight-regular);
+      color: var(--text-primary);
+      margin-bottom: var(--space-6);
+    }
+
+    .paper__keywords {
+      font-size: var(--text-sm);
+      color: var(--text-tertiary);
+      margin-bottom: var(--space-8);
+      line-height: var(--leading-relaxed);
+    }
+
+    .paper__abstract {
+      border-left: 2px solid var(--border-default);
+      padding-left: var(--space-6);
+      margin-bottom: var(--space-10);
+      color: var(--text-secondary);
+      font-size: var(--text-base);
+      line-height: var(--leading-relaxed);
+    }
+
+    .paper__hr {
+      width: 40px;
+      height: 1px;
+      background: var(--border-default);
+      margin: var(--space-10) 0;
+      border: none;
+    }
+
+    /* Section headings */
+    .paper h2 {
+      font-family: var(--font-display);
+      font-size: var(--text-xl);
+      font-weight: var(--weight-regular);
+      color: var(--text-primary);
+      margin-top: var(--space-10);
+      margin-bottom: var(--space-4);
+    }
+
+    .paper h3 {
+      font-family: var(--font-display);
+      font-size: var(--text-md);
+      font-weight: var(--weight-regular);
+      color: var(--text-primary);
+      margin-top: var(--space-8);
+      margin-bottom: var(--space-3);
+    }
+
+    /* Body text */
+    .paper p {
+      font-size: var(--text-base);
+      line-height: var(--leading-relaxed);
+      margin-bottom: var(--space-4);
+      color: var(--text-primary);
+    }
+
+    .paper ol, .paper ul {
+      margin-bottom: var(--space-4);
+      padding-left: var(--space-6);
+    }
+
+    .paper ol {
+      list-style: decimal;
+    }
+
+    .paper ul {
+      list-style: disc;
+    }
+
+    .paper li {
+      font-size: var(--text-base);
+      line-height: var(--leading-relaxed);
+      margin-bottom: var(--space-2);
+      color: var(--text-primary);
+    }
+
+    /* Tables */
+    .paper table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: var(--space-6);
+      font-size: var(--text-sm);
+    }
+
+    .paper th, .paper td {
+      text-align: left;
+      padding: var(--space-2) var(--space-3);
+      border-bottom: 1px solid var(--border-default);
+      line-height: var(--leading-normal);
+    }
+
+    .paper th {
+      color: var(--text-secondary);
+      font-weight: var(--weight-regular);
+      border-bottom: 2px solid var(--border-strong);
+    }
+
+    .paper td {
+      color: var(--text-primary);
+    }
+
+    /* Code blocks */
+    .paper pre {
+      background: var(--surface-sunken);
+      border: 1px solid var(--border-default);
+      border-radius: var(--radius-sm);
+      padding: var(--space-4);
+      overflow-x: auto;
+      margin-bottom: var(--space-6);
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      line-height: var(--leading-normal);
+      color: var(--text-primary);
+    }
+
+    .paper code {
+      font-family: var(--font-mono);
+      font-size: 0.92em;
+    }
+
+    /* Inline code */
+    .paper p code, .paper li code {
+      background: var(--surface-sunken);
+      padding: 0.1em 0.3em;
+      border-radius: var(--radius-sm);
+    }
+
+    /* Strong text */
+    .paper strong {
+      font-weight: var(--weight-bold);
+      color: var(--text-primary);
+    }
+
+    /* Emphasis */
+    .paper em {
+      font-style: italic;
+    }
+
+    /* References */
+    .paper__references {
+      margin-top: var(--space-8);
+    }
+
+    .paper__references ol {
+      list-style: decimal;
+      padding-left: var(--space-6);
+    }
+
+    .paper__references li {
+      font-size: var(--text-sm);
+      color: var(--text-secondary);
+      margin-bottom: var(--space-3);
+      line-height: var(--leading-relaxed);
+    }
+
+    /* Appendix tables — allow horizontal scroll on mobile */
+    .table-wrap {
+      overflow-x: auto;
+      margin-bottom: var(--space-6);
+    }
+
+    .table-wrap table {
+      min-width: 600px;
+    }
+
+    /* Bottom bar (same as other pages) */
+    .bottom-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) var(--space-6);
+      border-top: 1px solid var(--border-default);
+      font-size: var(--text-sm);
+    }
+    .bottom-bar__copyright { color: var(--text-tertiary); }
+    .bottom-bar__nav { display: flex; align-items: center; gap: var(--space-6); }
+    .bottom-bar__nav a { color: var(--text-secondary); text-decoration: none; transition: color var(--duration-normal) var(--ease-default); }
+    .bottom-bar__nav a:hover { color: var(--color-primary); }
+    .bottom-bar__controls { display: flex; align-items: center; gap: var(--space-4); }
+
+    /* Colophon line */
+    .paper__colophon {
+      font-size: var(--text-sm);
+      color: var(--text-tertiary);
+      font-style: italic;
+      margin-top: var(--space-6);
+    }
+
+    @media (max-width: 768px) {
+      .paper__title {
+        font-size: var(--text-2xl);
+      }
+      .bottom-bar {
+        flex-direction: column;
+        gap: var(--space-3);
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <main class="paper">
+    <a href="works.html" class="paper__back">&larr; Back</a>
+
+    <h1 class="paper__title">WorldRhythm: A Unified Framework for Cross-Cultural Rhythm Generation</h1>
+
+    <p class="paper__keywords"><strong>Keywords</strong>: rhythm generation, computational ethnomusicology, cross-cultural music, interlocking patterns, polyrhythm, algorithmic composition, articulation techniques</p>
+
+    <div class="paper__abstract">
+      <p>This paper presents WorldRhythm, a rule-based algorithmic framework for generating rhythmic patterns across ten distinct musical cultures within a unified architecture. Unlike existing approaches that focus on single cultural traditions or rely on machine learning with Western-biased datasets, WorldRhythm employs a four-layer role hierarchy combined with culture-specific preference matrices, specialized engines for unique rhythmic concepts, and an Articulation Profile system for style-specific ornamentation. The system integrates ethnomusicological research from West African polyrhythm, Afro-Cuban clave, Javanese gamelan, Balinese kotekan, Indian tala, and Balkan aksak traditions into a parameterized, interpretable generation system. This paper describes the core architecture, algorithmic processes, specialized engines, humanization mechanisms, and theoretical foundations of the framework.</p>
+    </div>
+
+    <hr class="paper__hr">
+
+    <!-- 1. Introduction -->
+    <h2>1. Introduction</h2>
+
+    <h3>1.1 Background</h3>
+    <p>Computational rhythm generation has predominantly focused on Western popular music styles. Major publicly available datasets such as the Groove MIDI Dataset and Magenta's drum transcription corpora consist almost entirely of Western genres including rock, pop, funk, and jazz. Recent research (Mehta et al., 2024) analyzing over one million hours of audio datasets found that 86% focus on Global North music, with 93% of researchers primarily studying Western music. Machine learning approaches such as GrooVAE and Drum RNN, while successful for expressive drum performance generation, are trained primarily on these Western-centric datasets and lack explicit modeling of culture-specific rhythmic principles.</p>
+    <p>Several computational systems have addressed non-Western musical traditions individually: the CompMusic project (UPF Barcelona) developed datasets and tala detection systems for Carnatic and Hindustani music; Euclidean rhythm generators based on Toussaint's research have been widely implemented; and various gamelan algorithmic composition systems exist. However, these efforts typically target single traditions. Additionally, computational systems for tabla and mridangam transcription have achieved approximately 93% accuracy, demonstrating the viability of modeling specific traditions.</p>
+    <p>Ethnomusicological research has documented sophisticated rhythmic systems across world cultures, including the timeline concept in West African music, the clave in Afro-Cuban traditions, the colotomic structure in Javanese gamelan, the kotekan interlocking in Balinese music, the tala cycles in Indian classical music, and the aksak asymmetric meters in Balkan folk music. However, these concepts have rarely been unified within a single generative framework.</p>
+
+    <h3>1.2 Objectives</h3>
+    <p>This research aims to develop an algorithmic system capable of:</p>
+    <ol>
+      <li>Faithfully representing the core characteristics of ten major world music rhythm styles</li>
+      <li>Supporting variation generation within single styles</li>
+      <li>Achieving intelligent cross-style mixing that maintains style-specific characteristics while ensuring overall coordination</li>
+      <li>Providing humanization processing aligned with natural performance characteristics</li>
+      <li>Implementing culture-specific ornamentation through an Articulation Profile system</li>
+    </ol>
+
+    <hr class="paper__hr">
+
+    <!-- 2. Related Work -->
+    <h2>2. Related Work</h2>
+
+    <h3>2.1 Cross-Cultural Rhythm Research</h3>
+    <p>Simha Arom (1991) documented complex interlocking structures in Central African music (Banda Linda and Aka Pygmies), revealing the principle of "minimal periodicity" as an analytical tool for non-Western rhythms. It should be noted that Arom's research primarily focuses on Central Africa rather than West Africa where timeline patterns are most prominent, and these regions differ in specific practices despite sharing common principles.</p>
+    <p>Gerhard Kubik (2010) elaborated the concept of "timeline" in African rhythm&mdash;a referential rhythmic pattern that permeates the entire ensemble, around which other parts organize. This concept directly inspired the role-layered architecture of this research.</p>
+    <p>Fernando Benadon (2006) demonstrated that timing deviations in human jazz performance are not random errors but style-specific expressive devices, providing theoretical foundation for the humanization mechanisms in this research.</p>
+
+    <h3>2.2 Algorithmic Rhythm Generation</h3>
+    <p>Godfried Toussaint (2013) established mathematical connections between Euclidean algorithms and world music rhythms, discovering that many traditional rhythmic patterns can be generated using specific parameters of the Euclidean algorithm. This research adopts this method as the core of basic rhythm generation.</p>
+    <p>Jeff Pressing (1983) proposed a cognitive complexity model for quantifying rhythmic difficulty. This research references this concept in density control and variation generation.</p>
+
+    <h3>2.3 Limitations of Existing Systems</h3>
+    <p>Existing rhythm generation tools such as Ableton Live's Beat Repeat and Native Instruments' Maschine, while powerful, are primarily designed for electronic music and hip-hop styles. They lack:</p>
+    <ul>
+      <li>Support for non-Western rhythmic timeline concepts</li>
+      <li>Style-specific swing and micro-timing processing</li>
+      <li>Intelligent mechanisms for cross-cultural style mixing</li>
+    </ul>
+
+    <hr class="paper__hr">
+
+    <!-- 3. System Architecture -->
+    <h2>3. System Architecture</h2>
+
+    <h3>3.1 Overall Design</h3>
+    <p>WorldRhythm adopts a modular architecture with core components including:</p>
+<pre>
+&#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;
+&#9474;                   RhythmEngine                       &#9474;
+&#9474;  &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;  &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;  &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;   &#9474;
+&#9474;  &#9474;  Pattern  &#9474;  &#9474;  Interlock &#9474;  &#9474;   Humanize    &#9474;   &#9474;
+&#9474;  &#9474; Generator &#9474;&#9472;&#9472;&#9474;  Manager   &#9474;&#9472;&#9472;&#9474;    Engine     &#9474;   &#9474;
+&#9474;  &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;  &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;  &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;   &#9474;
+&#9474;        &#9474;              &#9474;               &#9474;             &#9474;
+&#9474;  &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;  &#9484;&#9472;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9488;   &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9516;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;       &#9474;
+&#9474;  &#9474; Euclidean &#9474;  &#9474;  Style   &#9474;   &#9474;  Timing   &#9474;       &#9474;
+&#9474;  &#9474; Generator &#9474;  &#9474;Compat.   &#9474;   &#9474;  Profile  &#9474;       &#9474;
+&#9474;  &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;  &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;   &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;       &#9474;
+&#9474;                                                     &#9474;
+&#9474;  &#9484;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9488;   &#9474;
+&#9474;  &#9474;            Style-Specific Engines            &#9474;   &#9474;
+&#9474;  &#9474;  Clave &#9474; Batucada &#9474; Kotekan &#9474; Jazz &#9474; Amen   &#9474;   &#9474;
+&#9474;  &#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;   &#9474;
+&#9492;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9472;&#9496;
+</pre>
+
+    <h3>3.2 Four-Layer Role Hierarchy</h3>
+    <p>Inspired by African and Asian percussion traditions, the system divides rhythmic voices into four roles:</p>
+    <table>
+      <thead>
+        <tr><th>Role</th><th>Function</th><th>Musical Analogy</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Timeline</td><td>Provides constant reference framework</td><td>West African bell, Cuban clave</td></tr>
+        <tr><td>Foundation</td><td>Establishes low-frequency foundation</td><td>Bass drum, surdo</td></tr>
+        <tr><td>Groove</td><td>Fills mid-frequency space</td><td>Congas, snare</td></tr>
+        <tr><td>Lead</td><td>Improvisation and ornamentation</td><td>Solo instruments</td></tr>
+      </tbody>
+    </table>
+    <p>This layering is based on ethnomusicological functional analysis of percussion ensembles, reflecting the "reference-foundation-filling-ornamentation" hierarchical structure present in most traditions.</p>
+
+    <h3>3.3 Style Parameterization</h3>
+    <p>The system supports ten rhythmic styles, each defined by the following parameters:</p>
+<pre>
+struct StyleProfile {
+    // Basic parameters
+    float baseDensity;          // Base note density
+    float swingAmount;          // Swing degree
+    int preferredSubdivision;   // Preferred subdivision (8, 12, 16)
+
+    // Rhythmic pattern preferences
+    std::vector&lt;int&gt; clavePattern;     // Timeline rhythm pattern
+    std::vector&lt;int&gt; accentPattern;    // Accent pattern
+
+    // Interlocking rules
+    float avoidanceStrength;    // Avoidance strength
+    float complementBoost;      // Complement boost
+
+    // Humanization parameters
+    float timingVariance;       // Timing variance (milliseconds)
+    float velocityRange;        // Velocity range
+    float ghostNoteRatio;       // Ghost note ratio
+};
+</pre>
+
+    <p>Core characteristics of the ten styles (timing variance based on academic research by Polak &amp; London 2014, Friberg &amp; Sundstr&ouml;m 2002, Danielsen et al. 2015):</p>
+    <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Style</th><th>Subdivision</th><th>Swing</th><th>Timing Variance</th><th>Characteristics</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>West African</td><td>12</td><td>Medium</td><td>&plusmn;22ms</td><td>12/8 polyrhythm, strong interlock</td></tr>
+        <tr><td>Afro-Cuban</td><td>16</td><td>Medium</td><td>&plusmn;16ms</td><td>Clave-oriented, rich syncopation</td></tr>
+        <tr><td>Brazilian</td><td>16</td><td>High</td><td>&plusmn;14ms</td><td>Samba swing, surdo dialogue</td></tr>
+        <tr><td>Balkan</td><td>Mixed</td><td>Low</td><td>&plusmn;10ms</td><td>Irregular meters, asymmetric accents</td></tr>
+        <tr><td>Indian</td><td>16</td><td>Low</td><td>&plusmn;18ms</td><td>Tala cycles, tihai endings</td></tr>
+        <tr><td>Gamelan</td><td>Variable</td><td>None</td><td>&plusmn;12ms</td><td>Colotomic structure, irama levels</td></tr>
+        <tr><td>Jazz</td><td>12</td><td>High</td><td>&plusmn;12ms</td><td>Triplet groove, BPM-dependent swing</td></tr>
+        <tr><td>Electronic</td><td>16</td><td>None</td><td>&plusmn;5ms</td><td>Machine precision, four-on-floor</td></tr>
+        <tr><td>Breakbeat</td><td>16</td><td>Medium</td><td>&plusmn;15ms</td><td>Sample slicing, rhythmic breaks</td></tr>
+        <tr><td>Techno</td><td>16</td><td>None</td><td>&plusmn;2ms</td><td>Minimal, hypnotic repetition</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <hr class="paper__hr">
+
+    <!-- 4. Core Algorithms -->
+    <h2>4. Core Algorithms</h2>
+
+    <h3>4.1 Euclidean Rhythm Generation</h3>
+    <p>Basic rhythmic patterns are generated using Bjorklund's (2003) Euclidean algorithm. Given total steps <em>n</em> and hits <em>k</em>, the algorithm produces the maximum even distribution of <em>k</em> hits across <em>n</em> steps:</p>
+<pre>
+std::vector&lt;bool&gt; euclidean(int hits, int steps) {
+    std::vector&lt;int&gt; pattern(steps, 0);
+    int bucket = 0;
+
+    for (int i = 0; i &lt; steps; i++) {
+        bucket += hits;
+        if (bucket &gt;= steps) {
+            bucket -= steps;
+            pattern[i] = 1;
+        }
+    }
+    return pattern;
+}
+</pre>
+
+    <p>This algorithm can generate many traditional rhythmic patterns:</p>
+    <ul>
+      <li>E(3,8) = Tresillo (Cuban)</li>
+      <li>E(5,8) = Cinquillo (Cuban)</li>
+      <li>E(7,12) = West African standard bell rhythm</li>
+      <li>E(5,16) = Bossa Nova</li>
+    </ul>
+
+    <h3>4.2 Interlocking Generation Algorithm</h3>
+    <p>Interlocking is the key mechanism ensuring multi-part coordination. The system implements three interlocking strategies:</p>
+
+    <p><strong>Avoidance Strategy</strong>: Foundation avoids Timeline's strong beat positions</p>
+<pre>
+float calculateAvoidance(int step, const Pattern&amp; timeline,
+                         float avoidanceStrength) {
+    if (timeline.hasHit(step)) {
+        // Reduce probability when Timeline has hit
+        return 1.0f - avoidanceStrength;
+    }
+    return 1.0f;
+}
+</pre>
+
+    <p><strong>Complement Strategy</strong>: Groove fills gaps between Timeline and Foundation</p>
+<pre>
+float calculateComplement(int step, const Pattern&amp; timeline,
+                          const Pattern&amp; foundation, float boost) {
+    bool hasTimelineHit = timeline.hasHit(step);
+    bool hasFoundationHit = foundation.hasHit(step);
+
+    if (!hasTimelineHit &amp;&amp; !hasFoundationHit) {
+        // Empty positions receive boost
+        return boost;
+    }
+    return 1.0f;
+}
+</pre>
+
+    <p><strong>Negotiation Strategy</strong>: Lead voice considers all other voices</p>
+<pre>
+float calculateLeadProbability(int step, const Pattern patterns[3],
+                               float baseProb) {
+    int activeVoices = 0;
+    for (int i = 0; i &lt; 3; i++) {
+        if (patterns[i].hasHit(step)) activeVoices++;
+    }
+
+    // More active voices, Lead tends to rest
+    return baseProb * (1.0f - activeVoices * 0.2f);
+}
+</pre>
+
+    <h3>4.3 Style Compatibility Matrix</h3>
+    <p>When mixing cross-style, the system references a predefined compatibility matrix to determine interlocking strength:</p>
+<pre>
+static const float compatibilityMatrix[10][10] = {
+    //    WA    AC    BR    BK    IN    GM    JZ    EL    BB    TC
+    {1.00, 0.80, 0.70, 0.40, 0.50, 0.60, 0.60, 0.50, 0.60, 0.40}, // West African
+    {0.80, 1.00, 0.85, 0.45, 0.50, 0.55, 0.70, 0.60, 0.65, 0.50}, // Afro-Cuban
+    {0.70, 0.85, 1.00, 0.40, 0.45, 0.50, 0.75, 0.55, 0.70, 0.45}, // Brazilian
+    {0.40, 0.45, 0.40, 1.00, 0.60, 0.35, 0.50, 0.45, 0.45, 0.40}, // Balkan
+    {0.50, 0.50, 0.45, 0.60, 1.00, 0.55, 0.55, 0.40, 0.45, 0.35}, // Indian
+    {0.60, 0.55, 0.50, 0.35, 0.55, 1.00, 0.50, 0.50, 0.45, 0.50}, // Gamelan
+    {0.60, 0.70, 0.75, 0.50, 0.55, 0.50, 1.00, 0.70, 0.75, 0.60}, // Jazz
+    {0.50, 0.60, 0.55, 0.45, 0.40, 0.50, 0.70, 1.00, 0.80, 0.85}, // Electronic
+    {0.60, 0.65, 0.70, 0.45, 0.45, 0.45, 0.75, 0.80, 1.00, 0.75}, // Breakbeat
+    {0.40, 0.50, 0.45, 0.40, 0.35, 0.50, 0.60, 0.85, 0.75, 1.00}  // Techno
+};
+</pre>
+
+    <p>Compatibility is calculated based on the following principles:</p>
+    <ol>
+      <li><strong>Pulse families</strong>: Styles sharing the same basic subdivision have higher compatibility (e.g., 12/8 family: West African, Cuban, Brazilian)</li>
+      <li><strong>Historical connections</strong>: Styles with historical relationships have higher compatibility (e.g., Cuban and Jazz)</li>
+      <li><strong>Timing characteristics</strong>: Styles with similar humanization degrees are easier to mix (e.g., Electronic and Techno)</li>
+    </ol>
+
+    <p>When compatibility is low, the system automatically enhances interlocking:</p>
+<pre>
+float getInterlockStrength(int styleA, int styleB) {
+    float compatibility = getCompatibility(styleA, styleB);
+    // Lower compatibility, stronger interlock to maintain overall coordination
+    return 1.0f + (1.0f - compatibility) * 0.5f;
+}
+</pre>
+
+    <h3>4.4 Humanization Processing</h3>
+    <p>The humanization engine simulates timing and velocity variations in human performance with style-specific characteristics:</p>
+
+    <p><strong>Timing Variation</strong></p>
+<pre>
+float getTimingOffset(int step, int styleIndex, float amount) {
+    const StyleTimingProfile&amp; profile = profiles[styleIndex];
+
+    // Base variance
+    float variance = profile.baseVariance * amount;
+
+    // Role correction (Timeline most stable, Lead most free)
+    variance *= profile.roleMultipliers[currentRole];
+
+    // Generate Gaussian-distributed offset
+    return gaussianRandom(0, variance);
+}
+</pre>
+
+    <p><strong>BPM-Dependent Swing</strong></p>
+    <p>According to research by Friberg &amp; Sundstr&ouml;m (2002), jazz swing ratio varies with tempo:</p>
+    <ul>
+      <li>Slow (~120 BPM): up to 3.5:1</li>
+      <li>Medium: approximately 2:1 (triplet feel, 67%)</li>
+      <li>Fast (300+ BPM): approaching 1:1 (straight)</li>
+    </ul>
+    <p>This phenomenon originates from biomechanical limitations&mdash;maintaining large uneven subdivisions is difficult at high speeds.</p>
+<pre>
+float getSwingRatio(int styleIndex, float bpm) {
+    const StyleTimingProfile&amp; profile = profiles[styleIndex];
+
+    float slowRatio = profile.swingRatioSlow;  // Swing at slow tempo
+    float fastRatio = profile.swingRatioFast;  // Swing at fast tempo
+
+    // Linear interpolation, 100-180 BPM transition zone
+    float t = clamp((bpm - 100.0f) / 80.0f, 0.0f, 1.0f);
+    return lerp(slowRatio, fastRatio, t);
+}
+</pre>
+
+    <p><strong>Relative Ghost Note Velocity</strong></p>
+    <p>Ghost note velocity is calculated relative to the previous main note rather than as absolute value. According to academic research:</p>
+    <ul>
+      <li>Matsuo &amp; Sakaguchi (2024): 1:4 amplitude ratio = 25%</li>
+      <li>Cheng et al. (2022): 10dB difference = ~32%</li>
+    </ul>
+    <p>Therefore, ghost note velocity range is set at 25-32%.</p>
+<pre>
+float getGhostVelocity(float previousVelocity, int styleIndex) {
+    const StyleTimingProfile&amp; profile = profiles[styleIndex];
+    // ghostVelocityMin = 0.25, ghostVelocityMax = 0.32 (peer-reviewed)
+    float ratio = randomRange(profile.ghostVelocityMin,
+                              profile.ghostVelocityMax);
+    return previousVelocity * ratio;
+}
+</pre>
+
+    <h3>4.5 Articulation Profile System</h3>
+    <p>To achieve style-specific ornamentation techniques, the system employs an Articulation Profile lookup table based on ethnomusicological research. Each style and role combination has dedicated ornamentation settings.</p>
+
+    <p><strong>Articulation Types</strong></p>
+<pre>
+enum class ArticulationType {
+    None,   // No ornamentation
+    Flam,   // Double strike (grace note preceding)
+    Drag,   // Double grace notes
+    Ruff,   // Triple grace notes
+    Buzz    // Buzz roll (continuous fine strokes)
+};
+</pre>
+
+    <p><strong>Profile Structure</strong></p>
+<pre>
+struct ArticulationEntry {
+    ArticulationType type;      // Articulation technique type
+    float baseProbability;      // Base occurrence probability
+    bool onAccentsOnly;         // Trigger only on accents
+    bool onStrongBeats;         // Trigger only on strong beats
+};
+
+// 10 styles &times; 4 roles = 40 profile sets
+static const ArticulationEntry profiles[10][4];
+</pre>
+
+    <p><strong>Style-Specific Design</strong></p>
+    <p>Each style's Articulation design is based on ethnomusicological literature:</p>
+    <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Style</th><th>Timeline</th><th>Foundation</th><th>Groove</th><th>Lead</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>West African</td><td>Flam medium probability</td><td>Drag low probability</td><td>Flam high probability</td><td>Ruff medium probability</td></tr>
+        <tr><td>Afro-Cuban</td><td>Flam low probability</td><td>None</td><td>Flam medium probability</td><td>Drag high probability</td></tr>
+        <tr><td>Brazilian</td><td>Flam medium probability</td><td>Drag low probability</td><td>Ruff high probability</td><td>Buzz medium probability</td></tr>
+        <tr><td>Jazz</td><td>Flam low probability</td><td>Drag low probability</td><td>Buzz medium probability</td><td>Ruff high probability</td></tr>
+        <tr><td>Electronic</td><td>None</td><td>None</td><td>Flam low probability</td><td>Flam low probability</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <p><strong>Selection Algorithm</strong></p>
+<pre>
+ArticulationType selectArticulation(int styleIndex, int roleIndex,
+                                    float amount, bool isAccent,
+                                    bool isStrongBeat) {
+    const ArticulationEntry&amp; entry = profiles[styleIndex][roleIndex];
+
+    // Condition checking
+    if (entry.onAccentsOnly &amp;&amp; !isAccent) return None;
+    if (entry.onStrongBeats &amp;&amp; !isStrongBeat) return None;
+
+    // Probability calculation: base probability &times; user control amount
+    float probability = entry.baseProbability * amount;
+
+    if (randomFloat() &lt; probability) {
+        return entry.type;
+    }
+    return None;
+}
+</pre>
+
+    <p><strong>Ethnomusicological References</strong></p>
+    <p>Articulation Profile design references the following research:</p>
+    <ul>
+      <li>Afrodrumming.com: West African percussion Flam and Drag techniques</li>
+      <li>Marc D&eacute;douvan: Afro-Cuban percussion ornamentation traditions</li>
+      <li>Gamelan.org.nz: Gamelan music Kotekan interlocking techniques</li>
+      <li>Jazz drumming literature: Differences in Brush and Stick ornamentation</li>
+    </ul>
+
+    <hr class="paper__hr">
+
+    <!-- 5. Style-Specific Engines -->
+    <h2>5. Style-Specific Engines</h2>
+    <p>Beyond generic algorithms, the system includes specialized engines for specific traditions:</p>
+
+    <h3>5.1 ClaveEngine (Cuban)</h3>
+    <p>Implements 3-2/2-3 direction switching for Son Clave, Rumba Clave, and Bossa Nova Clave:</p>
+<pre>
+enum ClaveType { SON, RUMBA, BOSSA };
+enum Direction { THREE_TWO, TWO_THREE };
+
+Pattern generateClave(ClaveType type, Direction dir);
+void flipDirection();  // Real-time direction switching
+</pre>
+
+    <h3>5.2 BatucadaEngine (Brazilian)</h3>
+    <p>Simulates Samba school percussion Surdo trio interlocking:</p>
+    <ul>
+      <li><strong>Primeira</strong>: Beat 2 strong accent</li>
+      <li><strong>Segunda</strong>: Beat 1 response</li>
+      <li><strong>Terceira</strong>: Fills and variations</li>
+    </ul>
+<pre>
+struct SurdoInterlock {
+    Pattern primeira;  // Lead voice
+    Pattern segunda;   // Response voice
+    Pattern terceira;  // Ornamentation voice
+};
+
+SurdoInterlock generateSurdos(SambaStyle style, float swing);
+</pre>
+
+    <h3>5.3 KotekanEngine (Balinese)</h3>
+    <p>Implements Kotekan interlocking technique in gamelan music:</p>
+    <ul>
+      <li><strong>Polos</strong>: Descending melodic line</li>
+      <li><strong>Sangsih</strong>: Complementary ascending line</li>
+      <li><strong>Combined</strong>: Complete continuous sound stream</li>
+    </ul>
+<pre>
+enum KotekanType { NYOG_CAG, NOROT, TELU, EMPAT, UBIT };
+
+KotekanPair generateKotekan(KotekanType type, int steps);
+</pre>
+
+    <h3>5.4 JazzBrushEngine (Jazz)</h3>
+    <p>Simulates jazz drummer's brush and stick techniques:</p>
+<pre>
+enum PlayingStyle { BRUSHES, STICKS };
+enum TempoFeel { BALLAD, MEDIUM, UP_TEMPO, BEBOP };
+
+JazzKit generateComping(PlayingStyle style, TempoFeel feel, float bpm);
+</pre>
+
+    <h3>5.5 AmenBreakEngine (Breakbeat)</h3>
+    <p>Implements slicing and reassembly of classic Breakbeat samples:</p>
+<pre>
+enum BreakType { AMEN, THINK, FUNKY_DRUMMER, APACHE };
+enum ChopStyle { ORIGINAL, REVERSE, JUNGLE_1, JUNGLE_2 };
+
+BreakPattern generateBreak(BreakType type);
+BreakPattern chopBreak(const BreakPattern&amp; original, ChopStyle style);
+</pre>
+
+    <hr class="paper__hr">
+
+    <!-- 6. Experiments and Evaluation -->
+    <h2>6. Experiments and Evaluation</h2>
+
+    <h3>6.1 Experimental Design</h3>
+    <p>To verify algorithmic effectiveness, three mixed-style tests were designed:</p>
+
+    <p><strong>Test One: World Music/House Fusion</strong></p>
+    <ul>
+      <li>Timeline: West African style</li>
+      <li>Foundation: Electronic style</li>
+      <li>Groove: Afro-Cuban style</li>
+      <li>Lead: Jazz style</li>
+    </ul>
+
+    <p><strong>Test Two: Drum'n'Bass Meets Samba</strong></p>
+    <ul>
+      <li>Timeline: Brazilian style</li>
+      <li>Foundation: Breakbeat style</li>
+      <li>Groove: Brazilian style</li>
+      <li>Lead: Jazz style</li>
+    </ul>
+
+    <p><strong>Test Three: Experimental Low-Compatibility Combination</strong></p>
+    <ul>
+      <li>Timeline: Techno style</li>
+      <li>Foundation: Techno style</li>
+      <li>Groove: Gamelan style</li>
+      <li>Lead: Gamelan style</li>
+    </ul>
+
+    <h3>6.2 Results Analysis</h3>
+    <p><strong>Interlocking Effectiveness</strong></p>
+    <p>Measuring Timeline-Foundation overlap rate and Groove gap-filling rate:</p>
+    <table>
+      <thead>
+        <tr><th>Test</th><th>Timeline-Foundation Overlap</th><th>Groove Fill Rate</th><th>Overall Density</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Test 1</td><td>12.5%</td><td>68.7%</td><td>62.5%</td></tr>
+        <tr><td>Test 2</td><td>18.7%</td><td>71.9%</td><td>68.7%</td></tr>
+        <tr><td>Test 3</td><td>6.2%</td><td>75.0%</td><td>59.4%</td></tr>
+      </tbody>
+    </table>
+    <p>Results show:</p>
+    <ul>
+      <li>Low-compatibility combinations (Test 3) have lowest Timeline-Foundation overlap, showing enhanced interlocking mechanism works effectively</li>
+      <li>Groove fill rate maintains 65-75% across all tests, ensuring rhythmic flow</li>
+    </ul>
+
+    <p><strong>Style Feature Retention</strong></p>
+    <p>By analyzing rhythmic characteristics of each voice (subdivision preference, accent positions, swing degree), core qualities of each style are confirmed to be maintained:</p>
+    <table>
+      <thead>
+        <tr><th>Voice</th><th>Assigned Style</th><th>Subdivision Match</th><th>Accent Match</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Timeline (West African)</td><td>West African</td><td>91.6%</td><td>87.5%</td></tr>
+        <tr><td>Foundation (Electronic)</td><td>Electronic</td><td>100%</td><td>100%</td></tr>
+        <tr><td>Groove (Afro-Cuban)</td><td>Afro-Cuban</td><td>85.4%</td><td>79.2%</td></tr>
+        <tr><td>Lead (Jazz)</td><td>Jazz</td><td>83.3%</td><td>75.0%</td></tr>
+      </tbody>
+    </table>
+
+    <h3>6.3 Limitations</h3>
+    <ol>
+      <li><strong>Cultural Simplification</strong>: Simplifying complex musical traditions into parameters inevitably loses some details</li>
+      <li><strong>Static Compatibility</strong>: Compatibility matrix is preset and cannot reflect specific musical contexts</li>
+      <li><strong>Lack of Pitch Dimension</strong>: System focuses on rhythm and does not handle cross-cultural fusion of melody and harmony</li>
+    </ol>
+
+    <hr class="paper__hr">
+
+    <!-- 7. Conclusion and Future Work -->
+    <h2>7. Conclusion and Future Work</h2>
+
+    <h3>7.1 Conclusion</h3>
+    <p>The WorldRhythm algorithm proposed in this research successfully achieves:</p>
+    <ol>
+      <li><strong>Multi-style Support</strong>: Covers ten major world music rhythm traditions</li>
+      <li><strong>Intelligent Mixing</strong>: Achieves cross-style fusion through compatibility matrix and variable-strength interlocking</li>
+      <li><strong>Humanization Processing</strong>: Style-specific timing and velocity variations enhance musicality</li>
+      <li><strong>Articulation Profile</strong>: Ethnomusicologically-based ornamentation system with dedicated settings for each style and role combination</li>
+      <li><strong>Modular Architecture</strong>: Easy to extend with new styles and features</li>
+    </ol>
+    <p>This system provides music creators with a tool to explore cross-cultural rhythmic fusion while maintaining respect and understanding for each tradition.</p>
+
+    <h3>7.2 Future Work</h3>
+    <ol>
+      <li><strong>Machine Learning Integration</strong>: Train style models using real performance data to enhance realism</li>
+      <li><strong>Dynamic Compatibility</strong>: Dynamically adjust compatibility judgments based on actual generation results</li>
+      <li><strong>User Research</strong>: Conduct listening tests to evaluate musicality and cultural appropriateness of generated rhythms</li>
+      <li><strong>Pitch Extension</strong>: Add cross-cultural generation capabilities for melody and harmony</li>
+    </ol>
+
+    <hr class="paper__hr">
+
+    <!-- References -->
+    <h2>References</h2>
+    <div class="paper__references">
+    <ol>
+      <li>Arom, S. (1991). <em>African Polyphony and Polyrhythm: Musical Structure and Methodology</em>. Cambridge University Press.</li>
+      <li>Benadon, F. (2006). Slicing the Beat: Jazz Eighth-Notes as Expressive Microrhythm. <em>Ethnomusicology</em>, 50(1), 73-98.</li>
+      <li>Bjorklund, E. (2003). The Theory of Rep-Rate Pattern Generation in the SNS Timing System. <em>SNS ASD Technical Note</em>.</li>
+      <li>Cheng, T.Z., Creel, S.C., &amp; Iversen, J.R. (2022). How Do You Feel the Rhythm: Dynamic Motor-Auditory Interactions Are Involved in the Imagination of Hierarchical Timing. <em>Journal of Neuroscience</em>, 42(3), 500-512.</li>
+      <li>Danielsen, A., et al. (2015). Effects of instructed timing and tempo on snare drum sound in drum kit performance. <em>Journal of the Acoustical Society of America</em>, 138(4), 2301-2316.</li>
+      <li>Friberg, A., &amp; Sundstr&ouml;m, A. (2002). Swing Ratios and Ensemble Timing in Jazz Performance: Evidence for a Common Rhythmic Pattern. <em>Music Perception</em>, 19(3), 333-349.</li>
+      <li>Kubik, G. (2010). <em>Theory of African Music</em>, Volume I. University of Chicago Press.</li>
+      <li>Locke, D. (1982). Principles of Offbeat Timing and Cross-Rhythm in Southern Eve Drumming. <em>Ethnomusicology</em>, 26(2), 217-246.</li>
+      <li>Matsuo, H., &amp; Sakaguchi, Y. (2024). Effects of Rhythm and Accent Patterns on Tempo-Keeping Property of Finger Tapping. <em>i-Perception</em>. DOI: 10.1177/20592043241276959</li>
+      <li>Mehta, A., et al. (2024). Missing Melodies: AI Music Generation and the Need for Diverse Training Data. <em>arXiv preprint</em>.</li>
+      <li>Polak, R., &amp; London, J. (2014). Timing and Meter in Mande Drumming from Mali. <em>Music Theory Online</em>, 20(1).</li>
+      <li>Pressing, J. (1983). Cognitive Isomorphisms between Pitch and Rhythm in World Musics. <em>Studies in Music</em>, 17, 38-61.</li>
+      <li>Temperley, D. (2000). Meter and Grouping in African Music: A View from Music Theory. <em>Ethnomusicology</em>, 44(1), 65-96.</li>
+      <li>Tenzer, M. (2000). <em>Gamelan Gong Kebyar: The Art of Twentieth-Century Balinese Music</em>. University of Chicago Press.</li>
+      <li>Toussaint, G. T. (2013). <em>The Geometry of Musical Rhythm</em>. CRC Press.</li>
+    </ol>
+    </div>
+
+    <hr class="paper__hr">
+
+    <!-- Appendix A -->
+    <h2>Appendix A: Complete Style Compatibility Matrix</h2>
+    <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th></th><th>West African</th><th>Afro-Cuban</th><th>Brazilian</th><th>Balkan</th><th>Indian</th><th>Gamelan</th><th>Jazz</th><th>Electronic</th><th>Breakbeat</th><th>Techno</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>West African</strong></td><td>100%</td><td>80%</td><td>70%</td><td>40%</td><td>50%</td><td>60%</td><td>60%</td><td>50%</td><td>60%</td><td>40%</td></tr>
+        <tr><td><strong>Afro-Cuban</strong></td><td>80%</td><td>100%</td><td>85%</td><td>45%</td><td>50%</td><td>55%</td><td>70%</td><td>60%</td><td>65%</td><td>50%</td></tr>
+        <tr><td><strong>Brazilian</strong></td><td>70%</td><td>85%</td><td>100%</td><td>40%</td><td>45%</td><td>50%</td><td>75%</td><td>55%</td><td>70%</td><td>45%</td></tr>
+        <tr><td><strong>Balkan</strong></td><td>40%</td><td>45%</td><td>40%</td><td>100%</td><td>60%</td><td>35%</td><td>50%</td><td>45%</td><td>45%</td><td>40%</td></tr>
+        <tr><td><strong>Indian</strong></td><td>50%</td><td>50%</td><td>45%</td><td>60%</td><td>100%</td><td>55%</td><td>55%</td><td>40%</td><td>45%</td><td>35%</td></tr>
+        <tr><td><strong>Gamelan</strong></td><td>60%</td><td>55%</td><td>50%</td><td>35%</td><td>55%</td><td>100%</td><td>50%</td><td>50%</td><td>45%</td><td>50%</td></tr>
+        <tr><td><strong>Jazz</strong></td><td>60%</td><td>70%</td><td>75%</td><td>50%</td><td>55%</td><td>50%</td><td>100%</td><td>70%</td><td>75%</td><td>60%</td></tr>
+        <tr><td><strong>Electronic</strong></td><td>50%</td><td>60%</td><td>55%</td><td>45%</td><td>40%</td><td>50%</td><td>70%</td><td>100%</td><td>80%</td><td>85%</td></tr>
+        <tr><td><strong>Breakbeat</strong></td><td>60%</td><td>65%</td><td>70%</td><td>45%</td><td>45%</td><td>45%</td><td>75%</td><td>80%</td><td>100%</td><td>75%</td></tr>
+        <tr><td><strong>Techno</strong></td><td>40%</td><td>50%</td><td>45%</td><td>40%</td><td>35%</td><td>50%</td><td>60%</td><td>85%</td><td>75%</td><td>100%</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <!-- Appendix B -->
+    <h2>Appendix B: Style Family Classification</h2>
+
+    <p><strong>12/8 Pulse Family</strong></p>
+    <ul>
+      <li>West African (Standard Bell: E(7,12))</li>
+      <li>Afro-Cuban (Clave system)</li>
+      <li>Brazilian (Samba swing)</li>
+    </ul>
+
+    <p><strong>4/4 Pulse Family</strong></p>
+    <ul>
+      <li>Jazz (Triplet subdivision)</li>
+      <li>Electronic (Straight 16ths)</li>
+      <li>Breakbeat (Sliced reassembly)</li>
+      <li>Techno (Minimal loops)</li>
+    </ul>
+
+    <p><strong>Irregular Meter Family</strong></p>
+    <ul>
+      <li>Balkan (7/8, 9/8, 11/8)</li>
+      <li>Indian (Tala cycles)</li>
+    </ul>
+
+    <p><strong>Colotomic Family</strong></p>
+    <ul>
+      <li>Gamelan (Hierarchical gong punctuation structure)</li>
+    </ul>
+
+    <hr class="paper__hr">
+
+    <p class="paper__colophon">This research documents the WorldRhythm v0.20 algorithm, implemented in the VCV Rack module environment.</p>
+
+  </main>
+
+  <!-- Bottom Bar -->
+  <div class="bottom-bar">
+    <span class="bottom-bar__copyright" data-i18n="footer.copyright">&copy; 2025 MADZINE. All rights reserved.</span>
+    <nav class="bottom-bar__nav">
+      <a href="index.html" data-i18n="nav.home">Home</a>
+      <a href="software.html" data-i18n="nav.software">Software</a>
+      <a href="works.html" data-i18n="nav.works">Works</a>
+      <a href="contact.html" data-i18n="nav.contact">Contact</a>
+    </nav>
+    <div class="bottom-bar__controls">
+      <div class="lang-switcher">
+        <button class="lang-btn" data-lang="zh-TW" onclick="I18N.setLang('zh-TW')">中</button>
+        <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
+        <button class="lang-btn" data-lang="ja" onclick="I18N.setLang('ja')">JP</button>
+      </div>
+      <button id="mode-toggle" class="mode-toggle" aria-label="Toggle dark mode">&#9789;</button>
+    </div>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
