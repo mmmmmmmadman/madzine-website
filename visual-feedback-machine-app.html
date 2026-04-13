@@ -1,0 +1,1876 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Visual Feedback Machine">
+    <title>Visual Feedback Machine</title>
+    <style>
+        /* --- Font metrics override: unify line height across CJK and Latin --- */
+        @font-face {
+            font-family: 'Barlow Condensed';
+            src: local('Barlow Condensed Light'), local('Barlow Condensed');
+            font-weight: 300;
+            ascent-override: 90%;
+            descent-override: 25%;
+            line-gap-override: 0%;
+        }
+
+        @font-face {
+            font-family: 'Barlow Condensed';
+            src: local('Barlow Condensed Regular'), local('Barlow Condensed');
+            font-weight: 400;
+            ascent-override: 90%;
+            descent-override: 25%;
+            line-gap-override: 0%;
+        }
+
+        @font-face {
+            font-family: 'Barlow Condensed';
+            src: local('Barlow Condensed Medium'), local('Barlow Condensed');
+            font-weight: 500;
+            ascent-override: 90%;
+            descent-override: 25%;
+            line-gap-override: 0%;
+        }
+
+        @font-face {
+            font-family: 'Noto Sans TC';
+            src: local('Noto Sans TC Light'), local('Noto Sans TC');
+            font-weight: 300;
+            ascent-override: 90%;
+            descent-override: 25%;
+            line-gap-override: 0%;
+        }
+
+        @font-face {
+            font-family: 'Noto Sans TC';
+            src: local('Noto Sans TC Regular'), local('Noto Sans TC');
+            font-weight: 400;
+            ascent-override: 90%;
+            descent-override: 25%;
+            line-gap-override: 0%;
+        }
+
+        @font-face {
+            font-family: 'Noto Sans JP';
+            src: local('Noto Sans JP Light'), local('Noto Sans JP');
+            font-weight: 300;
+            ascent-override: 90%;
+            descent-override: 25%;
+            line-gap-override: 0%;
+        }
+
+        @font-face {
+            font-family: 'Noto Sans JP';
+            src: local('Noto Sans JP Regular'), local('Noto Sans JP');
+            font-weight: 400;
+            ascent-override: 90%;
+            descent-override: 25%;
+            line-gap-override: 0%;
+        }
+
+        :root {
+            --accent-color: hsl(0, 25%, 89%);
+            --accent-hue: 0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Barlow Condensed', 'Noto Sans TC', 'Noto Sans JP', sans-serif;
+            font-weight: 300;
+            line-height: 1.5;
+            background: #242424;
+            margin: 0;
+            padding: 0;
+            color: #e0e0e0;
+        }
+
+        .container {
+            background: #242424;
+            width: 100%;
+            min-height: 100vh;
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Help Panel (top bar, full width) --- */
+        .help-panel {
+            background: #1e1e1e;
+            border-bottom: 1px solid #3a3a3a;
+            padding: 10px 24px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .help-panel .help-line {
+            font-size: 18px;
+            font-weight: 300;
+            line-height: 1.5;
+            color: #888;
+        }
+
+        .help-panel .help-line.help-default {
+            color: #555;
+            font-style: italic;
+        }
+
+        /* --- Two-column layout --- */
+        .main-layout {
+            display: flex;
+            flex-direction: row;
+            flex: 1;
+        }
+
+        .left-column {
+            width: 50%;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border-right: 1px solid #3a3a3a;
+            flex-shrink: 0;
+        }
+
+        .right-column {
+            width: 50%;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Left column content --- */
+        .title {
+            font-size: 24px;
+            font-weight: 500;
+            line-height: 1.5;
+            text-align: center;
+            margin-bottom: 4px;
+            color: #e0e0e0;
+        }
+
+        .brand {
+            font-size: 18px;
+            font-weight: 300;
+            line-height: 1.5;
+            color: #999;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 2px;
+        }
+
+        .collab {
+            font-size: 18px;
+            font-weight: 300;
+            line-height: 1.5;
+            color: #666;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .hue-lang-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        /* --- Hue Wheel --- */
+        #hueWheelCanvas {
+            cursor: crosshair;
+            display: block;
+            flex-shrink: 0;
+        }
+
+        .lang-switch {
+            display: flex;
+            flex-direction: row;
+            gap: 0;
+            border: 1px solid #555;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .lang-switch button {
+            border: none;
+            background: #2a2a2a;
+            color: #ccc;
+            font-size: 18px;
+            font-weight: 400;
+            line-height: 1.5;
+            padding: 6px 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .lang-switch button + button {
+            border-top: none;
+            border-left: 1px solid #555;
+        }
+
+        .lang-switch button.active {
+            background: var(--accent-color);
+            color: #1a1a1a;
+        }
+
+        #contourPreviewCanvas {
+            display: block;
+            width: 100%;
+            height: 200px;
+            background: #000;
+            border-radius: 4px;
+            border: 1px solid #3a3a3a;
+            margin-top: 8px;
+        }
+
+        /* --- Controls (shared by both columns) --- */
+        .chaos-mode-group {
+            margin-bottom: 14px;
+        }
+
+        .chaos-mode-label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 400;
+            font-size: 18px;
+            line-height: 1.5;
+            color: #ccc;
+        }
+
+        .chaos-mode-switch {
+            display: flex;
+            gap: 0;
+            border: 1px solid #555;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .chaos-mode-switch input[type="radio"] {
+            display: none;
+        }
+
+        .chaos-mode-switch label {
+            flex: 1;
+            text-align: center;
+            padding: 8px 0;
+            font-size: 18px;
+            font-weight: 400;
+            line-height: 1.5;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #2a2a2a;
+            color: #ccc;
+        }
+
+        .chaos-mode-switch input[type="radio"]:checked + label {
+            background: var(--accent-color);
+            color: #1a1a1a;
+        }
+
+        .control-group {
+            margin-bottom: 10px;
+        }
+
+        .control-label {
+            display: block;
+            margin-bottom: 4px;
+            font-weight: 400;
+            font-size: 18px;
+            line-height: 1.5;
+            color: #ccc;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .slider {
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 4px;
+            border-radius: 2px;
+            background: #3a3a3a;
+            outline: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            cursor: pointer;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .slider::-webkit-slider-thumb:hover {
+            filter: brightness(0.9);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+        }
+
+        .value-display {
+            min-width: 60px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 300;
+            line-height: 1.5;
+            background: #1a1a1a;
+            color: #ccc;
+            padding: 6px 10px;
+            border-radius: 4px;
+            border: 1px solid #3a3a3a;
+        }
+
+
+        .button-row {
+            display: flex;
+            gap: 10px;
+            margin-top: 6px;
+        }
+
+        .button {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid #555;
+            border-radius: 4px;
+            font-size: 18px;
+            font-weight: 400;
+            line-height: 1.5;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .start-btn {
+            background: var(--accent-color);
+            color: #1a1a1a;
+            border-color: var(--accent-color);
+        }
+
+        .start-btn:hover {
+            filter: brightness(0.9);
+        }
+
+        .stop-btn {
+            background: #2a2a2a;
+            color: #ccc;
+        }
+
+        .stop-btn:hover {
+            background: #333;
+        }
+
+        .button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .status {
+            text-align: center;
+            margin-top: 10px;
+            padding: 8px;
+            border-radius: 4px;
+            background: #1a1a1a;
+            border: 1px solid #3a3a3a;
+            font-size: 18px;
+            font-weight: 300;
+            line-height: 1.5;
+            color: #999;
+        }
+
+        .status.recording {
+            background: var(--accent-color);
+            color: #1a1a1a;
+            border-color: var(--accent-color);
+        }
+
+        .status.stopped {
+            background: #1a1a1a;
+            border: 1px solid #3a3a3a;
+            color: #999;
+        }
+
+        .volume-meter {
+            width: 100%;
+            height: 4px;
+            background: #3a3a3a;
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .volume-bar {
+            height: 100%;
+            background: var(--accent-color);
+            width: 0%;
+            transition: width 0.1s ease;
+            border-radius: 2px;
+        }
+
+        /* --- Left column slider section --- */
+        .left-controls {
+            width: 100%;
+            margin-top: 16px;
+        }
+
+        /* --- Mobile: single column --- */
+        @media (max-width: 767px) {
+            .container {
+                padding: 16px;
+            }
+
+            .main-layout {
+                flex-direction: column;
+            }
+
+            .left-column {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #3a3a3a;
+                padding: 16px;
+            }
+
+            .right-column {
+                width: 100%;
+                padding: 16px;
+            }
+
+            .hue-lang-row {
+                gap: 12px;
+            }
+
+            #contourPreviewCanvas {
+                height: 160px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Help panel: single line, current language only -->
+        <div class="help-panel" id="helpPanel">
+            <div class="help-line help-default" id="helpText">將滑鼠移到控制項上方查看說明</div>
+        </div>
+
+        <div class="main-layout">
+            <!-- Left column: title + hue wheel + chaos source + contour preview -->
+            <div class="left-column">
+                <h1 class="title">Visual Feedback Machine</h1>
+                <div class="brand">MADZINE</div>
+                <div class="collab" data-i18n="collab">與 Liora 的協作</div>
+
+                <div class="hue-lang-row" data-help="hueWheel">
+                    <canvas id="hueWheelCanvas" width="75" height="75"></canvas>
+                    <div class="lang-switch">
+                        <button class="active" onclick="setLang('zh')" id="langZh">繁中</button>
+                        <button onclick="setLang('en')" id="langEn">EN</button>
+                        <button onclick="setLang('jp')" id="langJp">JP</button>
+                    </div>
+                </div>
+
+                <div class="left-controls">
+                    <div class="chaos-mode-group" data-help="chaosSource">
+                        <label class="chaos-mode-label" data-i18n="chaosSource">Chaos 來源</label>
+                        <div class="chaos-mode-switch">
+                            <input type="radio" id="modeLorenz" name="chaosMode" value="lorenz" checked>
+                            <label for="modeLorenz">Lorenz</label>
+                            <input type="radio" id="modeCamera" name="chaosMode" value="camera">
+                            <label for="modeCamera">Camera</label>
+                        </div>
+                    </div>
+
+                    <canvas id="contourPreviewCanvas" width="960" height="400"></canvas>
+
+                    <div class="control-group" data-help="chaosSpeed">
+                        <label class="control-label" data-i18n="chaosSpeed">混沌速度</label>
+                        <div class="slider-container">
+                            <input type="range" id="chaosSpeedSlider" class="slider" min="0.1" max="10" step="0.1" value="3.0">
+                            <div class="value-display" id="chaosSpeedValue">3.0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right column: all sliders + buttons + status -->
+            <div class="right-column">
+                <div class="control-group" data-help="delayTime">
+                    <label class="control-label" data-i18n="delayTime">延遲時間</label>
+                    <div class="slider-container">
+                        <input type="range" id="delaySlider" class="slider" min="0.1" max="3" step="0.1" value="0.5">
+                        <div class="value-display" id="delayValue">0.5s</div>
+                    </div>
+                </div>
+
+                <div class="control-group" data-help="feedback">
+                    <label class="control-label" data-i18n="feedback">回饋強度</label>
+                    <div class="slider-container">
+                        <input type="range" id="feedbackSlider" class="slider" min="0" max="0.95" step="0.05" value="0.3">
+                        <div class="value-display" id="feedbackValue">0.3</div>
+                    </div>
+                </div>
+
+                <div class="control-group" data-help="chaosAmount">
+                    <label class="control-label" data-i18n="chaosAmount">混沌量</label>
+                    <div class="slider-container">
+                        <input type="range" id="chaosAmountSlider" class="slider" min="0" max="1" step="0.05" value="0.0">
+                        <div class="value-display" id="chaosAmountValue">0.0</div>
+                    </div>
+                </div>
+
+                <div class="control-group" data-help="grainSize">
+                    <label class="control-label" data-i18n="grainSize">碎片大小</label>
+                    <div class="slider-container">
+                        <input type="range" id="grainSizeSlider" class="slider" min="10" max="200" step="5" value="50">
+                        <div class="value-display" id="grainSizeValue">50ms</div>
+                    </div>
+                </div>
+
+                <div class="control-group" data-help="gratchMix">
+                    <label class="control-label" data-i18n="gratchMix">Gratch 混合</label>
+                    <div class="slider-container">
+                        <input type="range" id="gratchMixSlider" class="slider" min="0" max="1" step="0.1" value="1.0">
+                        <div class="value-display" id="gratchMixValue">1.0</div>
+                    </div>
+                </div>
+
+                <div class="control-group" data-help="volume">
+                    <label class="control-label" data-i18n="volume">音量</label>
+                    <div class="slider-container">
+                        <input type="range" id="volumeSlider" class="slider" min="0" max="1" step="0.1" value="0.7">
+                        <div class="value-display" id="volumeValue">0.7</div>
+                    </div>
+                </div>
+
+                <div class="button-row">
+                    <button id="startBtn" class="button start-btn" data-i18n="start" data-help="startBtn">開始</button>
+                    <button id="stopBtn" class="button stop-btn" disabled data-i18n="stop" data-help="stopBtn">停止</button>
+                </div>
+
+                <div id="status" class="status" data-i18n="ready">準備就緒</div>
+
+                <div class="volume-meter">
+                    <div id="volumeBar" class="volume-bar"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- i18n ---
+        const i18n = {
+            zh: {
+                chaosSource: 'Chaos 來源',
+                delayTime: '延遲時間',
+                feedback: '回饋強度',
+                chaosAmount: '混沌量',
+                grainSize: '碎片大小',
+                gratchMix: 'Gratch 混合',
+                volume: '音量',
+                chaosSpeed: '混沌速度',
+                start: '開始',
+                stop: '停止',
+                ready: '準備就緒',
+                processing: '即時處理中',
+                stopped: '已停止',
+                collab: '與 Liora 的協作'
+            },
+            en: {
+                chaosSource: 'Chaos Source',
+                delayTime: 'Delay Time',
+                feedback: 'Feedback',
+                chaosAmount: 'Chaos Amount',
+                grainSize: 'Grain Size',
+                gratchMix: 'Gratch Mix',
+                volume: 'Volume',
+                chaosSpeed: 'Chaos Speed',
+                start: 'Start',
+                stop: 'Stop',
+                ready: 'Ready',
+                processing: 'Processing',
+                stopped: 'Stopped',
+                collab: 'Collaboration with Liora'
+            },
+            jp: {
+                chaosSource: 'Chaos ソース',
+                delayTime: 'ディレイタイム',
+                feedback: 'フィードバック',
+                chaosAmount: 'カオス量',
+                grainSize: 'グレインサイズ',
+                gratchMix: 'Gratch ミックス',
+                volume: '音量',
+                chaosSpeed: 'カオス速度',
+                start: 'スタート',
+                stop: 'ストップ',
+                ready: '準備完了',
+                processing: '処理中',
+                stopped: '停止済み',
+                collab: 'Liora とのコラボレーション'
+            }
+        };
+
+        let currentLang = 'zh';
+
+        function setLang(lang) {
+            currentLang = lang;
+            // Update button states
+            document.getElementById('langZh').classList.toggle('active', lang === 'zh');
+            document.getElementById('langEn').classList.toggle('active', lang === 'en');
+            document.getElementById('langJp').classList.toggle('active', lang === 'jp');
+            // Update all data-i18n elements
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (i18n[lang][key]) {
+                    el.textContent = i18n[lang][key];
+                }
+            });
+            // Update status based on current state
+            if (typeof looper !== 'undefined') {
+                const status = document.getElementById('status');
+                if (looper.isRecording) {
+                    status.textContent = i18n[lang].processing;
+                } else if (status.classList.contains('stopped')) {
+                    status.textContent = i18n[lang].stopped;
+                } else {
+                    status.textContent = i18n[lang].ready;
+                }
+            }
+            // Update help panel to current language
+            clearHelp();
+        }
+
+        // --- Help Content (trilingual) ---
+        const helpContent = {
+            chaosSource: {
+                en: "Chaos Source: Lorenz = mathematical strange attractor generating 3 independent chaotic signals (x/y/z). Camera = webcam contour detection, scan point generates 3 signals from X-distance, Y-distance, and turning angle along the contour.",
+                jp: "Chaosソース：Lorenz＝3つの独立したカオス信号（x/y/z）を生成する数学的ストレンジアトラクター。Camera＝Webカメラの輪郭検出、スキャン点がX距離・Y距離・転回角度から3信号を生成。",
+                zh: "Chaos 來源：Lorenz = 數學奇異吸引子，產生 3 個獨立混沌訊號（x/y/z）。Camera = 網路攝影機輪廓偵測，掃描點沿輪廓產生 X 軸距離、Y 軸距離、轉角角度 3 個訊號。"
+            },
+            delayTime: {
+                en: "Delay Time: Base delay buffer length in seconds. Modulated by chaos channel B (Lorenz y / contour Y-distance). Longer = more spacious echo, chaos makes it wobble.",
+                jp: "ディレイタイム：ディレイバッファの基本長さ（秒）。カオスチャンネルB（Lorenz y／輪郭Y距離）で変調。長い＝より広いエコー、カオスで揺らぐ。",
+                zh: "延遲時間：延遲緩衝基本長度（秒）。由混沌通道 B（Lorenz y / 輪廓 Y 距離）調變。越長 = 越寬廣的回音，混沌使其搖擺。"
+            },
+            feedback: {
+                en: "Feedback: Portion of delayed signal fed back into the delay input. Higher = longer decay tail. At 0.9+ the signal sustains almost indefinitely.",
+                jp: "フィードバック：ディレイ出力をディレイ入力に戻す割合。高い＝より長い減衰尾部。0.9以上でほぼ無限に持続。",
+                zh: "回饋強度：延遲輸出回饋到延遲輸入的比例。越高 = 衰減尾部越長。0.9 以上時訊號幾乎無限持續。"
+            },
+            chaosAmount: {
+                en: "Chaos Amount: Master depth for all 3 chaos modulations. At 0, no chaos affects any parameter. At 1, full modulation: A → BPF frequency + grain position, B → delay time wobble, C → grain size + trigger density.",
+                jp: "カオス量：3つのカオス変調のマスター深度。0＝パラメータに影響なし。1＝フル変調：A→BPF周波数+グレイン位置、B→ディレイタイム揺らぎ、C→グレインサイズ+トリガー密度。",
+                zh: "混沌量：3 個混沌調變的總深度。0 = 無混沌影響。1 = 全幅調變：A → BPF 頻率 + 碎片位置、B → 延遲時間搖擺、C → 碎片大小 + 觸發密度。"
+            },
+            grainSize: {
+                en: "Grain Size: Base length of each audio grain (ms). Modulated by chaos channel C (Lorenz z / contour turning angle). Shorter = glitchy texture, longer = smoother fragments.",
+                jp: "グレインサイズ：各オーディオグレインの基本長さ（ms）。カオスチャンネルC（Lorenz z／輪郭転回角度）で変調。短い＝グリッチ的テクスチャ、長い＝より滑らかな断片。",
+                zh: "碎片大小：每個音訊碎片的基本長度（毫秒）。由混沌通道 C（Lorenz z / 輪廓轉角角度）調變。越短 = 越 glitch 質感，越長 = 越平滑的片段。"
+            },
+            gratchMix: {
+                en: "Gratch Mix: Blend between clean delay output and granular processing. 0 = pure delay, 1 = full granular chaos. The granular engine chops the delayed signal into grains with random direction, pitch shifts (0.25x-4x), and chaos-driven position/density.",
+                jp: "Gratch ミックス：クリーンディレイ出力とグラニュラー処理のブレンド。0＝純粋なディレイ、1＝フルグラニュラーカオス。グラニュラーエンジンがディレイ信号をランダム方向・ピッチシフト（0.25x-4x）・カオス駆動の位置/密度でグレインに分割。",
+                zh: "Gratch 混合：乾淨延遲輸出與顆粒處理的混合比。0 = 純延遲、1 = 完全顆粒混沌。顆粒引擎將延遲訊號切成碎片，隨機方向、音高偏移（0.25x~4x）、混沌驅動的位置/密度。"
+            },
+            volume: {
+                en: "Volume: Master output level. Controls the final gain before speakers/headphones.",
+                jp: "音量：マスター出力レベル。スピーカー/ヘッドフォン前の最終ゲインを制御。",
+                zh: "音量：主輸出音量。控制進入喇叭/耳機前的最終增益。"
+            },
+            startBtn: {
+                en: "Start: Request microphone access and begin real-time audio processing. Signal chain: mic → delay (with feedback loop) → granular engine (chaos-modulated) → bandpass filter → output.",
+                jp: "スタート：マイクアクセスを要求しリアルタイム音声処理を開始。信号経路：マイク→ディレイ（フィードバックループ付き）→グラニュラーエンジン（カオス変調）→バンドパスフィルター→出力。",
+                zh: "開始：請求麥克風權限並啟動即時音訊處理。訊號鏈：麥克風 → 延遲（含回饋迴路）→ 顆粒引擎（混沌調變）→ 帶通濾波器 → 輸出。"
+            },
+            stopBtn: {
+                en: "Stop: End all audio processing, disconnect nodes, and release microphone.",
+                jp: "ストップ：全音声処理を終了、ノードを切断、マイクを解放。",
+                zh: "停止：結束所有音訊處理、斷開節點、釋放麥克風。"
+            },
+            hueWheel: {
+                en: "Hue Wheel: Drag to select interface accent color (HSV saturation 30%, brightness 92%). Affects slider thumbs, buttons, status bar, and contour scan point.",
+                jp: "Hueホイール：ドラッグしてアクセントカラーを選択（HSV彩度30%、明度92%）。スライダー、ボタン、ステータスバー、輪郭スキャン点に適用。",
+                zh: "色相圈：拖曳選擇介面強調色（HSV 飽和度 30%、亮度 92%）。影響推桿圓點、按鈕、狀態列、輪廓掃描點。"
+            },
+            chaosSpeed: {
+                en: "Chaos Speed: In Lorenz mode, controls the attractor evolution rate (dt multiplier). In Camera mode, controls contour scan speed (higher = faster scan cycle). Affects how rapidly the 3 chaos channels change.",
+                jp: "カオス速度：Lorenzモードではアトラクターの進化速度（dt乗数）を制御。Cameraモードでは輪郭スキャン速度を制御（高い＝より速いスキャン周期）。3つのカオスチャンネルの変化速度に影響。",
+                zh: "混沌速度：Lorenz 模式控制吸引子演化速率（dt 乘數）。Camera 模式控制輪廓掃描速度（越高 = 掃描週期越快）。影響 3 個混沌通道的變化速率。"
+            }
+        };
+
+        const defaultHelp = {
+            en: "Hover over controls for description",
+            jp: "コントロールにカーソルを合わせると説明が表示されます",
+            zh: "將滑鼠移到控制項上方查看說明"
+        };
+
+        function showHelp(key) {
+            const content = helpContent[key];
+            if (!content) return;
+            const el = document.getElementById('helpText');
+            el.textContent = content[currentLang];
+            el.classList.remove('help-default');
+        }
+
+        function clearHelp() {
+            const el = document.getElementById('helpText');
+            el.textContent = defaultHelp[currentLang];
+            el.classList.add('help-default');
+        }
+
+        // --- Hue Wheel ---
+        let accentHue = 0;
+
+        function hsvToHsl(h, s, v) {
+            // HSV to HSL conversion
+            const l = v * (1 - s / 2);
+            let sl = 0;
+            if (l > 0 && l < 1) {
+                sl = (v - l) / Math.min(l, 1 - l);
+            }
+            return { h: h, s: sl * 100, l: l * 100 };
+        }
+
+        function updateAccentColor(hue) {
+            accentHue = hue;
+            const hsl = hsvToHsl(hue, 0.30, 0.92);
+            const cssColor = `hsl(${hsl.h}, ${hsl.s.toFixed(1)}%, ${hsl.l.toFixed(1)}%)`;
+            document.documentElement.style.setProperty('--accent-color', cssColor);
+            document.documentElement.style.setProperty('--accent-hue', hue);
+        }
+
+        function drawHueWheel(canvas, selectedHue) {
+            const ctx = canvas.getContext('2d');
+            const size = canvas.width;
+            const cx = size / 2;
+            const cy = size / 2;
+            const outerR = size / 2 - 2;
+            const innerR = outerR - 12;
+            const segments = 72;
+            const step = (Math.PI * 2) / segments;
+
+            ctx.clearRect(0, 0, size, size);
+
+            // Draw color segments
+            for (let i = 0; i < segments; i++) {
+                const angle = i * step - Math.PI / 2;
+                const hue = (i / segments) * 360;
+                const hsl = hsvToHsl(hue, 0.30, 0.92);
+
+                ctx.beginPath();
+                ctx.arc(cx, cy, outerR, angle, angle + step + 0.02);
+                ctx.arc(cx, cy, innerR, angle + step + 0.02, angle, true);
+                ctx.closePath();
+                ctx.fillStyle = `hsl(${hsl.h}, ${hsl.s.toFixed(1)}%, ${hsl.l.toFixed(1)}%)`;
+                ctx.fill();
+            }
+
+            // Draw selected position indicator (white dot)
+            const selAngle = (selectedHue / 360) * Math.PI * 2 - Math.PI / 2;
+            const midR = (outerR + innerR) / 2;
+            const dotX = cx + Math.cos(selAngle) * midR;
+            const dotY = cy + Math.sin(selAngle) * midR;
+
+            ctx.beginPath();
+            ctx.arc(dotX, dotY, 5, 0, Math.PI * 2);
+            ctx.fillStyle = '#fff';
+            ctx.shadowColor = 'rgba(0,0,0,0.3)';
+            ctx.shadowBlur = 3;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Draw center preview circle
+            const previewR = innerR - 4;
+            const previewHsl = hsvToHsl(selectedHue, 0.30, 0.92);
+            ctx.beginPath();
+            ctx.arc(cx, cy, previewR, 0, Math.PI * 2);
+            ctx.fillStyle = `hsl(${previewHsl.h}, ${previewHsl.s.toFixed(1)}%, ${previewHsl.l.toFixed(1)}%)`;
+            ctx.fill();
+        }
+
+        function initHueWheel() {
+            const canvas = document.getElementById('hueWheelCanvas');
+            let dragging = false;
+
+            function getHueFromEvent(e) {
+                const rect = canvas.getBoundingClientRect();
+                let clientX, clientY;
+                if (e.touches) {
+                    clientX = e.touches[0].clientX;
+                    clientY = e.touches[0].clientY;
+                } else {
+                    clientX = e.clientX;
+                    clientY = e.clientY;
+                }
+                const x = clientX - rect.left - rect.width / 2;
+                const y = clientY - rect.top - rect.height / 2;
+                let angle = Math.atan2(y, x) + Math.PI / 2;
+                if (angle < 0) angle += Math.PI * 2;
+                return (angle / (Math.PI * 2)) * 360;
+            }
+
+            function onStart(e) {
+                e.preventDefault();
+                dragging = true;
+                const hue = getHueFromEvent(e);
+                updateAccentColor(hue);
+                drawHueWheel(canvas, hue);
+            }
+
+            function onMove(e) {
+                if (!dragging) return;
+                e.preventDefault();
+                const hue = getHueFromEvent(e);
+                updateAccentColor(hue);
+                drawHueWheel(canvas, hue);
+            }
+
+            function onEnd() {
+                dragging = false;
+            }
+
+            canvas.addEventListener('mousedown', onStart);
+            window.addEventListener('mousemove', onMove);
+            window.addEventListener('mouseup', onEnd);
+            canvas.addEventListener('touchstart', onStart, { passive: false });
+            window.addEventListener('touchmove', onMove, { passive: false });
+            window.addEventListener('touchend', onEnd);
+
+            // Initial draw
+            updateAccentColor(0);
+            drawHueWheel(canvas, 0);
+        }
+
+        // --- Init help hover listeners ---
+        function initHelpHover() {
+            document.querySelectorAll('[data-help]').forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    showHelp(el.getAttribute('data-help'));
+                });
+                el.addEventListener('mouseleave', () => {
+                    clearHelp();
+                });
+            });
+        }
+
+        class ChaosGenerator {
+            constructor() {
+                this.x = 0.1;
+                this.y = 0.1;
+                this.z = 0.1;
+                this.resetCounter = 0;
+                // Normalized outputs (-1..+1)
+                this.outA = 0;
+                this.outB = 0;
+                this.outC = 0;
+            }
+
+            reset() {
+                this.x = 0.1;
+                this.y = 0.1;
+                this.z = 0.1;
+                this.resetCounter++;
+            }
+
+            process(rate, sampleRate) {
+                const dt = Math.min(rate * 0.001, 0.05);
+
+                const sigma = 10.0;
+                const rho = 28.0;
+                const beta = 8.0 / 3.0;
+                const dx = sigma * (this.y - this.x);
+                const dy = this.x * (rho - this.z) - this.y;
+                const dz = this.x * this.y - beta * this.z;
+
+                this.x += dx * dt;
+                this.y += dy * dt;
+                this.z += dz * dt;
+
+                if (!isFinite(this.x) || !isFinite(this.y) || !isFinite(this.z) ||
+                    Math.abs(this.x) > 50.0 || Math.abs(this.y) > 50.0 || Math.abs(this.z) > 50.0) {
+                    this.reset();
+                    this.outA = 0; this.outB = 0; this.outC = 0;
+                    return;
+                }
+
+                this.outA = Math.max(-1, Math.min(1, this.x * 0.05));
+                this.outB = Math.max(-1, Math.min(1, this.y * 0.05));
+                this.outC = Math.max(-1, Math.min(1, (this.z - 25) / 25));
+            }
+        }
+
+        class ContourChaosGenerator {
+            constructor() {
+                // Three output channels (-1..+1)
+                this.outA = 0; // X distance from center
+                this.outB = 0; // Y distance from center
+                this.outC = 0; // Turning angle (curvature)
+                this.videoStream = null;
+                this.video = null;
+                this.offscreenCanvas = null;
+                this.offscreenCtx = null;
+                this.running = false;
+                this.animFrameId = null;
+
+                // Image processing buffers (160x120)
+                this.width = 160;
+                this.height = 120;
+                this.grayBuffer = new Uint8Array(this.width * this.height);
+                this.edgeBuffer = new Uint8Array(this.width * this.height);
+                this.visitedBuffer = new Uint8Array(this.width * this.height);
+                this.threshold = 80;
+
+                // Contour data
+                this.contour = []; // array of {x, y}
+                this.scanProgress = 0; // 0~1
+                this.scanTime = 2.0; // seconds per full scan
+                this.lastFrameTime = 0;
+
+                // Trail for preview
+                this.trailLength = 40;
+                this.trail = []; // recent scan positions
+
+                // Preview canvas
+                this.previewCanvas = null;
+                this.previewCtx = null;
+            }
+
+            async startCamera() {
+                if (this.running) return;
+                try {
+                    this.videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    this.video = document.createElement('video');
+                    this.video.srcObject = this.videoStream;
+                    this.video.setAttribute('playsinline', '');
+                    this.video.muted = true;
+                    await this.video.play();
+
+                    this.offscreenCanvas = document.createElement('canvas');
+                    this.offscreenCanvas.width = this.width;
+                    this.offscreenCanvas.height = this.height;
+                    this.offscreenCtx = this.offscreenCanvas.getContext('2d', { willReadFrequently: true });
+
+                    this.previewCanvas = document.getElementById('contourPreviewCanvas');
+                    this.previewCtx = this.previewCanvas.getContext('2d');
+
+                    this.running = true;
+                    this.lastFrameTime = performance.now();
+                    this.scanProgress = 0;
+                    this.trail = [];
+                    this.frameLoop();
+                } catch (err) {
+                    console.error('Camera start failed:', err);
+                }
+            }
+
+            stopCamera() {
+                this.running = false;
+                if (this.animFrameId) {
+                    cancelAnimationFrame(this.animFrameId);
+                    this.animFrameId = null;
+                }
+                if (this.videoStream) {
+                    this.videoStream.getTracks().forEach(t => t.stop());
+                    this.videoStream = null;
+                }
+                if (this.video) {
+                    this.video.pause();
+                    this.video.srcObject = null;
+                    this.video = null;
+                }
+                this.outA = 0; this.outB = 0; this.outC = 0;
+                this.contour = [];
+                this.trail = [];
+            }
+
+            frameLoop() {
+                if (!this.running) return;
+                this.animFrameId = requestAnimationFrame(() => this.frameLoop());
+
+                const now = performance.now();
+                const dt = (now - this.lastFrameTime) / 1000;
+                this.lastFrameTime = now;
+
+                // Draw video to offscreen canvas
+                this.offscreenCtx.drawImage(this.video, 0, 0, this.width, this.height);
+                const imageData = this.offscreenCtx.getImageData(0, 0, this.width, this.height);
+                const pixels = imageData.data;
+
+                // Grayscale conversion
+                const w = this.width;
+                const h = this.height;
+                for (let i = 0; i < w * h; i++) {
+                    const idx = i * 4;
+                    this.grayBuffer[i] = 0.299 * pixels[idx] + 0.587 * pixels[idx + 1] + 0.114 * pixels[idx + 2];
+                }
+
+                // Sobel edge detection
+                this.sobelEdgeDetect();
+
+                // Moore neighbor contour tracing
+                this.findLongestContour();
+
+                // Update scan progress and three outputs
+                if (this.contour.length > 6) {
+                    const chaosSpeed = parseFloat(document.getElementById('chaosSpeedSlider').value) || 3.0;
+                    this.scanTime = 10.0 / chaosSpeed;
+                    this.scanProgress += dt / this.scanTime;
+                    if (this.scanProgress >= 1) this.scanProgress -= Math.floor(this.scanProgress);
+
+                    const idx = Math.floor(this.scanProgress * this.contour.length) % this.contour.length;
+                    const pt = this.contour[idx];
+
+                    // A: X distance from center (normalized -1..+1)
+                    const centerX = this.width / 2;
+                    this.outA = Math.max(-1, Math.min(1, (pt.x - centerX) / centerX));
+
+                    // B: Y distance from center (normalized -1..+1)
+                    const centerY = this.height / 2;
+                    this.outB = Math.max(-1, Math.min(1, (pt.y - centerY) / centerY));
+
+                    // C: Turning angle (curvature, already -1..+1)
+                    this.outC = this.computeCurvature(idx);
+
+                    // Update trail
+                    this.trail.push({ x: pt.x, y: pt.y });
+                    if (this.trail.length > this.trailLength) {
+                        this.trail.shift();
+                    }
+                } else {
+                    this.outA = 0; this.outB = 0; this.outC = 0;
+                    this.trail = [];
+                }
+
+                // Draw preview
+                this.drawPreview();
+            }
+
+            sobelEdgeDetect() {
+                const w = this.width;
+                const h = this.height;
+                const gray = this.grayBuffer;
+                const edge = this.edgeBuffer;
+                edge.fill(0);
+
+                for (let y = 1; y < h - 1; y++) {
+                    for (let x = 1; x < w - 1; x++) {
+                        const tl = gray[(y - 1) * w + (x - 1)];
+                        const tc = gray[(y - 1) * w + x];
+                        const tr = gray[(y - 1) * w + (x + 1)];
+                        const ml = gray[y * w + (x - 1)];
+                        const mr = gray[y * w + (x + 1)];
+                        const bl = gray[(y + 1) * w + (x - 1)];
+                        const bc = gray[(y + 1) * w + x];
+                        const br = gray[(y + 1) * w + (x + 1)];
+
+                        const gx = -tl - 2 * ml - bl + tr + 2 * mr + br;
+                        const gy = -tl - 2 * tc - tr + bl + 2 * bc + br;
+                        const mag = Math.abs(gx) + Math.abs(gy);
+
+                        edge[y * w + x] = mag > this.threshold ? 1 : 0;
+                    }
+                }
+            }
+
+            findLongestContour() {
+                const w = this.width;
+                const h = this.height;
+                const edge = this.edgeBuffer;
+                const visited = this.visitedBuffer;
+                visited.fill(0);
+
+                let bestContour = [];
+
+                // 8-neighbor offsets (clockwise from right)
+                const dx = [1, 1, 0, -1, -1, -1, 0, 1];
+                const dy = [0, 1, 1, 1, 0, -1, -1, -1];
+
+                for (let y = 1; y < h - 1; y++) {
+                    for (let x = 1; x < w - 1; x++) {
+                        const idx = y * w + x;
+                        if (edge[idx] !== 1 || visited[idx]) continue;
+
+                        // Moore neighbor tracing
+                        const contour = [];
+                        let cx = x, cy = y;
+                        let startX = x, startY = y;
+                        let dir = 7; // start searching from previous direction
+                        let maxSteps = w * h;
+                        let steps = 0;
+
+                        do {
+                            contour.push({ x: cx, y: cy });
+                            visited[cy * w + cx] = 1;
+
+                            let found = false;
+                            let searchStart = (dir + 5) % 8; // backtrack: start from (dir - 3) mod 8
+
+                            for (let d = 0; d < 8; d++) {
+                                let nd = (searchStart + d) % 8;
+                                let nx = cx + dx[nd];
+                                let ny = cy + dy[nd];
+
+                                if (nx >= 0 && nx < w && ny >= 0 && ny < h && edge[ny * w + nx] === 1) {
+                                    dir = nd;
+                                    cx = nx;
+                                    cy = ny;
+                                    found = true;
+                                    break;
+                                }
+                            }
+
+                            if (!found) break;
+                            steps++;
+                        } while ((cx !== startX || cy !== startY) && steps < maxSteps);
+
+                        if (contour.length > bestContour.length) {
+                            bestContour = contour;
+                        }
+                    }
+                }
+
+                this.contour = bestContour;
+            }
+
+            computeCurvature(i) {
+                const c = this.contour;
+                const n = c.length;
+                if (n < 7) return 0;
+
+                const k = 3;
+                const iPrev = ((i - k) % n + n) % n;
+                const iNext = (i + k) % n;
+
+                const ax = c[i].x - c[iPrev].x;
+                const ay = c[i].y - c[iPrev].y;
+                const bx = c[iNext].x - c[i].x;
+                const by = c[iNext].y - c[i].y;
+
+                const cross = ax * by - ay * bx;
+                const dot = ax * bx + ay * by;
+
+                const angle = Math.atan2(cross, dot);
+                return Math.max(-1, Math.min(1, angle / Math.PI));
+            }
+
+            drawPreview() {
+                const ctx = this.previewCtx;
+                const canvas = this.previewCanvas;
+                if (!ctx || !canvas) return;
+
+                const cw = canvas.width;
+                const ch = canvas.height;
+                ctx.fillStyle = '#000';
+                ctx.fillRect(0, 0, cw, ch);
+
+                const contour = this.contour;
+                if (contour.length < 2) return;
+
+                // Scale factor from processing resolution to preview canvas
+                const sx = cw / this.width;
+                const sy = ch / this.height;
+
+                // Draw contour as white lines
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(contour[0].x * sx, contour[0].y * sy);
+                for (let i = 1; i < contour.length; i++) {
+                    ctx.lineTo(contour[i].x * sx, contour[i].y * sy);
+                }
+                ctx.closePath();
+                ctx.stroke();
+
+                // Accent color for trail and scan point
+                const aHsl = hsvToHsl(accentHue, 0.30, 0.92);
+                const accentR = aHsl.h;
+                const accentCss = `hsl(${aHsl.h}, ${aHsl.s.toFixed(1)}%, ${aHsl.l.toFixed(1)}%)`;
+
+                // Draw trail (fading)
+                if (this.trail.length > 1) {
+                    for (let i = 1; i < this.trail.length; i++) {
+                        const alpha = i / this.trail.length;
+                        ctx.strokeStyle = `hsla(${aHsl.h}, ${aHsl.s.toFixed(1)}%, ${aHsl.l.toFixed(1)}%, ${alpha * 0.8})`;
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.moveTo(this.trail[i - 1].x * sx, this.trail[i - 1].y * sy);
+                        ctx.lineTo(this.trail[i].x * sx, this.trail[i].y * sy);
+                        ctx.stroke();
+                    }
+                }
+
+                // Draw current scan point
+                if (this.trail.length > 0) {
+                    const p = this.trail[this.trail.length - 1];
+                    ctx.fillStyle = accentCss;
+                    ctx.beginPath();
+                    ctx.arc(p.x * sx, p.y * sy, 4, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // Glow effect
+                    ctx.fillStyle = `hsla(${aHsl.h}, ${aHsl.s.toFixed(1)}%, ${aHsl.l.toFixed(1)}%, 0.3)`;
+                    ctx.beginPath();
+                    ctx.arc(p.x * sx, p.y * sy, 8, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            // outA, outB, outC are read directly
+        }
+
+        class GrainProcessor {
+            constructor(audioContext) {
+                this.audioContext = audioContext;
+                this.bufferSize = 8192;
+                this.grainBuffer = new Float32Array(this.bufferSize);
+                this.writeIndex = 0;
+                this.maxGrains = 16;
+                this.grains = [];
+                this.phase = 0;
+
+                for (let i = 0; i < this.maxGrains; i++) {
+                    this.grains.push({
+                        active: false,
+                        position: 0,
+                        size: 0,
+                        envelope: 0,
+                        direction: 1,
+                        pitch: 1
+                    });
+                }
+            }
+
+            process(input, chaosC, chaosA) {
+                // chaosC → grain size + density
+                // chaosA → grain position
+                if (!isFinite(input)) input = 0;
+                if (!isFinite(chaosC)) chaosC = 0;
+                if (!isFinite(chaosA)) chaosA = 0;
+
+                this.grainBuffer[this.writeIndex] = Math.max(-1, Math.min(1, input));
+                this.writeIndex = (this.writeIndex + 1) % this.bufferSize;
+
+                // Grain size modulated by chaosC (±100%)
+                const grainSizeBase = parseFloat(document.getElementById('grainSizeSlider').value);
+                const sizeModulation = Math.max(-1, Math.min(1, chaosC)) * grainSizeBase;
+                const baseGrainSize = grainSizeBase + sizeModulation;
+                const grainSamples = Math.max(100, Math.min(10000, (baseGrainSize / 1000.0) * this.audioContext.sampleRate));
+
+                // Density modulated by chaosC
+                let density = 0.5 + Math.max(-1, Math.min(1, chaosC)) * 0.5;
+                density = Math.max(0, Math.min(1, density));
+
+                const triggerRate = density * 50.0 + 1.0;
+                this.phase += triggerRate / this.audioContext.sampleRate;
+
+                if (this.phase >= 1.0) {
+                    this.phase -= 1.0;
+
+                    for (let i = 0; i < this.maxGrains; i++) {
+                        if (!this.grains[i].active) {
+                            this.grains[i].active = true;
+                            this.grains[i].size = grainSamples;
+                            this.grains[i].envelope = 0;
+
+                            if (Math.random() < 0.5) {
+                                this.grains[i].direction = -1;
+                            } else {
+                                this.grains[i].direction = 1;
+                            }
+
+                            if (density > 0.5 && Math.random() < 0.4) {
+                                const rand = Math.random();
+                                if (rand < 0.25) {
+                                    this.grains[i].pitch = 0.25;
+                                } else if (rand < 0.5) {
+                                    this.grains[i].pitch = 0.5;
+                                } else if (rand < 0.75) {
+                                    this.grains[i].pitch = 2.0;
+                                } else {
+                                    this.grains[i].pitch = 4.0;
+                                }
+                            } else {
+                                this.grains[i].pitch = 1.0;
+                            }
+
+                            // Position modulated by chaosA
+                            let position = 0.5 + Math.max(-1, Math.min(1, chaosA)) * 0.5;
+                            position = Math.max(0, Math.min(1, position));
+                            this.grains[i].position = position * this.bufferSize;
+                            break;
+                        }
+                    }
+                }
+
+                let output = 0;
+                let activeGrains = 0;
+
+                for (let i = 0; i < this.maxGrains; i++) {
+                    if (this.grains[i].active) {
+                        const envPhase = this.grains[i].envelope / this.grains[i].size;
+
+                        if (envPhase >= 1.0 || !isFinite(envPhase)) {
+                            this.grains[i].active = false;
+                            continue;
+                        }
+
+                        const env = 0.5 * (1.0 - Math.cos(envPhase * 2.0 * Math.PI));
+
+                        let readPos = Math.floor(this.grains[i].position);
+                        readPos = ((readPos % this.bufferSize) + this.bufferSize) % this.bufferSize;
+
+                        const sample = this.grainBuffer[readPos];
+                        if (isFinite(sample) && isFinite(env)) {
+                            output += sample * env;
+                        }
+
+                        this.grains[i].position += this.grains[i].direction * this.grains[i].pitch;
+
+                        while (this.grains[i].position >= this.bufferSize) {
+                            this.grains[i].position -= this.bufferSize;
+                        }
+                        while (this.grains[i].position < 0) {
+                            this.grains[i].position += this.bufferSize;
+                        }
+
+                        this.grains[i].envelope += 1.0;
+                        activeGrains++;
+                    }
+                }
+
+                if (activeGrains > 0) {
+                    output /= Math.sqrt(activeGrains);
+                }
+
+                // Final safety check
+                return isFinite(output) ? Math.max(-2, Math.min(2, output)) : 0;
+            }
+        }
+
+        class AudioLooper {
+            constructor() {
+                this.audioContext = null;
+                this.mediaStream = null;
+                this.source = null;
+                this.delay = null;
+                this.feedback = null;
+                this.gainNode = null;
+                this.analyser = null;
+                this.grainProcessor = null;
+                this.chaosGenerator = null;
+                this.scriptNode = null;
+                this.bpf = null;
+                this.bpfWetGain = null;
+                this.bpfDryGain = null;
+                this.bpfMix = null;
+                this.isRecording = false;
+                this.chaosMode = 'lorenz'; // 'lorenz' or 'camera'
+                this.contourChaosGenerator = new ContourChaosGenerator();
+
+                // Lorenz phase space visualization
+                this.chaosHistoryLen = 800;
+                this.chaosHistoryX = new Float32Array(this.chaosHistoryLen);
+                this.chaosHistoryZ = new Float32Array(this.chaosHistoryLen);
+                this.chaosHistoryIndex = 0;
+                this.chaosHistoryDownsample = 0;
+                this.startOscilloscope();
+
+                this.initializeControls();
+            }
+
+            initializeControls() {
+                const delaySlider = document.getElementById('delaySlider');
+                const feedbackSlider = document.getElementById('feedbackSlider');
+                const chaosAmountSlider = document.getElementById('chaosAmountSlider');
+                const grainSizeSlider = document.getElementById('grainSizeSlider');
+                const gratchMixSlider = document.getElementById('gratchMixSlider');
+                const volumeSlider = document.getElementById('volumeSlider');
+                const delayValue = document.getElementById('delayValue');
+                const feedbackValue = document.getElementById('feedbackValue');
+                const chaosAmountValue = document.getElementById('chaosAmountValue');
+                const grainSizeValue = document.getElementById('grainSizeValue');
+                const gratchMixValue = document.getElementById('gratchMixValue');
+                const volumeValue = document.getElementById('volumeValue');
+                const startBtn = document.getElementById('startBtn');
+                const stopBtn = document.getElementById('stopBtn');
+
+                delaySlider.addEventListener('input', (e) => {
+                    const value = parseFloat(e.target.value);
+                    delayValue.textContent = value + 's';
+                    if (this.delay) {
+                        this.delay.delayTime.setValueAtTime(value, this.audioContext.currentTime);
+                    }
+                });
+
+                feedbackSlider.addEventListener('input', (e) => {
+                    const value = parseFloat(e.target.value);
+                    feedbackValue.textContent = value;
+                    if (this.feedback) {
+                        this.feedback.gain.setValueAtTime(value, this.audioContext.currentTime);
+                    }
+                });
+
+                chaosAmountSlider.addEventListener('input', (e) => {
+                    const value = parseFloat(e.target.value);
+                    chaosAmountValue.textContent = value;
+                });
+
+                grainSizeSlider.addEventListener('input', (e) => {
+                    const value = parseFloat(e.target.value);
+                    grainSizeValue.textContent = value + 'ms';
+                });
+
+                gratchMixSlider.addEventListener('input', (e) => {
+                    const value = parseFloat(e.target.value);
+                    gratchMixValue.textContent = value;
+                });
+
+                const chaosSpeedSlider = document.getElementById('chaosSpeedSlider');
+                const chaosSpeedValue = document.getElementById('chaosSpeedValue');
+                chaosSpeedSlider.addEventListener('input', (e) => {
+                    chaosSpeedValue.textContent = parseFloat(e.target.value).toFixed(1);
+                });
+
+                volumeSlider.addEventListener('input', (e) => {
+                    const value = parseFloat(e.target.value);
+                    volumeValue.textContent = value;
+                    if (this.gainNode) {
+                        this.gainNode.gain.setValueAtTime(value, this.audioContext.currentTime);
+                    }
+                });
+
+                // Chaos mode switch
+                const modeRadios = document.querySelectorAll('input[name="chaosMode"]');
+                const previewCanvas = document.getElementById('contourPreviewCanvas');
+                modeRadios.forEach(radio => {
+                    radio.addEventListener('change', (e) => {
+                        this.chaosMode = e.target.value;
+                        if (this.chaosMode === 'camera') {
+                            this.contourChaosGenerator.startCamera();
+                        } else {
+                            this.contourChaosGenerator.stopCamera();
+                        }
+                    });
+                });
+
+                startBtn.addEventListener('click', () => this.start());
+                stopBtn.addEventListener('click', () => this.stop());
+            }
+
+            async start() {
+                try {
+                    this.mediaStream = await navigator.mediaDevices.getUserMedia({
+                        audio: {
+                            echoCancellation: false,
+                            noiseSuppression: false,
+                            autoGainControl: false
+                        }
+                    });
+
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+                    this.source = this.audioContext.createMediaStreamSource(this.mediaStream);
+                    this.delay = this.audioContext.createDelay(5.0);
+                    this.feedback = this.audioContext.createGain();
+                    this.gainNode = this.audioContext.createGain();
+                    this.analyser = this.audioContext.createAnalyser();
+
+                    this.grainProcessor = new GrainProcessor(this.audioContext);
+                    this.chaosGenerator = new ChaosGenerator();
+                    this.scriptNode = this.audioContext.createScriptProcessor(512, 1, 1);
+
+                    // Create dry/wet gain nodes for BPF bypass
+                    this.bpfWetGain = this.audioContext.createGain();
+                    this.bpfDryGain = this.audioContext.createGain();
+                    this.bpfMix = this.audioContext.createGain();
+
+                    // Create BPF (Band-Pass Filter) for Gratch output
+                    this.bpf = this.audioContext.createBiquadFilter();
+                    this.bpf.type = 'bandpass';
+                    this.bpf.frequency.value = 750;
+                    this.bpf.Q.value = 0.7;
+
+                    let bpfUpdateCounter = 0;
+                    let lastBpfFreq = 750;
+                    let delayUpdateCounter = 0;
+                    let silenceCounter = 0;
+                    const maxSilenceFrames = 100; // About 5 seconds at 512 samples per frame
+
+                    this.scriptNode.onaudioprocess = (e) => {
+                        try {
+                            const input = e.inputBuffer.getChannelData(0);
+                            const output = e.outputBuffer.getChannelData(0);
+
+                            const chaosRate = parseFloat(document.getElementById('chaosSpeedSlider').value);
+                            const gratchMix = parseFloat(document.getElementById('gratchMixSlider').value);
+
+                            if (!isFinite(gratchMix)) return;
+
+                            // Update BPF wet/dry mix
+                            this.bpfWetGain.gain.value = gratchMix;
+                            this.bpfDryGain.gain.value = 1.0 - gratchMix;
+
+                            const useCamera = this.chaosMode === 'camera';
+                            const src = useCamera ? this.contourChaosGenerator : this.chaosGenerator;
+
+                            for (let i = 0; i < input.length; i++) {
+                                if (!isFinite(input[i])) {
+                                    output[i] = 0;
+                                    continue;
+                                }
+
+                                // Advance Lorenz (Camera updates via requestAnimationFrame)
+                                if (!useCamera) {
+                                    this.chaosGenerator.process(chaosRate, this.audioContext.sampleRate);
+                                }
+
+                                // Read three chaos channels, scaled by chaos amount
+                                const amt = parseFloat(document.getElementById('chaosAmountSlider').value) || 0;
+                                const chaosA = src.outA * amt; // Lorenz x / Camera X距離
+                                const chaosB = src.outB * amt; // Lorenz y / Camera Y距離
+                                const chaosC = src.outC * amt; // Lorenz z / Camera 轉角
+
+                                // Feed Lorenz phase space history
+                                this.chaosHistoryDownsample++;
+                                if (this.chaosHistoryDownsample >= 64 && !useCamera && this.chaosGenerator) {
+                                    this.chaosHistoryDownsample = 0;
+                                    const cx = this.chaosGenerator.x;
+                                    const cz = this.chaosGenerator.z;
+                                    if (isFinite(cx) && isFinite(cz)) {
+                                        this.chaosHistoryX[this.chaosHistoryIndex] = cx;
+                                        this.chaosHistoryZ[this.chaosHistoryIndex] = cz;
+                                        this.chaosHistoryIndex = (this.chaosHistoryIndex + 1) % this.chaosHistoryLen;
+                                    }
+                                }
+
+                                // === Channel A → BPF frequency ===
+                                if (bpfUpdateCounter % 16 === 0 && isFinite(chaosA)) {
+                                    const bpfFreq = 750 + chaosA * 250;
+                                    if (isFinite(bpfFreq) && bpfFreq >= 500 && bpfFreq <= 1000) {
+                                        lastBpfFreq = bpfFreq;
+                                        this.bpf.frequency.value = bpfFreq;
+                                    }
+                                }
+                                bpfUpdateCounter++;
+
+                                // === Channel B → Delay time modulation ===
+                                if (delayUpdateCounter % 16 === 0 && isFinite(chaosB)) {
+                                    const delayTimeBase = parseFloat(document.getElementById('delaySlider').value);
+                                    if (isFinite(delayTimeBase)) {
+                                        const modulatedDelayTime = delayTimeBase + chaosB * delayTimeBase;
+                                        const finalDelayTime = Math.max(0.001, Math.min(3.0, modulatedDelayTime));
+                                        if (isFinite(finalDelayTime)) {
+                                            this.delay.delayTime.setValueAtTime(finalDelayTime, this.audioContext.currentTime);
+                                        }
+                                    }
+                                }
+                                delayUpdateCounter++;
+
+                                // === Channel C → Grain size + density, Channel A → Grain position ===
+                                const grainOutput = this.grainProcessor.process(input[i], chaosC, chaosA);
+
+                                // Safety check for grain output
+                                if (!isFinite(grainOutput)) {
+                                    output[i] = input[i];
+                                } else {
+                                    output[i] = input[i] * (1.0 - gratchMix) + grainOutput * gratchMix;
+                                }
+
+                                // Final safety clamp
+                                if (!isFinite(output[i])) {
+                                    output[i] = 0;
+                                } else {
+                                    output[i] = Math.max(-1, Math.min(1, output[i]));
+                                }
+                            }
+
+                            // Check for silence/freeze
+                            let hasSignal = false;
+                            for (let i = 0; i < output.length; i++) {
+                                if (Math.abs(output[i]) > 0.001) {
+                                    hasSignal = true;
+                                    break;
+                                }
+                            }
+
+                            if (!hasSignal) {
+                                silenceCounter++;
+                                if (silenceCounter >= maxSilenceFrames) {
+                                    console.warn('Audio freeze detected - consider restarting');
+                                    silenceCounter = 0; // Reset to avoid spam
+                                }
+                            } else {
+                                silenceCounter = 0;
+                            }
+
+                        } catch (error) {
+                            console.error('Audio processing error:', error);
+                            // Fill output with zeros on error
+                            const output = e.outputBuffer.getChannelData(0);
+                            for (let i = 0; i < output.length; i++) {
+                                output[i] = 0;
+                            }
+                        }
+                    };
+
+                    const delayTime = parseFloat(document.getElementById('delaySlider').value);
+                    const feedbackAmount = parseFloat(document.getElementById('feedbackSlider').value);
+                    const volume = parseFloat(document.getElementById('volumeSlider').value);
+
+                    this.delay.delayTime.setValueAtTime(delayTime, this.audioContext.currentTime);
+                    this.feedback.gain.setValueAtTime(feedbackAmount, this.audioContext.currentTime);
+                    this.gainNode.gain.setValueAtTime(volume, this.audioContext.currentTime);
+
+                    // Audio routing: source → delay (with feedback) → gratch → BPF (wet/dry mix) → output
+                    // Delay stage
+                    this.source.connect(this.delay);
+                    this.delay.connect(this.feedback);
+                    this.feedback.connect(this.delay);
+
+                    // Gratch stage (scriptNode processes delay output)
+                    this.delay.connect(this.scriptNode);
+
+                    // BPF stage with wet/dry mix
+                    // Dry path (bypass BPF)
+                    this.scriptNode.connect(this.bpfDryGain);
+                    this.bpfDryGain.connect(this.bpfMix);
+
+                    // Wet path (through BPF)
+                    this.scriptNode.connect(this.bpf);
+                    this.bpf.connect(this.bpfWetGain);
+                    this.bpfWetGain.connect(this.bpfMix);
+
+                    // Output stage
+                    this.bpfMix.connect(this.gainNode);
+                    this.gainNode.connect(this.audioContext.destination);
+
+                    // Analyser for volume meter (not in audio path)
+                    this.bpfMix.connect(this.analyser);
+
+                    this.analyser.fftSize = 256;
+                    this.startVolumeMonitoring();
+
+                    this.isRecording = true;
+                    this.updateUI();
+
+                } catch (error) {
+                    console.error('Start failed:', error);
+                    const micAlerts = {
+                        zh: '無法存取麥克風。請檢查瀏覽器權限設定。',
+                        en: 'Cannot access microphone. Please check browser permissions.',
+                        jp: 'マイクにアクセスできません。ブラウザの権限を確認してください。'
+                    };
+                    alert(micAlerts[currentLang]);
+                }
+            }
+
+            stop() {
+                // Stop camera if active
+                this.contourChaosGenerator.stopCamera();
+
+                if (this.scriptNode) {
+                    this.scriptNode.disconnect();
+                    this.scriptNode.onaudioprocess = null;
+                }
+                if (this.bpf) {
+                    this.bpf.disconnect();
+                }
+                if (this.bpfWetGain) {
+                    this.bpfWetGain.disconnect();
+                }
+                if (this.bpfDryGain) {
+                    this.bpfDryGain.disconnect();
+                }
+                if (this.bpfMix) {
+                    this.bpfMix.disconnect();
+                }
+                if (this.mediaStream) {
+                    this.mediaStream.getTracks().forEach(track => track.stop());
+                }
+                if (this.audioContext) {
+                    this.audioContext.close();
+                }
+
+                this.audioContext = null;
+                this.mediaStream = null;
+                this.source = null;
+                this.delay = null;
+                this.feedback = null;
+                this.gainNode = null;
+                this.analyser = null;
+                this.grainProcessor = null;
+                this.chaosGenerator = null;
+                this.scriptNode = null;
+                this.bpf = null;
+                this.bpfWetGain = null;
+                this.bpfDryGain = null;
+                this.bpfMix = null;
+                this.isRecording = false;
+
+                this.updateUI();
+                this.stopVolumeMonitoring();
+            }
+
+            startVolumeMonitoring() {
+                const volumeBar = document.getElementById('volumeBar');
+                const bufferLength = this.analyser.frequencyBinCount;
+                const dataArray = new Uint8Array(bufferLength);
+
+                const updateVolume = () => {
+                    if (!this.isRecording) return;
+
+                    this.analyser.getByteFrequencyData(dataArray);
+
+                    let sum = 0;
+                    for (let i = 0; i < bufferLength; i++) {
+                        sum += dataArray[i];
+                    }
+                    const average = sum / bufferLength;
+                    const volumePercent = (average / 255) * 100;
+
+                    volumeBar.style.width = volumePercent + '%';
+
+                    requestAnimationFrame(updateVolume);
+                };
+
+                updateVolume();
+            }
+
+            stopVolumeMonitoring() {
+                const volumeBar = document.getElementById('volumeBar');
+                volumeBar.style.width = '0%';
+            }
+
+            startOscilloscope() {
+                const canvas = document.getElementById('contourPreviewCanvas');
+                const ctx = canvas.getContext('2d');
+                const draw = () => {
+                    requestAnimationFrame(draw);
+                    if (this.chaosMode === 'camera') return;
+
+                    const cw = canvas.width;
+                    const ch = canvas.height;
+                    ctx.fillStyle = '#000';
+                    ctx.fillRect(0, 0, cw, ch);
+
+                    const len = this.chaosHistoryLen;
+                    const idx = this.chaosHistoryIndex;
+                    const hx = this.chaosHistoryX;
+                    const hz = this.chaosHistoryZ;
+
+                    // Standard Lorenz: x ≈ ±20, z ≈ 5..48
+                    // Center x on canvas, z maps to y (inverted)
+                    const margin = 20;
+                    const mapX = (v) => margin + ((v + 22) / 44) * (cw - margin * 2);
+                    const mapY = (v) => ch - margin - ((v - 2) / 50) * (ch - margin * 2);
+
+                    const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim() || '#e0e0e0';
+
+                    // Draw continuous trail with increasing opacity
+                    let started = false;
+                    for (let i = 0; i < len; i++) {
+                        const ri = (idx + i) % len;
+                        if (hx[ri] === 0 && hz[ri] === 0) { started = false; continue; }
+
+                        const alpha = Math.pow(i / len, 2) * 0.7;
+                        const px = mapX(hx[ri]);
+                        const py = mapY(hz[ri]);
+
+                        if (!started) {
+                            started = true;
+                            continue;
+                        }
+
+                        const prevRi = (idx + i - 1) % len;
+                        if (hx[prevRi] === 0 && hz[prevRi] === 0) continue;
+
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${alpha})`;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(mapX(hx[prevRi]), mapY(hz[prevRi]));
+                        ctx.lineTo(px, py);
+                        ctx.stroke();
+                    }
+
+                    // Current position: bright dot with accent glow
+                    const lastIdx = (idx + len - 1) % len;
+                    if (hx[lastIdx] !== 0 || hz[lastIdx] !== 0) {
+                        const px = mapX(hx[lastIdx]);
+                        const py = mapY(hz[lastIdx]);
+
+                        ctx.fillStyle = accentColor;
+                        ctx.globalAlpha = 0.5;
+                        ctx.beginPath();
+                        ctx.arc(px, py, 6, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.globalAlpha = 1.0;
+
+                        ctx.fillStyle = '#fff';
+                        ctx.beginPath();
+                        ctx.arc(px, py, 2.5, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                };
+                draw();
+            }
+
+            updateUI() {
+                const startBtn = document.getElementById('startBtn');
+                const stopBtn = document.getElementById('stopBtn');
+                const status = document.getElementById('status');
+                const container = document.querySelector('.container');
+
+                if (this.isRecording) {
+                    startBtn.disabled = true;
+                    stopBtn.disabled = false;
+                    status.textContent = i18n[currentLang].processing;
+                    status.className = 'status recording';
+                    container.classList.add('recording');
+                } else {
+                    startBtn.disabled = false;
+                    stopBtn.disabled = true;
+                    status.textContent = i18n[currentLang].stopped;
+                    status.className = 'status stopped';
+                    container.classList.remove('recording');
+                }
+            }
+        }
+
+        const looper = new AudioLooper();
+
+        window.addEventListener('load', () => {
+            document.getElementById('status').textContent = i18n[currentLang].ready;
+            initHueWheel();
+            initHelpHover();
+        });
+    </script>
+</body>
+</html>
