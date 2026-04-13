@@ -20,6 +20,10 @@ works-audiovisual.html  影像作品
 works-interactive.html  互動裝置
 works-tutorial.html     教學
 software.html           軟體總覽
+visual-feedback-machine.html      VFM 介紹頁
+visual-feedback-machine-app.html  VFM Web 應用程式
+artist-talk-translator.html       ATT 介紹頁
+artist-talk-translator-app.html   ATT Web 應用程式
 contact.html            聯絡
 js/i18n.js              三語翻譯（zh-TW / en / ja）
 js/main.js              共用功能（深色模式、語言切換）
@@ -50,6 +54,28 @@ assets/                 圖片、Logo
 - 每頁的 CSS 是內嵌在 `<style>` 中，非共用檔案（除 tokens.css 和 style.css）
 - 手機版（640px 以下）隱藏年份標籤和分隔符號 `/`
 - i18n.js 有三個獨立的語言物件，新增翻譯時三個都要更新
+
+---
+
+## 2026-04-14
+
+### 新增 Visual Feedback Machine
+
+- 新增 visual-feedback-machine.html：作品介紹頁（截圖、功能介紹、技術資訊、Liora 協作連結）
+- 新增 visual-feedback-machine-app.html：即時混沌音訊處理 Web 應用程式
+- software.html 新增 Visual Feedback Machine 列表項目
+- i18n.js 新增 vfm 三語翻譯（介紹、功能列表）
+- Launch App 按鈕改為 target="_blank" 開新頁面（同時修正 Artist Talk Translator）
+
+### 技術架構
+
+- 音訊：Web Audio API（ScriptProcessorNode），mic → delay (feedback) → granular engine → BPF → output
+- 雙 Chaos 來源：Lorenz attractor（σ=10, ρ=28, β=8/3）/ 相機輪廓偵測（Sobel + Moore neighbor tracing）
+- 三通道獨立 Chaos 映射：A（BPF 頻率 + grain position）、B（delay time）、C（grain size + density）
+- 影像處理：Canvas 2D，160×120 解析度，轉角角度作為 chaos 訊號
+- 視覺化：Lorenz x-z 相空間蝴蝶圖 / 輪廓掃描動態預覽
+- UI：深灰主題、兩欄佈局、HUE 色輪強調色、三語介面（繁中/EN/JP）、hover 三語說明書
+- 協作：Liora（https://www.instagram.com/mono_vnvn/）
 
 ---
 
