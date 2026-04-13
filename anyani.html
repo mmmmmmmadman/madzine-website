@@ -203,9 +203,9 @@
         <span data-i18n="common.back">返回</span>
       </a>
       <h1>AnyAni</h1>
-      <p style="color: var(--text-secondary); font-size: var(--text-lg); margin-bottom: var(--space-2);">Turn Any Picture into Animation</p>
+      <p style="color: var(--text-secondary); font-size: var(--text-lg); margin-bottom: var(--space-2);">Stop Motion Animation Maker</p>
       <p class="card__tag">macOS, Windows</p>
-      <p data-i18n="apps.anyani.desc">定格動畫製作工具，AI 超解析與補幀</p>
+      <p data-i18n="apps.anyani.desc">定格動畫製作工具，影片匯入、AI 超解析與補幀</p>
     </div>
   </div>
 
@@ -216,7 +216,7 @@
         <div class="two-col">
           <div class="col-text">
             <h2 data-i18n="common.intro">功能介紹</h2>
-            <p class="intro-text" data-i18n-html="apps.anyani.intro">AnyAni 是一款定格動畫製作工具，將圖片序列轉換為影片。支援逐幀縮放、位移、旋轉與色鍵去背，內建 Fade/Dissolve 轉場效果。</p>
+            <p class="intro-text" data-i18n-html="apps.anyani.intro">AnyAni 是一款定格動畫製作工具。可將圖片序列轉換為影片，也可匯入影片抽幀轉為定格動畫。支援逐幀縮放、位移、旋轉與色鍵去背，內建 Fade/Dissolve 轉場效果。</p>
 
             <a href="https://www.patreon.com/posts/anyani-turn-any-154381106" target="_blank" class="buy-btn">Purchase / 購買 / 購入 — €10</a>
           </div>
@@ -240,6 +240,11 @@
                    alt="AnyAni Export"
                    data-full="assets/images/software/AnyAni_3.png"
                    onclick="switchImage(this)">
+              <img class="thumb-strip__item"
+                   src="assets/images/software/AnyAni_4.png"
+                   alt="AnyAni Video Import"
+                   data-full="assets/images/software/AnyAni_4.png"
+                   onclick="switchImage(this)">
             </div>
 
             <!-- YouTube videos -->
@@ -253,8 +258,11 @@
             <div>
               <h2 data-i18n="common.features">特色一覽</h2>
               <ul class="feature-list">
+                <li data-i18n="apps.anyani.features.videoimport">影片匯入 → 定格動畫（支援 mp4/mov/avi/mkv/webm 等）</li>
                 <li data-i18n="apps.anyani.features.upscale">AI 超解析（Real-ESRGAN，2x/4x，Photo/Anime 模型）</li>
                 <li data-i18n="apps.anyani.features.rife">AI 補幀（RIFE，2x/4x/8x/16x）</li>
+                <li data-i18n="apps.anyani.features.speed">播放速度控制（正向 / 反向）</li>
+                <li data-i18n="apps.anyani.features.resolution">SNS 解析度預設（4K / YouTube / Reels / TikTok / Instagram）</li>
                 <li data-i18n="apps.anyani.features.transition">轉場效果（Fade / Dissolve）</li>
                 <li data-i18n="apps.anyani.features.chromakey">色鍵去背（點擊選色 + 容差調整）</li>
                 <li data-i18n="apps.anyani.features.transform">逐幀變形（縮放 / 位移 / 旋轉）</li>
@@ -271,7 +279,7 @@
                 <dt data-i18n="common.platform">平台</dt>
                 <dd>macOS (Apple Silicon), Windows</dd>
                 <dt data-i18n="common.version">版本</dt>
-                <dd>v2.2.1</dd>
+                <dd>v3.2.0</dd>
               </dl>
             </div>
 
