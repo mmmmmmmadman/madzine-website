@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Artist Talk Translator</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #1a1a1a; color: #e0e0e0; min-height: 100vh; }
+
+/* Setup Panel */
+#setup { max-width: 700px; margin: 0 auto; padding: 32px; position: relative; }
+#setup h1 { font-size: 28px; font-weight: 700; margin-bottom: 24px; }
+.field { margin-bottom: 20px; }
+.field label { display: block; font-size: 18px; font-weight: 500; margin-bottom: 8px; }
+.field input, .field select, .field textarea {
+  width: 100%; padding: 10px 14px; font-size: 18px;
+  background: #2a2a2a; border: 1px solid #444; border-radius: 6px; color: #e0e0e0;
+}
+.field textarea { height: 150px; resize: vertical; }
+.field input[type="password"] { font-family: monospace; }
+.row { display: flex; gap: 16px; align-items: end; }
+.row .field { flex: 1; }
+.swap-btn { padding: 10px 16px; font-size: 20px; background: #333; border: 1px solid #555; border-radius: 6px; color: #e0e0e0; cursor: pointer; align-self: end; margin-bottom: 20px; }
+.swap-btn:hover { background: #444; }
+#startBtn {
+  width: 100%; padding: 16px; font-size: 22px; font-weight: 600;
+  background: #2563eb; color: white; border: none; border-radius: 8px; cursor: pointer;
+  margin-top: 12px;
+}
+#startBtn:hover { background: #1d4ed8; }
+#startBtn:disabled { background: #555; cursor: not-allowed; }
+.file-row { display: flex; gap: 12px; align-items: center; }
+.file-row button { padding: 10px 20px; font-size: 18px; background: #333; border: 1px solid #555; border-radius: 6px; color: #e0e0e0; cursor: pointer; white-space: nowrap; }
+.file-row span { font-size: 18px; color: #888; }
+.hint { font-size: 14px; color: #666; margin-top: 4px; }
+.preloaded-preview { max-height: 120px; overflow-y: auto; padding: 8px; background: #222; border-radius: 4px; font-size: 16px; color: #999; margin-top: 8px; white-space: pre-wrap; }
+#errorMsg { color: #ef4444; font-size: 18px; margin-top: 12px; }
+
+/* Live Panel */
+#live { display: none; height: 100vh; flex-direction: column; }
+.topbar { display: flex; align-items: center; padding: 12px 24px; gap: 16px; border-bottom: 1px solid #333; flex-shrink: 0; }
+.lang-indicator { font-size: 18px; font-weight: 600; padding: 6px 16px; border-radius: 20px; user-select: none; }
+.lang-a { background: #1e40af; color: white; }
+.lang-b { background: #b91c1c; color: white; }
+.lang-indicator.inactive { opacity: 0.3; }
+.audio-level { flex: 0 0 120px; height: 8px; background: #333; border-radius: 4px; overflow: hidden; }
+.audio-level-fill { height: 100%; background: #22c55e; transition: width 0.1s linear; }
+#stopBtn { margin-left: auto; font-size: 18px; font-weight: 500; color: #ef4444; background: none; border: 1px solid #ef4444; border-radius: 6px; padding: 6px 20px; cursor: pointer; }
+#stopBtn:hover { background: #ef44441a; }
+
+/* Transcript */
+#transcript { flex: 1; overflow-y: auto; padding: 24px; }
+.segment { margin-bottom: 20px; }
+.segment .original { font-size: 18px; color: #888; margin-bottom: 4px; }
+.segment .translated { font-size: 22px; color: #e0e0e0; font-weight: 500; }
+.segment .translated.pending { color: #666; font-style: italic; }
+#volatileText { font-size: 18px; color: #555; font-style: italic; padding: 0 24px 16px; }
+
+/* Ended */
+#endedPanel { display: none; text-align: center; padding: 40px; }
+#endedPanel h2 { font-size: 22px; color: #888; margin-bottom: 16px; }
+#endedPanel button { font-size: 18px; padding: 10px 24px; background: #333; border: 1px solid #555; border-radius: 6px; color: #e0e0e0; cursor: pointer; }
+
+/* Model selector */
+.model-field { margin-bottom: 20px; }
+.model-field label { display: block; font-size: 18px; font-weight: 500; margin-bottom: 8px; }
+.model-field select { width: 100%; padding: 10px 14px; font-size: 18px; background: #2a2a2a; border: 1px solid #444; border-radius: 6px; color: #e0e0e0; }
+
+/* Top bar with lang switcher and help */
+.setup-topbar { display: flex; justify-content: flex-end; align-items: center; gap: 12px; margin-bottom: 8px; }
+.ui-lang-switcher { display: flex; gap: 0; border: 1px solid #444; border-radius: 6px; overflow: hidden; }
+.ui-lang-btn { padding: 6px 14px; font-size: 16px; background: #2a2a2a; color: #888; border: none; cursor: pointer; border-right: 1px solid #444; }
+.ui-lang-btn:last-child { border-right: none; }
+.ui-lang-btn.active { background: #2563eb; color: white; }
+.ui-lang-btn:hover:not(.active) { background: #333; color: #e0e0e0; }
+.help-btn { width: 36px; height: 36px; font-size: 20px; font-weight: 700; background: #2a2a2a; color: #888; border: 1px solid #444; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.help-btn:hover { background: #333; color: #e0e0e0; }
+
+/* Help overlay */
+#helpOverlay {
+  display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.85); z-index: 1000; overflow-y: auto;
+}
+#helpContent {
+  max-width: 720px; margin: 40px auto; padding: 32px; background: #1a1a1a;
+  border: 1px solid #333; border-radius: 12px; position: relative;
+}
+#helpContent h2 { font-size: 24px; font-weight: 700; margin-bottom: 24px; }
+#helpContent h3 { font-size: 20px; font-weight: 600; margin-top: 24px; margin-bottom: 12px; color: #e0e0e0; }
+#helpContent p, #helpContent li { font-size: 16px; line-height: 1.7; color: #ccc; }
+#helpContent ul { margin-left: 20px; margin-bottom: 12px; }
+#helpContent li { margin-bottom: 6px; }
+#helpContent a { color: #60a5fa; text-decoration: none; }
+#helpContent a:hover { text-decoration: underline; }
+.help-close-btn {
+  position: absolute; top: 16px; right: 16px; width: 36px; height: 36px;
+  font-size: 22px; font-weight: 700; background: none; color: #888; border: 1px solid #444;
+  border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.help-close-btn:hover { color: #e0e0e0; background: #333; }
+</style>
+</head>
+<body>
+
+<!-- SETUP -->
+<div id="setup">
+  <div class="setup-topbar">
+    <div class="ui-lang-switcher">
+      <button class="ui-lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="ui-lang-btn" onclick="setLang('zh-TW')">中文</button>
+      <button class="ui-lang-btn" onclick="setLang('ja')">日本語</button>
+    </div>
+    <button class="help-btn" onclick="toggleHelp()" title="Help">?</button>
+  </div>
+
+  <h1 data-i18n="title">Artist Talk Translator</h1>
+
+  <div class="field">
+    <label data-i18n="elevenLabsKeyLabel">ElevenLabs API Key</label>
+    <input type="password" id="elevenLabsKey" data-i18n-placeholder="elevenLabsKeyPlaceholder" placeholder="xi-...">
+    <div class="hint" data-i18n-html="elevenLabsKeyHint">Get your key at <a href="https://elevenlabs.io/app/settings/api-keys" target="_blank" style="color:#60a5fa;">elevenlabs.io</a>. Free tier: 2.5 hours/month.</div>
+  </div>
+
+  <div class="field">
+    <label data-i18n="apiKeyLabel">Anthropic API Key</label>
+    <input type="password" id="apiKey" data-i18n-placeholder="apiKeyPlaceholder" placeholder="sk-ant-api03-...">
+    <div class="hint" data-i18n-html="apiKeyHint">Get your key at <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:#60a5fa;">console.anthropic.com</a>. Stored locally only.</div>
+  </div>
+
+  <div class="model-field">
+    <label data-i18n="modelLabel">Model</label>
+    <select id="modelSelect">
+      <option value="claude-haiku-4-5-20251001" data-i18n="modelHaiku">Claude Haiku 4.5 (fastest, cheapest)</option>
+      <option value="claude-sonnet-4-6" data-i18n="modelSonnet">Claude Sonnet 4.6 (balanced)</option>
+      <option value="claude-opus-4-6" data-i18n="modelOpus">Claude Opus 4.6 (highest quality)</option>
+    </select>
+  </div>
+
+  <div class="row">
+    <div class="field">
+      <label data-i18n="langALabel">Language A (primary speaker)</label>
+      <select id="langA"></select>
+    </div>
+    <button class="swap-btn" onclick="swapLanguages()" data-i18n-title="swapTitle" title="Swap languages">&#8646;</button>
+    <div class="field">
+      <label data-i18n="langBLabel">Language B</label>
+      <select id="langB"></select>
+    </div>
+  </div>
+
+  <div class="field">
+    <label data-i18n="preloadLabel">Preloaded Text (artist's statement / notes)</label>
+    <div class="file-row">
+      <button onclick="document.getElementById('fileInput').click()" data-i18n="loadFileBtn">Load Text File</button>
+      <button onclick="clearPreloadedTexts()" style="background:#4a2020;" data-i18n="clearFilesBtn">Clear All</button>
+      <input type="file" id="fileInput" accept=".txt,.md,.text" multiple style="display:none">
+    </div>
+    <div id="fileList" style="margin-top:8px;"></div>
+    <div id="preloadedPreview" class="preloaded-preview" style="display:none"></div>
+  </div>
+
+  <div id="errorMsg"></div>
+  <button id="startBtn" onclick="startSession()" data-i18n="startBtn">Start Session</button>
+</div>
+
+<!-- LIVE -->
+<div id="live">
+  <div class="topbar">
+    <div class="lang-indicator lang-a" id="langABtn">
+      <span id="langALabel">EN</span>
+    </div>
+    <div class="lang-indicator lang-b inactive" id="langBBtn">
+      <span id="langBLabel">JA</span>
+    </div>
+    <div class="audio-level"><div class="audio-level-fill" id="levelFill"></div></div>
+    <button id="stopBtn" onclick="stopSession()" data-i18n="stopBtn">Stop</button>
+  </div>
+  <div id="transcript"></div>
+  <div id="volatileText"></div>
+  <div id="endedPanel">
+    <h2 data-i18n="sessionEnded">Session Ended</h2>
+    <button onclick="returnToSetup()" data-i18n="backToSetup">Back to Setup</button>
+  </div>
+</div>
+
+<!-- HELP OVERLAY -->
+<div id="helpOverlay" onclick="if(event.target===this)toggleHelp()">
+  <div id="helpContent">
+    <button class="help-close-btn" onclick="toggleHelp()">&#10005;</button>
+    <div id="helpBody"></div>
+  </div>
+</div>
+
+<script>
+// ===========================================================================
+// Cloudflare Worker URL for ElevenLabs token proxy.
+// Update this after deploying your Worker.
+// ===========================================================================
+const WORKER_URL = 'https://elevenlabs-token-proxy.mmmmmmmadman.workers.dev';
+
+// Token lifetime: 15 minutes. Refresh at 14 minutes.
+const TOKEN_REFRESH_MS = 14 * 60 * 1000;
+
+// ---- I18N ----
+const I18N = {
+  en: {
+    title: 'Artist Talk Translator',
+    elevenLabsKeyLabel: 'ElevenLabs API Key',
+    elevenLabsKeyPlaceholder: 'xi-...',
+    elevenLabsKeyHint: 'Get your key at <a href="https://elevenlabs.io/app/settings/api-keys" target="_blank" style="color:#60a5fa;">elevenlabs.io</a>. Free tier: 2.5 hours/month.',
+    apiKeyLabel: 'Anthropic API Key',
+    apiKeyPlaceholder: 'sk-ant-api03-...',
+    apiKeyHint: 'Get your key at <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:#60a5fa;">console.anthropic.com</a>. Stored locally only.',
+    modelLabel: 'Model',
+    modelHaiku: 'Claude Haiku 4.5 (fastest, cheapest)',
+    modelSonnet: 'Claude Sonnet 4.6 (balanced)',
+    modelOpus: 'Claude Opus 4.6 (highest quality)',
+    langALabel: 'Language A (primary speaker)',
+    langBLabel: 'Language B',
+    swapTitle: 'Swap languages',
+    preloadLabel: 'Preloaded Text (artist\'s statement / notes)',
+    loadFileBtn: 'Load Text File',
+    clearFilesBtn: 'Clear All',
+    noFile: 'No file loaded',
+    startBtn: 'Start Session',
+    stopBtn: 'Stop',
+    sessionEnded: 'Session Ended',
+    backToSetup: 'Back to Setup',
+    translating: 'translating...',
+    errApiKeyRequired: 'Both API keys are required.',
+    errSameLang: 'Please select two different languages.',
+    errTokenFetch: 'Failed to get ElevenLabs token. Check your API key and Worker URL.',
+    errWebSocket: 'ElevenLabs WebSocket error',
+    helpTitle: 'Instructions',
+    helpContent: `
+      <h3>Step 1: Get an ElevenLabs API Key</h3>
+      <ul>
+        <li>Go to <a href="https://elevenlabs.io" target="_blank">https://elevenlabs.io</a></li>
+        <li>Create an account (free, no credit card needed)</li>
+        <li>Go to Settings &gt; API Keys (<a href="https://elevenlabs.io/app/settings/api-keys" target="_blank">direct link</a>)</li>
+        <li>Copy your API key</li>
+      </ul>
+      <h3>Step 2: Get an Anthropic API Key</h3>
+      <ul>
+        <li>Go to <a href="https://console.anthropic.com" target="_blank">https://console.anthropic.com</a></li>
+        <li>Create an account or sign in</li>
+        <li>Go to Settings &gt; API Keys (<a href="https://console.anthropic.com/settings/keys" target="_blank">direct link</a>)</li>
+        <li>Click "Create Key", copy the key (starts with <code>sk-ant-api03-</code>)</li>
+      </ul>
+      <h3>Step 3: Add Anthropic Credits</h3>
+      <ul>
+        <li>The Anthropic API key requires prepaid credits (separate from Claude Pro/Max subscription)</li>
+        <li>Go to Settings &gt; Billing (<a href="https://console.anthropic.com/settings/billing" target="_blank">direct link</a>)</li>
+        <li>Add credits (minimum $5 USD)</li>
+        <li>Cost estimate: approximately $0.50\u20131.00 per hour of translation</li>
+        <li>ElevenLabs provides 2.5 hours/month of free transcription</li>
+      </ul>
+      <h3>Step 4: Setup</h3>
+      <ul>
+        <li>Paste both API keys in their fields</li>
+        <li>Select a model (Haiku = fastest/cheapest, Sonnet = balanced, Opus = highest quality)</li>
+        <li>Select two languages (Language A = primary speaker, Language B = other)</li>
+        <li>Optionally load a text file with the artist's prepared statement for context-aware translation</li>
+      </ul>
+      <h3>Step 5: Start Session</h3>
+      <ul>
+        <li>Click "Start Session"</li>
+        <li>Allow microphone access when prompted</li>
+        <li>The app will automatically detect which language is being spoken and translate to the other</li>
+        <li>The language indicators at the top show which language was detected</li>
+        <li>Click "Stop" to end the session</li>
+      </ul>
+      <h3>Notes</h3>
+      <ul>
+        <li>Requires internet connection (for speech recognition and translation)</li>
+        <li>Works in all modern browsers (Chrome, Firefox, Safari, Edge)</li>
+        <li>ElevenLabs provides 2.5 hours/month of free transcription</li>
+        <li>Speech recognition accuracy: ~97.7% (WER 2.3%)</li>
+        <li>Supports automatic language detection and code-switching</li>
+        <li>API keys are stored locally in your browser only</li>
+        <li>The preloaded text helps translate proper nouns, artwork names, and specialized terminology correctly</li>
+      </ul>
+    `,
+  },
+  'zh-TW': {
+    title: 'Artist Talk Translator',
+    elevenLabsKeyLabel: 'ElevenLabs API Key',
+    elevenLabsKeyPlaceholder: 'xi-...',
+    elevenLabsKeyHint: '\u5728 <a href="https://elevenlabs.io/app/settings/api-keys" target="_blank" style="color:#60a5fa;">elevenlabs.io</a> \u53d6\u5f97\u91d1\u9470\u3002\u514d\u8cbb\u984d\u5ea6\uff1a\u6bcf\u6708 2.5 \u5c0f\u6642\u3002',
+    apiKeyLabel: 'Anthropic API Key',
+    apiKeyPlaceholder: 'sk-ant-api03-...',
+    apiKeyHint: '\u5728 <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:#60a5fa;">console.anthropic.com</a> \u53d6\u5f97\u91d1\u9470\u3002\u50c5\u5132\u5b58\u65bc\u672c\u6a5f\u700f\u89bd\u5668\u3002',
+    modelLabel: '\u6a21\u578b',
+    modelHaiku: 'Claude Haiku 4.5\uff08\u6700\u5feb\u3001\u6700\u4fbf\u5b9c\uff09',
+    modelSonnet: 'Claude Sonnet 4.6\uff08\u5747\u8861\uff09',
+    modelOpus: 'Claude Opus 4.6\uff08\u6700\u9ad8\u54c1\u8cea\uff09',
+    langALabel: '\u8a9e\u8a00 A\uff08\u4e3b\u8981\u8b1b\u8005\uff09',
+    langBLabel: '\u8a9e\u8a00 B',
+    swapTitle: '\u4ea4\u63db\u8a9e\u8a00',
+    preloadLabel: '\u9810\u8f09\u6587\u5b57\uff08\u85dd\u8853\u5bb6\u81ea\u8ff0\uff0f\u7b46\u8a18\uff09',
+    loadFileBtn: '\u8f09\u5165\u6587\u5b57\u6a94',
+    clearFilesBtn: '\u6e05\u9664\u5168\u90e8',
+    noFile: '\u5c1a\u672a\u8f09\u5165\u6a94\u6848',
+    startBtn: '\u958b\u59cb\u7ffb\u8b6f',
+    stopBtn: '\u505c\u6b62',
+    sessionEnded: '\u7ffb\u8b6f\u7d50\u675f',
+    backToSetup: '\u8fd4\u56de\u8a2d\u5b9a',
+    translating: '\u7ffb\u8b6f\u4e2d...',
+    errApiKeyRequired: '\u8acb\u8f38\u5165\u5169\u7d44 API Key\u3002',
+    errSameLang: '\u8acb\u9078\u64c7\u5169\u7a2e\u4e0d\u540c\u7684\u8a9e\u8a00\u3002',
+    errTokenFetch: '\u7121\u6cd5\u53d6\u5f97 ElevenLabs token\u3002\u8acb\u6aa2\u67e5 API Key \u548c Worker URL\u3002',
+    errWebSocket: 'ElevenLabs WebSocket \u932f\u8aa4',
+    helpTitle: '\u4f7f\u7528\u8aaa\u660e',
+    helpContent: `
+      <h3>\u6b65\u9a5f\u4e00\uff1a\u53d6\u5f97 ElevenLabs API Key</h3>
+      <ul>
+        <li>\u524d\u5f80 <a href="https://elevenlabs.io" target="_blank">https://elevenlabs.io</a></li>
+        <li>\u5efa\u7acb\u5e33\u865f\uff08\u514d\u8cbb\uff0c\u4e0d\u9700\u4fe1\u7528\u5361\uff09</li>
+        <li>\u524d\u5f80 Settings &gt; API Keys\uff08<a href="https://elevenlabs.io/app/settings/api-keys" target="_blank">\u76f4\u63a5\u9023\u7d50</a>\uff09</li>
+        <li>\u8907\u88fd\u4f60\u7684 API Key</li>
+      </ul>
+      <h3>\u6b65\u9a5f\u4e8c\uff1a\u53d6\u5f97 Anthropic API Key</h3>
+      <ul>
+        <li>\u524d\u5f80 <a href="https://console.anthropic.com" target="_blank">https://console.anthropic.com</a></li>
+        <li>\u5efa\u7acb\u5e33\u865f\u6216\u767b\u5165</li>
+        <li>\u524d\u5f80 Settings &gt; API Keys\uff08<a href="https://console.anthropic.com/settings/keys" target="_blank">\u76f4\u63a5\u9023\u7d50</a>\uff09</li>
+        <li>\u9ede\u64ca\u300cCreate Key\u300d\uff0c\u8907\u88fd\u91d1\u9470\uff08\u4ee5 <code>sk-ant-api03-</code> \u958b\u982d\uff09</li>
+      </ul>
+      <h3>\u6b65\u9a5f\u4e09\uff1aAnthropic \u5132\u503c</h3>
+      <ul>
+        <li>Anthropic API Key \u9700\u8981\u9810\u4ed8\u984d\u5ea6\uff08\u8207 Claude Pro/Max \u8a02\u95b1\u5206\u958b\u8a08\u7b97\uff09</li>
+        <li>\u524d\u5f80 Settings &gt; Billing\uff08<a href="https://console.anthropic.com/settings/billing" target="_blank">\u76f4\u63a5\u9023\u7d50</a>\uff09</li>
+        <li>\u5132\u503c\uff08\u6700\u4f4e $5 \u7f8e\u5143\uff09</li>
+        <li>\u8cbb\u7528\u4f30\u7b97\uff1a\u6bcf\u5c0f\u6642\u7ffb\u8b6f\u7d04 $0.50\u20131.00 \u7f8e\u5143</li>
+        <li>ElevenLabs \u514d\u8cbb\u984d\u5ea6\uff1a\u6bcf\u6708 2.5 \u5c0f\u6642\u8a9e\u97f3\u8fa8\u8b58</li>
+      </ul>
+      <h3>\u6b65\u9a5f\u56db\uff1a\u8a2d\u5b9a</h3>
+      <ul>
+        <li>\u5728\u6b04\u4f4d\u4e2d\u8cbc\u4e0a\u5169\u7d44 API Key</li>
+        <li>\u9078\u64c7\u6a21\u578b\uff08Haiku = \u6700\u5feb\u6700\u4fbf\u5b9c\u3001Sonnet = \u5747\u8861\u3001Opus = \u6700\u9ad8\u54c1\u8cea\uff09</li>
+        <li>\u9078\u64c7\u5169\u7a2e\u8a9e\u8a00\uff08\u8a9e\u8a00 A = \u4e3b\u8981\u8b1b\u8005\uff0c\u8a9e\u8a00 B = \u53e6\u4e00\u65b9\uff09</li>
+        <li>\u53ef\u9078\u64c7\u8f09\u5165\u85dd\u8853\u5bb6\u81ea\u8ff0\u7684\u6587\u5b57\u6a94\uff0c\u63d0\u4f9b\u4e0a\u4e0b\u6587\u4ee5\u63d0\u5347\u7ffb\u8b6f\u6e96\u78ba\u5ea6</li>
+      </ul>
+      <h3>\u6b65\u9a5f\u4e94\uff1a\u958b\u59cb\u7ffb\u8b6f</h3>
+      <ul>
+        <li>\u9ede\u64ca\u300c\u958b\u59cb\u7ffb\u8b6f\u300d</li>
+        <li>\u5141\u8a31\u9ea5\u514b\u98a8\u5b58\u53d6</li>
+        <li>\u7cfb\u7d71\u6703\u81ea\u52d5\u5075\u6e2c\u6b63\u5728\u8aaa\u7684\u8a9e\u8a00\uff0c\u4e26\u7ffb\u8b6f\u70ba\u53e6\u4e00\u7a2e\u8a9e\u8a00</li>
+        <li>\u9802\u90e8\u7684\u8a9e\u8a00\u6307\u793a\u5668\u986f\u793a\u5075\u6e2c\u5230\u7684\u8a9e\u8a00</li>
+        <li>\u9ede\u64ca\u300c\u505c\u6b62\u300d\u7d50\u675f\u7ffb\u8b6f</li>
+      </ul>
+      <h3>\u6ce8\u610f\u4e8b\u9805</h3>
+      <ul>
+        <li>\u9700\u8981\u7db2\u8def\u9023\u7dda\uff08\u7528\u65bc\u8a9e\u97f3\u8fa8\u8b58\u548c\u7ffb\u8b6f\uff09</li>
+        <li>\u652f\u63f4\u6240\u6709\u73fe\u4ee3\u700f\u89bd\u5668\uff08Chrome\u3001Firefox\u3001Safari\u3001Edge\uff09</li>
+        <li>ElevenLabs \u514d\u8cbb\u984d\u5ea6\uff1a\u6bcf\u6708 2.5 \u5c0f\u6642\u8a9e\u97f3\u8fa8\u8b58</li>
+        <li>\u8a9e\u97f3\u8fa8\u8b58\u6e96\u78ba\u5ea6\uff1a\u7d04 97.7%\uff08WER 2.3%\uff09</li>
+        <li>\u652f\u63f4\u81ea\u52d5\u8a9e\u8a00\u5075\u6e2c\u8207\u8a9e\u8a00\u5207\u63db</li>
+        <li>API Key \u50c5\u5132\u5b58\u65bc\u4f60\u7684\u700f\u89bd\u5668\u672c\u6a5f</li>
+        <li>\u9810\u8f09\u6587\u5b57\u6709\u52a9\u65bc\u6b63\u78ba\u7ffb\u8b6f\u5c08\u6709\u540d\u8a5e\u3001\u4f5c\u54c1\u540d\u7a31\u548c\u5c08\u696d\u8853\u8a9e</li>
+      </ul>
+    `,
+  },
+  ja: {
+    title: 'Artist Talk Translator',
+    elevenLabsKeyLabel: 'ElevenLabs API Key',
+    elevenLabsKeyPlaceholder: 'xi-...',
+    elevenLabsKeyHint: '<a href="https://elevenlabs.io/app/settings/api-keys" target="_blank" style="color:#60a5fa;">elevenlabs.io</a> \u3067\u30ad\u30fc\u3092\u53d6\u5f97\u3002\u7121\u6599\u679a\uff1a\u6708 2.5 \u6642\u9593\u3002',
+    apiKeyLabel: 'Anthropic API Key',
+    apiKeyPlaceholder: 'sk-ant-api03-...',
+    apiKeyHint: '<a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:#60a5fa;">console.anthropic.com</a> \u3067\u30ad\u30fc\u3092\u53d6\u5f97\u3002\u30d6\u30e9\u30a6\u30b6\u306b\u306e\u307f\u4fdd\u5b58\u3055\u308c\u307e\u3059\u3002',
+    modelLabel: '\u30e2\u30c7\u30eb',
+    modelHaiku: 'Claude Haiku 4.5\uff08\u6700\u901f\u30fb\u6700\u5b89\uff09',
+    modelSonnet: 'Claude Sonnet 4.6\uff08\u30d0\u30e9\u30f3\u30b9\u578b\uff09',
+    modelOpus: 'Claude Opus 4.6\uff08\u6700\u9ad8\u54c1\u8cea\uff09',
+    langALabel: '\u8a00\u8a9e A\uff08\u30e1\u30a4\u30f3\u30b9\u30d4\u30fc\u30ab\u30fc\uff09',
+    langBLabel: '\u8a00\u8a9e B',
+    swapTitle: '\u8a00\u8a9e\u3092\u5165\u308c\u66ff\u3048',
+    preloadLabel: '\u30d7\u30ea\u30ed\u30fc\u30c9\u30c6\u30ad\u30b9\u30c8\uff08\u30a2\u30fc\u30c6\u30a3\u30b9\u30c8\u30b9\u30c6\u30fc\u30c8\u30e1\u30f3\u30c8\uff0f\u30e1\u30e2\uff09',
+    loadFileBtn: '\u30c6\u30ad\u30b9\u30c8\u30d5\u30a1\u30a4\u30eb\u3092\u8aad\u8fbc',
+    clearFilesBtn: '\u3059\u3079\u3066\u30af\u30ea\u30a2',
+    noFile: '\u30d5\u30a1\u30a4\u30eb\u672a\u8aad\u8fbc',
+    startBtn: '\u30bb\u30c3\u30b7\u30e7\u30f3\u958b\u59cb',
+    stopBtn: '\u505c\u6b62',
+    sessionEnded: '\u30bb\u30c3\u30b7\u30e7\u30f3\u7d42\u4e86',
+    backToSetup: '\u8a2d\u5b9a\u306b\u623b\u308b',
+    translating: '\u7ffb\u8a33\u4e2d...',
+    errApiKeyRequired: '\u4e21\u65b9\u306eAPI Key\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044\u3002',
+    errSameLang: '\u7570\u306a\u308b2\u3064\u306e\u8a00\u8a9e\u3092\u9078\u629e\u3057\u3066\u304f\u3060\u3055\u3044\u3002',
+    errTokenFetch: 'ElevenLabs\u30c8\u30fc\u30af\u30f3\u306e\u53d6\u5f97\u306b\u5931\u6557\u3057\u307e\u3057\u305f\u3002API Key\u3068Worker URL\u3092\u78ba\u8a8d\u3057\u3066\u304f\u3060\u3055\u3044\u3002',
+    errWebSocket: 'ElevenLabs WebSocket\u30a8\u30e9\u30fc',
+    helpTitle: '\u4f7f\u3044\u65b9',
+    helpContent: `
+      <h3>\u30b9\u30c6\u30c3\u30d71\uff1aElevenLabs API Key\u3092\u53d6\u5f97</h3>
+      <ul>
+        <li><a href="https://elevenlabs.io" target="_blank">https://elevenlabs.io</a> \u306b\u30a2\u30af\u30bb\u30b9</li>
+        <li>\u30a2\u30ab\u30a6\u30f3\u30c8\u3092\u4f5c\u6210\uff08\u7121\u6599\u3001\u30af\u30ec\u30b8\u30c3\u30c8\u30ab\u30fc\u30c9\u4e0d\u8981\uff09</li>
+        <li>Settings &gt; API Keys \u306b\u79fb\u52d5\uff08<a href="https://elevenlabs.io/app/settings/api-keys" target="_blank">\u76f4\u63a5\u30ea\u30f3\u30af</a>\uff09</li>
+        <li>API Key\u3092\u30b3\u30d4\u30fc</li>
+      </ul>
+      <h3>\u30b9\u30c6\u30c3\u30d72\uff1aAnthropic API Key\u3092\u53d6\u5f97</h3>
+      <ul>
+        <li><a href="https://console.anthropic.com" target="_blank">https://console.anthropic.com</a> \u306b\u30a2\u30af\u30bb\u30b9</li>
+        <li>\u30a2\u30ab\u30a6\u30f3\u30c8\u3092\u4f5c\u6210\u307e\u305f\u306f\u30b5\u30a4\u30f3\u30a4\u30f3</li>
+        <li>Settings &gt; API Keys \u306b\u79fb\u52d5\uff08<a href="https://console.anthropic.com/settings/keys" target="_blank">\u76f4\u63a5\u30ea\u30f3\u30af</a>\uff09</li>
+        <li>\u300cCreate Key\u300d\u3092\u30af\u30ea\u30c3\u30af\u3057\u3001\u30ad\u30fc\u3092\u30b3\u30d4\u30fc\uff08<code>sk-ant-api03-</code> \u3067\u59cb\u307e\u308a\u307e\u3059\uff09</li>
+      </ul>
+      <h3>\u30b9\u30c6\u30c3\u30d73\uff1aAnthropic \u30af\u30ec\u30b8\u30c3\u30c8\u3092\u8ffd\u52a0</h3>
+      <ul>
+        <li>Anthropic API Key\u306b\u306f\u30d7\u30ea\u30da\u30a4\u30c9\u30af\u30ec\u30b8\u30c3\u30c8\u304c\u5fc5\u8981\u3067\u3059\uff08Claude Pro/Max\u30b5\u30d6\u30b9\u30af\u30ea\u30d7\u30b7\u30e7\u30f3\u3068\u306f\u5225\uff09</li>
+        <li>Settings &gt; Billing \u306b\u79fb\u52d5\uff08<a href="https://console.anthropic.com/settings/billing" target="_blank">\u76f4\u63a5\u30ea\u30f3\u30af</a>\uff09</li>
+        <li>\u30af\u30ec\u30b8\u30c3\u30c8\u3092\u8ffd\u52a0\uff08\u6700\u4f4e $5 USD\uff09</li>
+        <li>\u8cbb\u7528\u306e\u76ee\u5b89\uff1a\u7ffb\u8a331\u6642\u9593\u3042\u305f\u308a\u7d04 $0.50\u301c1.00</li>
+        <li>ElevenLabs\u306f\u6708 2.5 \u6642\u9593\u306e\u7121\u6599\u97f3\u58f0\u8a8d\u8b58\u3092\u63d0\u4f9b</li>
+      </ul>
+      <h3>\u30b9\u30c6\u30c3\u30d74\uff1a\u8a2d\u5b9a</h3>
+      <ul>
+        <li>\u4e21\u65b9\u306eAPI Key\u3092\u30d5\u30a3\u30fc\u30eb\u30c9\u306b\u8cbc\u308a\u4ed8\u3051</li>
+        <li>\u30e2\u30c7\u30eb\u3092\u9078\u629e\uff08Haiku\uff1d\u6700\u901f\u30fb\u6700\u5b89\u3001Sonnet\uff1d\u30d0\u30e9\u30f3\u30b9\u578b\u3001Opus\uff1d\u6700\u9ad8\u54c1\u8cea\uff09</li>
+        <li>2\u3064\u306e\u8a00\u8a9e\u3092\u9078\u629e\uff08\u8a00\u8a9eA\uff1d\u30e1\u30a4\u30f3\u30b9\u30d4\u30fc\u30ab\u30fc\u3001\u8a00\u8a9eB\uff1d\u76f8\u624b\u5074\uff09</li>
+        <li>\u5fc5\u8981\u306b\u5fdc\u3058\u3066\u30a2\u30fc\u30c6\u30a3\u30b9\u30c8\u30b9\u30c6\u30fc\u30c8\u30e1\u30f3\u30c8\u306e\u30c6\u30ad\u30b9\u30c8\u30d5\u30a1\u30a4\u30eb\u3092\u8aad\u307f\u8fbc\u307f\u3001\u6587\u8108\u306b\u57fa\u3065\u304f\u7ffb\u8a33\u7cbe\u5ea6\u3092\u5411\u4e0a</li>
+      </ul>
+      <h3>\u30b9\u30c6\u30c3\u30d75\uff1a\u30bb\u30c3\u30b7\u30e7\u30f3\u958b\u59cb</h3>
+      <ul>
+        <li>\u300c\u30bb\u30c3\u30b7\u30e7\u30f3\u958b\u59cb\u300d\u3092\u30af\u30ea\u30c3\u30af</li>
+        <li>\u30de\u30a4\u30af\u3078\u306e\u30a2\u30af\u30bb\u30b9\u3092\u8a31\u53ef</li>
+        <li>\u30a2\u30d7\u30ea\u304c\u8a71\u3055\u308c\u3066\u3044\u308b\u8a00\u8a9e\u3092\u81ea\u52d5\u691c\u51fa\u3057\u3001\u3082\u3046\u4e00\u65b9\u306e\u8a00\u8a9e\u306b\u7ffb\u8a33\u3057\u307e\u3059</li>
+        <li>\u4e0a\u90e8\u306e\u8a00\u8a9e\u30a4\u30f3\u30b8\u30b1\u30fc\u30bf\u30fc\u306f\u691c\u51fa\u3055\u308c\u305f\u8a00\u8a9e\u3092\u8868\u793a\u3057\u307e\u3059</li>
+        <li>\u300c\u505c\u6b62\u300d\u3092\u30af\u30ea\u30c3\u30af\u3057\u3066\u30bb\u30c3\u30b7\u30e7\u30f3\u3092\u7d42\u4e86</li>
+      </ul>
+      <h3>\u6ce8\u610f\u4e8b\u9805</h3>
+      <ul>
+        <li>\u30a4\u30f3\u30bf\u30fc\u30cd\u30c3\u30c8\u63a5\u7d9a\u304c\u5fc5\u8981\u3067\u3059\uff08\u97f3\u58f0\u8a8d\u8b58\u3068\u7ffb\u8a33\u306b\u4f7f\u7528\uff09</li>
+        <li>\u3059\u3079\u3066\u306e\u30e2\u30c0\u30f3\u30d6\u30e9\u30a6\u30b6\u3067\u52d5\u4f5c\uff08Chrome\u3001Firefox\u3001Safari\u3001Edge\uff09</li>
+        <li>ElevenLabs\u306f\u6708 2.5 \u6642\u9593\u306e\u7121\u6599\u97f3\u58f0\u8a8d\u8b58\u3092\u63d0\u4f9b</li>
+        <li>\u97f3\u58f0\u8a8d\u8b58\u7cbe\u5ea6\uff1a\u7d04 97.7%\uff08WER 2.3%\uff09</li>
+        <li>\u81ea\u52d5\u8a00\u8a9e\u691c\u51fa\u3068\u30b3\u30fc\u30c9\u30b9\u30a4\u30c3\u30c1\u30f3\u30b0\u3092\u30b5\u30dd\u30fc\u30c8</li>
+        <li>API Key\u306f\u30d6\u30e9\u30a6\u30b6\u306e\u30ed\u30fc\u30ab\u30eb\u306b\u306e\u307f\u4fdd\u5b58\u3055\u308c\u307e\u3059</li>
+        <li>\u30d7\u30ea\u30ed\u30fc\u30c9\u30c6\u30ad\u30b9\u30c8\u306f\u3001\u56fa\u6709\u540d\u8a5e\u3001\u4f5c\u54c1\u540d\u3001\u5c02\u9580\u7528\u8a9e\u306e\u6b63\u78ba\u306a\u7ffb\u8a33\u306b\u5f79\u7acb\u3061\u307e\u3059</li>
+      </ul>
+    `,
+  },
+};
+
+let currentUILang = localStorage.getItem('att_uiLang') || 'en';
+
+function setLang(lang) {
+  currentUILang = lang;
+  localStorage.setItem('att_uiLang', lang);
+  document.querySelectorAll('.ui-lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('onclick').includes("'" + lang + "'"));
+  });
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (I18N[lang] && I18N[lang][key] !== undefined) {
+      el.textContent = I18N[lang][key];
+    }
+  });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => {
+    const key = el.getAttribute('data-i18n-html');
+    if (I18N[lang] && I18N[lang][key] !== undefined) {
+      el.innerHTML = I18N[lang][key];
+    }
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-i18n-placeholder');
+    if (I18N[lang] && I18N[lang][key] !== undefined) {
+      el.placeholder = I18N[lang][key];
+    }
+  });
+  document.querySelectorAll('[data-i18n-title]').forEach(el => {
+    const key = el.getAttribute('data-i18n-title');
+    if (I18N[lang] && I18N[lang][key] !== undefined) {
+      el.title = I18N[lang][key];
+    }
+  });
+  updateHelpContent();
+  document.documentElement.lang = lang === 'zh-TW' ? 'zh-TW' : lang === 'ja' ? 'ja' : 'en';
+}
+
+function t(key) {
+  return (I18N[currentUILang] && I18N[currentUILang][key]) || I18N.en[key] || key;
+}
+
+// ---- HELP ----
+function toggleHelp() {
+  const overlay = document.getElementById('helpOverlay');
+  if (overlay.style.display === 'block') {
+    overlay.style.display = 'none';
+  } else {
+    updateHelpContent();
+    overlay.style.display = 'block';
+  }
+}
+
+function updateHelpContent() {
+  const body = document.getElementById('helpBody');
+  if (!body) return;
+  const lang = currentUILang;
+  const data = I18N[lang] || I18N.en;
+  body.innerHTML = '<h2>' + data.helpTitle + '</h2>' + data.helpContent;
+}
+
+// ---- LANGUAGES ----
+const LANGUAGES = [
+  { code: 'en-US', name: 'English', short: 'EN', forLLM: 'English', elevenCode: 'en' },
+  { code: 'ja-JP', name: '\u65e5\u672c\u8a9e', short: 'JA', forLLM: 'Japanese', elevenCode: 'ja' },
+  { code: 'zh-TW', name: '\u4e2d\u6587\uff08\u7e41\u9ad4\uff09', short: 'ZH-TW', forLLM: 'Traditional Chinese', elevenCode: 'zh' },
+  { code: 'zh-CN', name: '\u4e2d\u6587\uff08\u7b80\u4f53\uff09', short: 'ZH-CN', forLLM: 'Simplified Chinese', elevenCode: 'zh' },
+  { code: 'ko-KR', name: '\ud55c\uad6d\uc5b4', short: 'KO', forLLM: 'Korean', elevenCode: 'ko' },
+  { code: 'fr-FR', name: 'Fran\u00e7ais', short: 'FR', forLLM: 'French', elevenCode: 'fr' },
+  { code: 'de-DE', name: 'Deutsch', short: 'DE', forLLM: 'German', elevenCode: 'de' },
+  { code: 'es-ES', name: 'Espa\u00f1ol', short: 'ES', forLLM: 'Spanish', elevenCode: 'es' },
+  { code: 'pt-BR', name: 'Portugu\u00eas', short: 'PT', forLLM: 'Portuguese', elevenCode: 'pt' },
+  { code: 'it-IT', name: 'Italiano', short: 'IT', forLLM: 'Italian', elevenCode: 'it' },
+  { code: 'nl-NL', name: 'Nederlands', short: 'NL', forLLM: 'Dutch', elevenCode: 'nl' },
+  { code: 'sv-SE', name: 'Svenska', short: 'SV', forLLM: 'Swedish', elevenCode: 'sv' },
+  { code: 'tr-TR', name: 'T\u00fcrk\u00e7e', short: 'TR', forLLM: 'Turkish', elevenCode: 'tr' },
+  { code: 'vi-VN', name: 'Ti\u1ebfng Vi\u1ec7t', short: 'VI', forLLM: 'Vietnamese', elevenCode: 'vi' },
+  { code: 'th-TH', name: '\u0e20\u0e32\u0e29\u0e32\u0e44\u0e17\u0e22', short: 'TH', forLLM: 'Thai', elevenCode: 'th' },
+  { code: 'ru-RU', name: '\u0420\u0443\u0441\u0441\u043a\u0438\u0439', short: 'RU', forLLM: 'Russian', elevenCode: 'ru' },
+];
+
+function populateSelects() {
+  const a = document.getElementById('langA');
+  const b = document.getElementById('langB');
+  LANGUAGES.forEach((l) => {
+    a.add(new Option(l.name, l.code));
+    b.add(new Option(l.name, l.code));
+  });
+  a.value = 'en-US';
+  b.value = 'ja-JP';
+}
+
+function swapLanguages() {
+  const a = document.getElementById('langA');
+  const b = document.getElementById('langB');
+  const tmp = a.value;
+  a.value = b.value;
+  b.value = tmp;
+}
+
+// ---- FILE IMPORT ----
+let loadedFiles = []; // { name, content }
+
+document.getElementById('fileInput').addEventListener('change', (e) => {
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
+  let remaining = files.length;
+  files.forEach(file => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      loadedFiles.push({ name: file.name, content: reader.result });
+      remaining--;
+      if (remaining === 0) {
+        updatePreloadedDisplay();
+        e.target.value = ''; // allow re-selecting same files
+      }
+    };
+    reader.readAsText(file);
+  });
+});
+
+function updatePreloadedDisplay() {
+  preloadedText = loadedFiles.map(f => f.content).join('\n\n---\n\n');
+  const fileList = document.getElementById('fileList');
+  fileList.innerHTML = loadedFiles.map((f, i) =>
+    `<span style="display:inline-block;background:#333;padding:4px 10px;border-radius:4px;margin:2px 4px;font-size:16px;">${f.name}</span>`
+  ).join('');
+  const preview = document.getElementById('preloadedPreview');
+  preview.style.display = 'block';
+  preview.textContent = preloadedText.substring(0, 500) + (preloadedText.length > 500 ? '...' : '');
+}
+
+function clearPreloadedTexts() {
+  loadedFiles = [];
+  preloadedText = '';
+  document.getElementById('fileList').innerHTML = '';
+  document.getElementById('preloadedPreview').style.display = 'none';
+  document.getElementById('preloadedPreview').textContent = '';
+}
+
+// ---- STATE ----
+let preloadedText = '';
+let audioContext = null;
+let analyser = null;
+let animFrameId = null;
+let mediaStream = null;
+let workletNode = null;
+let ws = null;
+let isRunning = false;
+let segments = [];
+let detectedLang = 'a'; // which lang was last detected: 'a' or 'b'
+let tokenRefreshTimer = null;
+
+function getLang(which) {
+  const code = document.getElementById(which === 'a' ? 'langA' : 'langB').value;
+  return LANGUAGES.find(l => l.code === code);
+}
+
+// Map ElevenLabs language_code (e.g. "en", "ja") to 'a' or 'b'
+function mapElevenLangToSide(langCode) {
+  if (!langCode) return null;
+  const lc = langCode.toLowerCase().split('-')[0]; // normalize "en-US" -> "en"
+  const langA = getLang('a');
+  const langB = getLang('b');
+  if (langA.elevenCode === lc) return 'a';
+  if (langB.elevenCode === lc) return 'b';
+  return null;
+}
+
+// ---- AUDIO LEVEL ----
+function startAudioLevel(stream) {
+  if (!audioContext) audioContext = new AudioContext();
+  const source = audioContext.createMediaStreamSource(stream);
+  analyser = audioContext.createAnalyser();
+  analyser.fftSize = 512;
+  source.connect(analyser);
+  updateLevel();
+}
+
+function updateLevel() {
+  if (!analyser) return;
+  const data = new Uint8Array(analyser.frequencyBinCount);
+  analyser.getByteTimeDomainData(data);
+  let sum = 0;
+  for (let i = 0; i < data.length; i++) {
+    const v = (data[i] - 128) / 128;
+    sum += v * v;
+  }
+  const rms = Math.sqrt(sum / data.length);
+  const level = Math.min(rms / 0.5, 1);
+  document.getElementById('levelFill').style.width = (level * 100) + '%';
+  animFrameId = requestAnimationFrame(updateLevel);
+}
+
+function stopAudioLevel() {
+  if (animFrameId) cancelAnimationFrame(animFrameId);
+  analyser = null;
+}
+
+// ---- BASE64 UTIL ----
+function arrayBufferToBase64(buffer) {
+  const bytes = new Uint8Array(buffer);
+  let binary = '';
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+}
+
+// ---- ELEVENLABS TOKEN ----
+async function getElevenLabsToken(apiKey) {
+  const res = await fetch(WORKER_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ apiKey }),
+  });
+  if (!res.ok) {
+    const body = await res.text().catch(() => '');
+    throw new Error(`Token fetch failed (${res.status}): ${body}`);
+  }
+  const data = await res.json();
+  return data.token;
+}
+
+// ---- ELEVENLABS WEBSOCKET ----
+function connectElevenLabs(token) {
+  const params = new URLSearchParams({
+    model_id: 'scribe_v2_realtime',
+    token: token,
+    audio_format: 'pcm_16000',
+    include_timestamps: 'true',
+    include_language_detection: 'true',
+    commit_strategy: 'vad',
+    vad_silence_threshold_secs: '1.5',
+    // language_code omitted = auto-detect
+  });
+
+  ws = new WebSocket(`wss://api.elevenlabs.io/v1/speech-to-text/realtime?${params}`);
+
+  ws.onopen = () => {
+    console.log('ElevenLabs WebSocket connected');
+  };
+
+  ws.onmessage = (event) => {
+    const msg = JSON.parse(event.data);
+    switch (msg.message_type) {
+      case 'partial_transcript':
+        updateVolatile(msg.text || '');
+        break;
+      case 'committed_transcript_with_timestamps':
+        onFinalResult(msg.text || '', msg.language_code || null);
+        break;
+      case 'committed_transcript':
+        onFinalResult(msg.text || '', null);
+        break;
+      case 'session_started':
+        console.log('ElevenLabs session started:', msg);
+        break;
+      case 'error':
+        console.error('ElevenLabs error:', msg);
+        showLiveError(`${t('errWebSocket')}: ${msg.error || msg.message || JSON.stringify(msg)}`);
+        break;
+    }
+  };
+
+  ws.onerror = (err) => {
+    console.error('ElevenLabs WebSocket error:', err);
+  };
+
+  ws.onclose = (event) => {
+    console.log('ElevenLabs WebSocket closed:', event.code, event.reason);
+    // If session still running, this might be a token expiry — handled by refresh timer
+  };
+}
+
+function updateVolatile(text) {
+  document.getElementById('volatileText').textContent = text;
+}
+
+function showLiveError(msg) {
+  // Show error as a segment
+  segments.push({ id: Date.now(), original: msg, translated: null, isError: true });
+  renderSegments();
+  scrollToBottom();
+}
+
+// ---- AUDIO WORKLET SETUP ----
+async function setupAudioWorklet(stream) {
+  if (!audioContext) audioContext = new AudioContext();
+
+  // Resume context if suspended (autoplay policy)
+  if (audioContext.state === 'suspended') {
+    await audioContext.resume();
+  }
+
+  await audioContext.audioWorklet.addModule('audio-processor.js');
+  const source = audioContext.createMediaStreamSource(stream);
+  workletNode = new AudioWorkletNode(audioContext, 'pcm-processor');
+
+  workletNode.port.onmessage = (event) => {
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      const int16 = event.data; // Int16Array from worklet
+      const base64 = arrayBufferToBase64(int16.buffer);
+      ws.send(JSON.stringify({
+        message_type: 'input_audio_chunk',
+        audio_base_64: base64,
+      }));
+    }
+  };
+
+  source.connect(workletNode);
+  workletNode.connect(audioContext.destination); // needed for processing to run; output is silent
+}
+
+// ---- TOKEN REFRESH ----
+function scheduleTokenRefresh() {
+  clearTokenRefresh();
+  const elevenLabsKey = document.getElementById('elevenLabsKey').value.trim();
+  tokenRefreshTimer = setTimeout(async () => {
+    if (!isRunning) return;
+    console.log('Refreshing ElevenLabs token...');
+    try {
+      const newToken = await getElevenLabsToken(elevenLabsKey);
+      // Close old WebSocket
+      if (ws) {
+        ws.onclose = null; // prevent stale handler
+        ws.close();
+      }
+      // Connect with new token
+      connectElevenLabs(newToken);
+      // Schedule next refresh
+      scheduleTokenRefresh();
+    } catch (err) {
+      console.error('Token refresh failed:', err);
+      showLiveError(`Token refresh failed: ${err.message}`);
+    }
+  }, TOKEN_REFRESH_MS);
+}
+
+function clearTokenRefresh() {
+  if (tokenRefreshTimer) {
+    clearTimeout(tokenRefreshTimer);
+    tokenRefreshTimer = null;
+  }
+}
+
+// ---- TRANSLATION (Claude) ----
+async function translateWithClaude(text) {
+  const apiKey = document.getElementById('apiKey').value;
+  const model = document.getElementById('modelSelect').value;
+  const langA = getLang('a');
+  const langB = getLang('b');
+
+  let systemPrompt = `You are a real-time translator for an artist talk event.
+You will receive spoken text in either ${langA.forLLM} or ${langB.forLLM}.
+Detect which language the input is in, then translate it to the OTHER language.
+- If input is ${langA.forLLM}, translate to ${langB.forLLM}.
+- If input is ${langB.forLLM}, translate to ${langA.forLLM}.
+Output ONLY the translation. No explanations, no language labels, no notes.`;
+
+  if (preloadedText) {
+    const context = preloadedText.substring(0, 4000);
+    systemPrompt += `
+
+The artist's prepared statement (for context and terminology reference):
+---
+${context}
+---
+Use the above context to correctly translate proper nouns, artwork names, and art terminology.`;
+  }
+
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true',
+    },
+    body: JSON.stringify({
+      model: model,
+      max_tokens: 1024,
+      system: systemPrompt,
+      messages: [{ role: 'user', content: text }],
+    }),
+  });
+
+  if (!response.ok) {
+    const errBody = await response.json().catch(() => null);
+    const errMsg = errBody?.error?.message || `status ${response.status}`;
+    throw new Error(errMsg);
+  }
+
+  const data = await response.json();
+  return data.content[0].text.trim();
+}
+
+function onFinalResult(text, langCode) {
+  if (!text || !text.trim()) return;
+  text = text.trim();
+
+  // Update detected language indicator
+  const side = mapElevenLangToSide(langCode);
+  if (side) {
+    detectedLang = side;
+    updateLangButtons();
+  }
+
+  // Clear volatile
+  updateVolatile('');
+
+  const segmentId = Date.now();
+  segments.push({ id: segmentId, original: text, translated: null });
+  renderSegments();
+  scrollToBottom();
+
+  translateWithClaude(text)
+    .then(translated => {
+      const seg = segments.find(s => s.id === segmentId);
+      if (seg) {
+        seg.translated = translated;
+        renderSegments();
+        scrollToBottom();
+      }
+    })
+    .catch(err => {
+      console.error('Translation error:', err);
+      const seg = segments.find(s => s.id === segmentId);
+      if (seg) {
+        seg.translated = `(error: ${err.message.substring(0, 80)})`;
+        renderSegments();
+      }
+    });
+}
+
+// ---- RENDERING ----
+function renderSegments() {
+  const container = document.getElementById('transcript');
+  container.innerHTML = segments.map(s => {
+    if (s.isError) {
+      return `<div class="segment"><div class="original" style="color:#ef4444">${escapeHtml(s.original)}</div></div>`;
+    }
+    return `
+    <div class="segment">
+      <div class="original">${escapeHtml(s.original)}</div>
+      <div class="translated ${s.translated ? '' : 'pending'}">${s.translated ? escapeHtml(s.translated) : t('translating')}</div>
+    </div>
+  `;
+  }).join('');
+}
+
+function scrollToBottom() {
+  const el = document.getElementById('transcript');
+  el.scrollTop = el.scrollHeight;
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// ---- LANGUAGE INDICATOR ----
+function updateLangButtons() {
+  const aBtn = document.getElementById('langABtn');
+  const bBtn = document.getElementById('langBBtn');
+  aBtn.classList.toggle('inactive', detectedLang !== 'a');
+  bBtn.classList.toggle('inactive', detectedLang !== 'b');
+}
+
+// ---- SESSION CONTROL ----
+function showError(msg) {
+  document.getElementById('errorMsg').textContent = msg;
+}
+
+async function startSession() {
+  const elevenLabsKey = document.getElementById('elevenLabsKey').value.trim();
+  const apiKey = document.getElementById('apiKey').value.trim();
+
+  if (!elevenLabsKey || !apiKey) { showError(t('errApiKeyRequired')); return; }
+  if (!apiKey.startsWith('sk-')) { showError(t('errApiKeyRequired')); return; }
+
+  const langACode = document.getElementById('langA').value;
+  const langBCode = document.getElementById('langB').value;
+  if (langACode === langBCode) { showError(t('errSameLang')); return; }
+
+  showError('');
+
+  // Save keys to localStorage
+  localStorage.setItem('att_apiKey', apiKey);
+  localStorage.setItem('att_elevenLabsKey', elevenLabsKey);
+  localStorage.setItem('att_model', document.getElementById('modelSelect').value);
+
+  // Disable start button during setup
+  const startBtn = document.getElementById('startBtn');
+  startBtn.disabled = true;
+
+  try {
+    // 1. Get ElevenLabs token
+    const token = await getElevenLabsToken(elevenLabsKey);
+
+    // 2. Get microphone
+    mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+    // 3. Update UI
+    const langA = getLang('a');
+    const langB = getLang('b');
+    document.getElementById('langALabel').textContent = langA.short;
+    document.getElementById('langBLabel').textContent = langB.short;
+
+    document.getElementById('setup').style.display = 'none';
+    document.getElementById('live').style.display = 'flex';
+    document.getElementById('endedPanel').style.display = 'none';
+    document.getElementById('transcript').style.display = 'block';
+
+    isRunning = true;
+    detectedLang = 'a';
+    segments = [];
+    renderSegments();
+    updateLangButtons();
+
+    // 4. Start audio level meter
+    startAudioLevel(mediaStream);
+
+    // 5. Connect ElevenLabs WebSocket
+    connectElevenLabs(token);
+
+    // 6. Start AudioWorklet for PCM capture
+    await setupAudioWorklet(mediaStream);
+
+    // 7. Schedule token refresh
+    scheduleTokenRefresh();
+
+  } catch (err) {
+    console.error('Session start error:', err);
+    showError(t('errTokenFetch') + ' (' + err.message + ')');
+    startBtn.disabled = false;
+    // Clean up if partially started
+    if (mediaStream) { mediaStream.getTracks().forEach(t => t.stop()); mediaStream = null; }
+    return;
+  }
+
+  startBtn.disabled = false;
+}
+
+function stopSession() {
+  isRunning = false;
+
+  // Stop token refresh
+  clearTokenRefresh();
+
+  // Close WebSocket
+  if (ws) {
+    ws.onclose = null;
+    ws.close();
+    ws = null;
+  }
+
+  // Stop AudioWorklet
+  if (workletNode) {
+    workletNode.disconnect();
+    workletNode = null;
+  }
+
+  // Stop media stream
+  if (mediaStream) {
+    mediaStream.getTracks().forEach(t => t.stop());
+    mediaStream = null;
+  }
+
+  // Stop audio level
+  stopAudioLevel();
+
+  // Close audio context
+  if (audioContext) {
+    audioContext.close();
+    audioContext = null;
+  }
+
+  updateVolatile('');
+  document.getElementById('endedPanel').style.display = 'block';
+}
+
+function returnToSetup() {
+  document.getElementById('live').style.display = 'none';
+  document.getElementById('setup').style.display = 'block';
+}
+
+// ---- INIT ----
+populateSelects();
+// Restore saved settings
+const savedKey = localStorage.getItem('att_apiKey');
+if (savedKey) document.getElementById('apiKey').value = savedKey;
+const savedElevenKey = localStorage.getItem('att_elevenLabsKey');
+if (savedElevenKey) document.getElementById('elevenLabsKey').value = savedElevenKey;
+const savedModel = localStorage.getItem('att_model');
+if (savedModel) document.getElementById('modelSelect').value = savedModel;
+// Apply saved UI language
+setLang(currentUILang);
+</script>
+</body>
+</html>

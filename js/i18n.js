@@ -132,6 +132,22 @@ const I18N = {
             batch: '多選批次操作',
             multilang: '三語介面（EN / JP / TW）'
           }
+        },
+        artisttalktranslator: {
+          name: 'Artist Talk Translator',
+          desc: 'AI 即時語音翻譯，專為藝術座談設計',
+          intro: 'Artist Talk Translator 是專為藝術家座談會、演講活動設計的即時語音翻譯工具。使用 ElevenLabs Scribe v2 進行高精度語音辨識（WER 2.3%），並透過 Claude AI 進行高品質即時翻譯。<br><br>核心特色是「預載文本」功能：在座談開始前可匯入多個文本檔案（藝術家講稿、作品說明、術語表等），翻譯引擎會參考這些內容正確翻譯專有名詞、作品名稱和藝術術語。這就像事先給翻譯人員一份參考資料，讓翻譯更精確。<br><br>支援 16 種語言自動偵測與雙向翻譯，語言切換完全自動（code-switching），無需手動操作。介面提供中文、英文、日文三語切換。無需安裝任何軟體，用 Chrome 瀏覽器開啟即可使用。',
+          features: {
+            ai: 'ElevenLabs Scribe v2 語音辨識 + Claude AI 翻譯',
+            context: '支援多檔案預載文本，正確翻譯專有名詞與術語',
+            languages: '16 種語言自動偵測與雙向翻譯（code-switching）',
+            ui: '中文、英文、日文三語介面',
+            browser: '無需安裝，瀏覽器開啟即用',
+            cost: 'ElevenLabs 每月 2.5 小時免費，Claude API 每小時約 $0.50-1.00'
+          },
+          launch: '開啟應用程式',
+          guideTitle: '使用說明',
+          guide: '<h3>步驟一：申請 ElevenLabs API Key</h3><ol><li>前往 <a href="https://elevenlabs.io" target="_blank" style="color:var(--color-primary)">elevenlabs.io</a> 建立帳號（免費，不需信用卡）</li><li>前往 <a href="https://elevenlabs.io/app/settings/api-keys" target="_blank" style="color:var(--color-primary)">Settings &gt; API Keys</a></li><li>點擊「Create API Key」，複製金鑰</li></ol><h3>步驟二：申請 Anthropic API Key</h3><ol><li>前往 <a href="https://console.anthropic.com" target="_blank" style="color:var(--color-primary)">console.anthropic.com</a> 建立帳號</li><li>前往 <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:var(--color-primary)">Settings &gt; API Keys</a></li><li>點擊「Create Key」，複製金鑰（以 sk-ant-api03- 開頭）</li></ol><h3>步驟三：Anthropic 加值</h3><ol><li>API Key 需要預付額度（與 Claude Pro/Max 訂閱分開計費）</li><li>前往 <a href="https://console.anthropic.com/settings/billing" target="_blank" style="color:var(--color-primary)">Settings &gt; Billing</a> 加值（最低 $5 USD）</li><li>費用估算：每小時翻譯約 $0.50-1.00 USD</li><li>ElevenLabs 每月有 2.5 小時免費額度</li></ol><h3>步驟四：設定</h3><ol><li>在應用程式中貼上兩組 API Key</li><li>選擇 AI 模型（Haiku＝最快最便宜，Sonnet＝平衡，Opus＝最高品質）</li><li>選擇兩種語言（語言 A＝主講者，語言 B＝另一方）</li><li>可選：載入藝術家的文本檔案，讓翻譯更精確</li></ol><h3>步驟五：開始翻譯</h3><ol><li>點擊「開始」</li><li>允許麥克風存取</li><li>系統會自動偵測語言並翻譯成另一種語言</li><li>點擊「停止」結束</li></ol><h3>注意事項</h3><ul><li>需要網路連線</li><li>建議使用 Google Chrome</li><li>API Key 僅儲存在你的瀏覽器本地，不會傳送到任何第三方伺服器</li><li>語音辨識精度約 97.7%（WER 2.3%）</li><li>支援自動語言偵測與 code-switching</li></ul>'
         }
       },
       works: {
@@ -430,6 +446,22 @@ const I18N = {
             batch: 'Multi-select batch operations',
             multilang: 'Trilingual interface (EN / JP / TW)'
           }
+        },
+        artisttalktranslator: {
+          name: 'Artist Talk Translator',
+          desc: 'AI real-time speech translation for artist talks',
+          intro: 'Artist Talk Translator is a real-time speech translation tool designed for artist talks and lecture events. It uses ElevenLabs Scribe v2 for high-accuracy speech recognition (WER 2.3%) and Claude AI for high-quality real-time translation.<br><br>The key feature is "Preloaded Text": before the talk begins, import multiple text files (artist statements, artwork descriptions, glossaries, etc.). The translation engine references this content to correctly translate proper nouns, artwork names, and art terminology — like giving an interpreter reference materials beforehand.<br><br>Supports 16 languages with fully automatic detection and bidirectional translation (code-switching). The UI is available in English, Chinese, and Japanese. No software installation required — just open it in Chrome.',
+          features: {
+            ai: 'ElevenLabs Scribe v2 speech recognition + Claude AI translation',
+            context: 'Multiple file preloading for accurate terminology translation',
+            languages: '16 languages with auto-detection and code-switching',
+            ui: 'Trilingual UI (English, Chinese, Japanese)',
+            browser: 'No installation required — runs in browser',
+            cost: 'ElevenLabs: 2.5 hrs/month free. Claude API: ~$0.50–1.00/hr'
+          },
+          launch: 'Launch App',
+          guideTitle: 'How to Use',
+          guide: '<h3>Step 1: Get an ElevenLabs API Key</h3><ol><li>Go to <a href="https://elevenlabs.io" target="_blank" style="color:var(--color-primary)">elevenlabs.io</a> and create an account (free, no credit card required)</li><li>Go to <a href="https://elevenlabs.io/app/settings/api-keys" target="_blank" style="color:var(--color-primary)">Settings &gt; API Keys</a></li><li>Click "Create API Key" and copy it</li></ol><h3>Step 2: Get an Anthropic API Key</h3><ol><li>Go to <a href="https://console.anthropic.com" target="_blank" style="color:var(--color-primary)">console.anthropic.com</a> and create an account</li><li>Go to <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:var(--color-primary)">Settings &gt; API Keys</a></li><li>Click "Create Key" and copy it (starts with sk-ant-api03-)</li></ol><h3>Step 3: Add Anthropic Credits</h3><ol><li>The API key requires prepaid credits (separate from Claude Pro/Max subscription)</li><li>Go to <a href="https://console.anthropic.com/settings/billing" target="_blank" style="color:var(--color-primary)">Settings &gt; Billing</a> and add credits (minimum $5 USD)</li><li>Cost estimate: ~$0.50–1.00 USD per hour of translation</li><li>ElevenLabs includes 2.5 hours/month free</li></ol><h3>Step 4: Setup</h3><ol><li>Paste both API keys in the app</li><li>Select a model (Haiku = fastest/cheapest, Sonnet = balanced, Opus = highest quality)</li><li>Select two languages (Language A = primary speaker, Language B = other)</li><li>Optional: load text files with the artist\'s prepared statement for context-aware translation</li></ol><h3>Step 5: Start Translating</h3><ol><li>Click "Start Session"</li><li>Allow microphone access when prompted</li><li>The app automatically detects the spoken language and translates to the other</li><li>Click "Stop" to end the session</li></ol><h3>Notes</h3><ul><li>Requires internet connection</li><li>Best used in Google Chrome</li><li>API keys are stored locally in your browser only — never sent to any third-party server</li><li>Speech recognition accuracy: ~97.7% (WER 2.3%)</li><li>Supports automatic language detection and code-switching</li></ul>'
         }
       },
       works: {
@@ -728,6 +760,22 @@ const I18N = {
             batch: '複数選択バッチ操作',
             multilang: '3 言語インターフェース（EN / JP / TW）'
           }
+        },
+        artisttalktranslator: {
+          name: 'Artist Talk Translator',
+          desc: 'アーティストトークのためのAIリアルタイム音声翻訳',
+          intro: 'Artist Talk Translator は、アーティストトークや講演イベント向けのリアルタイム音声翻訳ツールです。ElevenLabs Scribe v2 による高精度音声認識（WER 2.3%）と、Claude AI による高品質なリアルタイム翻訳を組み合わせています。<br><br>核となる機能は「プリロードテキスト」です。トーク開始前にアーティストの原稿、作品説明、用語集など複数のテキストファイルを読み込ませることで、翻訳エンジンが固有名詞、作品名、美術用語を正確に翻訳します。通訳者に事前に資料を渡すようなものです。<br><br>16言語の自動検出と双方向翻訳に対応し、言語の切り替えは完全自動（コードスイッチング）です。UIは英語・中国語・日本語の3言語切替が可能。ソフトウェアのインストール不要 — Chromeブラウザで開くだけで使用できます。',
+          features: {
+            ai: 'ElevenLabs Scribe v2 音声認識 + Claude AI 翻訳',
+            context: '複数ファイルのプリロードで専門用語を正確に翻訳',
+            languages: '16言語の自動検出と双方向翻訳（コードスイッチング）',
+            ui: '3言語UI（英語・中国語・日本語）',
+            browser: 'インストール不要 — ブラウザで動作',
+            cost: 'ElevenLabs: 月2.5時間無料。Claude API: 約$0.50〜1.00/時間'
+          },
+          launch: 'アプリを起動',
+          guideTitle: '使用方法',
+          guide: '<h3>ステップ1：ElevenLabs APIキーの取得</h3><ol><li><a href="https://elevenlabs.io" target="_blank" style="color:var(--color-primary)">elevenlabs.io</a> でアカウントを作成（無料、クレジットカード不要）</li><li><a href="https://elevenlabs.io/app/settings/api-keys" target="_blank" style="color:var(--color-primary)">Settings &gt; API Keys</a> を開く</li><li>「Create API Key」をクリックし、キーをコピー</li></ol><h3>ステップ2：Anthropic APIキーの取得</h3><ol><li><a href="https://console.anthropic.com" target="_blank" style="color:var(--color-primary)">console.anthropic.com</a> でアカウントを作成</li><li><a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:var(--color-primary)">Settings &gt; API Keys</a> を開く</li><li>「Create Key」をクリックし、キーをコピー（sk-ant-api03- で始まる）</li></ol><h3>ステップ3：Anthropicクレジットの追加</h3><ol><li>APIキーにはプリペイドクレジットが必要（Claude Pro/Maxサブスクリプションとは別課金）</li><li><a href="https://console.anthropic.com/settings/billing" target="_blank" style="color:var(--color-primary)">Settings &gt; Billing</a> でクレジットを追加（最低$5 USD）</li><li>費用目安：翻訳1時間あたり約$0.50〜1.00 USD</li><li>ElevenLabsは月2.5時間無料</li></ol><h3>ステップ4：設定</h3><ol><li>アプリに2つのAPIキーを貼り付け</li><li>AIモデルを選択（Haiku＝最速・最安、Sonnet＝バランス、Opus＝最高品質）</li><li>2つの言語を選択（言語A＝主な話者、言語B＝相手方）</li><li>任意：アーティストの原稿テキストファイルを読み込み、翻訳精度を向上</li></ol><h3>ステップ5：翻訳開始</h3><ol><li>「セッション開始」をクリック</li><li>マイクへのアクセスを許可</li><li>アプリが自動的に言語を検出し、もう一方の言語に翻訳</li><li>「停止」をクリックして終了</li></ol><h3>注意事項</h3><ul><li>インターネット接続が必要</li><li>Google Chromeの使用を推奨</li><li>APIキーはブラウザのローカルにのみ保存され、第三者サーバーには送信されません</li><li>音声認識精度：約97.7%（WER 2.3%）</li><li>自動言語検出とコードスイッチングに対応</li></ul>'
         }
       },
       works: {
