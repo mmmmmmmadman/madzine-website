@@ -53,6 +53,36 @@ assets/                 圖片、Logo
 
 ---
 
+## 2026-04-13
+
+### 新增 Artist Talk Translator
+
+- 新增 artist-talk-translator.html：作品介紹頁（截圖、功能介紹、技術資訊、三語使用說明）
+- 新增 artist-talk-translator-app.html：即時語音翻譯 Web 應用程式
+- 新增 audio-processor.js：AudioWorklet PCM 處理（48kHz→16kHz resampling）
+- software.html 新增 Artist Talk Translator 列表項目
+- i18n.js 新增 artisttalktranslator 三語翻譯（介紹、功能、使用說明五步驟）
+
+### 技術架構
+
+- 語音辨識：ElevenLabs Scribe v2 Realtime（WER 2.3%，WebSocket 串流）
+- 翻譯：Claude API（Anthropic），支援預載文本脈絡翻譯
+- Token Proxy：Cloudflare Worker（elevenlabs-token-proxy.mmmmmmmadman.workers.dev）
+- 自動語言偵測：ElevenLabs code-switching，16 種語言
+- 預載文本：支援多檔案累加載入，前 4000 字元注入 Claude system prompt
+- 三語 UI：中文、英文、日文（含完整使用說明書）
+- 部署方式：純靜態 HTML + Cloudflare Worker（token proxy）
+
+### 開發過程
+
+- 初版為 macOS native app（Swift/SwiftUI + SpeechAnalyzer + Apple Translation）
+- 因跨平台需求改為 Web app
+- ASR 從 Web Speech API（WER ~10-15%）升級為 ElevenLabs Scribe v2（WER 2.3%）
+- 翻譯從 Apple Translation（無脈絡）改為 Claude API（支援預載文本脈絡）
+- 曾嘗試本地 LLM（MLX + Qwen3-8B-4bit），因品質不如 Claude 而放棄
+
+---
+
 ## 2026-04-11
 
 ### 新增 Dance Sound Design 頁面與區塊
