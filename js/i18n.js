@@ -155,11 +155,11 @@ const I18N = {
           desc: 'AI 即時語音翻譯，專為藝術座談設計',
           intro: 'Artist Talk Translator 是專為藝術家座談會、演講活動設計的即時語音翻譯工具。使用 ElevenLabs Scribe v2 進行高精度語音辨識（WER 2.3%），並透過 Claude AI 進行高品質即時翻譯。<br><br>核心特色是「預載文本」功能：在座談開始前可匯入多個文本檔案（藝術家講稿、作品說明、術語表等），翻譯引擎會參考這些內容正確翻譯專有名詞、作品名稱和藝術術語。這就像事先給翻譯人員一份參考資料，讓翻譯更精確。<br><br>支援 16 種語言自動偵測與雙向翻譯，語言切換完全自動（code-switching），無需手動操作。介面提供中文、英文、日文三語切換。無需安裝任何軟體，用 Chrome 瀏覽器開啟即可使用。',
           features: {
-            ai: 'ElevenLabs Scribe v2 語音辨識 + Claude AI 翻譯',
-            context: '支援多檔案預載文本，正確翻譯專有名詞與術語',
+            realtime: 'ElevenLabs Scribe v2 語音辨識 + Claude AI 即時翻譯',
+            preloaded: '支援多檔案預載文本，正確翻譯專有名詞與術語',
             languages: '16 種語言自動偵測與雙向翻譯（code-switching）',
             ui: '中文、英文、日文三語介面',
-            browser: '無需安裝，瀏覽器開啟即用',
+            noinstall: '無需安裝，瀏覽器開啟即用',
             cost: 'ElevenLabs 每月 2.5 小時免費，Claude API 每小時約 $0.50-1.00'
           },
           launch: '開啟應用程式',
@@ -487,11 +487,11 @@ const I18N = {
           desc: 'AI real-time speech translation for artist talks',
           intro: 'Artist Talk Translator is a real-time speech translation tool designed for artist talks and lecture events. It uses ElevenLabs Scribe v2 for high-accuracy speech recognition (WER 2.3%) and Claude AI for high-quality real-time translation.<br><br>The key feature is "Preloaded Text": before the talk begins, import multiple text files (artist statements, artwork descriptions, glossaries, etc.). The translation engine references this content to correctly translate proper nouns, artwork names, and art terminology — like giving an interpreter reference materials beforehand.<br><br>Supports 16 languages with fully automatic detection and bidirectional translation (code-switching). The UI is available in English, Chinese, and Japanese. No software installation required — just open it in Chrome.',
           features: {
-            ai: 'ElevenLabs Scribe v2 speech recognition + Claude AI translation',
-            context: 'Multiple file preloading for accurate terminology translation',
+            realtime: 'ElevenLabs Scribe v2 speech recognition + Claude AI real-time translation',
+            preloaded: 'Multiple file preloading for accurate terminology translation',
             languages: '16 languages with auto-detection and code-switching',
             ui: 'Trilingual UI (English, Chinese, Japanese)',
-            browser: 'No installation required — runs in browser',
+            noinstall: 'No installation required — runs in browser',
             cost: 'ElevenLabs: 2.5 hrs/month free. Claude API: ~$0.50–1.00/hr'
           },
           launch: 'Launch App',
@@ -819,11 +819,11 @@ const I18N = {
           desc: 'アーティストトークのためのAIリアルタイム音声翻訳',
           intro: 'Artist Talk Translator は、アーティストトークや講演イベント向けのリアルタイム音声翻訳ツールです。ElevenLabs Scribe v2 による高精度音声認識（WER 2.3%）と、Claude AI による高品質なリアルタイム翻訳を組み合わせています。<br><br>核となる機能は「プリロードテキスト」です。トーク開始前にアーティストの原稿、作品説明、用語集など複数のテキストファイルを読み込ませることで、翻訳エンジンが固有名詞、作品名、美術用語を正確に翻訳します。通訳者に事前に資料を渡すようなものです。<br><br>16言語の自動検出と双方向翻訳に対応し、言語の切り替えは完全自動（コードスイッチング）です。UIは英語・中国語・日本語の3言語切替が可能。ソフトウェアのインストール不要 — Chromeブラウザで開くだけで使用できます。',
           features: {
-            ai: 'ElevenLabs Scribe v2 音声認識 + Claude AI 翻訳',
-            context: '複数ファイルのプリロードで専門用語を正確に翻訳',
+            realtime: 'ElevenLabs Scribe v2 音声認識 + Claude AI リアルタイム翻訳',
+            preloaded: '複数ファイルのプリロードで専門用語を正確に翻訳',
             languages: '16言語の自動検出と双方向翻訳（コードスイッチング）',
             ui: '3言語UI（英語・中国語・日本語）',
-            browser: 'インストール不要 — ブラウザで動作',
+            noinstall: 'インストール不要 — ブラウザで動作',
             cost: 'ElevenLabs: 月2.5時間無料。Claude API: 約$0.50〜1.00/時間'
           },
           launch: 'アプリを起動',
