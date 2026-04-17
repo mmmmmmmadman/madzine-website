@@ -2,8 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Artist Talk Translator</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.7.0/mammoth.browser.min.js"></script>
 <style>
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #1a1a1a; color: #e0e0e0; min-height: 100vh; }
@@ -99,6 +104,39 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center;
 }
 .help-close-btn:hover { color: #e0e0e0; background: #333; }
+
+/* Supported info badges */
+.supported-info { background: #1f2937; border: 1px solid #2a3443; border-radius: 8px; padding: 16px; margin-bottom: 20px; font-size: 16px; color: #9ca3af; }
+.supported-info h3 { font-size: 18px; font-weight: 600; color: #e0e0e0; margin-bottom: 10px; }
+.supported-info .badge-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.supported-info .badge { display: inline-block; background: #2a2a2a; border: 1px solid #3a3a3a; border-radius: 4px; padding: 3px 10px; font-size: 14px; color: #cbd5e1; }
+.supported-info .section-label { font-weight: 600; color: #cbd5e1; margin-top: 6px; margin-bottom: 4px; display: block; }
+.file-progress { font-size: 14px; color: #60a5fa; margin-top: 6px; }
+.file-progress.err { color: #ef4444; }
+
+/* Responsive: mobile */
+@media (max-width: 640px) {
+  #setup { padding: 16px; max-width: 100%; }
+  #setup h1 { font-size: 22px; margin-bottom: 16px; }
+  .field label, .model-field label { font-size: 16px; }
+  .field input, .field select, .field textarea, .model-field select { font-size: 16px; padding: 12px; }
+  .row { flex-direction: column; gap: 8px; }
+  .swap-btn { width: 100%; margin-bottom: 0; padding: 12px; font-size: 18px; }
+  .file-row { flex-wrap: wrap; }
+  .file-row button { font-size: 16px; padding: 12px 16px; flex: 1; min-width: 120px; }
+  #startBtn { font-size: 20px; padding: 18px; }
+  .topbar { padding: 10px 12px; gap: 8px; flex-wrap: wrap; }
+  .lang-indicator { font-size: 15px; padding: 5px 12px; }
+  .audio-level { flex: 1 1 100%; order: 10; }
+  #stopBtn { font-size: 16px; padding: 6px 14px; }
+  #transcript { padding: 16px; }
+  .segment .original { font-size: 16px; }
+  .segment .translated { font-size: 19px; }
+  #volatileText { font-size: 16px; padding: 0 16px 12px; }
+  #helpContent { margin: 0; border-radius: 0; min-height: 100vh; padding: 20px; }
+  .supported-info { font-size: 14px; padding: 12px; }
+  .supported-info .badge { font-size: 12px; padding: 3px 8px; }
+}
 </style>
 </head>
 <body>
@@ -152,12 +190,41 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   <div class="field">
     <label data-i18n="preloadLabel">Preloaded Text (artist's statement / notes)</label>
     <div class="file-row">
-      <button onclick="document.getElementById('fileInput').click()" data-i18n="loadFileBtn">Load Text File</button>
+      <button onclick="document.getElementById('fileInput').click()" data-i18n="loadFileBtn">Load File</button>
       <button onclick="clearPreloadedTexts()" style="background:#4a2020;" data-i18n="clearFilesBtn">Clear All</button>
-      <input type="file" id="fileInput" accept=".txt,.md,.text" multiple style="display:none">
+      <input type="file" id="fileInput" accept=".txt,.md,.text,.rtf,.pdf,.docx,.html,.htm,.csv,.json,.xml,.srt,.vtt,.log,.rst,.tsv,.yaml,.yml,.js,.py,.c,.cpp,.h,.swift,.rs,.go,.java,.ts,.tex" multiple style="display:none">
     </div>
     <div id="fileList" style="margin-top:8px;"></div>
+    <div id="fileProgress" class="file-progress"></div>
     <div id="preloadedPreview" class="preloaded-preview" style="display:none"></div>
+  </div>
+
+  <div class="supported-info">
+    <h3 data-i18n="supportedTitle">Supported Files & Devices</h3>
+    <span class="section-label" data-i18n="supportedFilesLabel">File formats:</span>
+    <div class="badge-row">
+      <span class="badge">PDF</span>
+      <span class="badge">DOCX</span>
+      <span class="badge">RTF</span>
+      <span class="badge">TXT / MD</span>
+      <span class="badge">HTML</span>
+      <span class="badge">CSV / TSV</span>
+      <span class="badge">JSON / XML / YAML</span>
+      <span class="badge">SRT / VTT</span>
+      <span class="badge">LOG / RST</span>
+      <span class="badge" data-i18n="badgeCode">Code (.py .js .swift ...)</span>
+    </div>
+    <span class="section-label" data-i18n="supportedDevicesLabel">Devices & browsers:</span>
+    <div class="badge-row">
+      <span class="badge">macOS: Chrome / Safari 14.1+ / Firefox / Edge</span>
+      <span class="badge">Windows: Chrome / Edge / Firefox</span>
+      <span class="badge">Linux: Chrome / Firefox</span>
+      <span class="badge">iOS 14.5+ Safari</span>
+      <span class="badge">iPadOS 14.5+ Safari</span>
+      <span class="badge">Android 8+ Chrome</span>
+    </div>
+    <span class="section-label" data-i18n="supportedNotesLabel">Notes:</span>
+    <div data-i18n="supportedNotesText" style="font-size:14px; line-height:1.6;">HTTPS required on mobile for microphone access. Keep device plugged in for long sessions.</div>
   </div>
 
   <div id="errorMsg"></div>
@@ -220,7 +287,7 @@ const I18N = {
     langBLabel: 'Language B',
     swapTitle: 'Swap languages',
     preloadLabel: 'Preloaded Text (artist\'s statement / notes)',
-    loadFileBtn: 'Load Text File',
+    loadFileBtn: 'Load File',
     clearFilesBtn: 'Clear All',
     noFile: 'No file loaded',
     startBtn: 'Start Session',
@@ -232,6 +299,14 @@ const I18N = {
     errSameLang: 'Please select two different languages.',
     errTokenFetch: 'Failed to get ElevenLabs token. Check your API key and Worker URL.',
     errWebSocket: 'ElevenLabs WebSocket error',
+    loadingFile: 'Loading file',
+    fileLoadError: 'File load error',
+    supportedTitle: 'Supported Files & Devices',
+    supportedFilesLabel: 'File formats:',
+    supportedDevicesLabel: 'Devices & browsers:',
+    supportedNotesLabel: 'Notes:',
+    supportedNotesText: 'HTTPS required on mobile for microphone access. Keep device plugged in for long sessions. PDF / DOCX are parsed to plain text. Images in documents are ignored.',
+    badgeCode: 'Code (.py .js .swift ...)',
     helpTitle: 'Instructions',
     helpContent: `
       <h3>Step 1: Get an ElevenLabs API Key</h3>
@@ -261,7 +336,7 @@ const I18N = {
         <li>Paste both API keys in their fields</li>
         <li>Select a model (Haiku = fastest/cheapest, Sonnet = balanced, Opus = highest quality)</li>
         <li>Select two languages (Language A = primary speaker, Language B = other)</li>
-        <li>Optionally load a text file with the artist's prepared statement for context-aware translation</li>
+        <li>Optionally load one or more files with the artist's prepared statement for context-aware translation</li>
       </ul>
       <h3>Step 5: Start Session</h3>
       <ul>
@@ -271,10 +346,37 @@ const I18N = {
         <li>The language indicators at the top show which language was detected</li>
         <li>Click "Stop" to end the session</li>
       </ul>
+      <h3>Supported File Formats</h3>
+      <ul>
+        <li><b>Documents:</b> PDF, DOCX (Word), RTF</li>
+        <li><b>Plain text:</b> TXT, MD (Markdown), RST, LOG, TEX</li>
+        <li><b>Web:</b> HTML, HTM</li>
+        <li><b>Data:</b> CSV, TSV, JSON, XML, YAML / YML</li>
+        <li><b>Subtitles:</b> SRT, WebVTT</li>
+        <li><b>Source code:</b> .py .js .ts .swift .rs .go .c .cpp .h .java</li>
+        <li>Multiple files can be loaded at once — they are concatenated with separators.</li>
+        <li>Images inside documents are ignored; only text is extracted.</li>
+      </ul>
+      <h3>Supported Devices & Browsers</h3>
+      <ul>
+        <li><b>macOS:</b> Chrome, Safari 14.1+, Firefox, Edge</li>
+        <li><b>Windows 10/11:</b> Chrome, Edge, Firefox</li>
+        <li><b>Linux:</b> Chrome, Firefox</li>
+        <li><b>iOS 14.5+ / iPadOS 14.5+:</b> Safari (HTTPS required for microphone)</li>
+        <li><b>Android 8+:</b> Chrome (HTTPS required for microphone)</li>
+        <li>Minimum: any browser supporting Web Audio API, AudioWorklet, and WebSocket.</li>
+      </ul>
+      <h3>Mobile Tips</h3>
+      <ul>
+        <li>Open the page over HTTPS — microphone access is blocked on plain HTTP.</li>
+        <li>Keep the device plugged in; long sessions drain battery quickly.</li>
+        <li>Put the phone/tablet on a stand near the speaker for best audio capture.</li>
+        <li>Disable auto-lock during the session so the screen stays on.</li>
+        <li>On iOS, use Safari (Chrome on iOS uses the same WebKit engine but may have quirks).</li>
+      </ul>
       <h3>Notes</h3>
       <ul>
         <li>Requires internet connection (for speech recognition and translation)</li>
-        <li>Works in all modern browsers (Chrome, Firefox, Safari, Edge)</li>
         <li>ElevenLabs provides 2.5 hours/month of free transcription</li>
         <li>Speech recognition accuracy: ~97.7% (WER 2.3%)</li>
         <li>Supports automatic language detection and code-switching</li>
@@ -298,19 +400,27 @@ const I18N = {
     langALabel: '\u8a9e\u8a00 A\uff08\u4e3b\u8981\u8b1b\u8005\uff09',
     langBLabel: '\u8a9e\u8a00 B',
     swapTitle: '\u4ea4\u63db\u8a9e\u8a00',
-    preloadLabel: '\u9810\u8f09\u6587\u5b57\uff08\u85dd\u8853\u5bb6\u81ea\u8ff0\uff0f\u7b46\u8a18\uff09',
-    loadFileBtn: '\u8f09\u5165\u6587\u5b57\u6a94',
-    clearFilesBtn: '\u6e05\u9664\u5168\u90e8',
-    noFile: '\u5c1a\u672a\u8f09\u5165\u6a94\u6848',
-    startBtn: '\u958b\u59cb\u7ffb\u8b6f',
-    stopBtn: '\u505c\u6b62',
-    sessionEnded: '\u7ffb\u8b6f\u7d50\u675f',
-    backToSetup: '\u8fd4\u56de\u8a2d\u5b9a',
-    translating: '\u7ffb\u8b6f\u4e2d...',
-    errApiKeyRequired: '\u8acb\u8f38\u5165\u5169\u7d44 API Key\u3002',
-    errSameLang: '\u8acb\u9078\u64c7\u5169\u7a2e\u4e0d\u540c\u7684\u8a9e\u8a00\u3002',
-    errTokenFetch: '\u7121\u6cd5\u53d6\u5f97 ElevenLabs token\u3002\u8acb\u6aa2\u67e5 API Key \u548c Worker URL\u3002',
-    errWebSocket: 'ElevenLabs WebSocket \u932f\u8aa4',
+    preloadLabel: '預載文字（藝術家自述／筆記）',
+    loadFileBtn: '載入檔案',
+    clearFilesBtn: '清除全部',
+    noFile: '尚未載入檔案',
+    startBtn: '開始翻譯',
+    stopBtn: '停止',
+    sessionEnded: '翻譯結束',
+    backToSetup: '返回設定',
+    translating: '翻譯中...',
+    errApiKeyRequired: '請輸入兩組 API Key。',
+    errSameLang: '請選擇兩種不同的語言。',
+    errTokenFetch: '無法取得 ElevenLabs token。請檢查 API Key 和 Worker URL。',
+    errWebSocket: 'ElevenLabs WebSocket 錯誤',
+    loadingFile: '正在載入',
+    fileLoadError: '檔案載入錯誤',
+    supportedTitle: '支援的檔案與裝置',
+    supportedFilesLabel: '檔案格式：',
+    supportedDevicesLabel: '裝置與瀏覽器：',
+    supportedNotesLabel: '注意事項：',
+    supportedNotesText: '手機使用麥克風需 HTTPS 連線。長時間使用建議接電源。PDF／DOCX 僅擷取純文字，文件中的圖片會被忽略。',
+    badgeCode: '程式碼（.py .js .swift ...）',
     helpTitle: '\u4f7f\u7528\u8aaa\u660e',
     helpContent: `
       <h3>\u6b65\u9a5f\u4e00\uff1a\u53d6\u5f97 ElevenLabs API Key</h3>
@@ -335,30 +445,57 @@ const I18N = {
         <li>\u8cbb\u7528\u4f30\u7b97\uff1a\u6bcf\u5c0f\u6642\u7ffb\u8b6f\u7d04 $0.50\u20131.00 \u7f8e\u5143</li>
         <li>ElevenLabs \u514d\u8cbb\u984d\u5ea6\uff1a\u6bcf\u6708 2.5 \u5c0f\u6642\u8a9e\u97f3\u8fa8\u8b58</li>
       </ul>
-      <h3>\u6b65\u9a5f\u56db\uff1a\u8a2d\u5b9a</h3>
+      <h3>步驟四：設定</h3>
       <ul>
-        <li>\u5728\u6b04\u4f4d\u4e2d\u8cbc\u4e0a\u5169\u7d44 API Key</li>
-        <li>\u9078\u64c7\u6a21\u578b\uff08Haiku = \u6700\u5feb\u6700\u4fbf\u5b9c\u3001Sonnet = \u5747\u8861\u3001Opus = \u6700\u9ad8\u54c1\u8cea\uff09</li>
-        <li>\u9078\u64c7\u5169\u7a2e\u8a9e\u8a00\uff08\u8a9e\u8a00 A = \u4e3b\u8981\u8b1b\u8005\uff0c\u8a9e\u8a00 B = \u53e6\u4e00\u65b9\uff09</li>
-        <li>\u53ef\u9078\u64c7\u8f09\u5165\u85dd\u8853\u5bb6\u81ea\u8ff0\u7684\u6587\u5b57\u6a94\uff0c\u63d0\u4f9b\u4e0a\u4e0b\u6587\u4ee5\u63d0\u5347\u7ffb\u8b6f\u6e96\u78ba\u5ea6</li>
+        <li>在欄位中貼上兩組 API Key</li>
+        <li>選擇模型（Haiku = 最快最便宜、Sonnet = 均衡、Opus = 最高品質）</li>
+        <li>選擇兩種語言（語言 A = 主要講者，語言 B = 另一方）</li>
+        <li>可選擇載入一個或多個檔案作為藝術家自述，提供上下文以提升翻譯準確度</li>
       </ul>
-      <h3>\u6b65\u9a5f\u4e94\uff1a\u958b\u59cb\u7ffb\u8b6f</h3>
+      <h3>步驟五：開始翻譯</h3>
       <ul>
-        <li>\u9ede\u64ca\u300c\u958b\u59cb\u7ffb\u8b6f\u300d</li>
-        <li>\u5141\u8a31\u9ea5\u514b\u98a8\u5b58\u53d6</li>
-        <li>\u7cfb\u7d71\u6703\u81ea\u52d5\u5075\u6e2c\u6b63\u5728\u8aaa\u7684\u8a9e\u8a00\uff0c\u4e26\u7ffb\u8b6f\u70ba\u53e6\u4e00\u7a2e\u8a9e\u8a00</li>
-        <li>\u9802\u90e8\u7684\u8a9e\u8a00\u6307\u793a\u5668\u986f\u793a\u5075\u6e2c\u5230\u7684\u8a9e\u8a00</li>
-        <li>\u9ede\u64ca\u300c\u505c\u6b62\u300d\u7d50\u675f\u7ffb\u8b6f</li>
+        <li>點擊「開始翻譯」</li>
+        <li>允許麥克風存取</li>
+        <li>系統會自動偵測正在說的語言，並翻譯為另一種語言</li>
+        <li>頂部的語言指示器顯示偵測到的語言</li>
+        <li>點擊「停止」結束翻譯</li>
       </ul>
-      <h3>\u6ce8\u610f\u4e8b\u9805</h3>
+      <h3>支援的檔案格式</h3>
       <ul>
-        <li>\u9700\u8981\u7db2\u8def\u9023\u7dda\uff08\u7528\u65bc\u8a9e\u97f3\u8fa8\u8b58\u548c\u7ffb\u8b6f\uff09</li>
-        <li>\u652f\u63f4\u6240\u6709\u73fe\u4ee3\u700f\u89bd\u5668\uff08Chrome\u3001Firefox\u3001Safari\u3001Edge\uff09</li>
-        <li>ElevenLabs \u514d\u8cbb\u984d\u5ea6\uff1a\u6bcf\u6708 2.5 \u5c0f\u6642\u8a9e\u97f3\u8fa8\u8b58</li>
-        <li>\u8a9e\u97f3\u8fa8\u8b58\u6e96\u78ba\u5ea6\uff1a\u7d04 97.7%\uff08WER 2.3%\uff09</li>
-        <li>\u652f\u63f4\u81ea\u52d5\u8a9e\u8a00\u5075\u6e2c\u8207\u8a9e\u8a00\u5207\u63db</li>
-        <li>API Key \u50c5\u5132\u5b58\u65bc\u4f60\u7684\u700f\u89bd\u5668\u672c\u6a5f</li>
-        <li>\u9810\u8f09\u6587\u5b57\u6709\u52a9\u65bc\u6b63\u78ba\u7ffb\u8b6f\u5c08\u6709\u540d\u8a5e\u3001\u4f5c\u54c1\u540d\u7a31\u548c\u5c08\u696d\u8853\u8a9e</li>
+        <li><b>文件：</b>PDF、DOCX（Word）、RTF</li>
+        <li><b>純文字：</b>TXT、MD（Markdown）、RST、LOG、TEX</li>
+        <li><b>網頁：</b>HTML、HTM</li>
+        <li><b>資料：</b>CSV、TSV、JSON、XML、YAML／YML</li>
+        <li><b>字幕：</b>SRT、WebVTT</li>
+        <li><b>程式碼：</b>.py .js .ts .swift .rs .go .c .cpp .h .java</li>
+        <li>可同時載入多個檔案，系統會以分隔線合併。</li>
+        <li>文件中的圖片會被忽略，只擷取文字內容。</li>
+      </ul>
+      <h3>支援的裝置與瀏覽器</h3>
+      <ul>
+        <li><b>macOS：</b>Chrome、Safari 14.1+、Firefox、Edge</li>
+        <li><b>Windows 10/11：</b>Chrome、Edge、Firefox</li>
+        <li><b>Linux：</b>Chrome、Firefox</li>
+        <li><b>iOS 14.5+ / iPadOS 14.5+：</b>Safari（麥克風需 HTTPS）</li>
+        <li><b>Android 8+：</b>Chrome（麥克風需 HTTPS）</li>
+        <li>最低需求：支援 Web Audio API、AudioWorklet 與 WebSocket 的瀏覽器。</li>
+      </ul>
+      <h3>手機使用建議</h3>
+      <ul>
+        <li>必須用 HTTPS 開啟網頁 — 純 HTTP 會封鎖麥克風存取。</li>
+        <li>接上電源使用，長時間使用會很快耗電。</li>
+        <li>把手機／平板放在離講者較近的位置以獲得較佳錄音。</li>
+        <li>關閉自動鎖定，讓螢幕保持開啟。</li>
+        <li>iOS 請用 Safari（iOS 的 Chrome 其實也是 WebKit，但偶有異常）。</li>
+      </ul>
+      <h3>注意事項</h3>
+      <ul>
+        <li>需要網路連線（用於語音辨識和翻譯）</li>
+        <li>ElevenLabs 免費額度：每月 2.5 小時語音辨識</li>
+        <li>語音辨識準確度：約 97.7%（WER 2.3%）</li>
+        <li>支援自動語言偵測與語言切換</li>
+        <li>API Key 僅儲存於你的瀏覽器本機</li>
+        <li>預載文字有助於正確翻譯專有名詞、作品名稱和專業術語</li>
       </ul>
     `,
   },
@@ -377,19 +514,27 @@ const I18N = {
     langALabel: '\u8a00\u8a9e A\uff08\u30e1\u30a4\u30f3\u30b9\u30d4\u30fc\u30ab\u30fc\uff09',
     langBLabel: '\u8a00\u8a9e B',
     swapTitle: '\u8a00\u8a9e\u3092\u5165\u308c\u66ff\u3048',
-    preloadLabel: '\u30d7\u30ea\u30ed\u30fc\u30c9\u30c6\u30ad\u30b9\u30c8\uff08\u30a2\u30fc\u30c6\u30a3\u30b9\u30c8\u30b9\u30c6\u30fc\u30c8\u30e1\u30f3\u30c8\uff0f\u30e1\u30e2\uff09',
-    loadFileBtn: '\u30c6\u30ad\u30b9\u30c8\u30d5\u30a1\u30a4\u30eb\u3092\u8aad\u8fbc',
-    clearFilesBtn: '\u3059\u3079\u3066\u30af\u30ea\u30a2',
-    noFile: '\u30d5\u30a1\u30a4\u30eb\u672a\u8aad\u8fbc',
-    startBtn: '\u30bb\u30c3\u30b7\u30e7\u30f3\u958b\u59cb',
-    stopBtn: '\u505c\u6b62',
-    sessionEnded: '\u30bb\u30c3\u30b7\u30e7\u30f3\u7d42\u4e86',
-    backToSetup: '\u8a2d\u5b9a\u306b\u623b\u308b',
-    translating: '\u7ffb\u8a33\u4e2d...',
-    errApiKeyRequired: '\u4e21\u65b9\u306eAPI Key\u3092\u5165\u529b\u3057\u3066\u304f\u3060\u3055\u3044\u3002',
-    errSameLang: '\u7570\u306a\u308b2\u3064\u306e\u8a00\u8a9e\u3092\u9078\u629e\u3057\u3066\u304f\u3060\u3055\u3044\u3002',
-    errTokenFetch: 'ElevenLabs\u30c8\u30fc\u30af\u30f3\u306e\u53d6\u5f97\u306b\u5931\u6557\u3057\u307e\u3057\u305f\u3002API Key\u3068Worker URL\u3092\u78ba\u8a8d\u3057\u3066\u304f\u3060\u3055\u3044\u3002',
-    errWebSocket: 'ElevenLabs WebSocket\u30a8\u30e9\u30fc',
+    preloadLabel: 'プリロードテキスト（アーティストステートメント／メモ）',
+    loadFileBtn: 'ファイルを読込',
+    clearFilesBtn: 'すべてクリア',
+    noFile: 'ファイル未読込',
+    startBtn: 'セッション開始',
+    stopBtn: '停止',
+    sessionEnded: 'セッション終了',
+    backToSetup: '設定に戻る',
+    translating: '翻訳中...',
+    errApiKeyRequired: '両方のAPI Keyを入力してください。',
+    errSameLang: '異なる2つの言語を選択してください。',
+    errTokenFetch: 'ElevenLabsトークンの取得に失敗しました。API KeyとWorker URLを確認してください。',
+    errWebSocket: 'ElevenLabs WebSocketエラー',
+    loadingFile: '読込中',
+    fileLoadError: 'ファイル読込エラー',
+    supportedTitle: '対応ファイルとデバイス',
+    supportedFilesLabel: 'ファイル形式：',
+    supportedDevicesLabel: 'デバイスとブラウザ：',
+    supportedNotesLabel: '注意事項：',
+    supportedNotesText: 'モバイルでマイクを使うにはHTTPS接続が必要です。長時間使用時は電源接続を推奨。PDF／DOCXはテキストのみ抽出され、画像は無視されます。',
+    badgeCode: 'コード（.py .js .swift ...）',
     helpTitle: '\u4f7f\u3044\u65b9',
     helpContent: `
       <h3>\u30b9\u30c6\u30c3\u30d71\uff1aElevenLabs API Key\u3092\u53d6\u5f97</h3>
@@ -414,30 +559,57 @@ const I18N = {
         <li>\u8cbb\u7528\u306e\u76ee\u5b89\uff1a\u7ffb\u8a331\u6642\u9593\u3042\u305f\u308a\u7d04 $0.50\u301c1.00</li>
         <li>ElevenLabs\u306f\u6708 2.5 \u6642\u9593\u306e\u7121\u6599\u97f3\u58f0\u8a8d\u8b58\u3092\u63d0\u4f9b</li>
       </ul>
-      <h3>\u30b9\u30c6\u30c3\u30d74\uff1a\u8a2d\u5b9a</h3>
+      <h3>ステップ4：設定</h3>
       <ul>
-        <li>\u4e21\u65b9\u306eAPI Key\u3092\u30d5\u30a3\u30fc\u30eb\u30c9\u306b\u8cbc\u308a\u4ed8\u3051</li>
-        <li>\u30e2\u30c7\u30eb\u3092\u9078\u629e\uff08Haiku\uff1d\u6700\u901f\u30fb\u6700\u5b89\u3001Sonnet\uff1d\u30d0\u30e9\u30f3\u30b9\u578b\u3001Opus\uff1d\u6700\u9ad8\u54c1\u8cea\uff09</li>
-        <li>2\u3064\u306e\u8a00\u8a9e\u3092\u9078\u629e\uff08\u8a00\u8a9eA\uff1d\u30e1\u30a4\u30f3\u30b9\u30d4\u30fc\u30ab\u30fc\u3001\u8a00\u8a9eB\uff1d\u76f8\u624b\u5074\uff09</li>
-        <li>\u5fc5\u8981\u306b\u5fdc\u3058\u3066\u30a2\u30fc\u30c6\u30a3\u30b9\u30c8\u30b9\u30c6\u30fc\u30c8\u30e1\u30f3\u30c8\u306e\u30c6\u30ad\u30b9\u30c8\u30d5\u30a1\u30a4\u30eb\u3092\u8aad\u307f\u8fbc\u307f\u3001\u6587\u8108\u306b\u57fa\u3065\u304f\u7ffb\u8a33\u7cbe\u5ea6\u3092\u5411\u4e0a</li>
+        <li>両方のAPI Keyをフィールドに貼り付け</li>
+        <li>モデルを選択（Haiku＝最速・最安、Sonnet＝バランス型、Opus＝最高品質）</li>
+        <li>2つの言語を選択（言語A＝メインスピーカー、言語B＝相手側）</li>
+        <li>アーティストステートメントのファイルを1つまたは複数読み込み、文脈に基づく翻訳精度の向上が可能</li>
       </ul>
-      <h3>\u30b9\u30c6\u30c3\u30d75\uff1a\u30bb\u30c3\u30b7\u30e7\u30f3\u958b\u59cb</h3>
+      <h3>ステップ5：セッション開始</h3>
       <ul>
-        <li>\u300c\u30bb\u30c3\u30b7\u30e7\u30f3\u958b\u59cb\u300d\u3092\u30af\u30ea\u30c3\u30af</li>
-        <li>\u30de\u30a4\u30af\u3078\u306e\u30a2\u30af\u30bb\u30b9\u3092\u8a31\u53ef</li>
-        <li>\u30a2\u30d7\u30ea\u304c\u8a71\u3055\u308c\u3066\u3044\u308b\u8a00\u8a9e\u3092\u81ea\u52d5\u691c\u51fa\u3057\u3001\u3082\u3046\u4e00\u65b9\u306e\u8a00\u8a9e\u306b\u7ffb\u8a33\u3057\u307e\u3059</li>
-        <li>\u4e0a\u90e8\u306e\u8a00\u8a9e\u30a4\u30f3\u30b8\u30b1\u30fc\u30bf\u30fc\u306f\u691c\u51fa\u3055\u308c\u305f\u8a00\u8a9e\u3092\u8868\u793a\u3057\u307e\u3059</li>
-        <li>\u300c\u505c\u6b62\u300d\u3092\u30af\u30ea\u30c3\u30af\u3057\u3066\u30bb\u30c3\u30b7\u30e7\u30f3\u3092\u7d42\u4e86</li>
+        <li>「セッション開始」をクリック</li>
+        <li>マイクへのアクセスを許可</li>
+        <li>アプリが話されている言語を自動検出し、もう一方の言語に翻訳します</li>
+        <li>上部の言語インジケーターは検出された言語を表示します</li>
+        <li>「停止」をクリックしてセッションを終了</li>
       </ul>
-      <h3>\u6ce8\u610f\u4e8b\u9805</h3>
+      <h3>対応ファイル形式</h3>
       <ul>
-        <li>\u30a4\u30f3\u30bf\u30fc\u30cd\u30c3\u30c8\u63a5\u7d9a\u304c\u5fc5\u8981\u3067\u3059\uff08\u97f3\u58f0\u8a8d\u8b58\u3068\u7ffb\u8a33\u306b\u4f7f\u7528\uff09</li>
-        <li>\u3059\u3079\u3066\u306e\u30e2\u30c0\u30f3\u30d6\u30e9\u30a6\u30b6\u3067\u52d5\u4f5c\uff08Chrome\u3001Firefox\u3001Safari\u3001Edge\uff09</li>
-        <li>ElevenLabs\u306f\u6708 2.5 \u6642\u9593\u306e\u7121\u6599\u97f3\u58f0\u8a8d\u8b58\u3092\u63d0\u4f9b</li>
-        <li>\u97f3\u58f0\u8a8d\u8b58\u7cbe\u5ea6\uff1a\u7d04 97.7%\uff08WER 2.3%\uff09</li>
-        <li>\u81ea\u52d5\u8a00\u8a9e\u691c\u51fa\u3068\u30b3\u30fc\u30c9\u30b9\u30a4\u30c3\u30c1\u30f3\u30b0\u3092\u30b5\u30dd\u30fc\u30c8</li>
-        <li>API Key\u306f\u30d6\u30e9\u30a6\u30b6\u306e\u30ed\u30fc\u30ab\u30eb\u306b\u306e\u307f\u4fdd\u5b58\u3055\u308c\u307e\u3059</li>
-        <li>\u30d7\u30ea\u30ed\u30fc\u30c9\u30c6\u30ad\u30b9\u30c8\u306f\u3001\u56fa\u6709\u540d\u8a5e\u3001\u4f5c\u54c1\u540d\u3001\u5c02\u9580\u7528\u8a9e\u306e\u6b63\u78ba\u306a\u7ffb\u8a33\u306b\u5f79\u7acb\u3061\u307e\u3059</li>
+        <li><b>ドキュメント：</b>PDF、DOCX（Word）、RTF</li>
+        <li><b>プレーンテキスト：</b>TXT、MD（Markdown）、RST、LOG、TEX</li>
+        <li><b>Web：</b>HTML、HTM</li>
+        <li><b>データ：</b>CSV、TSV、JSON、XML、YAML／YML</li>
+        <li><b>字幕：</b>SRT、WebVTT</li>
+        <li><b>ソースコード：</b>.py .js .ts .swift .rs .go .c .cpp .h .java</li>
+        <li>複数ファイルを同時に読み込み可能、区切り線で連結されます。</li>
+        <li>ドキュメント内の画像は無視され、テキストのみ抽出されます。</li>
+      </ul>
+      <h3>対応デバイスとブラウザ</h3>
+      <ul>
+        <li><b>macOS：</b>Chrome、Safari 14.1+、Firefox、Edge</li>
+        <li><b>Windows 10/11：</b>Chrome、Edge、Firefox</li>
+        <li><b>Linux：</b>Chrome、Firefox</li>
+        <li><b>iOS 14.5+ / iPadOS 14.5+：</b>Safari（マイクにはHTTPSが必要）</li>
+        <li><b>Android 8+：</b>Chrome（マイクにはHTTPSが必要）</li>
+        <li>最低要件：Web Audio API、AudioWorklet、WebSocket対応のブラウザ。</li>
+      </ul>
+      <h3>モバイル利用のヒント</h3>
+      <ul>
+        <li>HTTPSでページを開いてください — プレーンHTTPではマイクがブロックされます。</li>
+        <li>電源に接続して使用してください。長時間使用はバッテリーを急速に消耗します。</li>
+        <li>スタンドに設置してスピーカーの近くに置くと録音品質が向上します。</li>
+        <li>セッション中は自動ロックを無効にして画面を点灯状態に保ってください。</li>
+        <li>iOSではSafariを推奨（iOSのChromeもWebKitベースですが挙動が異なる場合があります）。</li>
+      </ul>
+      <h3>注意事項</h3>
+      <ul>
+        <li>インターネット接続が必要です（音声認識と翻訳に使用）</li>
+        <li>ElevenLabsは月 2.5 時間の無料音声認識を提供</li>
+        <li>音声認識精度：約 97.7%（WER 2.3%）</li>
+        <li>自動言語検出とコードスイッチングをサポート</li>
+        <li>API Keyはブラウザのローカルにのみ保存されます</li>
+        <li>プリロードテキストは、固有名詞、作品名、専門用語の正確な翻訳に役立ちます</li>
       </ul>
     `,
   },
@@ -544,22 +716,154 @@ function swapLanguages() {
 // ---- FILE IMPORT ----
 let loadedFiles = []; // { name, content }
 
-document.getElementById('fileInput').addEventListener('change', (e) => {
+// Initialize PDF.js worker
+if (typeof pdfjsLib !== 'undefined') {
+  pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+}
+
+function getFileExt(name) {
+  const m = name.toLowerCase().match(/\.([a-z0-9]+)$/);
+  return m ? m[1] : '';
+}
+
+// Parse RTF to plain text (strips control words + groups)
+function parseRtf(rtf) {
+  let text = rtf
+    .replace(/\\par[d]?/g, '\n')
+    .replace(/\\tab/g, '\t')
+    .replace(/\\line/g, '\n')
+    .replace(/\\'([0-9a-fA-F]{2})/g, (_, h) => String.fromCharCode(parseInt(h, 16)))
+    .replace(/\\u(-?\d+)\??/g, (_, n) => {
+      const code = parseInt(n, 10);
+      return String.fromCharCode(code < 0 ? code + 65536 : code);
+    })
+    .replace(/\\[a-zA-Z]+-?\d* ?/g, '')
+    .replace(/[{}]/g, '');
+  return text.replace(/\n{3,}/g, '\n\n').trim();
+}
+
+// Parse HTML to plain text
+function parseHtml(html) {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  doc.querySelectorAll('script,style,noscript').forEach(el => el.remove());
+  return (doc.body?.innerText || doc.body?.textContent || '').trim();
+}
+
+// Parse XML to readable text
+function parseXml(xml) {
+  try {
+    const doc = new DOMParser().parseFromString(xml, 'text/xml');
+    return doc.documentElement.textContent.trim();
+  } catch {
+    return xml;
+  }
+}
+
+// Parse JSON to readable text
+function parseJson(txt) {
+  try {
+    return JSON.stringify(JSON.parse(txt), null, 2);
+  } catch {
+    return txt;
+  }
+}
+
+// Parse SRT / VTT subtitle: keep only text lines
+function parseSubtitle(txt) {
+  return txt
+    .split(/\r?\n/)
+    .filter(line => line.trim() && !/^\d+$/.test(line.trim()) && !/-->/.test(line) && !/^WEBVTT/i.test(line))
+    .join('\n');
+}
+
+// Parse PDF using pdf.js
+async function parsePdf(arrayBuffer) {
+  if (typeof pdfjsLib === 'undefined') throw new Error('PDF.js not loaded');
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  const pageTexts = [];
+  for (let p = 1; p <= pdf.numPages; p++) {
+    const page = await pdf.getPage(p);
+    const content = await page.getTextContent();
+    pageTexts.push(content.items.map(i => i.str).join(' '));
+  }
+  return pageTexts.join('\n\n');
+}
+
+// Parse DOCX using mammoth
+async function parseDocx(arrayBuffer) {
+  if (typeof mammoth === 'undefined') throw new Error('mammoth.js not loaded');
+  const result = await mammoth.extractRawText({ arrayBuffer });
+  return result.value;
+}
+
+function readAsText(file) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result);
+    r.onerror = () => reject(r.error);
+    r.readAsText(file);
+  });
+}
+
+function readAsArrayBuffer(file) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result);
+    r.onerror = () => reject(r.error);
+    r.readAsArrayBuffer(file);
+  });
+}
+
+async function extractFileContent(file) {
+  const ext = getFileExt(file.name);
+  switch (ext) {
+    case 'pdf':
+      return await parsePdf(await readAsArrayBuffer(file));
+    case 'docx':
+      return await parseDocx(await readAsArrayBuffer(file));
+    case 'rtf':
+      return parseRtf(await readAsText(file));
+    case 'html':
+    case 'htm':
+      return parseHtml(await readAsText(file));
+    case 'xml':
+      return parseXml(await readAsText(file));
+    case 'json':
+      return parseJson(await readAsText(file));
+    case 'srt':
+    case 'vtt':
+      return parseSubtitle(await readAsText(file));
+    default:
+      // txt, md, text, csv, tsv, yaml, yml, log, rst, js, py, swift, rs, go, c, cpp, h, java, ts, tex, or any plain text
+      return await readAsText(file);
+  }
+}
+
+document.getElementById('fileInput').addEventListener('change', async (e) => {
   const files = Array.from(e.target.files);
   if (!files.length) return;
-  let remaining = files.length;
-  files.forEach(file => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      loadedFiles.push({ name: file.name, content: reader.result });
-      remaining--;
-      if (remaining === 0) {
-        updatePreloadedDisplay();
-        e.target.value = ''; // allow re-selecting same files
-      }
-    };
-    reader.readAsText(file);
-  });
+  const progressEl = document.getElementById('fileProgress');
+  const errors = [];
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    progressEl.classList.remove('err');
+    progressEl.textContent = `${t('loadingFile')} ${i + 1}/${files.length}: ${file.name}`;
+    try {
+      const content = await extractFileContent(file);
+      loadedFiles.push({ name: file.name, content });
+    } catch (err) {
+      console.error('File load error:', file.name, err);
+      errors.push(`${file.name}: ${err.message}`);
+    }
+  }
+  if (errors.length) {
+    progressEl.classList.add('err');
+    progressEl.textContent = `${t('fileLoadError')}: ${errors.join('; ')}`;
+  } else {
+    progressEl.textContent = '';
+  }
+  updatePreloadedDisplay();
+  e.target.value = '';
 });
 
 function updatePreloadedDisplay() {
@@ -916,7 +1220,23 @@ function showError(msg) {
   document.getElementById('errorMsg').textContent = msg;
 }
 
+function checkBrowserSupport() {
+  const missing = [];
+  if (!window.WebSocket) missing.push('WebSocket');
+  if (!window.AudioContext && !window.webkitAudioContext) missing.push('Web Audio API');
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) missing.push('getUserMedia');
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (AC && !AC.prototype.audioWorklet) missing.push('AudioWorklet');
+  return missing;
+}
+
 async function startSession() {
+  const unsupported = checkBrowserSupport();
+  if (unsupported.length) {
+    showError('Browser not supported — missing: ' + unsupported.join(', ') + '. Please use Chrome / Edge / Firefox (latest) or Safari 14.5+.');
+    return;
+  }
+
   const elevenLabsKey = document.getElementById('elevenLabsKey').value.trim();
   const apiKey = document.getElementById('apiKey').value.trim();
 
