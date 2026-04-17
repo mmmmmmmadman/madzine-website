@@ -333,7 +333,8 @@ const I18N = {
         platform: '平台',
         language: '開發語言',
         version: '版本',
-        license: '授權'
+        license: '授權',
+        sourceCode: '原始碼'
       }
     },
 
@@ -664,7 +665,8 @@ const I18N = {
         platform: 'Platform',
         language: 'Language',
         version: 'Version',
-        license: 'License'
+        license: 'License',
+        sourceCode: 'Source Code'
       }
     },
 
@@ -995,7 +997,8 @@ const I18N = {
         platform: 'プラットフォーム',
         language: '開発言語',
         version: 'バージョン',
-        license: 'ライセンス'
+        license: 'ライセンス',
+        sourceCode: 'ソースコード'
       }
     }
   },

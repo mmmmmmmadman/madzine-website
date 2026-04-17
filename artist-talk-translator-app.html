@@ -81,6 +81,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .ui-lang-btn:hover:not(.active) { background: #333; color: #e0e0e0; }
 .help-btn { width: 36px; height: 36px; font-size: 20px; font-weight: 700; background: #2a2a2a; color: #888; border: 1px solid #444; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 .help-btn:hover { background: #333; color: #e0e0e0; }
+.github-link { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: 16px; background: #2a2a2a; color: #888; border: 1px solid #444; border-radius: 6px; text-decoration: none; transition: background 0.15s, color 0.15s; }
+.github-link:hover { background: #333; color: #e0e0e0; }
+.github-link svg { width: 18px; height: 18px; fill: currentColor; }
 
 /* Help overlay */
 #helpOverlay {
@@ -149,6 +152,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
       <button class="ui-lang-btn" onclick="setLang('zh-TW')">中文</button>
       <button class="ui-lang-btn" onclick="setLang('ja')">日本語</button>
     </div>
+    <a class="github-link" href="https://github.com/mmmmmmmadman/ArtistTalkTranslator" target="_blank" rel="noopener" data-i18n-title="githubTitle" title="View Source on GitHub">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.56 0-.28-.01-1.02-.02-2-3.2.69-3.88-1.54-3.88-1.54-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.23-1.28-5.23-5.69 0-1.26.45-2.28 1.19-3.08-.12-.29-.52-1.47.11-3.06 0 0 .97-.31 3.18 1.17.92-.26 1.91-.39 2.9-.39.99 0 1.98.13 2.9.39 2.21-1.48 3.18-1.17 3.18-1.17.63 1.59.23 2.77.11 3.06.74.8 1.19 1.82 1.19 3.08 0 4.42-2.69 5.39-5.25 5.68.41.35.77 1.04.77 2.1 0 1.51-.01 2.73-.01 3.1 0 .31.21.67.8.56C20.22 21.38 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5Z"/></svg>
+      <span data-i18n="githubLabel">GitHub</span>
+    </a>
     <button class="help-btn" onclick="toggleHelp()" title="Help">?</button>
   </div>
 
@@ -307,6 +314,8 @@ const I18N = {
     supportedNotesLabel: 'Notes:',
     supportedNotesText: 'HTTPS required on mobile for microphone access. Keep device plugged in for long sessions. PDF / DOCX are parsed to plain text. Images in documents are ignored.',
     badgeCode: 'Code (.py .js .swift ...)',
+    githubLabel: 'GitHub',
+    githubTitle: 'View Source on GitHub',
     helpTitle: 'Instructions',
     helpContent: `
       <h3>Step 1: Get an ElevenLabs API Key</h3>
@@ -421,6 +430,8 @@ const I18N = {
     supportedNotesLabel: '注意事項：',
     supportedNotesText: '手機使用麥克風需 HTTPS 連線。長時間使用建議接電源。PDF／DOCX 僅擷取純文字，文件中的圖片會被忽略。',
     badgeCode: '程式碼（.py .js .swift ...）',
+    githubLabel: 'GitHub',
+    githubTitle: '在 GitHub 查看原始碼',
     helpTitle: '\u4f7f\u7528\u8aaa\u660e',
     helpContent: `
       <h3>\u6b65\u9a5f\u4e00\uff1a\u53d6\u5f97 ElevenLabs API Key</h3>
@@ -535,6 +546,8 @@ const I18N = {
     supportedNotesLabel: '注意事項：',
     supportedNotesText: 'モバイルでマイクを使うにはHTTPS接続が必要です。長時間使用時は電源接続を推奨。PDF／DOCXはテキストのみ抽出され、画像は無視されます。',
     badgeCode: 'コード（.py .js .swift ...）',
+    githubLabel: 'GitHub',
+    githubTitle: 'GitHubでソースを見る',
     helpTitle: '\u4f7f\u3044\u65b9',
     helpContent: `
       <h3>\u30b9\u30c6\u30c3\u30d71\uff1aElevenLabs API Key\u3092\u53d6\u5f97</h3>
