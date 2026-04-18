@@ -178,7 +178,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     <select id="modelSelect">
       <option value="claude-haiku-4-5-20251001" data-i18n="modelHaiku">Claude Haiku 4.5 (fastest, cheapest)</option>
       <option value="claude-sonnet-4-6" data-i18n="modelSonnet">Claude Sonnet 4.6 (balanced)</option>
-      <option value="claude-opus-4-6" data-i18n="modelOpus">Claude Opus 4.6 (highest quality)</option>
+      <option value="claude-opus-4-7" data-i18n="modelOpus">Claude Opus 4.7 (highest quality)</option>
     </select>
   </div>
 
@@ -289,7 +289,7 @@ const I18N = {
     modelLabel: 'Model',
     modelHaiku: 'Claude Haiku 4.5 (fastest, cheapest)',
     modelSonnet: 'Claude Sonnet 4.6 (balanced)',
-    modelOpus: 'Claude Opus 4.6 (highest quality)',
+    modelOpus: 'Claude Opus 4.7 (highest quality)',
     langALabel: 'Language A (primary speaker)',
     langBLabel: 'Language B',
     swapTitle: 'Swap languages',
@@ -405,7 +405,7 @@ const I18N = {
     modelLabel: '\u6a21\u578b',
     modelHaiku: 'Claude Haiku 4.5\uff08\u6700\u5feb\u3001\u6700\u4fbf\u5b9c\uff09',
     modelSonnet: 'Claude Sonnet 4.6\uff08\u5747\u8861\uff09',
-    modelOpus: 'Claude Opus 4.6\uff08\u6700\u9ad8\u54c1\u8cea\uff09',
+    modelOpus: 'Claude Opus 4.7\uff08\u6700\u9ad8\u54c1\u8cea\uff09',
     langALabel: '\u8a9e\u8a00 A\uff08\u4e3b\u8981\u8b1b\u8005\uff09',
     langBLabel: '\u8a9e\u8a00 B',
     swapTitle: '\u4ea4\u63db\u8a9e\u8a00',
@@ -521,7 +521,7 @@ const I18N = {
     modelLabel: '\u30e2\u30c7\u30eb',
     modelHaiku: 'Claude Haiku 4.5\uff08\u6700\u901f\u30fb\u6700\u5b89\uff09',
     modelSonnet: 'Claude Sonnet 4.6\uff08\u30d0\u30e9\u30f3\u30b9\u578b\uff09',
-    modelOpus: 'Claude Opus 4.6\uff08\u6700\u9ad8\u54c1\u8cea\uff09',
+    modelOpus: 'Claude Opus 4.7\uff08\u6700\u9ad8\u54c1\u8cea\uff09',
     langALabel: '\u8a00\u8a9e A\uff08\u30e1\u30a4\u30f3\u30b9\u30d4\u30fc\u30ab\u30fc\uff09',
     langBLabel: '\u8a00\u8a9e B',
     swapTitle: '\u8a00\u8a9e\u3092\u5165\u308c\u66ff\u3048',
@@ -1239,7 +1239,7 @@ function checkBrowserSupport() {
   if (!window.AudioContext && !window.webkitAudioContext) missing.push('Web Audio API');
   if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) missing.push('getUserMedia');
   const AC = window.AudioContext || window.webkitAudioContext;
-  if (AC && !AC.prototype.audioWorklet) missing.push('AudioWorklet');
+  if (AC && !('audioWorklet' in AC.prototype)) missing.push('AudioWorklet');
   return missing;
 }
 
