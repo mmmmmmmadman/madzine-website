@@ -59,6 +59,11 @@ assets/                 圖片、Logo
 
 ## 2026-04-19
 
+### Artist Talk Translator v2.5
+
+- Session 靜默停止修復：WebSocket 健康狀態機、自動重連（exponential backoff）、手動重連按鈕、連線狀態燈、統一 `[WS]` log
+- 詳見 [artist-talk-translator-devlog.md](artist-talk-translator-devlog.md)
+
 ### Artist Talk Translator v2.4
 
 - 自動捲動至最新片段修正（IntersectionObserver async 時機問題 → 改同步判斷 + double rAF）

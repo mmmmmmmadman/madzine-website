@@ -13,11 +13,53 @@
 
 | 版本 | 日期 | 主要變動 |
 |------|------|---------|
+| v2.5 | 2026-04-19 | WebSocket 健康狀態機、自動重連、手動重連按鈕、連線狀態燈 |
 | v2.4 | 2026-04-19 | 自動捲動至最新片段修正 |
 | v2.3 | 2026-04-19 | 長時間 session 凍結修正、重複翻譯修正 |
 | v2.2 | 2026-04-18 | Start Session 按鈕修復、Opus 4.7 model ID 更新 |
 | v2.1 | 2026-04-17 | 擴充支援檔案格式與裝置 |
 | v2.0 | 2026-04-13 | Web 版首次發布（macOS native app 改 Web） |
+
+---
+
+## 2026-04-19 — v2.5
+
+### Session 靜默停止修復（WebSocket 健康狀態機）
+
+**症狀**：長時間 session 隨機停止翻譯。audio level 仍跳動、語言指示器有變化，但不再出現新翻譯；必須手動按 Stop 退回主畫面重開。時機長短不一（數分鐘至數十分鐘）。
+
+**根因盤點**（全部屬於「WebSocket 靜默死亡」類別）：
+
+| 代號 | 情境 |
+|------|------|
+| A | Token refresh：新 ws 連不上（network flaky / proxy 503），`onOpen` 永不觸發，全域 `ws` 永不切換 |
+| B | Token refresh：新 ws `onerror` 在 `onOpen` 前觸發，無人處理 |
+| C | 舊 ws 被 server 主動關（token 過期、idle timeout、server restart），`onclose` 只 `console.log` |
+| D | `getElevenLabsToken` fetch 失敗，原本只 reschedule 下次 refresh（14 分鐘後），中間都死 |
+| E | ElevenLabs 硬性 session 時間上限（error `session_time_limit_exceeded`，具體秒數未公開） |
+| F | ElevenLabs 伺服器 `error` 訊息，顯示但沒觸發重連 |
+| G | 行動裝置背景/螢幕鎖導致 ws 被 OS 關 |
+
+**修正**：加入完整 WebSocket 健康狀態機 + 自動重連 + 手動重連按鈕。
+
+| 面向 | 做法 |
+|------|------|
+| 狀態機 | `wsState`: `idle / connecting / open / reconnecting / failed` |
+| 偵測 | `onclose` + `onerror` + `open-timeout guard`（15s handshake 上限）+ 10s heartbeat 輪詢 `readyState` |
+| 自動重連 | exponential backoff `1→2→4→8→16→30s`，max 6 次；每次重新 fetch token；重用 AudioContext/worklet/mediaStream |
+| 手動重連 | Topbar 新增 Reconnect 按鈕（三語：Reconnect / 重連 / 再接続），按下立即重連並重置 retry 計數 |
+| 連線狀態燈 | Topbar 加 10px 圓點：灰(idle) / 黃閃爍(connecting/reconnecting) / 綠(open) / 紅(failed) |
+| Token refresh 強化 | 新 ws 15s 未 `onOpen` → 走重連路徑；fetch token 失敗立即重連（不等 14 分鐘） |
+| Server error 自動重連 | `error` 訊息包含 `session_time_limit` / `session_expired` / `token_expired` 字樣時直接重連 |
+| 診斷 log | 所有 WS 事件統一 `[WS HH:MM:SS.sss]` 前綴（state 變化、連線、斷線 code/reason、重連次數、heartbeat） |
+| 重連上限 | 6 次失敗後停止重連，UI 顯示錯誤 segment「Connection lost. Press the Reconnect button to try again, or Stop to restart.」 |
+
+**參考**：
+- Pipecat ElevenLabs STT 使用 5s keepalive 模式
+- LiveKit [#4609](https://github.com/livekit/agents/issues/4609) 確認官方客戶端不自動重連
+- ElevenLabs DeepWiki 揭露 `session_time_limit_exceeded` error type
+
+**相關 commit**：即將推送
 
 ---
 

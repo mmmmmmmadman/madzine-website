@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Artist Talk Translator v2.4</title>
+<title>Artist Talk Translator v2.5</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.7.0/mammoth.browser.min.js"></script>
 <style>
@@ -51,8 +51,17 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .lang-indicator.inactive { opacity: 0.3; }
 .audio-level { flex: 0 0 120px; height: 8px; background: #333; border-radius: 4px; overflow: hidden; }
 .audio-level-fill { height: 100%; background: #22c55e; transition: width 0.1s linear; }
-#stopBtn { margin-left: auto; font-size: 18px; font-weight: 500; color: #ef4444; background: none; border: 1px solid #ef4444; border-radius: 6px; padding: 6px 20px; cursor: pointer; }
+#stopBtn { font-size: 18px; font-weight: 500; color: #ef4444; background: none; border: 1px solid #ef4444; border-radius: 6px; padding: 6px 20px; cursor: pointer; }
 #stopBtn:hover { background: #ef44441a; }
+.ws-status { margin-left: auto; width: 10px; height: 10px; border-radius: 50%; background: #666; flex-shrink: 0; transition: background 0.2s; }
+.ws-status.ws-idle { background: #666; }
+.ws-status.ws-connecting, .ws-status.ws-reconnecting { background: #eab308; animation: wsPulse 1s infinite; }
+.ws-status.ws-open { background: #22c55e; }
+.ws-status.ws-failed { background: #ef4444; }
+@keyframes wsPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.35; } }
+#reconnectBtn { font-size: 18px; font-weight: 500; color: #eab308; background: none; border: 1px solid #eab308; border-radius: 6px; padding: 6px 16px; cursor: pointer; opacity: 0.5; transition: opacity 0.2s; }
+#reconnectBtn:hover { background: #eab3081a; opacity: 1; }
+#reconnectBtn.active { opacity: 1; }
 
 /* Transcript */
 #transcript { flex: 1; overflow-y: auto; padding: 24px; overflow-anchor: auto; }
@@ -133,6 +142,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   .lang-indicator { font-size: 15px; padding: 5px 12px; }
   .audio-level { flex: 1 1 100%; order: 10; }
   #stopBtn { font-size: 16px; padding: 6px 14px; }
+  #reconnectBtn { font-size: 15px; padding: 6px 10px; }
+  .ws-status { margin-left: auto; }
   #transcript { padding: 16px; }
   .segment .original { font-size: 16px; }
   .segment .translated { font-size: 19px; }
@@ -160,7 +171,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     <button class="help-btn" onclick="toggleHelp()" title="Help">?</button>
   </div>
 
-  <h1 data-i18n="title">Artist Talk Translator v2.4</h1>
+  <h1 data-i18n="title">Artist Talk Translator v2.5</h1>
 
   <div class="field">
     <label data-i18n="elevenLabsKeyLabel">ElevenLabs API Key</label>
@@ -249,6 +260,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
       <span id="langBLabel">JA</span>
     </div>
     <div class="audio-level"><div class="audio-level-fill" id="levelFill"></div></div>
+    <div id="wsStatus" class="ws-status ws-idle" data-i18n-title="wsStatusTitle" title="Connection status"></div>
+    <button id="reconnectBtn" onclick="triggerManualReconnect()" data-i18n="reconnectBtn" data-i18n-title="reconnectTitle" title="Force reconnect">Reconnect</button>
     <button id="stopBtn" onclick="stopSession()" data-i18n="stopBtn">Stop</button>
   </div>
   <div id="transcript"><div id="scrollAnchor"></div></div>
@@ -280,7 +293,7 @@ const TOKEN_REFRESH_MS = 14 * 60 * 1000;
 // ---- I18N ----
 const I18N = {
   en: {
-    title: 'Artist Talk Translator v2.4',
+    title: 'Artist Talk Translator v2.5',
     elevenLabsKeyLabel: 'ElevenLabs API Key',
     elevenLabsKeyPlaceholder: 'xi-...',
     elevenLabsKeyHint: 'Get your key at <a href="https://elevenlabs.io/app/settings/api-keys" target="_blank" style="color:#60a5fa;">elevenlabs.io</a>. Free tier: 2.5 hours/month.',
@@ -300,6 +313,9 @@ const I18N = {
     noFile: 'No file loaded',
     startBtn: 'Start Session',
     stopBtn: 'Stop',
+    reconnectBtn: 'Reconnect',
+    reconnectTitle: 'Force reconnect to ElevenLabs',
+    wsStatusTitle: 'Connection status',
     sessionEnded: 'Session Ended',
     backToSetup: 'Back to Setup',
     translating: 'translating...',
@@ -396,7 +412,7 @@ const I18N = {
     `,
   },
   'zh-TW': {
-    title: 'Artist Talk Translator v2.4',
+    title: 'Artist Talk Translator v2.5',
     elevenLabsKeyLabel: 'ElevenLabs API Key',
     elevenLabsKeyPlaceholder: 'xi-...',
     elevenLabsKeyHint: '\u5728 <a href="https://elevenlabs.io/app/settings/api-keys" target="_blank" style="color:#60a5fa;">elevenlabs.io</a> \u53d6\u5f97\u91d1\u9470\u3002\u514d\u8cbb\u984d\u5ea6\uff1a\u6bcf\u6708 2.5 \u5c0f\u6642\u3002',
@@ -416,6 +432,9 @@ const I18N = {
     noFile: '尚未載入檔案',
     startBtn: '開始翻譯',
     stopBtn: '停止',
+    reconnectBtn: '重連',
+    reconnectTitle: '強制重新連線至 ElevenLabs',
+    wsStatusTitle: '連線狀態',
     sessionEnded: '翻譯結束',
     backToSetup: '返回設定',
     translating: '翻譯中...',
@@ -512,7 +531,7 @@ const I18N = {
     `,
   },
   ja: {
-    title: 'Artist Talk Translator v2.4',
+    title: 'Artist Talk Translator v2.5',
     elevenLabsKeyLabel: 'ElevenLabs API Key',
     elevenLabsKeyPlaceholder: 'xi-...',
     elevenLabsKeyHint: '<a href="https://elevenlabs.io/app/settings/api-keys" target="_blank" style="color:#60a5fa;">elevenlabs.io</a> \u3067\u30ad\u30fc\u3092\u53d6\u5f97\u3002\u7121\u6599\u679a\uff1a\u6708 2.5 \u6642\u9593\u3002',
@@ -532,6 +551,9 @@ const I18N = {
     noFile: 'ファイル未読込',
     startBtn: 'セッション開始',
     stopBtn: '停止',
+    reconnectBtn: '再接続',
+    reconnectTitle: 'ElevenLabsに強制再接続',
+    wsStatusTitle: '接続状態',
     sessionEnded: 'セッション終了',
     backToSetup: '設定に戻る',
     translating: '翻訳中...',
@@ -902,6 +924,9 @@ function clearPreloadedTexts() {
 // ---- STATE ----
 const MAX_SEGMENTS = 500;
 const SCROLL_FOLLOW_THRESHOLD = 80; // px — auto-follow when user is within this distance from bottom
+const MAX_RECONNECT = 6;
+const WS_OPEN_TIMEOUT_MS = 15000; // handshake must complete within 15s
+const HEARTBEAT_MS = 10000;       // poll ws.readyState every 10s
 let preloadedText = '';
 let audioContext = null;
 let analyser = null;
@@ -914,6 +939,25 @@ let segments = new Map(); // id -> { original, translated, isError, rootEl, tran
 let segmentSeq = 0;
 let detectedLang = 'a'; // which lang was last detected: 'a' or 'b'
 let tokenRefreshTimer = null;
+// ws health
+let wsState = 'idle'; // idle | connecting | open | reconnecting | failed
+let reconnectAttempt = 0;
+let reconnectTimer = null;
+let reconnectInFlight = false;
+let heartbeatTimer = null;
+
+function wsLog() {
+  const prefix = '[WS ' + new Date().toISOString().slice(11, 23) + ']';
+  console.log.apply(console, [prefix].concat(Array.prototype.slice.call(arguments)));
+}
+function setWsState(s) {
+  wsState = s;
+  wsLog('state →', s);
+  const el = document.getElementById('wsStatus');
+  if (el) el.className = 'ws-status ws-' + s;
+  const btn = document.getElementById('reconnectBtn');
+  if (btn) btn.classList.toggle('active', s !== 'open' && s !== 'idle');
+}
 
 function getLang(which) {
   const code = document.getElementById(which === 'a' ? 'langA' : 'langB').value;
@@ -999,10 +1043,27 @@ function connectElevenLabs(token, options = {}) {
     // language_code omitted = auto-detect
   });
 
+  wsLog('connect attempt, overlap=', !!options.overlap);
+  if (!options.overlap) setWsState('connecting');
+
   const sock = new WebSocket(`wss://api.elevenlabs.io/v1/speech-to-text/realtime?${params}`);
 
+  // Guard: if handshake stalls, treat as failure and trigger reconnect path.
+  const openGuard = setTimeout(() => {
+    wsLog('open-guard FIRED, handshake stalled');
+    try { sock.close(); } catch (_) {}
+    if (options.onOpenTimeout) options.onOpenTimeout();
+    else if (!options.overlap && isRunning) scheduleReconnect('open-timeout');
+  }, WS_OPEN_TIMEOUT_MS);
+
   sock.onopen = () => {
-    console.log('ElevenLabs WebSocket connected');
+    clearTimeout(openGuard);
+    wsLog('onopen', options.overlap ? '(overlap new)' : '(primary)');
+    if (!options.overlap) {
+      setWsState('open');
+      reconnectAttempt = 0;
+      startHeartbeat();
+    }
     if (options.onOpen) options.onOpen(sock);
   };
 
@@ -1020,28 +1081,105 @@ function connectElevenLabs(token, options = {}) {
         // ElevenLabs emits both when include_timestamps=true; ignore this one to avoid double translate.
         break;
       case 'session_started':
-        console.log('ElevenLabs session started:', msg);
+        wsLog('session_started', msg);
         break;
       case 'error':
-        console.error('ElevenLabs error:', msg);
+        wsLog('server error msg', msg);
         showLiveError(`${t('errWebSocket')}: ${msg.error || msg.message || JSON.stringify(msg)}`);
+        // If server indicates session hit a hard limit, force reconnect immediately.
+        if (!options.overlap && sock === ws && isRunning) {
+          const typ = String(msg.type || msg.error || msg.message || '');
+          if (/session_time_limit|session_expired|token_expired/i.test(typ)) {
+            scheduleReconnect('server-error:' + typ);
+          }
+        }
         break;
     }
   };
 
   sock.onerror = (err) => {
-    console.error('ElevenLabs WebSocket error:', err);
+    wsLog('onerror', err && err.message ? err.message : '');
+    if (!options.overlap && sock === ws && isRunning) scheduleReconnect('onerror');
   };
 
   sock.onclose = (event) => {
-    console.log('ElevenLabs WebSocket closed:', event.code, event.reason);
-    // If session still running, this might be a token expiry — handled by refresh timer
+    clearTimeout(openGuard);
+    wsLog('onclose code=', event.code, 'reason=', event.reason, 'clean=', event.wasClean);
+    if (!options.overlap && sock === ws && isRunning) scheduleReconnect('onclose:' + event.code);
   };
 
   if (!options.overlap) {
     ws = sock;
   }
   return sock;
+}
+
+function startHeartbeat() {
+  stopHeartbeat();
+  heartbeatTimer = setInterval(() => {
+    if (!isRunning) { stopHeartbeat(); return; }
+    const rs = ws ? ws.readyState : -1;
+    if (ws && rs === WebSocket.CLOSED && wsState === 'open') {
+      wsLog('heartbeat detected CLOSED while state=open → reconnect');
+      scheduleReconnect('heartbeat');
+    }
+  }, HEARTBEAT_MS);
+}
+function stopHeartbeat() {
+  if (heartbeatTimer) { clearInterval(heartbeatTimer); heartbeatTimer = null; }
+}
+
+function scheduleReconnect(cause, forceDelayMs) {
+  if (!isRunning) return;
+  if (reconnectInFlight) { wsLog('reconnect skipped (in flight), cause=', cause); return; }
+  if (reconnectAttempt >= MAX_RECONNECT) {
+    wsLog('reconnect EXHAUSTED');
+    setWsState('failed');
+    showLiveError('Connection lost. Press the Reconnect button to try again, or Stop to restart.');
+    return;
+  }
+  reconnectInFlight = true;
+  setWsState('reconnecting');
+  const delay = (typeof forceDelayMs === 'number')
+    ? forceDelayMs
+    : Math.min(30000, 1000 * Math.pow(2, reconnectAttempt));
+  reconnectAttempt++;
+  wsLog('reconnect scheduled #', reconnectAttempt, 'in', delay, 'ms, cause=', cause);
+  clearTimeout(reconnectTimer);
+  reconnectTimer = setTimeout(async () => {
+    try {
+      clearTokenRefresh();
+      const key = document.getElementById('elevenLabsKey').value.trim();
+      const newToken = await getElevenLabsToken(key);
+      // Tear down any existing ws (whatever state)
+      if (ws) {
+        try {
+          ws.onopen = null; ws.onmessage = null; ws.onerror = null; ws.onclose = null;
+          if (ws.readyState <= 1) ws.close();
+        } catch (_) {}
+      }
+      ws = null;
+      stopHeartbeat();
+      connectElevenLabs(newToken); // primary path, sets ws + state=connecting
+      scheduleTokenRefresh();
+      reconnectInFlight = false;
+    } catch (e) {
+      wsLog('reconnect attempt failed:', e.message);
+      reconnectInFlight = false;
+      scheduleReconnect('retry-fail');
+    }
+  }, delay);
+}
+
+function triggerManualReconnect() {
+  if (!isRunning) return;
+  wsLog('MANUAL reconnect requested by user');
+  clearTimeout(reconnectTimer); reconnectTimer = null;
+  clearTokenRefresh();
+  stopHeartbeat();
+  reconnectInFlight = false;
+  reconnectAttempt = 0; // give user a fresh retry budget
+  scheduleReconnect('manual', 0);
 }
 
 function updateVolatile(text) {
@@ -1089,7 +1227,7 @@ function scheduleTokenRefresh() {
   const elevenLabsKey = document.getElementById('elevenLabsKey').value.trim();
   tokenRefreshTimer = setTimeout(async () => {
     if (!isRunning) return;
-    console.log('Refreshing ElevenLabs token...');
+    wsLog('token refresh: start');
     try {
       const newToken = await getElevenLabsToken(elevenLabsKey);
       const oldWs = ws;
@@ -1097,7 +1235,9 @@ function scheduleTokenRefresh() {
       connectElevenLabs(newToken, {
         overlap: true,
         onOpen: (newSock) => {
-          ws = newSock; // worklet sends to new ws from here on
+          wsLog('token refresh: new ws OPEN, swapping');
+          ws = newSock;
+          reconnectAttempt = 0; // successful refresh counts as healthy
           // Give old ws a short grace period to flush any pending commits, then detach.
           setTimeout(() => {
             if (oldWs) {
@@ -1111,13 +1251,17 @@ function scheduleTokenRefresh() {
             }
           }, 500);
         },
+        onOpenTimeout: () => {
+          wsLog('token refresh: new ws open-timeout → full reconnect');
+          scheduleReconnect('refresh-timeout');
+        },
       });
       scheduleTokenRefresh();
     } catch (err) {
-      console.error('Token refresh failed:', err);
+      wsLog('token refresh failed:', err.message);
       showLiveError(`Token refresh failed: ${err.message}`);
-      // Still reschedule so the session recovers on next cycle.
-      scheduleTokenRefresh();
+      // Trigger reconnect instead of waiting another 14 min.
+      scheduleReconnect('refresh-fetch-fail');
     }
   }, TOKEN_REFRESH_MS);
 }
@@ -1364,6 +1508,9 @@ async function startSession() {
 
     isRunning = true;
     detectedLang = 'a';
+    reconnectAttempt = 0;
+    reconnectInFlight = false;
+    setWsState('idle');
     clearSegments();
     updateLangButtons();
 
@@ -1394,8 +1541,13 @@ async function startSession() {
 function stopSession() {
   isRunning = false;
 
-  // Stop token refresh
+  // Stop reconnect + heartbeat + token refresh
+  if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
+  reconnectInFlight = false;
+  reconnectAttempt = 0;
+  stopHeartbeat();
   clearTokenRefresh();
+  setWsState('idle');
 
   // Close WebSocket (detach handlers first to break closures)
   if (ws) {
