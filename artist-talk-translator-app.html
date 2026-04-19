@@ -1017,7 +1017,8 @@ function connectElevenLabs(token, options = {}) {
         onFinalResult(msg.text || '', msg.language_code || null);
         break;
       case 'committed_transcript':
-        onFinalResult(msg.text || '', null);
+        // Sibling of committed_transcript_with_timestamps (same commit, no word-level timings).
+        // ElevenLabs emits both when include_timestamps=true; ignore this one to avoid double translate.
         break;
       case 'session_started':
         console.log('ElevenLabs session started:', msg);
