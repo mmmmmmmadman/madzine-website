@@ -159,6 +159,7 @@ const I18N = {
             preloaded: '支援多檔案預載文本，正確翻譯專有名詞與術語',
             languages: '16 種語言自動偵測與雙向翻譯（code-switching）',
             ui: '中文、英文、日文三語介面',
+            stability: '長時間穩定運行：自動重連、外接麥克風熱插拔、連續說話也能翻譯',
             noinstall: '無需安裝，瀏覽器開啟即用',
             cost: 'ElevenLabs 每月 2.5 小時免費，Claude API 每小時約 $0.50-1.00'
           },
@@ -491,6 +492,7 @@ const I18N = {
             preloaded: 'Multiple file preloading for accurate terminology translation',
             languages: '16 languages with auto-detection and code-switching',
             ui: 'Trilingual UI (English, Chinese, Japanese)',
+            stability: 'Long-session stable: auto-reconnect, mic hot-swap, continuous-speech commit',
             noinstall: 'No installation required — runs in browser',
             cost: 'ElevenLabs: 2.5 hrs/month free. Claude API: ~$0.50–1.00/hr'
           },
@@ -823,6 +825,7 @@ const I18N = {
             preloaded: '複数ファイルのプリロードで専門用語を正確に翻訳',
             languages: '16言語の自動検出と双方向翻訳（コードスイッチング）',
             ui: '3言語UI（英語・中国語・日本語）',
+            stability: '長時間安定動作：自動再接続、マイク切替対応、連続発話対応',
             noinstall: 'インストール不要 — ブラウザで動作',
             cost: 'ElevenLabs: 月2.5時間無料。Claude API: 約$0.50〜1.00/時間'
           },
