@@ -901,6 +901,7 @@ function clearPreloadedTexts() {
 
 // ---- STATE ----
 const MAX_SEGMENTS = 500;
+const SCROLL_FOLLOW_THRESHOLD = 80; // px — auto-follow when user is within this distance from bottom
 let preloadedText = '';
 let audioContext = null;
 let analyser = null;
@@ -913,8 +914,6 @@ let segments = new Map(); // id -> { original, translated, isError, rootEl, tran
 let segmentSeq = 0;
 let detectedLang = 'a'; // which lang was last detected: 'a' or 'b'
 let tokenRefreshTimer = null;
-let isAtBottom = true;
-let bottomObserver = null;
 
 function getLang(which) {
   const code = document.getElementById(which === 'a' ? 'langA' : 'langB').value;
@@ -1231,8 +1230,24 @@ function createSegmentEl(seg) {
   return root;
 }
 
+function isNearBottom(container) {
+  return container.scrollHeight - container.scrollTop - container.clientHeight <= SCROLL_FOLLOW_THRESHOLD;
+}
+
+function scrollToBottomNow(container) {
+  // Two rAFs: first lets the DOM mutation paint + layout; second runs after content-visibility
+  // realized sizes so scrollHeight reflects the real height, not the intrinsic estimate.
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      container.scrollTop = container.scrollHeight;
+    });
+  });
+}
+
 function appendSegment(seg) {
   const container = document.getElementById('transcript');
+  const shouldFollow = isNearBottom(container);
+
   const anchor = document.getElementById('scrollAnchor');
   if (anchor && anchor.parentNode === container) {
     container.insertBefore(createSegmentEl(seg), anchor);
@@ -1240,17 +1255,22 @@ function appendSegment(seg) {
     container.appendChild(createSegmentEl(seg));
   }
   trimSegments();
-  maybeScrollToBottom();
+
+  if (shouldFollow) scrollToBottomNow(container);
 }
 
 function updateSegmentTranslation(id, text, isError) {
   const seg = segments.get(id);
   if (!seg || !seg.translatedEl) return;
+  const container = document.getElementById('transcript');
+  const shouldFollow = isNearBottom(container);
+
   seg.translated = text;
   seg.translatedEl.classList.remove('pending');
   if (isError) seg.translatedEl.style.color = '#ef4444';
   seg.translatedEl.textContent = text;
-  maybeScrollToBottom();
+
+  if (shouldFollow) scrollToBottomNow(container);
 }
 
 function trimSegments() {
@@ -1271,37 +1291,6 @@ function clearSegments() {
   a.id = 'scrollAnchor';
   container.appendChild(a);
   segments.clear();
-}
-
-function maybeScrollToBottom() {
-  if (!isAtBottom) return;
-  requestAnimationFrame(() => {
-    const anchor = document.getElementById('scrollAnchor');
-    if (anchor) anchor.scrollIntoView({ block: 'end' });
-  });
-}
-
-function setupScrollObserver() {
-  if (bottomObserver) { bottomObserver.disconnect(); bottomObserver = null; }
-  const container = document.getElementById('transcript');
-  const anchor = document.getElementById('scrollAnchor');
-  if (!container || !anchor) return;
-  isAtBottom = true;
-  bottomObserver = new IntersectionObserver((entries) => {
-    for (const entry of entries) {
-      if (entry.target.id === 'scrollAnchor') {
-        isAtBottom = entry.isIntersecting;
-      }
-    }
-  }, { root: container, threshold: 0.01 });
-  bottomObserver.observe(anchor);
-}
-
-function disposeScrollObserver() {
-  if (bottomObserver) {
-    bottomObserver.disconnect();
-    bottomObserver = null;
-  }
 }
 
 // ---- LANGUAGE INDICATOR ----
@@ -1376,7 +1365,6 @@ async function startSession() {
     isRunning = true;
     detectedLang = 'a';
     clearSegments();
-    setupScrollObserver();
     updateLangButtons();
 
     // 4. Start audio level meter
@@ -1442,9 +1430,6 @@ function stopSession() {
     audioContext.close();
     audioContext = null;
   }
-
-  // Dispose scroll observer
-  disposeScrollObserver();
 
   updateVolatile('');
   document.getElementById('endedPanel').style.display = 'block';
