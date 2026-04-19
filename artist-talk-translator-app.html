@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Artist Talk Translator v2.5</title>
+<title>Artist Talk Translator v2.6</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.7.0/mammoth.browser.min.js"></script>
 <style>
@@ -171,7 +171,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     <button class="help-btn" onclick="toggleHelp()" title="Help">?</button>
   </div>
 
-  <h1 data-i18n="title">Artist Talk Translator v2.5</h1>
+  <h1 data-i18n="title">Artist Talk Translator v2.6</h1>
 
   <div class="field">
     <label data-i18n="elevenLabsKeyLabel">ElevenLabs API Key</label>
@@ -293,7 +293,7 @@ const TOKEN_REFRESH_MS = 14 * 60 * 1000;
 // ---- I18N ----
 const I18N = {
   en: {
-    title: 'Artist Talk Translator v2.5',
+    title: 'Artist Talk Translator v2.6',
     elevenLabsKeyLabel: 'ElevenLabs API Key',
     elevenLabsKeyPlaceholder: 'xi-...',
     elevenLabsKeyHint: 'Get your key at <a href="https://elevenlabs.io/app/settings/api-keys" target="_blank" style="color:#60a5fa;">elevenlabs.io</a>. Free tier: 2.5 hours/month.',
@@ -412,7 +412,7 @@ const I18N = {
     `,
   },
   'zh-TW': {
-    title: 'Artist Talk Translator v2.5',
+    title: 'Artist Talk Translator v2.6',
     elevenLabsKeyLabel: 'ElevenLabs API Key',
     elevenLabsKeyPlaceholder: 'xi-...',
     elevenLabsKeyHint: '\u5728 <a href="https://elevenlabs.io/app/settings/api-keys" target="_blank" style="color:#60a5fa;">elevenlabs.io</a> \u53d6\u5f97\u91d1\u9470\u3002\u514d\u8cbb\u984d\u5ea6\uff1a\u6bcf\u6708 2.5 \u5c0f\u6642\u3002',
@@ -531,7 +531,7 @@ const I18N = {
     `,
   },
   ja: {
-    title: 'Artist Talk Translator v2.5',
+    title: 'Artist Talk Translator v2.6',
     elevenLabsKeyLabel: 'ElevenLabs API Key',
     elevenLabsKeyPlaceholder: 'xi-...',
     elevenLabsKeyHint: '<a href="https://elevenlabs.io/app/settings/api-keys" target="_blank" style="color:#60a5fa;">elevenlabs.io</a> \u3067\u30ad\u30fc\u3092\u53d6\u5f97\u3002\u7121\u6599\u679a\uff1a\u6708 2.5 \u6642\u9593\u3002',
@@ -927,6 +927,11 @@ const SCROLL_FOLLOW_THRESHOLD = 80; // px — auto-follow when user is within th
 const MAX_RECONNECT = 6;
 const WS_OPEN_TIMEOUT_MS = 15000; // handshake must complete within 15s
 const HEARTBEAT_MS = 10000;       // poll ws.readyState every 10s
+// Manual-commit VAD parameters (replaces ElevenLabs server-side VAD)
+const SILENCE_RMS_THRESHOLD = 0.015; // RMS below this counts as silence
+const SILENCE_COMMIT_MS = 1500;      // sustained silence → commit (natural pause)
+const MAX_CHUNK_MS = 12000;          // hard upper bound → force commit even if speaker never pauses
+const MIN_AUDIO_BEFORE_COMMIT_MS = 400; // avoid committing when nothing has been said yet
 let preloadedText = '';
 let audioContext = null;
 let analyser = null;
@@ -945,6 +950,11 @@ let reconnectAttempt = 0;
 let reconnectTimer = null;
 let reconnectInFlight = false;
 let heartbeatTimer = null;
+// manual-commit VAD
+let silenceStartTs = null;        // ms timestamp when silence began, null if currently speaking
+let lastCommitTs = 0;             // ms timestamp of the last commit we sent (or session start)
+let hasAudioSinceCommit = false;  // whether any speech has occurred since the last commit
+let firstAudioTs = 0;             // ms timestamp when speech resumed after a commit
 
 function wsLog() {
   const prefix = '[WS ' + new Date().toISOString().slice(11, 23) + ']';
@@ -997,7 +1007,55 @@ function updateLevel() {
   const rms = Math.sqrt(sum / data.length);
   const level = Math.min(rms / 0.5, 1);
   document.getElementById('levelFill').style.width = (level * 100) + '%';
+
+  // Client-side VAD for manual commit_strategy
+  if (isRunning && ws && ws.readyState === WebSocket.OPEN) {
+    const now = performance.now();
+    if (rms < SILENCE_RMS_THRESHOLD) {
+      if (silenceStartTs === null) silenceStartTs = now;
+      const silenceDuration = now - silenceStartTs;
+      const audioElapsed = hasAudioSinceCommit ? now - firstAudioTs : 0;
+      if (hasAudioSinceCommit && audioElapsed >= MIN_AUDIO_BEFORE_COMMIT_MS && silenceDuration >= SILENCE_COMMIT_MS) {
+        sendCommit('silence');
+      }
+    } else {
+      silenceStartTs = null;
+      if (!hasAudioSinceCommit) {
+        hasAudioSinceCommit = true;
+        firstAudioTs = now;
+      }
+    }
+    // Hard upper bound — guarantees commit even if speaker never stops.
+    if (hasAudioSinceCommit && (now - lastCommitTs) >= MAX_CHUNK_MS) {
+      sendCommit('max-duration');
+    }
+  }
+
   animFrameId = requestAnimationFrame(updateLevel);
+}
+
+function sendCommit(cause) {
+  if (!ws || ws.readyState !== WebSocket.OPEN) return;
+  try {
+    ws.send(JSON.stringify({
+      message_type: 'input_audio_chunk',
+      audio_base_64: '',
+      commit: true,
+    }));
+    wsLog('commit sent, cause=', cause);
+  } catch (e) {
+    wsLog('commit send failed:', e.message);
+  }
+  lastCommitTs = performance.now();
+  silenceStartTs = null;
+  hasAudioSinceCommit = false;
+}
+
+function resetCommitTracking() {
+  lastCommitTs = performance.now();
+  silenceStartTs = null;
+  hasAudioSinceCommit = false;
+  firstAudioTs = 0;
 }
 
 function stopAudioLevel() {
@@ -1038,8 +1096,9 @@ function connectElevenLabs(token, options = {}) {
     audio_format: 'pcm_16000',
     include_timestamps: 'true',
     include_language_detection: 'true',
-    commit_strategy: 'vad',
-    vad_silence_threshold_secs: '1.5',
+    commit_strategy: 'manual',
+    // Client-side silence detection + hard max-duration timer drive commit.
+    // See SILENCE_RMS_THRESHOLD / SILENCE_COMMIT_MS / MAX_CHUNK_MS in state block.
     // language_code omitted = auto-detect
   });
 
@@ -1325,6 +1384,9 @@ Use the above context to correctly translate proper nouns, artwork names, and ar
 }
 
 function onFinalResult(text, langCode) {
+  // A commit has landed; restart the local VAD timers regardless of text content.
+  resetCommitTracking();
+
   if (!text || !text.trim()) return;
   text = text.trim();
 
@@ -1511,6 +1573,7 @@ async function startSession() {
     reconnectAttempt = 0;
     reconnectInFlight = false;
     setWsState('idle');
+    resetCommitTracking();
     clearSegments();
     updateLangButtons();
 

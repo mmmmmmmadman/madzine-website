@@ -13,12 +13,41 @@
 
 | 版本 | 日期 | 主要變動 |
 |------|------|---------|
+| v2.6 | 2026-04-19 | 連續說話卡住修正（`commit_strategy` 切 manual + 客戶端 RMS VAD + 12s 時間上限） |
 | v2.5 | 2026-04-19 | WebSocket 健康狀態機、自動重連、手動重連按鈕、連線狀態燈 |
 | v2.4 | 2026-04-19 | 自動捲動至最新片段修正 |
 | v2.3 | 2026-04-19 | 長時間 session 凍結修正、重複翻譯修正 |
 | v2.2 | 2026-04-18 | Start Session 按鈕修復、Opus 4.7 model ID 更新 |
 | v2.1 | 2026-04-17 | 擴充支援檔案格式與裝置 |
 | v2.0 | 2026-04-13 | Web 版首次發布（macOS native app 改 Web） |
+
+---
+
+## 2026-04-19 — v2.6
+
+### 連續說話無法開始翻譯修正
+
+**症狀**：講者連續說話 20 秒以上不停，程式不會產出任何翻譯；必須停頓才會觸發一次 commit。
+
+**根因**：ElevenLabs Realtime 只有兩種 `commit_strategy` — `vad` 和 `manual`。原本使用 `vad` 模式 + `vad_silence_threshold_secs=1.5`，必須偵測到 1.5 秒靜音才 commit。**沒有時間上限參數**（`max_chunk_duration_secs` 不存在）。連續說話無靜音 → VAD 永遠不觸發 → 永遠不 commit → 永遠不翻譯。
+
+**修正**：仿 Pipecat 的做法，全權移交客戶端 VAD：
+
+| 面向 | 做法 |
+|------|------|
+| `commit_strategy` | `vad` → `manual` |
+| 靜音偵測 | 複用 `updateLevel()` 每幀算的 RMS，閾值 `0.015` |
+| 自然切段 | RMS < 閾值持續 `SILENCE_COMMIT_MS=1500ms` → 送 `{message_type:"input_audio_chunk", audio_base_64:"", commit:true}` |
+| 硬性上限 | 最大累積音訊 `MAX_CHUNK_MS=12000ms` → 強制 commit（保證連續說話也翻譯） |
+| 最小門檻 | `MIN_AUDIO_BEFORE_COMMIT_MS=400ms` — 避免啟動瞬間送空 commit |
+| Commit 保護 | `onFinalResult` 收到 commit 回應後立即 `resetCommitTracking()`，避免雙送 |
+| 診斷 log | `[WS] commit sent, cause=silence|max-duration` |
+
+**為何不用 slider**：先固定常數觀察效果，必要時再加可調 UI。符合 minimal UI 原則。
+
+**參考**：Pipecat 也用 `commit_strategy=manual` + 自己跑 VAD，與本方案一致。
+
+**相關 commit**：即將推送
 
 ---
 

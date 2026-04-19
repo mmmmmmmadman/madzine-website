@@ -59,6 +59,11 @@ assets/                 圖片、Logo
 
 ## 2026-04-19
 
+### Artist Talk Translator v2.6
+
+- 連續說話無法開始翻譯修正：`commit_strategy=manual` + 客戶端 RMS VAD（靜音 1.5s）+ 12s 時間上限
+- 詳見 [artist-talk-translator-devlog.md](artist-talk-translator-devlog.md)
+
 ### Artist Talk Translator v2.5
 
 - Session 靜默停止修復：WebSocket 健康狀態機、自動重連（exponential backoff）、手動重連按鈕、連線狀態燈、統一 `[WS]` log
