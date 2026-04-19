@@ -13,10 +13,33 @@
 
 | 版本 | 日期 | 主要變動 |
 |------|------|---------|
+| v2.4 | 2026-04-19 | 自動捲動至最新片段修正 |
 | v2.3 | 2026-04-19 | 長時間 session 凍結修正、重複翻譯修正 |
 | v2.2 | 2026-04-18 | Start Session 按鈕修復、Opus 4.7 model ID 更新 |
 | v2.1 | 2026-04-17 | 擴充支援檔案格式與裝置 |
 | v2.0 | 2026-04-13 | Web 版首次發布（macOS native app 改 Web） |
+
+---
+
+## 2026-04-19 — v2.4
+
+### 自動捲動至最新片段修正
+
+**症狀**：內容超出視窗後，新片段出現但畫面沒自動捲到最底，使用者必須手動捲動才能看到最新翻譯。
+
+**根因**：v2.3 用 IntersectionObserver 監聽 `#scrollAnchor` 是否在視口內，把結果寫到全域 `isAtBottom`。`appendSegment` 同步執行時立刻讀 `isAtBottom`，但 observer 的回呼是 async，新片段把哨兵推出視口的瞬間 `isAtBottom` 還沒更新 → `maybeScrollToBottom` 讀到舊值誤判成 false → 不捲動。
+
+**修正**：
+
+| 面向 | 做法 |
+|------|------|
+| 判斷方式 | 改同步計算 `scrollHeight − scrollTop − clientHeight ≤ 80px` |
+| 快照時機 | append/update DOM **之前** 先抓 `shouldFollow` |
+| 捲動時序 | double `requestAnimationFrame`，第一次等 DOM 繪製、第二次等 `content-visibility` 實際高度確定 |
+| 簡化 | 移除 `IntersectionObserver / isAtBottom / bottomObserver / maybeScrollToBottom / setupScrollObserver / disposeScrollObserver` |
+| 使用者保護 | 離底 >80px 時不自動跟隨（手動上捲看歷史不會被打斷） |
+
+**相關 commit**：`702c690`（捲動修復）
 
 ---
 

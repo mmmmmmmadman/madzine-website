@@ -59,6 +59,11 @@ assets/                 圖片、Logo
 
 ## 2026-04-19
 
+### Artist Talk Translator v2.4
+
+- 自動捲動至最新片段修正（IntersectionObserver async 時機問題 → 改同步判斷 + double rAF）
+- 詳見 [artist-talk-translator-devlog.md](artist-talk-translator-devlog.md)
+
 ### Artist Talk Translator v2.3
 
 - 長時間 session 凍結修正（增量 DOM、ring buffer、content-visibility、scroll observer、token refresh overlap）
