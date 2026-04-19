@@ -59,6 +59,11 @@ assets/                 圖片、Logo
 
 ## 2026-04-19
 
+### Artist Talk Translator v2.7
+
+- 外接麥克風熱插拔卡黃燈修正：`devicechange` 事件 + 500ms debounce + 重建 `MediaStreamAudioSourceNode`，保留 AudioContext/worklet/ws 不中斷
+- 詳見 [artist-talk-translator-devlog.md](artist-talk-translator-devlog.md)
+
 ### Artist Talk Translator v2.6
 
 - 連續說話無法開始翻譯修正：`commit_strategy=manual` + 客戶端 RMS VAD（靜音 1.5s）+ 12s 時間上限

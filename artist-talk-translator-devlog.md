@@ -13,6 +13,7 @@
 
 | 版本 | 日期 | 主要變動 |
 |------|------|---------|
+| v2.7 | 2026-04-19 | 外接麥克風熱插拔修正（devicechange 監聽 + 重建 MediaStreamSource） |
 | v2.6 | 2026-04-19 | 連續說話卡住修正（`commit_strategy` 切 manual + 客戶端 RMS VAD + 12s 時間上限） |
 | v2.5 | 2026-04-19 | WebSocket 健康狀態機、自動重連、手動重連按鈕、連線狀態燈 |
 | v2.4 | 2026-04-19 | 自動捲動至最新片段修正 |
@@ -20,6 +21,36 @@
 | v2.2 | 2026-04-18 | Start Session 按鈕修復、Opus 4.7 model ID 更新 |
 | v2.1 | 2026-04-17 | 擴充支援檔案格式與裝置 |
 | v2.0 | 2026-04-13 | Web 版首次發布（macOS native app 改 Web） |
+
+---
+
+## 2026-04-19 — v2.7
+
+### 外接麥克風熱插拔導致連線燈卡黃燈修正
+
+**症狀**：使用者啟動 session 後插入外接麥克風或藍牙耳機，連線狀態燈變成黃色一直不恢復，翻譯停止。
+
+**根因**：
+- 原 `mediaStream` 從 `getUserMedia({audio:true})` 取得時綁定當時的預設 input。
+- macOS 切換預設 input（插外接麥、USB 耳機、藍牙）時，**舊 MediaStreamTrack `readyState` 多數情況仍為 `live`，`onended` 不觸發**；但實際上音訊已不再從新裝置進來，level meter 歸零。
+- ElevenLabs 收不到 audio → server 最終關閉 ws → 觸發自動重連 → 新 ws 連上但仍用舊（無聲）stream → 又關 → 再重連 → 連線燈卡 `reconnecting`（黃）長達 61 秒後才耗盡變紅。
+
+**修正**：透過 `navigator.mediaDevices.ondevicechange` 主動偵測裝置列表變化並即時替換 MediaStream。
+
+| 面向 | 做法 |
+|------|------|
+| 偵測 | `navigator.mediaDevices.addEventListener('devicechange', onDeviceChange)`（session 啟動時掛載） |
+| 防抖 | 500ms debounce（藍牙連線常連發 2-3 次事件） |
+| 併發保護 | `deviceChangeInFlight` flag 避免重入 |
+| 執行 | 重新 `getUserMedia({audio:true})` → 停舊 stream 所有 track → disconnect 舊 `MediaStreamAudioSourceNode` → 建新 source 並 connect 到現有 analyser + worklet |
+| 保留 | AudioContext、AudioWorkletNode、WebSocket、token refresh、heartbeat 全部不動；翻譯不中斷 |
+| 錯誤處理 | 失敗時顯示紅色 segment「Microphone switch failed: ...」 |
+| 清理 | `stopSession` 移除 listener + 清 source reference + 清 debounce timer |
+| 診斷 log | `[WS] devicechange: swapping mic stream / mic stream swapped OK / devicechange swap FAILED` |
+
+**為何不用 `track.onended`**：macOS 切換預設 input 時 track 不會 `ended`；單做 A 在此情境抓不到。
+
+**相關 commit**：即將推送
 
 ---
 

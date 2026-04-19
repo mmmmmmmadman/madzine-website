@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Artist Talk Translator v2.6</title>
+<title>Artist Talk Translator v2.7</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.7.0/mammoth.browser.min.js"></script>
 <style>
@@ -171,7 +171,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     <button class="help-btn" onclick="toggleHelp()" title="Help">?</button>
   </div>
 
-  <h1 data-i18n="title">Artist Talk Translator v2.6</h1>
+  <h1 data-i18n="title">Artist Talk Translator v2.7</h1>
 
   <div class="field">
     <label data-i18n="elevenLabsKeyLabel">ElevenLabs API Key</label>
@@ -293,7 +293,7 @@ const TOKEN_REFRESH_MS = 14 * 60 * 1000;
 // ---- I18N ----
 const I18N = {
   en: {
-    title: 'Artist Talk Translator v2.6',
+    title: 'Artist Talk Translator v2.7',
     elevenLabsKeyLabel: 'ElevenLabs API Key',
     elevenLabsKeyPlaceholder: 'xi-...',
     elevenLabsKeyHint: 'Get your key at <a href="https://elevenlabs.io/app/settings/api-keys" target="_blank" style="color:#60a5fa;">elevenlabs.io</a>. Free tier: 2.5 hours/month.',
@@ -412,7 +412,7 @@ const I18N = {
     `,
   },
   'zh-TW': {
-    title: 'Artist Talk Translator v2.6',
+    title: 'Artist Talk Translator v2.7',
     elevenLabsKeyLabel: 'ElevenLabs API Key',
     elevenLabsKeyPlaceholder: 'xi-...',
     elevenLabsKeyHint: '\u5728 <a href="https://elevenlabs.io/app/settings/api-keys" target="_blank" style="color:#60a5fa;">elevenlabs.io</a> \u53d6\u5f97\u91d1\u9470\u3002\u514d\u8cbb\u984d\u5ea6\uff1a\u6bcf\u6708 2.5 \u5c0f\u6642\u3002',
@@ -531,7 +531,7 @@ const I18N = {
     `,
   },
   ja: {
-    title: 'Artist Talk Translator v2.6',
+    title: 'Artist Talk Translator v2.7',
     elevenLabsKeyLabel: 'ElevenLabs API Key',
     elevenLabsKeyPlaceholder: 'xi-...',
     elevenLabsKeyHint: '<a href="https://elevenlabs.io/app/settings/api-keys" target="_blank" style="color:#60a5fa;">elevenlabs.io</a> \u3067\u30ad\u30fc\u3092\u53d6\u5f97\u3002\u7121\u6599\u679a\uff1a\u6708 2.5 \u6642\u9593\u3002',
@@ -955,6 +955,12 @@ let silenceStartTs = null;        // ms timestamp when silence began, null if cu
 let lastCommitTs = 0;             // ms timestamp of the last commit we sent (or session start)
 let hasAudioSinceCommit = false;  // whether any speech has occurred since the last commit
 let firstAudioTs = 0;             // ms timestamp when speech resumed after a commit
+// mic device hot-swap
+let analyserSource = null;        // MediaStreamAudioSourceNode feeding the analyser
+let workletSource = null;         // MediaStreamAudioSourceNode feeding the worklet
+let deviceChangeHandler = null;
+let deviceChangeDebounceTimer = null;
+let deviceChangeInFlight = false;
 
 function wsLog() {
   const prefix = '[WS ' + new Date().toISOString().slice(11, 23) + ']';
@@ -988,10 +994,10 @@ function mapElevenLangToSide(langCode) {
 // ---- AUDIO LEVEL ----
 function startAudioLevel(stream) {
   if (!audioContext) audioContext = new AudioContext();
-  const source = audioContext.createMediaStreamSource(stream);
+  analyserSource = audioContext.createMediaStreamSource(stream);
   analyser = audioContext.createAnalyser();
   analyser.fftSize = 512;
-  source.connect(analyser);
+  analyserSource.connect(analyser);
   updateLevel();
 }
 
@@ -1262,7 +1268,7 @@ async function setupAudioWorklet(stream) {
   }
 
   await audioContext.audioWorklet.addModule('audio-processor.js');
-  const source = audioContext.createMediaStreamSource(stream);
+  workletSource = audioContext.createMediaStreamSource(stream);
   workletNode = new AudioWorkletNode(audioContext, 'pcm-processor');
 
   workletNode.port.onmessage = (event) => {
@@ -1276,8 +1282,55 @@ async function setupAudioWorklet(stream) {
     }
   };
 
-  source.connect(workletNode);
+  workletSource.connect(workletNode);
   workletNode.connect(audioContext.destination); // needed for processing to run; output is silent
+}
+
+async function swapMicStream() {
+  if (!isRunning) return;
+  if (deviceChangeInFlight) { wsLog('devicechange swap skipped (in flight)'); return; }
+  deviceChangeInFlight = true;
+  wsLog('devicechange: swapping mic stream');
+  try {
+    const newStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    // Stop old tracks
+    if (mediaStream) {
+      mediaStream.getTracks().forEach(t => t.stop());
+    }
+    // Disconnect old audio-graph sources
+    try { if (analyserSource) analyserSource.disconnect(); } catch (_) {}
+    try { if (workletSource) workletSource.disconnect(); } catch (_) {}
+    analyserSource = null;
+    workletSource = null;
+    mediaStream = newStream;
+    // Rebuild sources and reconnect into existing analyser / worklet.
+    if (audioContext && audioContext.state === 'suspended') {
+      try { await audioContext.resume(); } catch (_) {}
+    }
+    if (audioContext && analyser) {
+      analyserSource = audioContext.createMediaStreamSource(newStream);
+      analyserSource.connect(analyser);
+    }
+    if (audioContext && workletNode) {
+      workletSource = audioContext.createMediaStreamSource(newStream);
+      workletSource.connect(workletNode);
+    }
+    resetCommitTracking();
+    wsLog('devicechange: mic stream swapped OK');
+  } catch (err) {
+    wsLog('devicechange swap FAILED:', err.message);
+    showLiveError('Microphone switch failed: ' + err.message);
+  } finally {
+    deviceChangeInFlight = false;
+  }
+}
+
+function onDeviceChange() {
+  if (!isRunning) return;
+  // Debounce: platforms fire devicechange several times in quick succession
+  // (e.g. Bluetooth connect sends 2-3 events). Wait for the dust to settle.
+  clearTimeout(deviceChangeDebounceTimer);
+  deviceChangeDebounceTimer = setTimeout(swapMicStream, 500);
 }
 
 // ---- TOKEN REFRESH ----
@@ -1589,6 +1642,12 @@ async function startSession() {
     // 7. Schedule token refresh
     scheduleTokenRefresh();
 
+    // 8. Listen for mic device changes (external mic plugged / Bluetooth / system default switch)
+    if (navigator.mediaDevices && navigator.mediaDevices.addEventListener) {
+      deviceChangeHandler = onDeviceChange;
+      navigator.mediaDevices.addEventListener('devicechange', deviceChangeHandler);
+    }
+
   } catch (err) {
     console.error('Session start error:', err);
     showError(t('errTokenFetch') + ' (' + err.message + ')');
@@ -1611,6 +1670,16 @@ function stopSession() {
   stopHeartbeat();
   clearTokenRefresh();
   setWsState('idle');
+
+  // Unhook device-change listener
+  if (deviceChangeHandler && navigator.mediaDevices && navigator.mediaDevices.removeEventListener) {
+    navigator.mediaDevices.removeEventListener('devicechange', deviceChangeHandler);
+  }
+  deviceChangeHandler = null;
+  if (deviceChangeDebounceTimer) { clearTimeout(deviceChangeDebounceTimer); deviceChangeDebounceTimer = null; }
+  deviceChangeInFlight = false;
+  analyserSource = null;
+  workletSource = null;
 
   // Close WebSocket (detach handlers first to break closures)
   if (ws) {
