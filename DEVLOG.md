@@ -57,6 +57,32 @@ assets/                 圖片、Logo
 
 ---
 
+## 2026-04-19
+
+### Artist Talk Translator v2.3：長時間 session 凍結修正
+
+**症狀**：使用 10–30 分鐘後瀏覽器凍結，必須 reload 才能繼續。同時觀察到每段輸入被翻譯兩次。
+
+**根因**：
+- `segments` 陣列只增不減，`renderSegments()` 每次用 `container.innerHTML = segments.map(...).join('')` 整段重建 DOM，累積 100–500 條後 DOM 重建成本爆炸
+- `segments.find()` O(n) 掃描、`Date.now()` 當 id 會碰撞
+- Token refresh 直接關舊 ws、沒等新 ws open 造成 audio gap
+- ElevenLabs Realtime 在 `include_timestamps=true` 時對同一 commit 同時發送 `committed_transcript` 與 `committed_transcript_with_timestamps`，兩個 case 都呼叫 `onFinalResult` → 重複翻譯
+
+**修正**：
+- 改用 `Map<id, {original, translated, isError, rootEl, translatedEl}>` + 單調 `segmentSeq`
+- 純 `createElement + textContent` 增量渲染（`appendSegment / updateSegmentTranslation`）
+- ring buffer 上限 500 條（`trimSegments`）
+- CSS 加 `content-visibility: auto; contain-intrinsic-size: 0 60px` 讓離屏 segment 暫停 render
+- 尾端哨兵 `#scrollAnchor` + IntersectionObserver：只在使用者停在底部時自動 `scrollIntoView`
+- Token refresh 改雙 ws overlap：新 ws `onopen` 才切換全域 ws，500ms 後關舊 ws
+- `stopSession` 清除 worklet/ws 所有 handler 切斷 closure
+- switch case `committed_transcript` 改為 no-op，翻譯只由 `committed_transcript_with_timestamps` 觸發
+
+**相關 commit**：`905a221`（凍結修復）、`0677443`（重複翻譯修復）、`73a6807`（版本號 v2.3）
+
+---
+
 ## 2026-04-14
 
 ### 新增 Visual Feedback Machine
