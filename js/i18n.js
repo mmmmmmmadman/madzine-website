@@ -180,6 +180,37 @@ const I18N = {
           installation: '裝置',
           performance: '演出'
         },
+        mu: {
+          desc: '為周穆個展《Tell Me Something You Didn\'t Say》製作的互動影像，使用自行開發的 Calligram Video 程式。',
+          tagline: '為個展現場製作的互動影像',
+          venue: 'Sapporo Tenjinyama Art Studio · 2026',
+          hero: '周穆個展《Tell Me Something You Didn\'t Say》展場後方影像，由 MADZINE 使用自行開發的 Calligram Video 製作。',
+          intro1: '2026 年 4 月，藝術家周穆（Murky Ghost）於札幌天神山藝術工作室駐村期間，邀請每日造訪者講述「未曾說出口的事」，蒐集了九天份的話語。她將這些故事拆解為碎片化的關鍵字、狀態與內在矛盾，化為空間中盤旋的鴉群。',
+          intro2: '展場後方的影像作品由 MADZINE 製作，將周穆駐村期間的手寫日記轉化為「打字文字構成手寫筆畫」的即時影像。每分鐘自動換頁切換段落，當觀者走進畫面時，文字會避開人形並縮小，呈現語言「在飛行中」尚未成形或已然破碎的狀態。',
+          intro3: '兩部 10 分鐘 FullHD 影片於展場循環播放。',
+          program: {
+            title: '關於 Calligram Video',
+            desc: '本作品所使用的程式，是 MADZINE 為了此次展覽自行開發的工具。可將任意手寫文字轉換為「打字字符組成手寫筆畫」的即時互動影像，並支援人形互動與影片輸出。'
+          },
+          features: {
+            calligram: '手寫照片去背 → 自動切句 → calligram 文字排版',
+            glyph: '依筆畫粗細分配字級，粗處放大字、細處放小字',
+            pages: '多段文本分頁系統，依時間自動切換',
+            person: '即時人形偵測互動，文字避開人體並縮小',
+            export: 'FullHD 影片輸出（AVAssetWriter 硬體 H.264）',
+            params: '即時調整字級、密度、互動範圍等參數'
+          },
+          tech: {
+            algoLabel: 'Calligram 演算法',
+            algoDesc: '距離變換 + 貪婪放置 + 兩階段補洞，11 級多解析度 placement metadata',
+            renderLabel: '即時渲染',
+            renderDesc: 'CoreText 製作 884 字 glyph atlas（1920×1920），GPU instanced quad 採樣，mipmap 解決縮放問題',
+            personLabel: '人形互動',
+            personDesc: 'Apple Vision (VNGeneratePersonSegmentationRequest)，shader 採樣 mask gradient → 字位移外推 + 縮小',
+            videoLabel: '影片管線',
+            videoDesc: 'AVAssetWriter + CVMetalTextureCache 零拷貝，VideoToolbox 硬體 H.264'
+          }
+        },
         music: {
           title: '音樂作品',
           desc: '原創音樂專輯與 EP',
@@ -513,6 +544,37 @@ const I18N = {
           installation: 'Installation',
           performance: 'Performance'
         },
+        mu: {
+          desc: 'Interactive moving-image work for Murky Ghost\'s solo exhibition "Tell Me Something You Didn\'t Say", made with a custom-built program (Calligram Video).',
+          tagline: 'Interactive moving image for an exhibition',
+          venue: 'Sapporo Tenjinyama Art Studio · 2026',
+          hero: 'Moving-image work installed at the rear of Murky Ghost\'s solo exhibition "Tell Me Something You Didn\'t Say", produced by MADZINE with a custom-built program (Calligram Video).',
+          intro1: 'In April 2026, artist Murky Ghost (周穆) was in residency at Sapporo Tenjinyama Art Studio. Over nine days, she invited daily visitors to tell her "something they had not said." The collected stories were broken apart, keeping only their keyword fragments, inner states, and contradictions — transformed into a flock of crows circling in the space.',
+          intro2: 'At the rear of the exhibition, MADZINE produced a moving-image piece that turns Murky Ghost\'s handwritten residency notes into real-time imagery, where typed characters compose the shape of handwritten strokes. Pages auto-rotate every minute. When a viewer enters the frame, the text shrinks away from the body — words held in the act of flight, not yet formed or already broken.',
+          intro3: 'Two 10-minute FullHD videos play on loop in the exhibition.',
+          program: {
+            title: 'About Calligram Video',
+            desc: 'The program used in this work was custom-built by MADZINE for this exhibition. It turns any handwritten text into a real-time interactive image where typed characters compose the shape of handwritten strokes, with person-silhouette interaction and video export built in.'
+          },
+          features: {
+            calligram: 'Handwriting photo background removal → auto sentence segmentation → calligram layout',
+            glyph: 'Glyph size scales with stroke thickness — larger characters on thick strokes, smaller on thin',
+            pages: 'Multi-page text system, auto-switching by elapsed time',
+            person: 'Real-time person segmentation; text shrinks and shifts away from the body',
+            export: 'FullHD video export (AVAssetWriter, hardware H.264)',
+            params: 'Live parameter adjustment: glyph size, density, interaction radius'
+          },
+          tech: {
+            algoLabel: 'Calligram algorithm',
+            algoDesc: 'Distance transform + greedy placement + two-stage hole filling; 11-level multi-resolution placement metadata',
+            renderLabel: 'Real-time rendering',
+            renderDesc: '884-character CoreText glyph atlas (1920×1920); GPU instanced quad sampling; mipmap to resolve sub-pixel disappearance',
+            personLabel: 'Person interaction',
+            personDesc: 'Apple Vision (VNGeneratePersonSegmentationRequest); shader samples mask gradient to repel and shrink characters',
+            videoLabel: 'Video pipeline',
+            videoDesc: 'AVAssetWriter + CVMetalTextureCache zero-copy; VideoToolbox hardware H.264'
+          }
+        },
         music: {
           title: 'Music',
           desc: 'Original music albums and EPs',
@@ -845,6 +907,37 @@ const I18N = {
           music: '音楽',
           installation: 'インスタレーション',
           performance: 'パフォーマンス'
+        },
+        mu: {
+          desc: '周穆（Murky Ghost）の個展《Tell Me Something You Didn\'t Say》のために制作したインタラクティブ映像。MADZINE が自作した Calligram Video を使用。',
+          tagline: '個展のために制作したインタラクティブ映像',
+          venue: 'Sapporo Tenjinyama Art Studio · 2026',
+          hero: '周穆（Murky Ghost）個展《Tell Me Something You Didn\'t Say》会場奥の映像作品。MADZINE が自作した Calligram Video により制作。',
+          intro1: '2026 年 4 月、アーティスト周穆（Murky Ghost）は札幌天神山アートスタジオに滞在し、九日間にわたり来場者へ「言いそびれた一つのこと」を語ってもらいました。集められた言葉は断片的なキーワード、状態、そして内なる矛盾へと分解され、空間を旋回する鴉の群れへと変換されました。',
+          intro2: '会場の奥に展示された映像作品は MADZINE が制作。周穆の滞在中の手書きノートを、「タイプ文字が手書き文字のかたちを構成する」リアルタイム映像へと変換しました。一分ごとにページが自動で切り替わり、観者が画面に近づくと、文字は人体を避けて縮小し、まだ言葉になっていない、あるいはすでに崩れた「飛行中の状態」として現れます。',
+          intro3: '10 分の FullHD 映像 2 本が会場でループ再生されています。',
+          program: {
+            title: 'Calligram Video について',
+            desc: '本作品で使用したプログラムは、本展のために MADZINE が自作したツールです。任意の手書きテキストを「タイプ文字が手書き文字を構成する」リアルタイム映像に変換し、人体インタラクションと映像書き出しに対応します。'
+          },
+          features: {
+            calligram: '手書き写真の背景除去 → 自動文切り → カリグラム配置',
+            glyph: '線の太さに応じて文字サイズを配分。太い箇所は大きく、細い箇所は小さく',
+            pages: '複数段落のページ切替システム、時間に応じて自動遷移',
+            person: 'リアルタイム人体検出。文字が身体を避けて縮小',
+            export: 'FullHD 映像書き出し（AVAssetWriter ハードウェア H.264）',
+            params: '文字サイズ、密度、インタラクション範囲などをリアルタイム調整'
+          },
+          tech: {
+            algoLabel: 'Calligram アルゴリズム',
+            algoDesc: '距離変換＋貪欲配置＋二段階の穴埋め。11 段階のマルチ解像度配置メタデータ',
+            renderLabel: 'リアルタイムレンダリング',
+            renderDesc: 'CoreText で 884 字の glyph atlas（1920×1920）を生成。GPU インスタンス化 quad でサンプリング。mipmap によりサブピクセル消失を解決',
+            personLabel: '人体インタラクション',
+            personDesc: 'Apple Vision（VNGeneratePersonSegmentationRequest）。shader で mask の gradient をサンプリングし、文字を押し出し縮小',
+            videoLabel: '映像パイプライン',
+            videoDesc: 'AVAssetWriter + CVMetalTextureCache のゼロコピー。VideoToolbox ハードウェア H.264'
+          }
         },
         music: {
           title: '音楽作品',
