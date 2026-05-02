@@ -104,12 +104,68 @@
       margin-left: 0;
       color: var(--text-primary);
     }
+    #main-image {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+      border-radius: var(--radius-sm);
+      cursor: zoom-in;
+      display: block;
+    }
+    .thumb-strip {
+      display: flex;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+    .thumb-strip__item {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      flex-shrink: 0;
+      border-radius: var(--radius-sm);
+      border: 2px solid var(--border-default);
+      cursor: pointer;
+      opacity: 0.6;
+      transition:
+        opacity var(--duration-normal) var(--ease-default),
+        border-color var(--duration-normal) var(--ease-default);
+    }
+    .thumb-strip__item:hover {
+      opacity: 0.85;
+    }
+    .thumb-strip__item.active {
+      opacity: 1;
+      border-color: var(--color-primary);
+    }
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      background: oklch(0.10 0.005 55 / 0.92);
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .lightbox.is-open {
+      display: flex;
+    }
+    .lightbox img {
+      max-width: 90vw;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: var(--radius-sm);
+    }
     @media (max-width: 768px) {
       .two-col {
         grid-template-columns: 1fr;
       }
       .col-text {
         position: static;
+      }
+      .thumb-strip__item {
+        width: 80px;
+        height: 80px;
       }
     }
     .bottom-bar {
@@ -154,6 +210,35 @@
           </div>
 
           <div class="col-right">
+            <img id="main-image" src="assets/images/works/mu/IMG_6232.jpg" alt="Tell Me Something You Didn't Say — 展場">
+            <div class="thumb-strip">
+              <img class="thumb-strip__item active"
+                   src="assets/images/works/mu/IMG_6232.jpg"
+                   alt="展場 1"
+                   data-full="assets/images/works/mu/IMG_6232.jpg"
+                   onclick="switchImage(this)">
+              <img class="thumb-strip__item"
+                   src="assets/images/works/mu/IMG_6331.jpg"
+                   alt="展場 2"
+                   data-full="assets/images/works/mu/IMG_6331.jpg"
+                   onclick="switchImage(this)">
+              <img class="thumb-strip__item"
+                   src="assets/images/works/mu/IMG_6409.jpg"
+                   alt="展場 3"
+                   data-full="assets/images/works/mu/IMG_6409.jpg"
+                   onclick="switchImage(this)">
+              <img class="thumb-strip__item"
+                   src="assets/images/works/mu/IMG_6416.jpg"
+                   alt="展場 4"
+                   data-full="assets/images/works/mu/IMG_6416.jpg"
+                   onclick="switchImage(this)">
+              <img class="thumb-strip__item"
+                   src="assets/images/works/mu/IMG_6496.jpg"
+                   alt="展場 5"
+                   data-full="assets/images/works/mu/IMG_6496.jpg"
+                   onclick="switchImage(this)">
+            </div>
+
             <div class="video-container">
               <iframe src="https://www.youtube.com/embed/ohRio4ejlj0" allowfullscreen></iframe>
             </div>
@@ -199,6 +284,10 @@
     </section>
   </main>
 
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <img id="lightbox-img" src="" alt="">
+  </div>
+
   <!-- Bottom Bar -->
   <div class="bottom-bar">
     <span class="bottom-bar__copyright" data-i18n="footer.copyright">&copy; 2025 MADZINE. 保留所有權利。</span>
@@ -220,5 +309,32 @@
 
   <script src="js/i18n.js"></script>
   <script src="js/main.js"></script>
+  <script>
+    function switchImage(thumb) {
+      var mainImg = document.getElementById('main-image');
+      mainImg.src = thumb.dataset.full;
+      mainImg.alt = thumb.alt;
+      var allThumbs = document.querySelectorAll('.thumb-strip__item');
+      for (var i = 0; i < allThumbs.length; i++) {
+        allThumbs[i].classList.remove('active');
+      }
+      thumb.classList.add('active');
+    }
+
+    document.getElementById('main-image').addEventListener('click', function() {
+      var lb = document.getElementById('lightbox');
+      document.getElementById('lightbox-img').src = this.src;
+      document.getElementById('lightbox-img').alt = this.alt;
+      lb.classList.add('is-open');
+    });
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('is-open');
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeLightbox();
+    });
+  </script>
 </body>
 </html>
