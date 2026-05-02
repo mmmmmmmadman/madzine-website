@@ -216,7 +216,122 @@ const PageTransition = {
 };
 
 /* =========================================================
-   7. Initialization
+   7. Lightbox Navigation (prev/next buttons + arrow keys)
+   ========================================================= */
+const Lightbox = {
+  init() {
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const thumbs = document.querySelectorAll('.thumb-strip__item');
+    if (!lightbox || !lightboxImg || thumbs.length < 2) return;
+
+    this._injectStyles();
+
+    const prevBtn = document.createElement('button');
+    prevBtn.type = 'button';
+    prevBtn.className = 'lightbox__nav lightbox__nav--prev';
+    prevBtn.setAttribute('aria-label', 'Previous image');
+    prevBtn.textContent = '‹';
+
+    const nextBtn = document.createElement('button');
+    nextBtn.type = 'button';
+    nextBtn.className = 'lightbox__nav lightbox__nav--next';
+    nextBtn.setAttribute('aria-label', 'Next image');
+    nextBtn.textContent = '›';
+
+    lightbox.appendChild(prevBtn);
+    lightbox.appendChild(nextBtn);
+
+    const navigate = (dir) => {
+      const all = Array.from(document.querySelectorAll('.thumb-strip__item'));
+      if (!all.length) return;
+      let idx = all.findIndex((t) => t.classList.contains('active'));
+      if (idx === -1) idx = 0;
+      const next = all[(idx + dir + all.length) % all.length];
+
+      if (typeof window.switchImage === 'function') {
+        window.switchImage(next);
+      } else {
+        all.forEach((t) => t.classList.remove('active'));
+        next.classList.add('active');
+        const mainImg = document.getElementById('main-image');
+        if (mainImg) {
+          mainImg.src = next.dataset.full;
+          mainImg.alt = next.alt;
+        }
+      }
+      lightboxImg.src = next.dataset.full;
+      lightboxImg.alt = next.alt;
+    };
+
+    prevBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      navigate(-1);
+    });
+    nextBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      navigate(1);
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (!lightbox.classList.contains('is-open')) return;
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+  },
+
+  _injectStyles() {
+    if (document.getElementById('lightbox-nav-styles')) return;
+    const css = `
+.lightbox__nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 1px solid var(--border-default);
+  background: oklch(0.15 0.005 55 / 0.65);
+  color: var(--text-primary);
+  font-size: 32px;
+  line-height: 1;
+  font-family: var(--font-display, sans-serif);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  z-index: 310;
+  transition:
+    background var(--duration-normal) var(--ease-default),
+    border-color var(--duration-normal) var(--ease-default);
+}
+.lightbox__nav:hover {
+  background: oklch(0.25 0.005 55 / 0.85);
+  border-color: var(--color-primary);
+}
+.lightbox__nav--prev { left: 24px; }
+.lightbox__nav--next { right: 24px; }
+@media (max-width: 768px) {
+  .lightbox__nav { width: 44px; height: 44px; font-size: 24px; }
+  .lightbox__nav--prev { left: 12px; }
+  .lightbox__nav--next { right: 12px; }
+}
+`;
+    const style = document.createElement('style');
+    style.id = 'lightbox-nav-styles';
+    style.textContent = css;
+    document.head.appendChild(style);
+  }
+};
+
+/* =========================================================
+   8. Initialization
    ========================================================= */
 document.addEventListener('DOMContentLoaded', () => {
   DarkMode.init();
@@ -225,4 +340,5 @@ document.addEventListener('DOMContentLoaded', () => {
   ScrollReveal.init();
   Slideshow.init();
   PageTransition.init();
+  Lightbox.init();
 });
