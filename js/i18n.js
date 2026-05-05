@@ -150,6 +150,19 @@ const I18N = {
           },
           launch: '開啟應用程式'
         },
+        vav: {
+          name: 'VAV',
+          desc: 'Eurorack 視覺音訊系統，攝影機/音訊輸入與 CV 輸出',
+          intro: 'VAV（Vision-Audio-Visual System for Eurorack）是為模組化合成器設計的即時視覺/音訊整合系統。透過 DC-coupled 音訊介面，將攝影機輪廓偵測與音訊分析的結果輸出為 CV/Gate，回饋至 Eurorack 模組進行控制。<br><br>音訊端包含 4 軌混音器、立體聲 Delay、Granular 採樣、Reverb、Glitch 與 Chaos 調變。視覺端使用 OpenGL 即時渲染，可載入 4 張影像填入攝影機畫面四象限，並透過 Stable Diffusion Img2Img 進行即時 AI 生圖；Glitch Shader 提供 Region Tear / Scanline Jitter / Block Shuffle 三種破壞效果。<br><br>CV 輸出包含輪廓偵測驅動的 2 軌 CV 與 3 軌 Decay Envelope，所有控制項皆可透過右鍵 MIDI Learn 對應外部 MIDI CC / Note。',
+          features: {
+            io: '攝影機與音訊雙輸入，DC-coupled 介面送 CV/Gate 至 Eurorack',
+            audio: '4 軌混音 + Stereo Delay / Granular / Reverb / Glitch / Chaos',
+            visual: 'OpenGL 即時渲染 + 4 通道音訊反應視覺 + Glitch Shader',
+            ai: 'Stable Diffusion Img2Img 即時 AI 生圖',
+            cv: '輪廓驅動 2 軌 CV + 3 軌 Decay Envelope',
+            midi: '右鍵 MIDI Learn 任意控制項（CC / Note Toggle）'
+          }
+        },
         artisttalktranslator: {
           name: 'Artist Talk Translator',
           desc: 'AI 即時語音翻譯，專為藝術座談設計',
@@ -366,7 +379,8 @@ const I18N = {
         language: '開發語言',
         version: '版本',
         license: '授權',
-        sourceCode: '原始碼'
+        sourceCode: '原始碼',
+        demo: 'Demo'
       }
     },
 
@@ -513,6 +527,19 @@ const I18N = {
             multilang: 'Trilingual interface (Traditional Chinese / EN / JP)'
           },
           launch: 'Launch App'
+        },
+        vav: {
+          name: 'VAV',
+          desc: 'Vision-Audio-Visual System for Eurorack — camera/audio input with CV output',
+          intro: 'VAV (Vision-Audio-Visual System for Eurorack) is a real-time visual and audio integration system designed for modular synthesizers. Through a DC-coupled audio interface, contour detection and audio analysis are routed back to the Eurorack rack as CV/Gate.<br><br>The audio side includes a 4-track mixer, stereo Delay, Granular sampler, Reverb, Glitch, and Chaos modulation. The visual side uses OpenGL real-time rendering with 4-channel audio-reactive visuals (V2: load 4 images into the four camera regions), Stable Diffusion Img2Img real-time AI generation, and a Glitch Shader (Region Tear / Scanline Jitter / Block Shuffle).<br><br>CV output includes contour-driven 2-channel CV and 3-channel Decay Envelopes; every control can be MIDI-Learned to an external CC / Note via right-click.',
+          features: {
+            io: 'Camera + audio input, CV/Gate output to Eurorack via DC-coupled interface',
+            audio: '4-track mixer + Stereo Delay / Granular / Reverb / Glitch / Chaos',
+            visual: 'OpenGL real-time rendering + 4-channel audio-reactive visuals + Glitch Shader',
+            ai: 'Stable Diffusion Img2Img real-time AI generation',
+            cv: 'Contour-driven 2-channel CV + 3-channel Decay Envelope',
+            midi: 'MIDI Learn on any control via right-click (CC / Note Toggle)'
+          }
         },
         artisttalktranslator: {
           name: 'Artist Talk Translator',
@@ -730,7 +757,8 @@ const I18N = {
         language: 'Language',
         version: 'Version',
         license: 'License',
-        sourceCode: 'Source Code'
+        sourceCode: 'Source Code',
+        demo: 'Demo'
       }
     },
 
@@ -877,6 +905,19 @@ const I18N = {
             multilang: '3言語インターフェース（繁體中文 / EN / JP）'
           },
           launch: 'アプリを開く'
+        },
+        vav: {
+          name: 'VAV',
+          desc: 'Eurorack 向け Vision-Audio-Visual システム — カメラ/オーディオ入力と CV 出力',
+          intro: 'VAV（Vision-Audio-Visual System for Eurorack）はモジュラーシンセ向けに設計されたリアルタイム映像・音声統合システムです。DC-coupled オーディオインターフェースを介して、輪郭検出と音声解析の結果を CV/Gate として Eurorack に返送します。<br><br>オーディオ側は 4 トラックミキサー、ステレオディレイ、グラニュラーサンプラー、リバーブ、グリッチ、Chaos モジュレーションを含みます。映像側は OpenGL リアルタイムレンダリング、4 チャンネル オーディオリアクティブ映像（V2：4 枚の画像をカメラ領域に充填）、Stable Diffusion Img2Img リアルタイム AI 画像生成、グリッチシェーダー（Region Tear / Scanline Jitter / Block Shuffle）を備えています。<br><br>CV 出力は輪郭検出による 2 チャンネル CV と 3 チャンネル Decay Envelope。すべてのコントロールに右クリックで MIDI Learn が可能。',
+          features: {
+            io: 'カメラ + オーディオ入力、DC-coupled インターフェースで Eurorack へ CV/Gate 出力',
+            audio: '4 トラックミキサー + ステレオディレイ / グラニュラー / リバーブ / グリッチ / Chaos',
+            visual: 'OpenGL リアルタイムレンダリング + 4 チャンネル オーディオリアクティブ映像 + グリッチシェーダー',
+            ai: 'Stable Diffusion Img2Img リアルタイム AI 画像生成',
+            cv: '輪郭検出による 2 チャンネル CV + 3 チャンネル Decay Envelope',
+            midi: '右クリックで任意のコントロールを MIDI Learn（CC / Note Toggle）'
+          }
         },
         artisttalktranslator: {
           name: 'Artist Talk Translator',
@@ -1094,7 +1135,8 @@ const I18N = {
         language: '開発言語',
         version: 'バージョン',
         license: 'ライセンス',
-        sourceCode: 'ソースコード'
+        sourceCode: 'ソースコード',
+        demo: 'デモ'
       }
     }
   },
