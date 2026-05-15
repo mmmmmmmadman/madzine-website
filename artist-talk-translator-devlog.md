@@ -13,6 +13,7 @@
 
 | 版本 | 日期 | 主要變動 |
 |------|------|---------|
+| v2.8 | 2026-05-16 | 應用內 debug log 下載按鈕（非技術使用者一鍵取得診斷 log） |
 | v2.7 | 2026-04-19 | 外接麥克風熱插拔修正（devicechange 監聽 + 重建 MediaStreamSource） |
 | v2.6 | 2026-04-19 | 連續說話卡住修正（`commit_strategy` 切 manual + 客戶端 RMS VAD + 12s 時間上限） |
 | v2.5 | 2026-04-19 | WebSocket 健康狀態機、自動重連、手動重連按鈕、連線狀態燈 |
@@ -21,6 +22,48 @@
 | v2.2 | 2026-04-18 | Start Session 按鈕修復、Opus 4.7 model ID 更新 |
 | v2.1 | 2026-04-17 | 擴充支援檔案格式與裝置 |
 | v2.0 | 2026-04-13 | Web 版首次發布（macOS native app 改 Web） |
+
+---
+
+## 2026-05-16 — v2.8
+
+### 應用內 debug log 下載（給非技術使用者）
+
+**觸發**：天神山アートスタジオ 2026-05-15 報告 — open studio 之後翻譯軟體不再正常運作，連線燈一直閃黃燈，雖然麥克風有輸入但文字沒產出。
+
+**為何不沿用「請打開 DevTools Console」**：使用此軟體的對象是藝術家、駐村工作室、座談主持人；要求他們在 Chrome/Safari 用 F12 / Cmd+Option+I 開 DevTools、切到 Console tab、過濾 `[WS]`、截圖回傳，門檻過高。實際結果是 MAD 永遠拿不到 log，只能憑遠端症狀猜根因。
+
+**設計選擇**：把診斷工具內建到應用本身。藝術家點一個按鈕 → 自動下載 .txt → email 寄回。零技術門檻。
+
+**實作**：
+
+| 面向 | 做法 |
+|------|------|
+| Buffer | `debugLog[]` array，cap 500 筆，超過丟最舊 |
+| 來源 1 | `wsLog()` 內加 `appendDebugLog('WS', args)` — 涵蓋全部 ws 狀態變化、token fetch、open-guard、onclose、heartbeat、reconnect |
+| 來源 2 | `showLiveError()` 內加 `appendDebugLog('ERR', [msg])` — 涵蓋 server error msg、token refresh fail、mic switch fail |
+| 序列化 | `Error` 抽 name+message、object JSON.stringify、其餘 String()；try/catch 包住避免循環引用炸掉 |
+| 下載格式 | 純 `.txt`，檔名 `att-debug-YYYY-MM-DDTHH-MM-SS.txt`（冒號和點換成 dash 避免 Windows 檔名問題） |
+| 檔頭 metadata | URL、navigator.userAgent、當前 wsState、reconnectAttempt、isRunning — 不靠藝術家口述環境 |
+| UI 位置 | 標題列 reconnectBtn 旁的「Download Log / 下載 Log / Logダウンロード」常駐按鈕 |
+| 樣式 | 中性灰 `#888`（與黃色 reconnect 區分），hover 變淡背景；mobile 同步縮小字級 |
+| i18n | 三語完整（含 title hover 提示「Email it to MAD when reporting a problem」） |
+| 觸發時機 | 不限 session 狀態，任何時候可下載 |
+
+**為何不在 session 結束時自動下載**：使用者報告問題時可能正在 session 中；強制等到 stop 才能下載會讓「重現症狀 → 立刻取證」流程斷掉。
+
+**為何 cap 500 筆**：典型 session 1-2 分鐘黃燈循環，wsLog 約每 1-3 秒一筆，500 筆覆蓋 8-25 分鐘觀察窗口，足夠涵蓋從 session 啟動到問題重現。
+
+**Tenjinyama 案的待辦**：拿到藝術家寄回的 .txt 後依以下 log 樣式判定根因：
+
+| log 樣式 | 根因 |
+|----------|------|
+| `Token fetch failed (4xx)` 反覆 | API key 認證 |
+| `onclose code=1008/4xxx` 緊接 onopen | server 主動關（額度／plan／rate-limit） |
+| `open-guard FIRED` 反覆 | 工作室防火牆擋 wss 握手 |
+| `server error msg ... quota_exceeded/auth_error` | server 明確拒絕，msg 內含原因 |
+
+**相關 commit**：832a8fc
 
 ---
 
