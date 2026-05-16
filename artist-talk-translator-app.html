@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Artist Talk Translator v2.8</title>
+<title>Artist Talk Translator v2.9</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.7.0/mammoth.browser.min.js"></script>
 <style>
@@ -174,7 +174,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     <button class="help-btn" onclick="toggleHelp()" title="Help">?</button>
   </div>
 
-  <h1 data-i18n="title">Artist Talk Translator v2.8</h1>
+  <h1 data-i18n="title">Artist Talk Translator v2.9</h1>
 
   <div class="field">
     <label data-i18n="elevenLabsKeyLabel">ElevenLabs API Key</label>
@@ -297,7 +297,7 @@ const TOKEN_REFRESH_MS = 14 * 60 * 1000;
 // ---- I18N ----
 const I18N = {
   en: {
-    title: 'Artist Talk Translator v2.8',
+    title: 'Artist Talk Translator v2.9',
     elevenLabsKeyLabel: 'ElevenLabs API Key',
     elevenLabsKeyPlaceholder: 'xi-...',
     elevenLabsKeyHint: 'Get your key at <a href="https://elevenlabs.io/app/settings/api-keys" target="_blank" style="color:#60a5fa;">elevenlabs.io</a>. Free tier: 2.5 hours/month.',
@@ -329,6 +329,7 @@ const I18N = {
     errSameLang: 'Please select two different languages.',
     errTokenFetch: 'Failed to get ElevenLabs token. Check your API key and Worker URL.',
     errWebSocket: 'ElevenLabs WebSocket error',
+    errHardFail: 'ElevenLabs account problem — likely out of credit or unpaid. Log in to elevenlabs.io → Usage / Subscription. Reconnect button will retry after you fix it.',
     loadingFile: 'Loading file',
     fileLoadError: 'File load error',
     supportedTitle: 'Supported Files & Devices',
@@ -418,7 +419,7 @@ const I18N = {
     `,
   },
   'zh-TW': {
-    title: 'Artist Talk Translator v2.8',
+    title: 'Artist Talk Translator v2.9',
     elevenLabsKeyLabel: 'ElevenLabs API Key',
     elevenLabsKeyPlaceholder: 'xi-...',
     elevenLabsKeyHint: '\u5728 <a href="https://elevenlabs.io/app/settings/api-keys" target="_blank" style="color:#60a5fa;">elevenlabs.io</a> \u53d6\u5f97\u91d1\u9470\u3002\u514d\u8cbb\u984d\u5ea6\uff1a\u6bcf\u6708 2.5 \u5c0f\u6642\u3002',
@@ -450,6 +451,7 @@ const I18N = {
     errSameLang: '請選擇兩種不同的語言。',
     errTokenFetch: '無法取得 ElevenLabs token。請檢查 API Key 和 Worker URL。',
     errWebSocket: 'ElevenLabs WebSocket 錯誤',
+    errHardFail: 'ElevenLabs 帳號問題 — 可能餘額用完或未付款。請登入 elevenlabs.io → Usage / Subscription 確認。處理後可按「重連」重試。',
     loadingFile: '正在載入',
     fileLoadError: '檔案載入錯誤',
     supportedTitle: '支援的檔案與裝置',
@@ -539,7 +541,7 @@ const I18N = {
     `,
   },
   ja: {
-    title: 'Artist Talk Translator v2.8',
+    title: 'Artist Talk Translator v2.9',
     elevenLabsKeyLabel: 'ElevenLabs API Key',
     elevenLabsKeyPlaceholder: 'xi-...',
     elevenLabsKeyHint: '<a href="https://elevenlabs.io/app/settings/api-keys" target="_blank" style="color:#60a5fa;">elevenlabs.io</a> \u3067\u30ad\u30fc\u3092\u53d6\u5f97\u3002\u7121\u6599\u679a\uff1a\u6708 2.5 \u6642\u9593\u3002',
@@ -571,6 +573,7 @@ const I18N = {
     errSameLang: '異なる2つの言語を選択してください。',
     errTokenFetch: 'ElevenLabsトークンの取得に失敗しました。API KeyとWorker URLを確認してください。',
     errWebSocket: 'ElevenLabs WebSocketエラー',
+    errHardFail: 'ElevenLabsアカウントの問題 — 残高不足または未払いの可能性があります。elevenlabs.io にログインして Usage / Subscription を確認してください。対応後「再接続」ボタンで再試行できます。',
     loadingFile: '読込中',
     fileLoadError: 'ファイル読込エラー',
     supportedTitle: '対応ファイルとデバイス',
@@ -937,6 +940,10 @@ const SCROLL_FOLLOW_THRESHOLD = 80; // px — auto-follow when user is within th
 const MAX_RECONNECT = 6;
 const WS_OPEN_TIMEOUT_MS = 15000; // handshake must complete within 15s
 const HEARTBEAT_MS = 10000;       // poll ws.readyState every 10s
+// onclose reasons that will NOT recover by reconnecting (account/billing/auth).
+// Detected case 2026-05-15: ElevenLabs returned reason="insufficient_funds_initial_check"
+// for every reconnect attempt; client looped forever without telling the user the real cause.
+const HARD_FAIL_REASON = /insufficient_funds|quota_exceeded|billing|payment|subscription|account_disabled|invalid_api_key|unauthorized/i;
 // Manual-commit VAD parameters (replaces ElevenLabs server-side VAD)
 const SILENCE_RMS_THRESHOLD = 0.015; // RMS below this counts as silence
 const SILENCE_COMMIT_MS = 1500;      // sustained silence → commit (natural pause)
@@ -1176,7 +1183,10 @@ function connectElevenLabs(token, options = {}) {
     wsLog('onopen', options.overlap ? '(overlap new)' : '(primary)');
     if (!options.overlap) {
       setWsState('open');
-      reconnectAttempt = 0;
+      // NOTE: reconnectAttempt is intentionally NOT reset here.
+      // Server may accept the handshake then immediately close (e.g. insufficient_funds_initial_check);
+      // resetting on onopen would mask such hard-fail loops as healthy. Reset moved to onmessage
+      // upon first real transcript message (true sign of a working session).
       startHeartbeat();
     }
     if (options.onOpen) options.onOpen(sock);
@@ -1186,9 +1196,11 @@ function connectElevenLabs(token, options = {}) {
     const msg = JSON.parse(event.data);
     switch (msg.message_type) {
       case 'partial_transcript':
+        if (!options.overlap && sock === ws) reconnectAttempt = 0; // healthy: real data flowing
         updateVolatile(msg.text || '');
         break;
       case 'committed_transcript_with_timestamps':
+        if (!options.overlap && sock === ws) reconnectAttempt = 0;
         onFinalResult(msg.text || '', msg.language_code || null);
         break;
       case 'committed_transcript':
@@ -1220,7 +1232,19 @@ function connectElevenLabs(token, options = {}) {
   sock.onclose = (event) => {
     clearTimeout(openGuard);
     wsLog('onclose code=', event.code, 'reason=', event.reason, 'clean=', event.wasClean);
-    if (!options.overlap && sock === ws && isRunning) scheduleReconnect('onclose:' + event.code);
+    if (!options.overlap && sock === ws && isRunning) {
+      if (event.reason && HARD_FAIL_REASON.test(event.reason)) {
+        wsLog('HARD FAIL — halting reconnect. reason=', event.reason);
+        stopHeartbeat();
+        clearTokenRefresh();
+        if (reconnectTimer) { clearTimeout(reconnectTimer); reconnectTimer = null; }
+        reconnectInFlight = false;
+        setWsState('failed');
+        showLiveError(t('errHardFail') + ' (' + event.reason + ')');
+        return;
+      }
+      scheduleReconnect('onclose:' + event.code);
+    }
   };
 
   if (!options.overlap) {

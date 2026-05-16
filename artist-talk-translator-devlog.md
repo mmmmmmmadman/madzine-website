@@ -13,6 +13,7 @@
 
 | 版本 | 日期 | 主要變動 |
 |------|------|---------|
+| v2.9 | 2026-05-16 | 識別 server 端帳號層級 hard-fail（額度/帳單/認證），不再無限重連並出明確錯誤；reconnectAttempt reset 點從 onopen 改到首次 transcript |
 | v2.8 | 2026-05-16 | 應用內 debug log 下載按鈕（非技術使用者一鍵取得診斷 log） |
 | v2.7 | 2026-04-19 | 外接麥克風熱插拔修正（devicechange 監聽 + 重建 MediaStreamSource） |
 | v2.6 | 2026-04-19 | 連續說話卡住修正（`commit_strategy` 切 manual + 客戶端 RMS VAD + 12s 時間上限） |
@@ -22,6 +23,42 @@
 | v2.2 | 2026-04-18 | Start Session 按鈕修復、Opus 4.7 model ID 更新 |
 | v2.1 | 2026-04-17 | 擴充支援檔案格式與裝置 |
 | v2.0 | 2026-04-13 | Web 版首次發布（macOS native app 改 Web） |
+
+---
+
+## 2026-05-16 — v2.9
+
+### Server hard-fail 識別 + healthy reset 時機修正
+
+**Tenjinyama log 解讀**（v2.8 取得的 `att-debug-2026-05-15T23-44-32.txt`，83 秒共約 80 次循環）：
+
+```
+onopen (primary) → state → open → session_started → onclose code=1000
+reason=insufficient_funds_initial_check clean=true → state → reconnecting
+```
+
+ElevenLabs server 接受 WebSocket 握手、回 `session_started`，**~300ms 後立刻關連線**，reason 永遠是 `insufficient_funds_initial_check` —— 帳號餘額不足。Client 端 token 拿得到、wss 握手沒問題、code=1000 clean=true 不是網路斷。**問題不在 software，在 ElevenLabs 帳號的 credit balance**。
+
+**為什麼藝術家看到「黃燈閃不停」而不是紅燈**：v2.5 的 `scheduleReconnect` 邏輯在 `sock.onopen` 內 `reconnectAttempt = 0`（行 1179）。本 case 每次 onopen 後立刻 close，reset 已執行 → reconnectAttempt 永遠 0 → 永遠不會到 MAX_RECONNECT=6 → 永遠不出紅燈、永遠不出「Connection lost」訊息。藝術家以為 software 壞了，無法判斷是帳號問題。
+
+**修正**：
+
+| 面向 | 做法 |
+|------|------|
+| Hard-fail 識別 | `HARD_FAIL_REASON = /insufficient_funds\|quota_exceeded\|billing\|payment\|subscription\|account_disabled\|invalid_api_key\|unauthorized/i` |
+| 觸發點 | `sock.onclose` 解析 `event.reason`，命中 pattern 即視為不可恢復 |
+| 行為 | 立刻 `stopHeartbeat` + `clearTokenRefresh` + 清 reconnect timer + `setWsState('failed')` 紅燈 + `showLiveError(t('errHardFail'))` + **return，不再 scheduleReconnect** |
+| 手動覆寫 | 使用者按「Reconnect」按鈕仍可 fresh retry（升級 plan 後可用），不擋死 |
+| Reset 時機修正 | `reconnectAttempt = 0` 從 `sock.onopen` 移除 → 改到 `onmessage` 收到 `partial_transcript` / `committed_transcript_with_timestamps` 時 reset。理由：onopen 不代表 session 真的工作；只有實際收到 transcript 才是「真資料流動」的健康訊號 |
+| i18n | 三語 `errHardFail` 訊息，明確說「ElevenLabs 帳號問題 — 可能餘額用完或未付款。請登入 elevenlabs.io → Usage / Subscription」 |
+
+**為何不擋死 manual reconnect**：使用者升級 plan 後需要不重新 reload 也能立刻測試；強制鎖死會逼他刷新頁面、重新貼 API key、重新選語言。`triggerManualReconnect` 已 `reconnectAttempt = 0` + `reconnectInFlight = false`，是合適的 fresh-retry 入口。
+
+**為何不光靠 reset 改點就好（也要加 hard-fail 識別）**：只改 reset，藝術家最多看到紅燈 + 「Connection lost. Press the Reconnect button...」，仍不知道是錢的問題。Hard-fail 訊息點明根因，省去客服往返。
+
+**Tenjinyama 後續動作**：請藝術家登入 elevenlabs.io 確認 Usage，建議升級 Starter（$5/月）— Free 12 分鐘額度對 open studio / artist talk 顯然不夠。
+
+**相關 commit**：即將推送
 
 ---
 
