@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "R=/Users/madzine/MADZINE/Documents/madzine-website; git -C $R fetch origin --quiet 2>/dev/null; echo '# madzine-website git 最新狀態'; echo '## 本地最近 commit'; git -C $R log --oneline -8; echo '## 工作區未提交變更'; git -C $R status -s; echo '## 與 origin/main 比較 (落後<-->領先)'; git -C $R rev-list --left-right --count origin/main...HEAD 2>/dev/null; echo '## origin/main 上但本地還沒有的 commit'; git -C $R log --oneline HEAD..origin/main 2>/dev/null"
+          }
+        ]
+      }
+    ]
+  }
+}
