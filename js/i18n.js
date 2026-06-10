@@ -136,6 +136,25 @@ const I18N = {
             multilang: '三語介面（EN / JP / TW）'
           }
         },
+        mado: {
+          name: 'MADO',
+          desc: '無邊框影像／影片預覽工具，拖曳載入、播放清單、音訊輸出',
+          platform: 'macOS, Windows',
+          download: '下載 — macOS (.dmg)',
+          intro: 'MADO 是無邊框的影像／影片預覽工具。視窗沒有標題列與邊框，畫面就是內容本身，適合疊在其他軟體上方當參考影像、即時 webcam 監看或現場演出投影。<br><br>來源可在即時 webcam 與影片播放之間切換。webcam 透過 AVFoundation 取像，可選擇相機裝置。影片直接拖曳檔案載入，多檔會累加到播放清單而非取代既有項目，並可在面板中排序、移除、為每支影片獨立設定翻轉。三態循環按鈕在「播完即停 / 單支循環 / 整個清單循環」之間切換。<br><br>視窗操作全部在無邊框畫面上完成：任意位置拖曳移動視窗、雙擊切換全螢幕、右下角拖曳縮放、可切換永遠置頂。鍵盤可全黑遮蓋、暫停／繼續、回到開頭。<br><br>音訊輸出可指定裝置與音量，RtAudio 列舉所有 CoreAudio 輸出裝置（含 External Headphones / HDMI 等）。介面強調色用 HUE 色相環即時調整，內建 Coral / Mint / Sky / Violet 四個預設，選擇會自動儲存。<br><br>以 Rust + egui 開發，影片解碼用 ffmpeg-next，音訊輸出用 RtAudio，相機透過 Python AVFoundation service 餵 RGBA frame。支援英文、日文、繁體中文三語介面與說明書。',
+          features: {
+            borderless: '無邊框視窗：全畫面拖曳移動、雙擊全螢幕、右下角拖曳縮放、永遠置頂',
+            camera: 'Webcam 即時影像來源（AVFoundation，可切換相機裝置）',
+            dragdrop: '拖曳影片檔載入，多檔累加為播放清單（不取代既有項目）',
+            playlist: '播放清單面板：排序、移除、每支獨立翻轉',
+            loop: '三態循環：播完即停 / 單支循環 / 整個清單循環',
+            flip: '左右／上下翻轉（UV 反向，每支影片獨立設定）',
+            audio: '音訊輸出裝置選擇與音量（RtAudio 列舉所有 CoreAudio 輸出裝置）',
+            hue: 'HUE 色相環：即時調整介面強調色，含 Coral / Mint / Sky / Violet 預設',
+            keyboard: '鍵盤控制：全黑遮蓋、暫停／繼續、回到開頭',
+            multilang: '三語介面與說明書（EN / JP / TW）'
+          }
+        },
         vfm: {
           name: 'Visual Feedback Machine',
           desc: '即時混沌音訊處理，Lorenz 吸引子與相機輪廓偵測',
@@ -514,6 +533,25 @@ const I18N = {
             multilang: 'Trilingual interface (EN / JP / TW)'
           }
         },
+        mado: {
+          name: 'MADO',
+          desc: 'Borderless camera & video preview, drag-drop loading, playlist, audio output',
+          platform: 'macOS, Windows',
+          download: 'Download — macOS (.dmg)',
+          intro: 'MADO is a borderless camera & video preview tool. The window has no title bar or frame — the picture is the content — making it ideal as a floating reference image over other apps, a live webcam monitor, or a projection source for live performance.<br><br>The source switches between a live webcam and video playback. The webcam captures via AVFoundation with selectable camera devices. Video files are loaded by drag-and-drop; multiple files append to the playlist rather than replacing existing items, and each clip can be reordered, removed, or flipped independently in the playlist drawer. A three-state loop button cycles between play-through, repeat-one, and repeat-all.<br><br>All window operations happen on the borderless surface: drag anywhere to move the window, double-click to toggle fullscreen, drag the bottom-right corner to resize, and toggle always-on-top. The keyboard handles blackout, pause/resume, and return-to-start.<br><br>Audio output device and volume are configurable; RtAudio enumerates every CoreAudio output device (including External Headphones / HDMI). The accent colour is adjusted live with a HUE wheel, with four presets (Coral / Mint / Sky / Violet) that persist across launches.<br><br>Built with Rust + egui, video decoding via ffmpeg-next, audio output via RtAudio, and camera frames fed as RGBA via a Python AVFoundation service. Interface and manual support English, Japanese, and Traditional Chinese.',
+          features: {
+            borderless: 'Borderless window: drag anywhere to move, double-click fullscreen, corner resize, always-on-top',
+            camera: 'Live webcam source (AVFoundation, selectable camera device)',
+            dragdrop: 'Drag-drop video files; multiple files append to the playlist (never replaces existing items)',
+            playlist: 'Playlist drawer: reorder, remove, per-clip flip',
+            loop: 'Three-state loop: play-through / repeat-one / repeat-all',
+            flip: 'Horizontal / vertical flip (UV-based, per-clip in video mode)',
+            audio: 'Audio output device selection & volume (RtAudio enumerates all CoreAudio outputs)',
+            hue: 'HUE wheel: live accent colour with Coral / Mint / Sky / Violet presets',
+            keyboard: 'Keyboard control: blackout, pause/resume, return-to-start',
+            multilang: 'Trilingual interface & manual (EN / JP / TW)'
+          }
+        },
         vfm: {
           name: 'Visual Feedback Machine',
           desc: 'Real-time chaotic audio processing with Lorenz attractor and camera contour detection',
@@ -890,6 +928,25 @@ const I18N = {
             transform: 'フレームごとの変形（スケール / オフセット / 回転）',
             batch: '複数選択バッチ操作',
             multilang: '3 言語インターフェース（EN / JP / TW）'
+          }
+        },
+        mado: {
+          name: 'MADO',
+          desc: 'ボーダーレスのカメラ＆動画プレビュー、ドラッグ＆ドロップ・プレイリスト・音声出力',
+          platform: 'macOS, Windows',
+          download: 'ダウンロード — macOS (.dmg)',
+          intro: 'MADO はボーダーレスのカメラ＆動画プレビューツールです。ウィンドウにはタイトルバーも枠もなく、映像そのものが画面になります。他のアプリの上に重ねる参照映像、ライブ webcam モニター、ライブパフォーマンスの投影ソースに最適です。<br><br>ソースはライブ webcam と動画再生を切り替えできます。webcam は AVFoundation で取り込み、カメラデバイスを選択可能。動画はファイルをドラッグ＆ドロップで読み込み、複数ファイルは既存項目を置き換えずプレイリストに追加され、並び替え・削除・クリップ毎の反転を一覧で設定できます。3 状態のループボタンで「最後まで再生して停止 / 1 本リピート / 全体リピート」を切り替えます。<br><br>ウィンドウ操作はすべてボーダーレス画面上で完結：任意の位置をドラッグして移動、ダブルクリックでフルスクリーン切替、右下隅をドラッグでリサイズ、常に最前面の切替。キーボードでブラックアウト、一時停止／再開、先頭に戻る操作が可能です。<br><br>音声の出力デバイスと音量を指定でき、RtAudio がすべての CoreAudio 出力デバイス（External Headphones / HDMI 等を含む）を列挙します。アクセントカラーは HUE ホイールでリアルタイムに調整でき、Coral / Mint / Sky / Violet の 4 プリセットを内蔵、選択は保存されます。<br><br>Rust + egui で開発、動画デコードは ffmpeg-next、音声出力は RtAudio、カメラは Python AVFoundation service が RGBA フレームを供給。英語・日本語・繁体字中国語の 3 言語インターフェースと説明書に対応。',
+          features: {
+            borderless: 'ボーダーレスウィンドウ：任意の位置でドラッグ移動、ダブルクリックでフルスクリーン、隅でリサイズ、常に最前面',
+            camera: 'ライブ webcam ソース（AVFoundation、カメラデバイス選択可）',
+            dragdrop: '動画ファイルをドラッグ＆ドロップで読み込み、複数ファイルはプレイリストに追加（既存項目を置き換えない）',
+            playlist: 'プレイリスト一覧：並び替え、削除、クリップ毎の反転',
+            loop: '3 状態ループ：最後まで再生して停止 / 1 本リピート / 全体リピート',
+            flip: '水平 / 垂直反転（UV ベース、Video モードではクリップ単位）',
+            audio: '音声出力デバイス選択と音量（RtAudio がすべての CoreAudio 出力を列挙）',
+            hue: 'HUE ホイール：Coral / Mint / Sky / Violet プリセット付きのリアルタイムアクセントカラー',
+            keyboard: 'キーボード操作：ブラックアウト、一時停止／再開、先頭に戻る',
+            multilang: '3 言語インターフェースと説明書（EN / JP / TW）'
           }
         },
         vfm: {
