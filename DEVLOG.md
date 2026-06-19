@@ -1,5 +1,17 @@
 # MADZINE Website 開發紀錄
 
+## 2026-06-19
+
+### 首頁文案調整
+
+- 刪除 hero tagline「對藝術嚴謹，對人生溫柔 / Strict with art, gentle with life / 芸術に厳しく、人生に優しく」
+  - 移除 index.html 中 `<span class="v7__description">` 整行
+  - i18n.js 三語 `hero.description` 改為空字串（保留 key）
+  - index.html `<meta name="description">` 同步移除該句
+- Software 區塊描述改為「自製應用程式 / Original applications / オリジナルアプリケーション」（原為「VCV Rack 模組與自製應用程式」）
+
+---
+
 ## 網站更新指南
 
 ### 架構概覽
