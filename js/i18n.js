@@ -16,7 +16,7 @@ const I18N = {
       hero: {
         title: 'MADZINE',
         subtitle: '媒體藝術・軟體開發',
-        description: '對藝術嚴謹，對人生溫柔'
+        description: ''
       },
       section: {
         works: {
@@ -26,7 +26,7 @@ const I18N = {
         },
         software: {
           title: '軟體作品',
-          desc: 'VCV Rack 模組與自製應用程式',
+          desc: '自製應用程式',
           more: '查看全部軟體'
         },
         contact: {
@@ -413,7 +413,7 @@ const I18N = {
       hero: {
         title: 'MADZINE',
         subtitle: 'Media Art \u00B7 Software Coding',
-        description: 'Strict with art, gentle with life'
+        description: ''
       },
       section: {
         works: {
@@ -423,7 +423,7 @@ const I18N = {
         },
         software: {
           title: 'Software',
-          desc: 'VCV Rack modules and original applications',
+          desc: 'Original applications',
           more: 'View All Software'
         },
         contact: {
@@ -810,7 +810,7 @@ const I18N = {
       hero: {
         title: 'MADZINE',
         subtitle: 'メディアアート・ソフトウェア開発',
-        description: '芸術に厳しく、人生に優しく'
+        description: ''
       },
       section: {
         works: {
@@ -820,7 +820,7 @@ const I18N = {
         },
         software: {
           title: 'ソフトウェア',
-          desc: 'VCV Rack モジュールとオリジナルアプリケーション',
+          desc: 'オリジナルアプリケーション',
           more: 'すべてのソフトウェアを見る'
         },
         contact: {
