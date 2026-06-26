@@ -48,7 +48,7 @@ const I18N = {
       apps: {
         visionmod: {
           name: 'Vision MOD',
-          desc: '即時視覺合成器，畫面與音訊驅動、可輸出 CV／MIDI',
+          desc: '用影像調變聲音，承襲 Complex Oscillator 精神，不接複雜配線就能產生豐富動態',
           platform: 'macOS, Windows',
           intro: 'Vision MOD 是一款即時視覺合成器，把模組合成器 Complex Oscillator 的概念帶進視覺領域：Modifier 素材提供動態，Carrier 素材是被這動態承載的影像，以一段素材去調變另一段素材，產生新的影音現象。<br><br>訊號流由主視窗右側的模組面板定義，Fundamental Vision 鎖在第一站作為素材源頭，其後可自由加入、排序、bypass、刪除 Diffusion、Chromascope、Minimalize、3D Object、Particle、Flow Warp、Feedback 等模組，同一種模組可加入多份 instance 並各自獨立串接。<br><br>程式分析畫面輪廓與顏色、加上 4 軌音訊輸入的 RMS，產生 modulation signal 驅動內部參數，並可同時透過 CV Output 送出音訊介面與 MIDI 裝置（每路指定 CC#、14-bit），控制外部硬體。macOS 使用 Stable Diffusion 1.5 + ControlNet + Hyper-SD15 1-step LoRA，Windows 使用 Stream Diffusion + CUDA／TensorRT。核心以 Rust + wgpu + cpal 開發，macOS 走 Metal、Windows 走 DirectX 12，同源碼跨平台。',
           features: {
@@ -459,7 +459,7 @@ const I18N = {
       apps: {
         visionmod: {
           name: 'Vision MOD',
-          desc: 'Real-time visual synthesizer driven by image and audio, with CV / MIDI output',
+          desc: 'Visual-to-audio modulation in the Complex Oscillator spirit—rich dynamics without complex patching',
           platform: 'macOS, Windows',
           intro: 'Vision MOD is a real-time visual synthesizer that brings the Complex Oscillator idea from modular synthesis into the visual domain: a Modifier source provides the dynamics, a Carrier source provides the image those dynamics ride, and one footage modulates another to produce a new audio-visual phenomenon.<br><br>The signal flow is defined by the module catalog on the right side of the main window. Fundamental Vision is pinned to slot 1 as the source anchor; downstream the user freely adds, reorders, bypasses, or removes Diffusion, Chromascope, Minimalize, 3D Object, Particle, Flow Warp, and Feedback. The same module kind can be instantiated multiple times, each keeping its own parameters and wired into the chain independently.<br><br>The program analyzes contour and color from the live image together with the RMS of the four audio inputs to generate modulation signals that drive internal parameters; the same signals can be sent in parallel through CV Output to the audio interface and to a MIDI device (per-route CC#, 14-bit) for external hardware. macOS runs Stable Diffusion 1.5 with ControlNet and a Hyper-SD15 1-step LoRA; Windows runs Stream Diffusion on CUDA / TensorRT. The core is built in Rust + wgpu + cpal, targeting Metal on macOS and DirectX 12 on Windows from a single codebase.',
           features: {
@@ -870,7 +870,7 @@ const I18N = {
       apps: {
         visionmod: {
           name: 'Vision MOD',
-          desc: 'リアルタイム映像シンセサイザー、映像と音声で駆動、CV／MIDI 出力対応',
+          desc: '映像で音声を変調、Complex Oscillator の精神を継承、複雑な配線なしで豊かな動きを生み出す',
           platform: 'macOS, Windows',
           intro: 'Vision MOD はモジュラーシンセサイザーの Complex Oscillator——一方のオシレーターでもう一方を整形する仕組み——を映像領域に持ち込んだリアルタイム映像シンセサイザーです。Modifier の素材が動きを与え、Carrier の素材はその動きに乗る映像。ある素材が別の素材を変調し、新しい視聴覚現象が生まれます。<br><br>シグナルフローはメインウィンドウ右側のモジュールパネルで定義します。Fundamental Vision は素材の起点としてスロット 1 に固定、それ以降は Diffusion、Chromascope、Minimalize、3D Object、Particle、Flow Warp、Feedback などのモジュールを自由に追加・並べ替え・bypass・削除できます。同じ種類のモジュールを複数 instance 化でき、各 instance は独立したパラメータで直列接続されます。<br><br>映像から輪郭と色を解析し、4 軌音声入力の RMS と合わせて modulation signal を生成、本体のパラメータを駆動するほか、同じ信号を CV Output で音声インターフェースの 3ch 以降と MIDI 装置（ルートごとの CC#、14bit）に並行送出して外部機器の制御にも使えます。macOS は Stable Diffusion 1.5 + ControlNet + Hyper-SD15 1-step LoRA、Windows は Stream Diffusion + CUDA／TensorRT で実行。コアは Rust + wgpu + cpal で構築、macOS は Metal、Windows は DirectX 12 をターゲットとし、同一ソースでクロスプラットフォーム対応。',
           features: {
