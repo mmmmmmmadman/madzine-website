@@ -102,18 +102,26 @@ button{background:none;border:none;cursor:pointer}
 .lang-btn:active{background:var(--panel)}
 
 /* join */
-#join{justify-content:center;align-items:center;gap:16px}
-#join .lab{font-size:15px;color:var(--fg2);letter-spacing:.14em;line-height:1.2}
+#join{justify-content:center;align-items:center;gap:14px;overflow-y:auto}
+#join .lab{font-size:15px;color:var(--fg2);letter-spacing:.14em;line-height:1.2;flex:0 0 auto}
+#nameinput{
+  width:100%;max-width:320px;text-align:center;
+  font-size:22px;letter-spacing:.04em;
+  background:var(--bg-elev);border:1px solid var(--line);border-radius:10px;
+  padding:10px;color:var(--fg);line-height:1.2;min-height:48px;flex:0 0 auto;
+}
+#nameinput:focus{outline:none;border-color:var(--acc-dim)}
+#joinrole{width:100%;max-width:320px;flex:0 0 auto}
 #codeinput{
   width:100%;max-width:320px;text-align:center;
   font-size:64px;letter-spacing:.22em;
   background:var(--bg-elev);border:1px solid var(--line);border-radius:10px;
   padding:10px 0 10px 12px;color:var(--fg);line-height:1.2;
-  text-transform:uppercase;
+  text-transform:uppercase;flex:0 0 auto;
 }
 #codeinput:focus{outline:none;border-color:var(--acc-dim)}
-#joinmsg{font-size:14px;color:var(--fg3);min-height:18px;line-height:1.2}
-.row-btns{display:flex;gap:var(--gap);width:100%}
+#joinmsg{font-size:14px;color:var(--fg3);min-height:18px;line-height:1.2;flex:0 0 auto}
+.row-btns{display:flex;gap:var(--gap);width:100%;flex:0 0 auto}
 
 /* ---------- main ---------- */
 /* the whole leader column scrolls when the viewport is short, so the tempo /
@@ -150,6 +158,21 @@ button{background:none;border:none;cursor:pointer}
 }
 #tapbtn:active,#tapbtn.hit{background:var(--acc);color:#121212}
 #tapinfo{font-size:14px;color:var(--fg3);line-height:1.2;margin-top:5px;text-align:center}
+
+/* read-only tempo / meter (a conductor who is not the host) */
+/* the read-only tempo card collapses into a single compact strip so it does
+   not leave a large empty block where the TAP button used to be */
+.card.ro{border-color:#2a2a2a}
+.card.ro#tempocard{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px var(--pad)}
+.card.ro #nudge,.card.ro #tapbtn{display:none}
+.card.ro #tempo{flex:0 0 auto;gap:8px}
+.card.ro #bpmbox{display:flex;align-items:baseline;gap:8px;min-width:0;text-align:left}
+.card.ro #bpmval{font-size:40px;line-height:1}
+.card.ro #bpmunit{margin-top:0}
+.card.ro #tapinfo{flex:1 1 auto;margin-top:0;text-align:right}
+.card.ro #meterrow{pointer-events:none}
+.card.ro .meter-btn{opacity:.4}
+.card.ro .meter-btn.on{opacity:1}
 
 /* meter row */
 #meterrow{display:flex;gap:6px}
@@ -194,6 +217,11 @@ button{background:none;border:none;cursor:pointer}
 .cell .n{font-size:14px;color:var(--fg3);letter-spacing:.16em;line-height:1.2}
 .cell.bars{border-color:#3d3d3d}
 .cell.bars .lab{color:var(--fg)}
+.cell.ramp{border-color:var(--acc-dim)}
+/* CSS-drawn hairpin: widening = crescendo, narrowing = diminuendo */
+.wedge{width:46px;height:11px;background:var(--acc);flex:0 0 auto}
+.wedge.up{clip-path:polygon(0 46%,100% 0,100% 100%,0 54%)}
+.wedge.down{clip-path:polygon(0 0,100% 46%,100% 54%,0 100%)}
 .cell.armed{border-color:var(--acc);background:var(--acc-dim)}
 .cell.picked{border-color:var(--acc-glow)}
 .cell:active{background:var(--panel)}
@@ -220,6 +248,10 @@ button{background:none;border:none;cursor:pointer}
   .dot{width:16px;height:16px}
   .dot.first{width:22px;height:22px}
   #metrocard{gap:6px}
+  #codeinput{font-size:48px}
+  #join{gap:12px}
+  #rampbar{height:32px;margin-top:14px}
+  #ramprem{font-size:32px;margin-top:10px}
   :root{--pad:8px}
 }
 
@@ -251,6 +283,24 @@ button{background:none;border:none;cursor:pointer}
 #ovflash{background:var(--acc);color:#121212;transition:opacity .35s linear}
 #ovflash.fade{opacity:0}
 #flashtxt{font-size:min(15vh,17vw);line-height:1.02;letter-spacing:.02em;font-weight:400;word-break:break-word}
+/* source nickname stays visually subordinate to the cue text */
+#flashfrom{font-size:17px;letter-spacing:.14em;color:rgba(18,18,18,.55);margin-top:14px;line-height:1.2;max-width:90%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ---------- ramp overlay ---------- */
+#ramptxt{font-size:min(11vh,13vw);line-height:1.04;letter-spacing:.02em;font-weight:400;word-break:break-word}
+#rampdir{font-size:22px;letter-spacing:.18em;color:var(--fg2);margin-top:8px;line-height:1.2}
+#rampbar{
+  position:relative;width:min(78vw,320px);height:38px;margin-top:20px;
+  background:#2e2e2e;overflow:hidden;
+}
+#rampbar.up{clip-path:polygon(0 46%,100% 0,100% 100%,0 54%)}
+#rampbar.down{clip-path:polygon(0 0,100% 46%,100% 54%,0 100%)}
+#rampfill{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--acc)}
+#ramprem{font-size:38px;letter-spacing:.06em;margin-top:14px;line-height:1.15}
+#rampsub{font-size:15px;color:var(--fg3);letter-spacing:.2em;margin-top:6px;line-height:1.2}
+#rampdots{display:flex;align-items:center;justify-content:center;gap:10px;min-height:30px;margin-top:14px;flex-wrap:wrap}
+#rampfrom{font-size:15px;color:var(--fg3);letter-spacing:.14em;margin-top:12px;line-height:1.2}
+#ovramp .cancel{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);font-size:17px;color:var(--fg3);border:1px solid var(--line);border-radius:8px;padding:10px 20px;min-height:44px;line-height:1.2}
 
 /* ---------- modal / hue ---------- */
 #scrim{position:fixed;inset:0;z-index:50;display:none;background:rgba(0,0,0,.6)}
@@ -315,6 +365,12 @@ button{background:none;border:none;cursor:pointer}
 
   <!-- JOIN -->
   <div class="screen" id="join">
+    <div class="lab" data-i18n="join_name_lab"></div>
+    <input id="nameinput" type="text" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="12" data-i18n-ph="join_name_ph">
+    <div class="seg" id="joinrole">
+      <button data-cue="1" data-i18n="role_cue"></button>
+      <button data-cue="0" data-i18n="role_follow"></button>
+    </div>
     <div class="lab" data-i18n="join_lab"></div>
     <input id="codeinput" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" maxlength="4" placeholder="————">
     <div id="joinmsg"></div>
@@ -358,6 +414,7 @@ button{background:none;border:none;cursor:pointer}
       <div id="transport">
         <button class="tr-btn" id="metrobtn"></button>
         <button class="tr-btn" id="soundbtn"></button>
+        <button class="tr-btn" id="rolebtn"></button>
         <button class="tr-btn" id="editbtn"></button>
       </div>
     </div>
@@ -395,7 +452,22 @@ button{background:none;border:none;cursor:pointer}
 </div>
 
 <!-- FLASH OVERLAY -->
-<div class="overlay" id="ovflash"><div id="flashtxt"></div></div>
+<div class="overlay" id="ovflash">
+  <div id="flashtxt"></div>
+  <div id="flashfrom"></div>
+</div>
+
+<!-- RAMP OVERLAY -->
+<div class="overlay" id="ovramp">
+  <div id="ramptxt"></div>
+  <div id="rampdir"></div>
+  <div id="rampbar"><div id="rampfill"></div></div>
+  <div id="ramprem"></div>
+  <div id="rampsub" data-i18n="ramp_sub"></div>
+  <div id="rampdots"></div>
+  <div id="rampfrom"></div>
+  <button class="cancel hidden" id="rampcancel" data-i18n="ramp_cancel"></button>
+</div>
 
 <!-- HUE POPUP -->
 <div id="scrim"></div>
@@ -411,6 +483,11 @@ button{background:none;border:none;cursor:pointer}
   <div class="seg" id="edtype">
     <button data-type="cue" data-i18n="ed_type_cue"></button>
     <button data-type="bars" data-i18n="ed_type_bars"></button>
+    <button data-type="ramp" data-i18n="ed_type_ramp"></button>
+  </div>
+  <div class="seg hidden" id="eddir">
+    <button data-dir="up"><span data-i18n="ramp_up"></span><i class="wedge up" style="margin-left:8px;display:inline-block;vertical-align:middle;width:32px;height:9px"></i></button>
+    <button data-dir="down"><span data-i18n="ramp_down"></span><i class="wedge down" style="margin-left:8px;display:inline-block;vertical-align:middle;width:32px;height:9px"></i></button>
   </div>
   <div id="ednrow" class="hidden">
     <button class="nudge-btn" id="ednminus">-1</button>
@@ -439,6 +516,13 @@ var I18N = {
   home_join:"加入房間",       home_join_sub:"Follower — 接收 leader 的指令",
   home_local:"本地模式",      home_local_sub:"單機 — 不連線，功能全部可用",
   join_lab:"輸入四位房號",
+  join_name_lab:"你的暱稱（可留空）",
+  join_name_ph:"暱稱",
+  role_cue:"可下指令",         role_follow:"只跟隨",
+  player_n:"團員 {n}",         host_name:"房主",
+  conn_conductor:"可下指令 · 非房主",
+  conn_follower:"跟隨中",
+  ro_hint:"速度與拍號由房主控制",
   join_back:"返回",           join_go:"加入",
   join_err_len:"房號需四位英數",
   join_connecting:"連線中",
@@ -467,9 +551,14 @@ var I18N = {
   hue_hint:"外環 色相 · 中心 上下拖曳 飽和度",
   ed_title:"格子設定",         ed_name_ph:"名稱",
   ed_type_cue:"即時指令",      ed_type_bars:"小節數",
+  ed_type_ramp:"漸變",
+  ramp_up:"漸強",              ramp_down:"漸弱",
+  ramp_sub:"剩餘小節",         ramp_cancel:"取消漸變",
+  ramp_cell:"{n} 小節漸變",
   ed_delete:"刪除",            ed_done:"完成",
   cell_1:"4 小節後", cell_2:"8 小節後", cell_3:"變吵",   cell_4:"變安靜",
-  cell_5:"SOLO",     cell_6:"回主題",   cell_7:"結尾",   cell_8:"自由"
+  cell_5:"SOLO",     cell_6:"回主題",   cell_7:"結尾",   cell_8:"自由",
+  cell_9:"漸強",     cell_10:"漸弱"
 },
 "en":{
   brand_sub:"LIVE CUE SYSTEM",
@@ -477,6 +566,13 @@ var I18N = {
   home_join:"Join Room",      home_join_sub:"Follower — receive leader cues",
   home_local:"Local Mode",    home_local_sub:"Standalone — offline, all features",
   join_lab:"ENTER 4 CHARACTER CODE",
+  join_name_lab:"YOUR NAME (OPTIONAL)",
+  join_name_ph:"Name",
+  role_cue:"Conductor",       role_follow:"Follow Only",
+  player_n:"Player {n}",      host_name:"Host",
+  conn_conductor:"Conductor · not host",
+  conn_follower:"Following",
+  ro_hint:"Tempo and meter are set by the host",
   join_back:"Back",           join_go:"Join",
   join_err_len:"Code must be 4 letters or digits",
   join_connecting:"Connecting",
@@ -505,9 +601,14 @@ var I18N = {
   hue_hint:"Ring hue · Center drag saturation",
   ed_title:"CELL SETTINGS",    ed_name_ph:"Name",
   ed_type_cue:"Instant Cue",   ed_type_bars:"Bar Count",
+  ed_type_ramp:"Gradual",
+  ramp_up:"Build Up",          ramp_down:"Wind Down",
+  ramp_sub:"BARS REMAINING",   ramp_cancel:"Cancel Gradual",
+  ramp_cell:"OVER {n} BARS",
   ed_delete:"Delete",          ed_done:"Done",
   cell_1:"After 4 Bars", cell_2:"After 8 Bars", cell_3:"Louder", cell_4:"Quieter",
-  cell_5:"SOLO",         cell_6:"Back to Head", cell_7:"Ending", cell_8:"Free"
+  cell_5:"SOLO",         cell_6:"Back to Head", cell_7:"Ending", cell_8:"Free",
+  cell_9:"Build Up",     cell_10:"Wind Down"
 },
 "ja":{
   brand_sub:"ライブキューシステム",
@@ -515,6 +616,13 @@ var I18N = {
   home_join:"ルームに参加",    home_join_sub:"フォロワー — リーダーのキュー受信",
   home_local:"ローカルモード", home_local_sub:"単体 — オフラインで全機能",
   join_lab:"4文字のコードを入力",
+  join_name_lab:"ニックネーム（任意）",
+  join_name_ph:"名前",
+  role_cue:"キュー可",         role_follow:"追従のみ",
+  player_n:"メンバー {n}",     host_name:"ホスト",
+  conn_conductor:"キュー可 · ホスト以外",
+  conn_follower:"追従中",
+  ro_hint:"テンポと拍子はホストが操作",
   join_back:"戻る",            join_go:"参加",
   join_err_len:"コードは英数字4文字です",
   join_connecting:"接続中",
@@ -543,9 +651,14 @@ var I18N = {
   hue_hint:"外周 色相 · 中央 上下ドラッグ 彩度",
   ed_title:"セル設定",          ed_name_ph:"名前",
   ed_type_cue:"即時キュー",     ed_type_bars:"小節数",
+  ed_type_ramp:"グラデーション",
+  ramp_up:"だんだん強く",       ramp_down:"だんだん弱く",
+  ramp_sub:"残り小節",          ramp_cancel:"変化を中止",
+  ramp_cell:"{n} 小節かけて",
   ed_delete:"削除",             ed_done:"完了",
   cell_1:"4小節後", cell_2:"8小節後", cell_3:"強く",     cell_4:"静かに",
-  cell_5:"SOLO",    cell_6:"テーマへ", cell_7:"エンディング", cell_8:"フリー"
+  cell_5:"SOLO",    cell_6:"テーマへ", cell_7:"エンディング", cell_8:"フリー",
+  cell_9:"だんだん強く", cell_10:"だんだん弱く"
 }
 };
 
@@ -759,7 +872,9 @@ var DEFAULT_CELL_DEFS = [
   {id:"c5", key:"cell_5", type:"cue"},
   {id:"c6", key:"cell_6", type:"cue"},
   {id:"c7", key:"cell_7", type:"cue"},
-  {id:"c8", key:"cell_8", type:"cue"}
+  {id:"c8", key:"cell_8", type:"cue"},
+  {id:"c9", key:"cell_9", type:"ramp", n:4, dir:"up"},
+  {id:"c10", key:"cell_10", type:"ramp", n:4, dir:"down"}
 ];
 /* Built in the current language. Once the user edits a cell the set is written
    to localStorage and is never regenerated on a language switch. */
@@ -767,6 +882,7 @@ function defaultCells(){
   return DEFAULT_CELL_DEFS.map(function(c){
     var o = {id:c.id, label:t(c.key), type:c.type};
     if(c.n !== undefined) o.n = c.n;
+    if(c.dir !== undefined) o.dir = c.dir;
     return o;
   });
 }
@@ -775,7 +891,12 @@ function cellsAreCustom(){
 }
 
 var S = {
-  role:"none",            // none | leader | follower | local
+  /* role  = network endpoint: none | leader (host) | follower | local
+     canCue = permission to send cues. The host is always a conductor;
+     a follower may be a conductor as well, but is never the state authority. */
+  role:"none",
+  canCue:false,
+  name:"",
   code:"",
   bpm:  clamp(readNum("sg_bpm",120), 30, 300),
   meter: clamp(readNum("sg_meter",0), 0, METERS.length-1)|0,
@@ -785,8 +906,10 @@ var S = {
   cells: loadCells(),
   pending:null,           // {bars, label}
   count:null,             // {startAt, bars, label}
+  ramp:null,              // {startAt, bars, label, dir, from}
   flashUntil:0,
   flashText:"",
+  flashFrom:"",
   editMode:false,
   editId:null,
   connKey:null, connArg:null,   // live-translated status strings
@@ -808,12 +931,16 @@ function saveCells(){ localStorage.setItem("sg_cells", JSON.stringify(S.cells));
 function meter(){ return METERS[S.meter]; }
 function beatDur(){ return (60000/S.bpm) * (4/meter().d); }
 function barDur(){ return beatDur() * meter().n; }
-function isLeader(){ return S.role==="leader" || S.role==="local"; }
+/* host  = the single state authority (room creator, or a standalone device)
+   canCue = may issue cues; every host is a conductor, a follower may be one too */
+function isHost(){ return S.role==="leader" || S.role==="local"; }
+function canCue(){ return isHost() || S.canCue===true; }
+function myName(){ return S.name || t(isHost() ? "host_name" : "player_n", 1); }
 
 /* =========================================================
    NETWORK (PeerJS)
    ========================================================= */
-var peer=null, conns=[], hostConn=null, clockOffset=0, retryTimer=null, retryDelay=1200;
+var peer=null, conns=[], hostConn=null, clockOffset=0, retryTimer=null, retryDelay=1200, peerSeq=0;
 var PREFIX = "madzine-sessionguide-";
 var CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 
@@ -822,18 +949,24 @@ function makeCode(){
   var s=""; for(var i=0;i<4;i++) s += CODE_CHARS[Math.floor(Math.random()*CODE_CHARS.length)];
   return s;
 }
+/* host -> everyone. Only the host ever broadcasts authoritative state. */
 function send(obj){
-  if(S.role!=="leader") return;
+  if(!isHost()) return;
   var msg = JSON.stringify(obj);
   for(var i=0;i<conns.length;i++){
     var c = conns[i];
     if(c && c.open){ try{ c.send(msg); }catch(err){} }
   }
 }
+/* non-host conductor -> host. These are requests, never applied locally:
+   the sender waits for the host broadcast like everybody else. */
+function req(obj){
+  if(hostConn && hostConn.open){ try{ hostConn.send(JSON.stringify(obj)); }catch(err){} }
+}
 function stateMsg(){
   return {t:"sync", bpm:S.bpm, meter:S.meter,
           metroRunning:S.metroRunning, metroStart:S.metroStart,
-          count:S.count};
+          count:S.count, ramp:S.ramp};
 }
 function setConnState(key, arg){
   S.connKey = key || null;
@@ -859,9 +992,11 @@ function peerReady(){
   return false;
 }
 function hostRoom(attempt){
-  if(!peerReady()){ S.role="local"; showMain(); setConnState("conn_local"); return; }
+  if(!peerReady()){ S.role="local"; S.canCue=true; showMain(); setConnState("conn_local"); return; }
   S.code = makeCode();
   S.role = "leader";
+  S.canCue = true;
+  S.name = storedName() || t("host_name");
   showMain();
   setConnState("conn_creating");
   peer = new Peer(PREFIX + S.code, {debug:0});
@@ -874,7 +1009,20 @@ function hostRoom(attempt){
     c.on("open", function(){ updateConn(); try{ c.send(JSON.stringify(stateMsg())); }catch(err){} });
     c.on("data", function(raw){
       var m = parse(raw); if(!m) return;
-      if(m.t==="ping" && c.open){ try{ c.send(JSON.stringify({t:"pong", c:m.c, s:Date.now()})); }catch(err){} }
+      if(m.t==="ping" && c.open){ try{ c.send(JSON.stringify({t:"pong", c:m.c, s:Date.now()})); }catch(err){} return; }
+      if(m.t==="hello"){
+        peerSeq++;
+        c._name = (m.name||"").slice(0,12).trim() || t("player_n", peerSeq);
+        c._canCue = m.canCue===true;
+        if(c.open){ try{ c.send(JSON.stringify({t:"welcome", name:c._name})); }catch(err){} }
+        return;
+      }
+      if(m.t==="role"){ c._canCue = m.canCue===true; return; }
+      if(m.t==="req"){
+        if(!c._canCue) return;                    // only conductors may request
+        onCueRequest(m, c._name || "");
+        return;
+      }
     });
     c.on("close", function(){ conns = conns.filter(function(x){return x!==c;}); updateConn(); });
     c.on("error", function(){ conns = conns.filter(function(x){return x!==c;}); updateConn(); });
@@ -892,6 +1040,9 @@ function updateConn(){
   if(S.role==="leader") setConnState("conn_peers", conns.filter(function(c){return c.open;}).length);
 }
 
+function storedName(){
+  try{ return (localStorage.getItem("sg_name")||"").slice(0,12); }catch(err){ return ""; }
+}
 function joinRoom(code){
   if(!peerReady()) return;
   S.code = code; S.role = "follower";
@@ -915,7 +1066,8 @@ function connectHost(){
     retryDelay = 1200;
     showMain();
     document.getElementById("roomcode").textContent = S.code;
-    setConnState("conn_connected");
+    renderFollowerConnState();
+    try{ c.send(JSON.stringify({t:"hello", name:S.name, canCue:S.canCue===true})); }catch(err){}
     pingHost();
   });
   c.on("data", function(raw){ onHostData(parse(raw)); });
@@ -941,6 +1093,10 @@ function pingHost(){
   try{ hostConn.send(JSON.stringify({t:"ping", c:pingSentAt})); }catch(err){}
   setTimeout(pingHost, 5000);
 }
+function renderFollowerConnState(){
+  if(S.role!=="follower") return;
+  setConnState(S.canCue ? "conn_conductor" : "conn_follower");
+}
 function onHostData(m){
   if(!m) return;
   if(m.t==="pong"){
@@ -948,16 +1104,29 @@ function onHostData(m){
     clockOffset = (m.s + rtt/2) - Date.now();
     return;
   }
+  if(m.t==="welcome"){ S.name = m.name || S.name; return; }
   if(m.t==="sync"){
     S.bpm = m.bpm; S.meter = m.meter;
     S.metroRunning = m.metroRunning; S.metroStart = m.metroStart;
     S.count = m.count || null;
+    S.ramp  = m.ramp  || null;
+    if(!S.ramp) hideRamp();
     renderAll();
     return;
   }
-  if(m.t==="flash"){ startFlash(m.text, m.dur); return; }
-  if(m.t==="count"){ S.count = {startAt:m.startAt, bars:m.bars, label:m.label||""}; return; }
+  if(m.t==="flash"){ startFlash(m.text, m.dur, m.from); return; }
+  if(m.t==="count"){
+    S.ramp = null; hideRamp();
+    S.count = {startAt:m.startAt, bars:m.bars, label:m.label||"", from:m.from||""};
+    return;
+  }
   if(m.t==="countcancel"){ S.count = null; hideCount(); return; }
+  if(m.t==="ramp"){
+    S.count = null; hideCount();
+    S.ramp = {startAt:m.startAt, bars:m.bars, label:m.label||"", dir:m.dir||"up", from:m.from||""};
+    return;
+  }
+  if(m.t==="rampcancel"){ S.ramp = null; hideRamp(); return; }
 }
 
 /* =========================================================
@@ -974,30 +1143,80 @@ function show(el){
 }
 function showMain(){
   show(scrMain);
-  var leader = isLeader();
-  document.getElementById("tempocard").classList.toggle("hidden", !leader);
-  document.getElementById("metercard").classList.toggle("hidden", !leader);
-  document.getElementById("gridwrap").classList.toggle("hidden", !leader);
-  document.getElementById("folinfo").classList.toggle("hidden", leader);
-  document.getElementById("editbtn").classList.toggle("hidden", !leader);
-  document.getElementById("metrobtn").classList.toggle("hidden", !leader);
+  applyPermissions();
   renderAll();
   if(S.role==="local") setConnState("conn_local");
   requestWakeLock();
 }
+/* Called on entry and whenever the conductor / follow-only switch is flipped,
+   so a hand-over takes effect immediately without reconnecting. */
+function applyPermissions(){
+  var host = isHost(), cue = canCue();
+  var tempoCard = document.getElementById("tempocard");
+  var meterCard = document.getElementById("metercard");
+  tempoCard.classList.toggle("hidden", !cue);
+  meterCard.classList.toggle("hidden", !cue);
+  tempoCard.classList.toggle("ro", !host);      // BPM / meter: host only
+  meterCard.classList.toggle("ro", !host);
+  document.getElementById("gridwrap").classList.toggle("hidden", !cue);
+  document.getElementById("folinfo").classList.toggle("hidden", cue);
+  document.getElementById("editbtn").classList.toggle("hidden", !cue);
+  document.getElementById("metrobtn").classList.toggle("hidden", !host);
+  document.getElementById("rolebtn").classList.toggle("hidden", host);
+  if(S.editMode && !cue){
+    S.editMode = false;
+    document.getElementById("editbtn").classList.remove("on");
+  }
+  if(!cue) S.pending = null;
+  renderRoleBtn();
+  renderTapInfo();
+}
+function renderRoleBtn(){
+  var b = document.getElementById("rolebtn");
+  b.textContent = t(S.canCue ? "role_cue" : "role_follow");
+  b.classList.toggle("on", !!S.canCue);
+}
+document.getElementById("rolebtn").addEventListener("click", function(){
+  if(isHost()) return;                       // the host is always a conductor
+  S.canCue = !S.canCue;
+  try{ localStorage.setItem("sg_cancue", S.canCue ? "1" : "0"); }catch(err){}
+  req({t:"role", canCue:S.canCue});
+  applyPermissions();
+  renderAll();
+  renderFollowerConnState();
+});
 
 document.getElementById("btnCreate").addEventListener("click", function(){ hostRoom(0); });
 document.getElementById("btnLocal").addEventListener("click", function(){
-  S.role = "local"; S.code = ""; showMain(); setConnState("conn_local");
+  S.role = "local"; S.canCue = true; S.code = "";
+  S.name = storedName() || t("host_name");
+  showMain(); setConnState("conn_local");
 });
 document.getElementById("btnJoin").addEventListener("click", function(){
   show(scrJoin); setJoinMsg(null);
+  document.getElementById("nameinput").value = storedName();
+  setJoinRole(readNum("sg_cancue",0) === 1);
   document.getElementById("codeinput").focus();
+});
+/* join screen: conductor / follow-only choice */
+function setJoinRole(v){
+  S.canCue = !!v;
+  Array.prototype.forEach.call(document.querySelectorAll("#joinrole button"), function(b){
+    b.classList.toggle("on", (b.getAttribute("data-cue")==="1") === S.canCue);
+  });
+}
+Array.prototype.forEach.call(document.querySelectorAll("#joinrole button"), function(b){
+  b.addEventListener("click", function(){ setJoinRole(b.getAttribute("data-cue")==="1"); });
 });
 document.getElementById("btnJoinBack").addEventListener("click", function(){ show(scrHome); });
 document.getElementById("btnJoinGo").addEventListener("click", function(){
   var v = (document.getElementById("codeinput").value||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
   if(v.length!==4){ setJoinMsg("join_err_len"); return; }
+  S.name = (document.getElementById("nameinput").value||"").trim().slice(0,12);
+  try{
+    localStorage.setItem("sg_name", S.name);
+    localStorage.setItem("sg_cancue", S.canCue ? "1" : "0");
+  }catch(err){}
   joinRoom(v);
 });
 document.getElementById("codeinput").addEventListener("input", function(){
@@ -1005,9 +1224,10 @@ document.getElementById("codeinput").addEventListener("input", function(){
 });
 document.getElementById("leavebtn").addEventListener("click", function(){
   try{ if(peer) peer.destroy(); }catch(err){}
-  peer=null; conns=[]; hostConn=null; clearTimeout(retryTimer);
-  S.role="none"; S.count=null; S.metroRunning=false; S.pending=null;
-  hideCount(); setConnState(null); show(scrHome);
+  peer=null; conns=[]; hostConn=null; clearTimeout(retryTimer); peerSeq=0;
+  S.role="none"; S.canCue=false; S.count=null; S.ramp=null;
+  S.metroRunning=false; S.pending=null;
+  hideCount(); hideRamp(); setConnState(null); show(scrHome);
 });
 
 /* ---------- language switch ---------- */
@@ -1042,8 +1262,9 @@ function applyLang(){
 var taps = [];
 var tapbtn = document.getElementById("tapbtn");
 function renderTapInfo(){
-  document.getElementById("tapinfo").textContent =
-    S.tapKey ? t(S.tapKey, S.tapArg === null ? undefined : S.tapArg) : t("tap_hint");
+  var el = document.getElementById("tapinfo");
+  if(!isHost() && S.role!=="none"){ el.textContent = t("ro_hint"); return; }
+  el.textContent = S.tapKey ? t(S.tapKey, S.tapArg === null ? undefined : S.tapArg) : t("tap_hint");
 }
 function doTap(){
   var t = performance.now();
@@ -1065,6 +1286,7 @@ function doTap(){
 }
 tapbtn.addEventListener("pointerdown", function(e){ e.preventDefault(); doTap(); });
 function setBpm(v){
+  if(!isHost()) return;                 // tempo is host-only
   S.bpm = clamp(Math.round(v),30,300);
   localStorage.setItem("sg_bpm", String(S.bpm));
   document.getElementById("bpmval").textContent = S.bpm;
@@ -1084,6 +1306,7 @@ function renderMeters(){
     b.className = "meter-btn" + (i===S.meter ? " on" : "");
     b.textContent = m.name;
     b.addEventListener("click", function(){
+      if(!isHost()) return;             // meter is host-only
       S.meter = i;
       localStorage.setItem("sg_meter", String(i));
       renderMeters(); renderDots(); send(stateMsg());
@@ -1095,7 +1318,7 @@ function renderMeters(){
 /* =========================================================
    METRONOME  (local clock, leader broadcasts start stamp)
    ========================================================= */
-var dotEls = [], countDotEls = [];
+var dotEls = [], countDotEls = [], rampDotEls = [];
 function buildDots(wrap){
   wrap.innerHTML = "";
   var els = [], m = meter();
@@ -1109,9 +1332,11 @@ function buildDots(wrap){
 function renderDots(){
   dotEls      = buildDots(document.getElementById("dots"));
   countDotEls = buildDots(document.getElementById("countdots"));
-  lastBeat = -1; lastCountBeat = -1;
+  rampDotEls  = buildDots(document.getElementById("rampdots"));
+  lastBeat = -1; lastCountBeat = -1; lastRampBeat = -1;
 }
 function toggleMetro(){
+  if(!isHost()) return;                 // transport is host-only
   S.metroRunning = !S.metroRunning;
   S.metroStart = S.metroRunning ? now() + 120 : 0;
   nextClickBeat = -1;
@@ -1161,7 +1386,7 @@ function renderGrid(){
   gridEl.innerHTML = "";
   S.cells.forEach(function(c){
     var b = document.createElement("button");
-    b.className = "cell " + (c.type==="bars" ? "bars" : "cue");
+    b.className = "cell " + (c.type==="bars" ? "bars" : (c.type==="ramp" ? "ramp" : "cue"));
     if(S.editMode) b.className += " editing";
     if(S.pending && S.pending.cellId===c.id) b.className += " armed";
     if(S.pending && S.pending.label===c.label && c.type==="cue") b.className += " picked";
@@ -1172,6 +1397,14 @@ function renderGrid(){
       var n = document.createElement("div");
       n.className = "n"; n.textContent = t("bars_unit", c.n);
       b.appendChild(n);
+    }
+    if(c.type==="ramp"){
+      var w = document.createElement("div");
+      w.className = "wedge " + (c.dir==="down" ? "down" : "up");
+      b.appendChild(w);
+      var rn = document.createElement("div");
+      rn.className = "n"; rn.textContent = t("ramp_cell", c.n || 4);
+      b.appendChild(rn);
     }
     var lpTimer=null, moved=false;
     b.addEventListener("pointerdown", function(){
@@ -1190,6 +1423,11 @@ function renderGrid(){
 }
 function cellTap(c){
   if(S.editMode){ openEditor(c.id); return; }
+  if(!canCue()) return;
+  if(c.type==="ramp"){                 // starts now, no arming step
+    fireRamp(c.n || 4, c.label, c.dir==="down" ? "down" : "up");
+    return;
+  }
   if(c.type==="bars"){
     S.pending = {cellId:c.id, bars:c.n, label:(S.pending && S.pending.label) || ""};
     renderGrid();
@@ -1227,7 +1465,7 @@ document.getElementById("editbtn").addEventListener("click", function(){
   renderGrid();
 });
 document.getElementById("addcell").addEventListener("click", function(){
-  var c = {id:"c"+Date.now(), label:t("new_cell_label"), type:"cue", n:4};
+  var c = {id:"c"+Date.now(), label:t("new_cell_label"), type:"cue", n:4, dir:"up"};
   S.cells.push(c); saveCells(); renderGrid(); openEditor(c.id);
 });
 
@@ -1239,6 +1477,7 @@ function openEditor(id){
   S.editId = id;
   document.getElementById("edlabel").value = c.label;
   document.getElementById("ednval").textContent = c.n || 4;
+  setEdDir(c.dir === "down" ? "down" : "up");
   setEdType(c.type);
   editorEl.classList.add("show");
   scrim.classList.add("show");
@@ -1251,6 +1490,7 @@ function closeEditor(){
     c.label = v || c.label;
     c.type = curEdType;
     c.n = parseInt(document.getElementById("ednval").textContent,10) || 4;
+    c.dir = curEdDir;
     saveCells();
   }
   editorEl.classList.remove("show");
@@ -1258,15 +1498,25 @@ function closeEditor(){
   S.editId = null;
   renderGrid();
 }
-var curEdType = "cue";
-function setEdType(t){
-  curEdType = t;
+var curEdType = "cue", curEdDir = "up";
+function setEdType(v){
+  curEdType = v;
   var btns = document.querySelectorAll("#edtype button");
-  for(var i=0;i<btns.length;i++) btns[i].classList.toggle("on", btns[i].getAttribute("data-type")===t);
-  document.getElementById("ednrow").classList.toggle("hidden", t!=="bars");
+  for(var i=0;i<btns.length;i++) btns[i].classList.toggle("on", btns[i].getAttribute("data-type")===v);
+  /* bar count is used by both "after N bars" and "over N bars" */
+  document.getElementById("ednrow").classList.toggle("hidden", v==="cue");
+  document.getElementById("eddir").classList.toggle("hidden", v!=="ramp");
+}
+function setEdDir(v){
+  curEdDir = v;
+  var btns = document.querySelectorAll("#eddir button");
+  for(var i=0;i<btns.length;i++) btns[i].classList.toggle("on", btns[i].getAttribute("data-dir")===v);
 }
 Array.prototype.forEach.call(document.querySelectorAll("#edtype button"), function(b){
   b.addEventListener("click", function(){ setEdType(b.getAttribute("data-type")); });
+});
+Array.prototype.forEach.call(document.querySelectorAll("#eddir button"), function(b){
+  b.addEventListener("click", function(){ setEdDir(b.getAttribute("data-dir")); });
 });
 document.getElementById("ednminus").addEventListener("click", function(){
   var v = parseInt(document.getElementById("ednval").textContent,10)||4;
@@ -1290,17 +1540,39 @@ editorEl.addEventListener("pointerdown", function(e){ e.stopPropagation(); });
 /* =========================================================
    CUES / COUNTDOWN
    ========================================================= */
-function fireCue(text){
+/* ---------------------------------------------------------
+   Authority model
+   The host owns every timestamp. A conductor that is not the host sends a
+   request without any timestamp and the host stamps it on arrival.
+   Chosen over "sender converts with its own clockOffset" because the host
+   must snap countdowns to its own bar grid anyway (startCountdown reads
+   S.metroStart, which lives in host time), so a client-supplied startAt
+   would be recomputed and any offset error would only add jitter.
+   --------------------------------------------------------- */
+function onCueRequest(m, from){
+  if(!isHost()) return;
+  if(m.k==="flash")       fireCue(m.text, from);
+  else if(m.k==="count")  startCountdown(m.bars, m.label, from);
+  else if(m.k==="ramp")   fireRamp(m.bars, m.label, m.dir, from);
+  else if(m.k==="cancelcount") cancelCountdown();
+  else if(m.k==="cancelramp")  cancelRamp();
+}
+
+function fireCue(text, from){
+  if(!isHost()){ req({t:"req", k:"flash", text:text}); return; }
   var dur = Math.round(barDur()*2);
   dur = clamp(dur, 1500, 6000);
-  send({t:"flash", text:text, dur:dur});
-  startFlash(text, dur);
+  var src = from || myName();
+  send({t:"flash", text:text, dur:dur, from:src});
+  startFlash(text, dur, src);
 }
-function startFlash(text, dur){
+function startFlash(text, dur, from){
   S.flashText = text || "";
+  S.flashFrom = from || "";
   S.flashUntil = now() + (dur || 2000);
   var ov = document.getElementById("ovflash");
   document.getElementById("flashtxt").textContent = S.flashText;
+  document.getElementById("flashfrom").textContent = S.flashFrom;
   ov.classList.remove("fade");
   ov.classList.add("show");
 }
@@ -1310,17 +1582,21 @@ function endFlash(){
   setTimeout(function(){ ov.classList.remove("show"); ov.classList.remove("fade"); }, 360);
   S.flashUntil = 0;
 }
-function startCountdown(bars, label){
+function startCountdown(bars, label, from){
+  if(!isHost()){ req({t:"req", k:"count", bars:bars, label:label||""}); return; }
   var t = now() + 150;
   if(S.metroRunning && S.metroStart){
     var bd = barDur();
     var k = Math.ceil((t - S.metroStart)/bd);
     t = S.metroStart + k*bd;
   }
-  S.count = {startAt:t, bars:bars, label:label||""};
-  send({t:"count", startAt:t, bars:bars, label:label||""});
+  var src = from || myName();
+  S.ramp = null; hideRamp();                 // countdown and ramp are exclusive
+  S.count = {startAt:t, bars:bars, label:label||"", from:src};
+  send({t:"count", startAt:t, bars:bars, label:label||"", from:src});
 }
 function cancelCountdown(){
+  if(!isHost()){ req({t:"req", k:"cancelcount"}); return; }
   S.count = null; hideCount(); send({t:"countcancel"});
 }
 document.getElementById("countcancel").addEventListener("click", cancelCountdown);
@@ -1331,24 +1607,55 @@ function hideCount(){
   for(var i=0;i<countDotEls.length;i++) countDotEls[i].classList.remove("on");
 }
 
+/* ---------- gradual change (ramp): starts now, runs across N bars ---------- */
+function fireRamp(bars, label, dir, from){
+  if(!isHost()){ req({t:"req", k:"ramp", bars:bars, label:label||"", dir:dir}); return; }
+  var startAt = now() + 150;                 // "from now", no bar snapping
+  var src = from || myName();
+  S.count = null; hideCount();               // ramp and countdown are exclusive
+  S.ramp = {startAt:startAt, bars:bars, label:label||"", dir:dir==="down"?"down":"up", from:src};
+  send({t:"ramp", startAt:startAt, bars:bars, label:label||"", dir:S.ramp.dir, from:src});
+}
+function cancelRamp(){
+  if(!isHost()){ req({t:"req", k:"cancelramp"}); return; }
+  S.ramp = null; hideRamp(); send({t:"rampcancel"});
+}
+document.getElementById("rampcancel").addEventListener("click", cancelRamp);
+function hideRamp(){
+  var ov = document.getElementById("ovramp");
+  ov.classList.remove("show");
+  document.getElementById("rampfill").style.width = "0%";
+  lastRampBeat = -1;
+  for(var i=0;i<rampDotEls.length;i++) rampDotEls[i].classList.remove("on");
+}
+
 /* =========================================================
    MAIN LOOP
    ========================================================= */
-var lastBeat = -1, nextClickBeat = -1, lastCountBeat = -1;
+var lastBeat = -1, nextClickBeat = -1, lastCountBeat = -1, lastRampBeat = -1;
 var ovcount = document.getElementById("ovcount");
 var countnum = document.getElementById("countnum");
 var countlab = document.getElementById("countlab");
 var countcancelBtn = document.getElementById("countcancel");
+var ovramp = document.getElementById("ovramp");
+var ramptxt = document.getElementById("ramptxt");
+var rampdirEl = document.getElementById("rampdir");
+var rampbar = document.getElementById("rampbar");
+var rampfill = document.getElementById("rampfill");
+var rampremEl = document.getElementById("ramprem");
+var rampfromEl = document.getElementById("rampfrom");
+var rampcancelBtn = document.getElementById("rampcancel");
 
 /* update() is idempotent: every value is derived from timestamps, so it is safe
    to drive it from both rAF (smooth) and a setInterval net (survives rAF throttling). */
 function update(){
-  var t = now();
+  /* nt, not t: t() is the translation function and must stay reachable here */
+  var nt = now();
   var bd = beatDur(), br = barDur();
 
   /* metronome visuals */
-  if(S.metroRunning && S.metroStart && t >= S.metroStart){
-    var beats = Math.floor((t - S.metroStart)/bd);
+  if(S.metroRunning && S.metroStart && nt >= S.metroStart){
+    var beats = Math.floor((nt - S.metroStart)/bd);
     var idx = ((beats % meter().n) + meter().n) % meter().n;
     if(beats !== lastBeat){
       lastBeat = beats;
@@ -1359,9 +1666,9 @@ function update(){
       if(nextClickBeat < 0) nextClickBeat = Math.max(0, beats+1);
       while(true){
         var bt = S.metroStart + nextClickBeat*bd;
-        if(bt - t > 150) break;
+        if(bt - nt > 150) break;
         var bi = ((nextClickBeat % meter().n) + meter().n) % meter().n;
-        var when = actx.currentTime + Math.max(0,(bt - t))/1000;
+        var when = actx.currentTime + Math.max(0,(bt - nt))/1000;
         click(when, bi===0);
         nextClickBeat++;
         if(nextClickBeat > beats + 64) break;
@@ -1375,20 +1682,20 @@ function update(){
   /* countdown */
   if(S.count){
     var endAt = S.count.startAt + S.count.bars*br;
-    var rem = endAt - t;
+    var rem = endAt - nt;
     if(rem <= 0){
-      var lbl = S.count.label;
+      var lbl = S.count.label, lfrom = S.count.from || "";
       S.count = null; hideCount();
-      startFlash(lbl || t("flash_default"), clamp(Math.round(br*2),1500,6000));
+      startFlash(lbl || t("flash_default"), clamp(Math.round(br*2),1500,6000), lfrom);
     }else{
       var left = Math.max(1, Math.ceil(rem/br));
       ovcount.classList.add("show");
-      countcancelBtn.classList.toggle("hidden", !isLeader());
+      countcancelBtn.classList.toggle("hidden", !canCue());
       if(countnum.textContent !== String(left)) countnum.textContent = left;
       countlab.textContent = S.count.label || "";
       /* countdown metronome dots — same timebase as the countdown itself, so
          they run even when the metronome transport is stopped */
-      var cbeats = Math.floor((t - S.count.startAt)/bd);
+      var cbeats = Math.floor((nt - S.count.startAt)/bd);
       if(cbeats !== lastCountBeat){
         lastCountBeat = cbeats;
         var cidx = cbeats < 0 ? -1 : ((cbeats % meter().n) + meter().n) % meter().n;
@@ -1404,8 +1711,39 @@ function update(){
     }
   }
 
+  /* gradual change: local progress from the host timestamp, no per-beat traffic */
+  if(S.ramp){
+    var rTotal = S.ramp.bars*br;
+    var rEnd = S.ramp.startAt + rTotal;
+    var rRem = rEnd - nt;
+    if(rRem <= 0){
+      S.ramp = null; hideRamp();
+    }else{
+      ovramp.classList.add("show");
+      rampcancelBtn.classList.toggle("hidden", !canCue());
+      var isDown = S.ramp.dir === "down";
+      if(ramptxt.textContent !== S.ramp.label) ramptxt.textContent = S.ramp.label;
+      var dirTxt = t(isDown ? "ramp_down" : "ramp_up");
+      if(rampdirEl.textContent !== dirTxt) rampdirEl.textContent = dirTxt;
+      rampbar.classList.toggle("up", !isDown);
+      rampbar.classList.toggle("down", isDown);
+      var prog = clamp((nt - S.ramp.startAt)/rTotal, 0, 1);
+      rampfill.style.width = (prog*100).toFixed(1) + "%";
+      var rLeft = Math.max(1, Math.ceil(rRem/br));
+      var remTxt = t("bars_unit", rLeft);
+      if(rampremEl.textContent !== remTxt) rampremEl.textContent = remTxt;
+      if(rampfromEl.textContent !== (S.ramp.from||"")) rampfromEl.textContent = S.ramp.from||"";
+      var rbeats = Math.floor((nt - S.ramp.startAt)/bd);
+      if(rbeats !== lastRampBeat){
+        lastRampBeat = rbeats;
+        var ridx = rbeats < 0 ? -1 : ((rbeats % meter().n) + meter().n) % meter().n;
+        for(var q=0;q<rampDotEls.length;q++) rampDotEls[q].classList.toggle("on", q===ridx);
+      }
+    }
+  }
+
   /* flash */
-  if(S.flashUntil && t >= S.flashUntil) endFlash();
+  if(S.flashUntil && nt >= S.flashUntil) endFlash();
 }
 function tick(){ update(); requestAnimationFrame(tick); }
 
@@ -1417,14 +1755,16 @@ function renderAll(){
   document.getElementById("roomlabel").textContent = t((S.role==="local") ? "mode_label" : "room_label");
   document.getElementById("roomcode").textContent =
     (S.role==="local") ? t("local_code") : (S.code || "————");
-  renderMeters(); renderDots(); renderSound(); renderGrid();
+  renderMeters(); renderDots(); renderSound(); renderGrid(); renderRoleBtn();
   document.getElementById("metrobtn").textContent = t(S.metroRunning ? "metro_stop" : "metro_start");
   document.getElementById("metrobtn").classList.toggle("on", S.metroRunning);
   document.getElementById("editbtn").textContent = t(S.editMode ? "edit_off" : "edit_on");
   document.getElementById("folstate").textContent = t("fol_wait");
   if(S.role==="follower"){
-    document.getElementById("folsub").textContent = S.bpm + " BPM · " + meter().name;
+    document.getElementById("folsub").textContent =
+      (S.name ? S.name + " · " : "") + S.bpm + " BPM · " + meter().name;
   }
+  renderTapInfo();
 }
 
 /* wake lock */

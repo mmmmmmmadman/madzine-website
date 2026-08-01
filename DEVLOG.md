@@ -1,5 +1,20 @@
 # MADZINE Website 開發紀錄
 
+## 2026-08-02
+
+### Session Guide：角色權限與漸變指令
+
+- 權限與網路端點分離：`S.role` 維持網路角色，新增 `S.canCue` 權限旗標
+- 加入時可選「可下指令 / 只跟隨」並填暱稱，主畫面可中途切換（交棒）
+- host 為唯一狀態權威：conductor 送請求，host 套用後廣播，startAt 由 host 蓋章
+- BPM 與拍號僅 host 可改，非 host conductor 顯示唯讀狀態列
+- 新增第三種格子型別 ramp（漸強 / 漸弱 + N 小節），全螢幕持續進度顯示，與倒數互斥
+- 新增訊息型別 `ramp` / `rampcancel`，`sync` 加帶 ramp 供中途加入者接上
+- 修正 `update()` 內區域變數 `t` 遮蔽翻譯函式 `t()` 導致的 TypeError
+- 介紹頁 features 新增 ramp 與 roles 兩項三語說明
+
+---
+
 ## 2026-08-01
 
 ### 新增 Session Guide
