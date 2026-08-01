@@ -118,6 +118,11 @@ const I18N = {
             themes: '10 種色彩主題'
           }
         },
+        sessionguide: {
+          name: 'Session Guide',
+          desc: '樂團即興指揮工具，多人手機同步顯示指令與小節倒數',
+          platform: 'Web'
+        },
         watchnext: {
           name: 'WatchNext',
           desc: '跨串流平台影視搜尋工具',
@@ -529,6 +534,11 @@ const I18N = {
             themes: '10 color themes'
           }
         },
+        sessionguide: {
+          name: 'Session Guide',
+          desc: 'Band conducting tool with synced cues and bar countdown across phones',
+          platform: 'Web'
+        },
         watchnext: {
           name: 'WatchNext',
           desc: 'Cross-platform streaming search tool',
@@ -939,6 +949,11 @@ const I18N = {
             icloud: 'iCloud Drive プリセット同期',
             themes: '10種カラーテーマ'
           }
+        },
+        sessionguide: {
+          name: 'Session Guide',
+          desc: 'バンド即興指揮ツール、複数スマホでキューと小節カウントダウンを同期表示',
+          platform: 'Web'
         },
         watchnext: {
           name: 'WatchNext',
