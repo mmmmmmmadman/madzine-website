@@ -44,7 +44,10 @@ button,input{font-family:var(--font);font-weight:300;line-height:1.2;color:inher
 button{background:none;border:none;cursor:pointer}
 
 #app{
-  position:fixed;inset:0;
+  /* dynamic viewport height: iOS Safari shrinks the visible area when the
+     toolbars are shown, and position:fixed alone reports the LARGE viewport. */
+  position:fixed;left:0;right:0;top:0;
+  height:100vh;height:100svh;height:100dvh;
   display:flex;flex-direction:column;
   padding:calc(env(safe-area-inset-top,0px) + 8px) calc(env(safe-area-inset-right,0px) + 12px) calc(env(safe-area-inset-bottom,0px) + 10px) calc(env(safe-area-inset-left,0px) + 12px);
 }
@@ -54,7 +57,7 @@ button{background:none;border:none;cursor:pointer}
   display:flex;align-items:center;justify-content:space-between;
   gap:8px;height:26px;flex:0 0 auto;
 }
-#wordmark{font-size:14px;letter-spacing:.14em;color:var(--fg3);line-height:26px;white-space:nowrap}
+#wordmark{font-size:14px;letter-spacing:.14em;color:var(--fg3);line-height:26px;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
 #topright{display:flex;align-items:center;gap:10px}
 #connstate{font-size:14px;color:var(--fg2);line-height:26px;white-space:nowrap}
 .hue-btn{
@@ -83,6 +86,21 @@ button{background:none;border:none;cursor:pointer}
 .big-btn.primary{border-color:var(--acc-dim);color:var(--acc)}
 .big-btn:active{background:var(--panel)}
 
+/* language switch (home corner) */
+#langbar{
+  position:absolute;
+  left:calc(env(safe-area-inset-left,0px) + 12px);
+  bottom:calc(env(safe-area-inset-bottom,0px) + 10px);
+  display:flex;gap:6px;
+}
+.lang-btn{
+  font-size:16px;letter-spacing:.1em;color:var(--fg3);
+  background:var(--bg-elev);border:1px solid var(--line);border-radius:6px;
+  min-height:44px;min-width:52px;padding:0 12px;line-height:1.2;
+}
+.lang-btn.on{color:var(--acc);border-color:var(--acc-dim)}
+.lang-btn:active{background:var(--panel)}
+
 /* join */
 #join{justify-content:center;align-items:center;gap:16px}
 #join .lab{font-size:15px;color:var(--fg2);letter-spacing:.14em;line-height:1.2}
@@ -98,7 +116,9 @@ button{background:none;border:none;cursor:pointer}
 .row-btns{display:flex;gap:var(--gap);width:100%}
 
 /* ---------- main ---------- */
-#main{gap:var(--gap);padding-top:6px}
+/* the whole leader column scrolls when the viewport is short, so the tempo /
+   meter / metronome cards scroll away instead of squeezing the cell grid */
+#main{gap:var(--gap);padding-top:6px;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 .card{
   background:var(--bg-elev);border:1px solid var(--line);border-radius:10px;
   padding:var(--pad);flex:0 0 auto;
@@ -159,12 +179,11 @@ button{background:none;border:none;cursor:pointer}
 .tr-btn.on{border-color:var(--acc);color:var(--acc)}
 
 /* grid */
-#gridwrap{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:var(--gap)}
+#gridwrap{flex:1 0 auto;display:flex;flex-direction:column;gap:var(--gap)}
 #grid{
-  flex:1 1 auto;min-height:0;
+  flex:1 0 auto;
   display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);
   grid-auto-rows:minmax(56px,1fr);
-  overflow-y:auto;-webkit-overflow-scrolling:touch;
 }
 .cell{
   border:1px solid var(--line);border-radius:10px;background:var(--bg-elev);
@@ -188,6 +207,22 @@ button{background:none;border:none;cursor:pointer}
 }
 #cancelbtn{flex:0 0 auto;min-height:52px;padding:0 14px;border:1px solid var(--line);border-radius:10px;font-size:17px;color:var(--fg2);line-height:1.2}
 
+/* short viewports (iPhone Safari with toolbars, ~664 px and below):
+   compress the non-interactive display elements so the cell grid keeps
+   at least two visible rows. Touch targets stay at 44 px. */
+@media (max-height:700px){
+  #roomcode{font-size:28px}
+  #bpmval{font-size:52px}
+  #bpmbox{min-width:100px}
+  #tapbtn{min-height:70px;font-size:26px}
+  #tapinfo{margin-top:3px}
+  #dots{min-height:24px}
+  .dot{width:16px;height:16px}
+  .dot.first{width:22px;height:22px}
+  #metrocard{gap:6px}
+  :root{--pad:8px}
+}
+
 /* follower panel */
 #folinfo{display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;flex:1 1 auto;min-height:0}
 #folstate{font-size:24px;color:var(--fg2);letter-spacing:.08em;line-height:1.3;text-align:center}
@@ -195,7 +230,9 @@ button{background:none;border:none;cursor:pointer}
 
 /* ---------- overlays ---------- */
 .overlay{
-  position:fixed;inset:0;z-index:40;display:none;
+  position:fixed;left:0;right:0;top:0;
+  height:100vh;height:100svh;height:100dvh;
+  z-index:40;display:none;
   flex-direction:column;align-items:center;justify-content:center;
   padding:24px;text-align:center;background:var(--bg);
 }
@@ -203,7 +240,11 @@ button{background:none;border:none;cursor:pointer}
 #countnum{font-size:min(44vh,40vw);line-height:.82;letter-spacing:-.02em;font-weight:400}
 #countlab{font-size:34px;letter-spacing:.1em;color:var(--fg2);margin-top:10px;line-height:1.25}
 #countsub{font-size:15px;color:var(--fg3);letter-spacing:.2em;margin-top:16px;line-height:1.2}
+#countdots{display:flex;align-items:center;justify-content:center;gap:10px;min-height:30px;margin-top:14px;flex-wrap:wrap}
 #ovcount.last{background:#3a1512}
+#ovcount.last .dot{background:#2a0f0d;border-color:#7a3a31}
+#ovcount.last .dot.on{background:var(--fg);border-color:var(--fg)}
+#ovcount.last .dot.first.on{background:var(--acc-glow);border-color:var(--acc-glow)}
 #ovcount.last #countnum{color:#ff6a55}
 #ovcount.last.blink #countnum{opacity:.15}
 #ovcount .cancel{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);font-size:17px;color:var(--fg3);border:1px solid var(--line);border-radius:8px;padding:10px 20px;min-height:44px;line-height:1.2}
@@ -265,21 +306,21 @@ button{background:none;border:none;cursor:pointer}
   <div class="screen show" id="home">
     <div class="brand">
       <div class="t">Session Guide</div>
-      <div class="s">LIVE CUE SYSTEM</div>
+      <div class="s" data-i18n="brand_sub"></div>
     </div>
-    <button class="big-btn primary" id="btnCreate">建立房間<span class="sub">Leader — 發送指令給團員</span></button>
-    <button class="big-btn" id="btnJoin">加入房間<span class="sub">Follower — 接收 leader 的指令</span></button>
-    <button class="big-btn" id="btnLocal">本地模式<span class="sub">單機 — 不連線，功能全部可用</span></button>
+    <button class="big-btn primary" id="btnCreate"><span data-i18n="home_create"></span><span class="sub" data-i18n="home_create_sub"></span></button>
+    <button class="big-btn" id="btnJoin"><span data-i18n="home_join"></span><span class="sub" data-i18n="home_join_sub"></span></button>
+    <button class="big-btn" id="btnLocal"><span data-i18n="home_local"></span><span class="sub" data-i18n="home_local_sub"></span></button>
   </div>
 
   <!-- JOIN -->
   <div class="screen" id="join">
-    <div class="lab">輸入四位房號</div>
+    <div class="lab" data-i18n="join_lab"></div>
     <input id="codeinput" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" maxlength="4" placeholder="————">
     <div id="joinmsg"></div>
     <div class="row-btns">
-      <button class="big-btn" id="btnJoinBack" style="flex:0 0 34%">返回</button>
-      <button class="big-btn primary" id="btnJoinGo" style="flex:1 1 auto">加入</button>
+      <button class="big-btn" id="btnJoinBack" style="flex:0 0 34%" data-i18n="join_back"></button>
+      <button class="big-btn primary" id="btnJoinGo" style="flex:1 1 auto" data-i18n="join_go"></button>
     </div>
   </div>
 
@@ -290,7 +331,7 @@ button{background:none;border:none;cursor:pointer}
         <div id="roomlabel">ROOM</div>
         <div id="roomcode">————</div>
       </div>
-      <button id="leavebtn">離開</button>
+      <button id="leavebtn" data-i18n="leave"></button>
     </div>
 
     <div class="card" id="tempocard">
@@ -305,7 +346,7 @@ button{background:none;border:none;cursor:pointer}
         </div>
         <button id="tapbtn">TAP</button>
       </div>
-      <div id="tapinfo">連點四下以上取得速度</div>
+      <div id="tapinfo"></div>
     </div>
 
     <div class="card" id="metercard">
@@ -315,9 +356,9 @@ button{background:none;border:none;cursor:pointer}
     <div class="card" id="metrocard">
       <div id="dots"></div>
       <div id="transport">
-        <button class="tr-btn" id="metrobtn">節拍器 開始</button>
-        <button class="tr-btn" id="soundbtn">音效 關</button>
-        <button class="tr-btn" id="editbtn">編輯格子</button>
+        <button class="tr-btn" id="metrobtn"></button>
+        <button class="tr-btn" id="soundbtn"></button>
+        <button class="tr-btn" id="editbtn"></button>
       </div>
     </div>
 
@@ -325,16 +366,22 @@ button{background:none;border:none;cursor:pointer}
       <div id="grid"></div>
       <div id="pendingbar" class="hidden">
         <div id="pendingtxt"></div>
-        <button id="cancelbtn">取消</button>
-        <button id="startbtn">開始</button>
+        <button id="cancelbtn" data-i18n="cancel"></button>
+        <button id="startbtn" data-i18n="start"></button>
       </div>
-      <button class="big-btn" id="addcell" style="min-height:50px;font-size:18px;display:none">新增格子</button>
+      <button class="big-btn" id="addcell" style="min-height:50px;font-size:18px;display:none" data-i18n="add_cell"></button>
     </div>
 
     <div id="folinfo" class="hidden">
-      <div id="folstate">等待 leader 指令</div>
+      <div id="folstate"></div>
       <div id="folsub"></div>
     </div>
+  </div>
+
+  <div id="langbar">
+    <button class="lang-btn" data-lang="zh-TW">中</button>
+    <button class="lang-btn" data-lang="en">EN</button>
+    <button class="lang-btn" data-lang="ja">JP</button>
   </div>
 </div>
 
@@ -342,8 +389,9 @@ button{background:none;border:none;cursor:pointer}
 <div class="overlay" id="ovcount">
   <div id="countnum">4</div>
   <div id="countlab"></div>
-  <div id="countsub">小節倒數</div>
-  <button class="cancel hidden" id="countcancel">取消倒數</button>
+  <div id="countdots"></div>
+  <div id="countsub" data-i18n="count_sub"></div>
+  <button class="cancel hidden" id="countcancel" data-i18n="count_cancel"></button>
 </div>
 
 <!-- FLASH OVERLAY -->
@@ -353,16 +401,16 @@ button{background:none;border:none;cursor:pointer}
 <div id="scrim"></div>
 <div id="huepop">
   <canvas id="huecanvas" width="440" height="440" style="width:220px;height:220px"></canvas>
-  <div id="hueinfo">外環 色相 · 中心 上下拖曳 飽和度</div>
+  <div id="hueinfo" data-i18n="hue_hint"></div>
 </div>
 
 <!-- CELL EDITOR -->
 <div id="editor">
-  <div class="h">格子設定</div>
-  <input id="edlabel" type="text" maxlength="12" placeholder="名稱">
+  <div class="h" data-i18n="ed_title"></div>
+  <input id="edlabel" type="text" maxlength="12" data-i18n-ph="ed_name_ph">
   <div class="seg" id="edtype">
-    <button data-type="cue">即時指令</button>
-    <button data-type="bars">小節數</button>
+    <button data-type="cue" data-i18n="ed_type_cue"></button>
+    <button data-type="bars" data-i18n="ed_type_bars"></button>
   </div>
   <div id="ednrow" class="hidden">
     <button class="nudge-btn" id="ednminus">-1</button>
@@ -370,8 +418,8 @@ button{background:none;border:none;cursor:pointer}
     <button class="nudge-btn" id="ednplus">+1</button>
   </div>
   <div id="edbtns">
-    <button id="eddel">刪除</button>
-    <button id="eddone">完成</button>
+    <button id="eddel" data-i18n="ed_delete"></button>
+    <button id="eddone" data-i18n="ed_done"></button>
   </div>
 </div>
 
@@ -379,6 +427,158 @@ button{background:none;border:none;cursor:pointer}
 <script>
 "use strict";
 (function(){
+
+/* =========================================================
+   I18N  (zh-TW / en / ja)
+   Strings are kept short enough for a 390 px wide viewport.
+   ========================================================= */
+var I18N = {
+"zh-TW":{
+  brand_sub:"現場指令系統",
+  home_create:"建立房間",     home_create_sub:"Leader — 發送指令給團員",
+  home_join:"加入房間",       home_join_sub:"Follower — 接收 leader 的指令",
+  home_local:"本地模式",      home_local_sub:"單機 — 不連線，功能全部可用",
+  join_lab:"輸入四位房號",
+  join_back:"返回",           join_go:"加入",
+  join_err_len:"房號需四位英數",
+  join_connecting:"連線中",
+  join_notfound:"找不到房間，確認房號後重試",
+  join_nopeer:"連線元件未載入，請確認網路後重整；仍可使用本地模式",
+  conn_notloaded:"元件未載入", conn_local:"本地模式",
+  conn_creating:"建立中",      conn_connecting:"連線中",
+  conn_connected:"已連線",     conn_reconnect:"重新連線中",
+  conn_error:"連線錯誤",       conn_none:"未連線",
+  conn_peers:"{n} 位團員",
+  room_label:"房號",           mode_label:"模式",
+  local_code:"本地",           leave:"離開",
+  tap_hint:"連點四下以上取得速度",
+  tap_count:"已點 {n} 下",     tap_done:"速度已更新",
+  metro_start:"節拍器 開始",   metro_stop:"節拍器 停止",
+  sound_on:"音效 開",          sound_off:"音效 關",
+  edit_on:"編輯格子",          edit_off:"完成編輯",
+  add_cell:"新增格子",         new_cell_label:"新指令",
+  bars_unit:"{n} 小節",
+  pending_bars:"{n} 小節倒數", pending_cue:"　指令 {label}",
+  pending_hint:"可再點一個指令格附加，或直接按開始",
+  cancel:"取消",               start:"開始",
+  count_sub:"小節倒數",        count_cancel:"取消倒數",
+  flash_default:"開始",
+  fol_wait:"等待 leader 指令",
+  hue_hint:"外環 色相 · 中心 上下拖曳 飽和度",
+  ed_title:"格子設定",         ed_name_ph:"名稱",
+  ed_type_cue:"即時指令",      ed_type_bars:"小節數",
+  ed_delete:"刪除",            ed_done:"完成",
+  cell_1:"4 小節後", cell_2:"8 小節後", cell_3:"變吵",   cell_4:"變安靜",
+  cell_5:"SOLO",     cell_6:"回主題",   cell_7:"結尾",   cell_8:"自由"
+},
+"en":{
+  brand_sub:"LIVE CUE SYSTEM",
+  home_create:"Create Room",  home_create_sub:"Leader — send cues to the band",
+  home_join:"Join Room",      home_join_sub:"Follower — receive leader cues",
+  home_local:"Local Mode",    home_local_sub:"Standalone — offline, all features",
+  join_lab:"ENTER 4 CHARACTER CODE",
+  join_back:"Back",           join_go:"Join",
+  join_err_len:"Code must be 4 letters or digits",
+  join_connecting:"Connecting",
+  join_notfound:"Room not found. Check the code and retry.",
+  join_nopeer:"Network module not loaded. Check your connection and reload; Local Mode still works.",
+  conn_notloaded:"No network", conn_local:"Local",
+  conn_creating:"Creating",    conn_connecting:"Connecting",
+  conn_connected:"Connected",  conn_reconnect:"Reconnecting",
+  conn_error:"Error",          conn_none:"Offline",
+  conn_peers:"{n} joined",
+  room_label:"ROOM",           mode_label:"MODE",
+  local_code:"LOCAL",          leave:"Leave",
+  tap_hint:"Tap 4 times or more to set tempo",
+  tap_count:"{n} taps",        tap_done:"Tempo updated",
+  metro_start:"Start Click",   metro_stop:"Stop Click",
+  sound_on:"Sound On",         sound_off:"Sound Off",
+  edit_on:"Edit Cells",        edit_off:"Done Editing",
+  add_cell:"Add Cell",         new_cell_label:"New Cue",
+  bars_unit:"{n} BARS",
+  pending_bars:"{n} bar countdown", pending_cue:" · Cue {label}",
+  pending_hint:"Tap a cue to attach, or press Start",
+  cancel:"Cancel",             start:"Start",
+  count_sub:"BARS TO GO",      count_cancel:"Cancel Countdown",
+  flash_default:"START",
+  fol_wait:"Waiting for leader cue",
+  hue_hint:"Ring hue · Center drag saturation",
+  ed_title:"CELL SETTINGS",    ed_name_ph:"Name",
+  ed_type_cue:"Instant Cue",   ed_type_bars:"Bar Count",
+  ed_delete:"Delete",          ed_done:"Done",
+  cell_1:"After 4 Bars", cell_2:"After 8 Bars", cell_3:"Louder", cell_4:"Quieter",
+  cell_5:"SOLO",         cell_6:"Back to Head", cell_7:"Ending", cell_8:"Free"
+},
+"ja":{
+  brand_sub:"ライブキューシステム",
+  home_create:"ルームを作成",  home_create_sub:"リーダー — メンバーへキュー送信",
+  home_join:"ルームに参加",    home_join_sub:"フォロワー — リーダーのキュー受信",
+  home_local:"ローカルモード", home_local_sub:"単体 — オフラインで全機能",
+  join_lab:"4文字のコードを入力",
+  join_back:"戻る",            join_go:"参加",
+  join_err_len:"コードは英数字4文字です",
+  join_connecting:"接続中",
+  join_notfound:"ルームが見つかりません。コードを確認",
+  join_nopeer:"通信モジュール未読込。ネットワークを確認して再読込。ローカルモードは使えます",
+  conn_notloaded:"通信不可",   conn_local:"ローカル",
+  conn_creating:"作成中",      conn_connecting:"接続中",
+  conn_connected:"接続済",     conn_reconnect:"再接続中",
+  conn_error:"接続エラー",     conn_none:"未接続",
+  conn_peers:"{n} 人接続",
+  room_label:"ルーム",          mode_label:"モード",
+  local_code:"ローカル",        leave:"退出",
+  tap_hint:"4回以上タップでテンポ設定",
+  tap_count:"{n} 回タップ",     tap_done:"テンポ更新",
+  metro_start:"クリック開始",   metro_stop:"クリック停止",
+  sound_on:"音 オン",           sound_off:"音 オフ",
+  edit_on:"セル編集",           edit_off:"編集完了",
+  add_cell:"セルを追加",        new_cell_label:"新規キュー",
+  bars_unit:"{n} 小節",
+  pending_bars:"{n} 小節カウント", pending_cue:"　キュー {label}",
+  pending_hint:"キューをタップで追加、または開始",
+  cancel:"キャンセル",          start:"スタート",
+  count_sub:"小節カウント",     count_cancel:"カウント中止",
+  flash_default:"スタート",
+  fol_wait:"リーダーのキュー待ち",
+  hue_hint:"外周 色相 · 中央 上下ドラッグ 彩度",
+  ed_title:"セル設定",          ed_name_ph:"名前",
+  ed_type_cue:"即時キュー",     ed_type_bars:"小節数",
+  ed_delete:"削除",             ed_done:"完了",
+  cell_1:"4小節後", cell_2:"8小節後", cell_3:"強く",     cell_4:"静かに",
+  cell_5:"SOLO",    cell_6:"テーマへ", cell_7:"エンディング", cell_8:"フリー"
+}
+};
+
+function normLang(v){
+  if(!v) return null;
+  v = String(v).toLowerCase();
+  if(v.indexOf("zh")===0) return "zh-TW";
+  if(v.indexOf("ja")===0 || v.indexOf("jp")===0) return "ja";
+  if(v.indexOf("en")===0) return "en";
+  return null;
+}
+function initLang(){
+  var q = null;
+  try{
+    var m = /[?&]lang=([^&]+)/.exec(window.location.search);
+    if(m) q = normLang(decodeURIComponent(m[1]));
+  }catch(err){}
+  if(q){ try{ localStorage.setItem("sg_lang", q); }catch(e2){} return q; }
+  var stored = null;
+  try{ stored = normLang(localStorage.getItem("sg_lang")); }catch(e3){}
+  if(stored) return stored;
+  return normLang(navigator.language || (navigator.languages||[])[0]) || "en";
+}
+var lang = initLang();
+
+/* t(key, value) — {n} and {label} are both replaced by value */
+function t(k, v){
+  var dict = I18N[lang] || I18N.en;
+  var s = dict[k];
+  if(s === undefined) s = I18N.en[k];
+  if(s === undefined) return k;
+  return (v === undefined) ? s : s.replace(/\{n\}|\{label\}/g, v);
+}
 
 /* =========================================================
    HUE THEME  (HSB, hue 0..1, saturation multiplier 0..2)
@@ -551,16 +751,28 @@ var METERS = [
   {name:"7/8", n:7, d:8, acc:[0,4]},
   {name:"5/4", n:5, d:4, acc:[0,3]}
 ];
-var DEFAULT_CELLS = [
-  {id:"c1", label:"4 小節後", type:"bars", n:4},
-  {id:"c2", label:"8 小節後", type:"bars", n:8},
-  {id:"c3", label:"變吵",   type:"cue"},
-  {id:"c4", label:"變安靜", type:"cue"},
-  {id:"c5", label:"SOLO",   type:"cue"},
-  {id:"c6", label:"回主題", type:"cue"},
-  {id:"c7", label:"結尾",   type:"cue"},
-  {id:"c8", label:"自由",   type:"cue"}
+var DEFAULT_CELL_DEFS = [
+  {id:"c1", key:"cell_1", type:"bars", n:4},
+  {id:"c2", key:"cell_2", type:"bars", n:8},
+  {id:"c3", key:"cell_3", type:"cue"},
+  {id:"c4", key:"cell_4", type:"cue"},
+  {id:"c5", key:"cell_5", type:"cue"},
+  {id:"c6", key:"cell_6", type:"cue"},
+  {id:"c7", key:"cell_7", type:"cue"},
+  {id:"c8", key:"cell_8", type:"cue"}
 ];
+/* Built in the current language. Once the user edits a cell the set is written
+   to localStorage and is never regenerated on a language switch. */
+function defaultCells(){
+  return DEFAULT_CELL_DEFS.map(function(c){
+    var o = {id:c.id, label:t(c.key), type:c.type};
+    if(c.n !== undefined) o.n = c.n;
+    return o;
+  });
+}
+function cellsAreCustom(){
+  try{ return !!localStorage.getItem("sg_cells"); }catch(err){ return false; }
+}
 
 var S = {
   role:"none",            // none | leader | follower | local
@@ -576,7 +788,10 @@ var S = {
   flashUntil:0,
   flashText:"",
   editMode:false,
-  editId:null
+  editId:null,
+  connKey:null, connArg:null,   // live-translated status strings
+  joinKey:null,
+  tapKey:null,  tapArg:null
 };
 
 function loadCells(){
@@ -587,7 +802,7 @@ function loadCells(){
       if(Array.isArray(a) && a.length) return a;
     }
   }catch(err){}
-  return DEFAULT_CELLS.map(function(c){ return Object.assign({},c); });
+  return defaultCells();
 }
 function saveCells(){ localStorage.setItem("sg_cells", JSON.stringify(S.cells)); }
 function meter(){ return METERS[S.meter]; }
@@ -620,20 +835,35 @@ function stateMsg(){
           metroRunning:S.metroRunning, metroStart:S.metroStart,
           count:S.count};
 }
-function setConnState(txt){ document.getElementById("connstate").textContent = txt; }
+function setConnState(key, arg){
+  S.connKey = key || null;
+  S.connArg = (arg === undefined) ? null : arg;
+  renderConnState();
+}
+function renderConnState(){
+  document.getElementById("connstate").textContent =
+    S.connKey ? t(S.connKey, S.connArg === null ? undefined : S.connArg) : "";
+}
+function setJoinMsg(key){
+  S.joinKey = key || null;
+  renderJoinMsg();
+}
+function renderJoinMsg(){
+  document.getElementById("joinmsg").textContent = S.joinKey ? t(S.joinKey) : "";
+}
 
 function peerReady(){
   if(typeof Peer !== "undefined") return true;
-  setConnState("連線元件未載入");
-  document.getElementById("joinmsg").textContent = "連線元件未載入，請確認網路後重整；仍可使用本地模式";
+  setConnState("conn_notloaded");
+  setJoinMsg("join_nopeer");
   return false;
 }
 function hostRoom(attempt){
-  if(!peerReady()){ S.role="local"; showMain(); setConnState("本地模式"); return; }
+  if(!peerReady()){ S.role="local"; showMain(); setConnState("conn_local"); return; }
   S.code = makeCode();
   S.role = "leader";
   showMain();
-  setConnState("建立中");
+  setConnState("conn_creating");
   peer = new Peer(PREFIX + S.code, {debug:0});
   peer.on("open", function(){
     document.getElementById("roomcode").textContent = S.code;
@@ -649,49 +879,48 @@ function hostRoom(attempt){
     c.on("close", function(){ conns = conns.filter(function(x){return x!==c;}); updateConn(); });
     c.on("error", function(){ conns = conns.filter(function(x){return x!==c;}); updateConn(); });
   });
-  peer.on("disconnected", function(){ setConnState("訊號中斷 重連中"); try{ peer.reconnect(); }catch(err){} });
+  peer.on("disconnected", function(){ setConnState("conn_reconnect"); try{ peer.reconnect(); }catch(err){} });
   peer.on("error", function(err){
     if(err && err.type==="unavailable-id" && (attempt||0) < 5){
       try{ peer.destroy(); }catch(e2){}
       hostRoom((attempt||0)+1); return;
     }
-    setConnState("連線錯誤");
+    setConnState("conn_error");
   });
 }
 function updateConn(){
-  if(S.role==="leader") setConnState(conns.filter(function(c){return c.open;}).length + " 位團員已連線");
+  if(S.role==="leader") setConnState("conn_peers", conns.filter(function(c){return c.open;}).length);
 }
 
 function joinRoom(code){
   if(!peerReady()) return;
   S.code = code; S.role = "follower";
-  var msg = document.getElementById("joinmsg");
-  msg.textContent = "連線中";
+  setJoinMsg("join_connecting");
   peer = new Peer({debug:0});
   peer.on("open", function(){ connectHost(); });
-  peer.on("disconnected", function(){ setConnState("訊號中斷 重連中"); try{ peer.reconnect(); }catch(err){} });
+  peer.on("disconnected", function(){ setConnState("conn_reconnect"); try{ peer.reconnect(); }catch(err){} });
   peer.on("error", function(){
     if(S.role!=="follower") return;
-    msg.textContent = "找不到房間，確認房號後重試";
-    setConnState("未連線");
+    setJoinMsg("join_notfound");
+    setConnState("conn_none");
     scheduleRetry();
   });
 }
 function connectHost(){
   if(!peer || S.role!=="follower") return;
-  setConnState("連線中");
+  setConnState("conn_connecting");
   var c = peer.connect(PREFIX + S.code, {reliable:true});
   hostConn = c;
   c.on("open", function(){
     retryDelay = 1200;
     showMain();
     document.getElementById("roomcode").textContent = S.code;
-    setConnState("已連線");
+    setConnState("conn_connected");
     pingHost();
   });
   c.on("data", function(raw){ onHostData(parse(raw)); });
-  c.on("close", function(){ setConnState("連線中斷 重連中"); scheduleRetry(); });
-  c.on("error", function(){ setConnState("連線中斷 重連中"); scheduleRetry(); });
+  c.on("close", function(){ setConnState("conn_reconnect"); scheduleRetry(); });
+  c.on("error", function(){ setConnState("conn_reconnect"); scheduleRetry(); });
 }
 function scheduleRetry(){
   if(S.role!=="follower") return;
@@ -737,9 +966,11 @@ function onHostData(m){
 var scrHome = document.getElementById("home");
 var scrJoin = document.getElementById("join");
 var scrMain = document.getElementById("main");
+var langbar = document.getElementById("langbar");
 function show(el){
   [scrHome,scrJoin,scrMain].forEach(function(s){ s.classList.remove("show"); });
   el.classList.add("show");
+  langbar.classList.toggle("hidden", el !== scrHome);   // corner switch is home only
 }
 function showMain(){
   show(scrMain);
@@ -751,22 +982,22 @@ function showMain(){
   document.getElementById("editbtn").classList.toggle("hidden", !leader);
   document.getElementById("metrobtn").classList.toggle("hidden", !leader);
   renderAll();
-  if(S.role==="local") setConnState("本地模式");
+  if(S.role==="local") setConnState("conn_local");
   requestWakeLock();
 }
 
 document.getElementById("btnCreate").addEventListener("click", function(){ hostRoom(0); });
 document.getElementById("btnLocal").addEventListener("click", function(){
-  S.role = "local"; S.code = ""; showMain(); setConnState("本地模式");
+  S.role = "local"; S.code = ""; showMain(); setConnState("conn_local");
 });
 document.getElementById("btnJoin").addEventListener("click", function(){
-  show(scrJoin); document.getElementById("joinmsg").textContent = "";
+  show(scrJoin); setJoinMsg(null);
   document.getElementById("codeinput").focus();
 });
 document.getElementById("btnJoinBack").addEventListener("click", function(){ show(scrHome); });
 document.getElementById("btnJoinGo").addEventListener("click", function(){
   var v = (document.getElementById("codeinput").value||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
-  if(v.length!==4){ document.getElementById("joinmsg").textContent = "房號需四位英數"; return; }
+  if(v.length!==4){ setJoinMsg("join_err_len"); return; }
   joinRoom(v);
 });
 document.getElementById("codeinput").addEventListener("input", function(){
@@ -776,14 +1007,44 @@ document.getElementById("leavebtn").addEventListener("click", function(){
   try{ if(peer) peer.destroy(); }catch(err){}
   peer=null; conns=[]; hostConn=null; clearTimeout(retryTimer);
   S.role="none"; S.count=null; S.metroRunning=false; S.pending=null;
-  hideCount(); setConnState(""); show(scrHome);
+  hideCount(); setConnState(null); show(scrHome);
 });
+
+/* ---------- language switch ---------- */
+function setLang(v){
+  var n = normLang(v); if(!n || n === lang) return;
+  lang = n;
+  try{ localStorage.setItem("sg_lang", lang); }catch(err){}
+  if(!cellsAreCustom()) S.cells = defaultCells();   // untouched defaults follow the language
+  applyLang();
+}
+Array.prototype.forEach.call(document.querySelectorAll(".lang-btn"), function(b){
+  b.addEventListener("click", function(){ setLang(b.getAttribute("data-lang")); });
+});
+function applyLang(){
+  document.documentElement.setAttribute("lang", lang === "zh-TW" ? "zh-Hant" : lang);
+  Array.prototype.forEach.call(document.querySelectorAll("[data-i18n]"), function(el){
+    el.textContent = t(el.getAttribute("data-i18n"));
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-i18n-ph]"), function(el){
+    el.setAttribute("placeholder", t(el.getAttribute("data-i18n-ph")));
+  });
+  Array.prototype.forEach.call(document.querySelectorAll(".lang-btn"), function(b){
+    b.classList.toggle("on", b.getAttribute("data-lang") === lang);
+  });
+  renderConnState(); renderJoinMsg(); renderTapInfo();
+  renderAll();
+}
 
 /* =========================================================
    TEMPO / TAP
    ========================================================= */
 var taps = [];
 var tapbtn = document.getElementById("tapbtn");
+function renderTapInfo(){
+  document.getElementById("tapinfo").textContent =
+    S.tapKey ? t(S.tapKey, S.tapArg === null ? undefined : S.tapArg) : t("tap_hint");
+}
 function doTap(){
   var t = performance.now();
   if(taps.length && (t - taps[taps.length-1]) > beatDur()*8) taps = [];
@@ -796,7 +1057,9 @@ function doTap(){
     var avg = sum/iv.length;
     setBpm(clamp(Math.round(60000/avg),30,300));   // BPM is quarter-note based
   }
-  document.getElementById("tapinfo").textContent = taps.length<4 ? ("已點 "+taps.length+" 下") : "速度已更新";
+  if(taps.length < 4){ S.tapKey = "tap_count"; S.tapArg = taps.length; }
+  else { S.tapKey = "tap_done"; S.tapArg = null; }
+  renderTapInfo();
   tapbtn.classList.add("hit");
   setTimeout(function(){ tapbtn.classList.remove("hit"); }, 70);
 }
@@ -832,22 +1095,27 @@ function renderMeters(){
 /* =========================================================
    METRONOME  (local clock, leader broadcasts start stamp)
    ========================================================= */
-var dotEls = [];
-function renderDots(){
-  var wrap = document.getElementById("dots");
-  wrap.innerHTML = ""; dotEls = [];
-  var m = meter();
+var dotEls = [], countDotEls = [];
+function buildDots(wrap){
+  wrap.innerHTML = "";
+  var els = [], m = meter();
   for(var i=0;i<m.n;i++){
     var d = document.createElement("div");
     d.className = "dot" + (i===0 ? " first" : (m.acc.indexOf(i)>=0 ? " acc" : ""));
-    wrap.appendChild(d); dotEls.push(d);
+    wrap.appendChild(d); els.push(d);
   }
+  return els;
+}
+function renderDots(){
+  dotEls      = buildDots(document.getElementById("dots"));
+  countDotEls = buildDots(document.getElementById("countdots"));
+  lastBeat = -1; lastCountBeat = -1;
 }
 function toggleMetro(){
   S.metroRunning = !S.metroRunning;
   S.metroStart = S.metroRunning ? now() + 120 : 0;
   nextClickBeat = -1;
-  document.getElementById("metrobtn").textContent = S.metroRunning ? "節拍器 停止" : "節拍器 開始";
+  document.getElementById("metrobtn").textContent = t(S.metroRunning ? "metro_stop" : "metro_start");
   document.getElementById("metrobtn").classList.toggle("on", S.metroRunning);
   send(stateMsg());
 }
@@ -855,7 +1123,7 @@ document.getElementById("metrobtn").addEventListener("click", toggleMetro);
 
 var soundbtn = document.getElementById("soundbtn");
 function renderSound(){
-  soundbtn.textContent = S.sound ? "音效 開" : "音效 關";
+  soundbtn.textContent = t(S.sound ? "sound_on" : "sound_off");
   soundbtn.classList.toggle("on", S.sound);
 }
 soundbtn.addEventListener("click", function(){
@@ -902,7 +1170,7 @@ function renderGrid(){
     b.appendChild(lab);
     if(c.type==="bars"){
       var n = document.createElement("div");
-      n.className = "n"; n.textContent = c.n + " BARS";
+      n.className = "n"; n.textContent = t("bars_unit", c.n);
       b.appendChild(n);
     }
     var lpTimer=null, moved=false;
@@ -939,9 +1207,9 @@ function renderPending(){
   var txt = document.getElementById("pendingtxt");
   if(!S.pending){ bar.classList.add("hidden"); return; }
   bar.classList.remove("hidden");
-  txt.textContent = S.pending.bars + " 小節倒數"
-    + (S.pending.label ? ("　指令 " + S.pending.label) : "")
-    + "\n可再點一個指令格附加，或直接按開始";
+  txt.textContent = t("pending_bars", S.pending.bars)
+    + (S.pending.label ? t("pending_cue", S.pending.label) : "")
+    + "\n" + t("pending_hint");
 }
 document.getElementById("cancelbtn").addEventListener("click", function(){
   S.pending = null; renderGrid();
@@ -954,12 +1222,12 @@ document.getElementById("startbtn").addEventListener("click", function(){
 document.getElementById("editbtn").addEventListener("click", function(){
   S.editMode = !S.editMode;
   document.getElementById("editbtn").classList.toggle("on", S.editMode);
-  document.getElementById("editbtn").textContent = S.editMode ? "完成編輯" : "編輯格子";
+  document.getElementById("editbtn").textContent = t(S.editMode ? "edit_off" : "edit_on");
   if(S.editMode) S.pending = null;
   renderGrid();
 });
 document.getElementById("addcell").addEventListener("click", function(){
-  var c = {id:"c"+Date.now(), label:"新指令", type:"cue", n:4};
+  var c = {id:"c"+Date.now(), label:t("new_cell_label"), type:"cue", n:4};
   S.cells.push(c); saveCells(); renderGrid(); openEditor(c.id);
 });
 
@@ -1059,12 +1327,14 @@ document.getElementById("countcancel").addEventListener("click", cancelCountdown
 function hideCount(){
   var ov = document.getElementById("ovcount");
   ov.classList.remove("show","last","blink");
+  lastCountBeat = -1;
+  for(var i=0;i<countDotEls.length;i++) countDotEls[i].classList.remove("on");
 }
 
 /* =========================================================
    MAIN LOOP
    ========================================================= */
-var lastBeat = -1, nextClickBeat = -1;
+var lastBeat = -1, nextClickBeat = -1, lastCountBeat = -1;
 var ovcount = document.getElementById("ovcount");
 var countnum = document.getElementById("countnum");
 var countlab = document.getElementById("countlab");
@@ -1109,13 +1379,21 @@ function update(){
     if(rem <= 0){
       var lbl = S.count.label;
       S.count = null; hideCount();
-      startFlash(lbl || "開始", clamp(Math.round(br*2),1500,6000));
+      startFlash(lbl || t("flash_default"), clamp(Math.round(br*2),1500,6000));
     }else{
       var left = Math.max(1, Math.ceil(rem/br));
       ovcount.classList.add("show");
       countcancelBtn.classList.toggle("hidden", !isLeader());
       if(countnum.textContent !== String(left)) countnum.textContent = left;
       countlab.textContent = S.count.label || "";
+      /* countdown metronome dots — same timebase as the countdown itself, so
+         they run even when the metronome transport is stopped */
+      var cbeats = Math.floor((t - S.count.startAt)/bd);
+      if(cbeats !== lastCountBeat){
+        lastCountBeat = cbeats;
+        var cidx = cbeats < 0 ? -1 : ((cbeats % meter().n) + meter().n) % meter().n;
+        for(var k=0;k<countDotEls.length;k++) countDotEls[k].classList.toggle("on", k===cidx);
+      }
       var last = left === 1;
       ovcount.classList.toggle("last", last);
       if(last){
@@ -1136,15 +1414,16 @@ function tick(){ update(); requestAnimationFrame(tick); }
    ========================================================= */
 function renderAll(){
   document.getElementById("bpmval").textContent = S.bpm;
-  document.getElementById("roomlabel").textContent = (S.role==="local") ? "MODE" : "ROOM";
+  document.getElementById("roomlabel").textContent = t((S.role==="local") ? "mode_label" : "room_label");
   document.getElementById("roomcode").textContent =
-    (S.role==="local") ? "LOCAL" : (S.code || "————");
+    (S.role==="local") ? t("local_code") : (S.code || "————");
   renderMeters(); renderDots(); renderSound(); renderGrid();
-  document.getElementById("metrobtn").textContent = S.metroRunning ? "節拍器 停止" : "節拍器 開始";
+  document.getElementById("metrobtn").textContent = t(S.metroRunning ? "metro_stop" : "metro_start");
   document.getElementById("metrobtn").classList.toggle("on", S.metroRunning);
+  document.getElementById("editbtn").textContent = t(S.editMode ? "edit_off" : "edit_on");
+  document.getElementById("folstate").textContent = t("fol_wait");
   if(S.role==="follower"){
-    document.getElementById("folstate").textContent = "等待 leader 指令";
-    document.getElementById("folsub").textContent = S.bpm + " BPM　" + meter().name;
+    document.getElementById("folsub").textContent = S.bpm + " BPM · " + meter().name;
   }
 }
 
@@ -1169,7 +1448,7 @@ document.addEventListener("pointerdown", function once(){
 document.addEventListener("gesturestart", function(e){ e.preventDefault(); });
 
 applyTheme();
-renderAll();
+applyLang();     // also runs renderAll()
 requestAnimationFrame(tick);
 setInterval(update, 100);
 
