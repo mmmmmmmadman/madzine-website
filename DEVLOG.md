@@ -1,5 +1,28 @@
 # MADZINE Website 開發紀錄
 
+## 2026-08-01
+
+### 新增 Session Guide
+
+- 新增 sessionguide.html：作品介紹頁（六張截圖 thumb strip、功能介紹、技術資訊）
+- 新增 sessionguide-app.html：樂團即興指揮 Web 應用程式（原 sessionguide.html 改名）
+- software.html 新增 Session Guide 列表項目
+- i18n.js 新增 sessionguide 三語翻譯（desc / intro / launch / features）
+- App 本身內建三語切換（中 / EN / JP），支援 `?lang=` 參數
+- 開源程式碼位置：`OpenSource/SessionGuide/index.html`（單檔自包含）
+
+### 技術架構
+
+- 連線：WebRTC 點對點（PeerJS），4 字元房號；leader 廣播 JSON，follower 定期 ping/pong 校時
+- 節奏：Tap tempo（近 4 次間隔平均），拍號 4/4、3/4、6/8、7/8、5/4
+- 節拍器：純視覺圓點（主畫面與倒數畫面各一組），第一拍 accent 色，AudioContext click 音可選
+- 指令：自訂格子存 localStorage，即時閃示型與小節倒數型兩種
+- 倒數：依時間戳本地推算，最後一小節紅色警示，歸零閃示指令
+- 視窗：`100dvh` 處理 iOS Safari 動態工具列，主欄整體可捲動
+- 其他：Wake Lock 螢幕常亮、本地離線模式
+
+---
+
 ## 2026-06-19
 
 ### 首頁文案調整

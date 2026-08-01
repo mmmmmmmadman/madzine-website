@@ -1,1458 +1,303 @@
 <!DOCTYPE html>
-<html lang="zh-Hant">
+<html lang="zh-TW">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
-<meta name="theme-color" content="#121212">
-<meta name="description" content="Session Guide - band leader cue system for live improvisation.">
-<title>Session Guide</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400&family=Noto+Sans+TC:wght@300;400&family=Noto+Sans+JP:wght@300;400&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#121212;
-  --bg-elev:#1c1c1c;
-  --panel:#232323;
-  --line:#303030;
-  --fg:#f2f2f2;
-  --fg2:#a8a8a8;
-  --fg3:#6e6e6e;
-  --acc:#e8846c;
-  --acc-dim:#6b4a41;
-  --acc-glow:#ff9c80;
-  --warn:#c8443a;
-  --font:"Barlow Condensed","Noto Sans TC","Noto Sans JP","PingFang TC",-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
-  --gap:8px;
-  --pad:10px;
-}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%}
-body{
-  background:var(--bg);
-  color:var(--fg);
-  font-family:var(--font);
-  font-weight:300;
-  line-height:1.2;
-  font-size:17px;
-  overflow:hidden;
-  -webkit-font-smoothing:antialiased;
-  -webkit-user-select:none;user-select:none;
-  overscroll-behavior:none;
-}
-button,input{font-family:var(--font);font-weight:300;line-height:1.2;color:inherit}
-button{background:none;border:none;cursor:pointer}
-
-#app{
-  /* dynamic viewport height: iOS Safari shrinks the visible area when the
-     toolbars are shown, and position:fixed alone reports the LARGE viewport. */
-  position:fixed;left:0;right:0;top:0;
-  height:100vh;height:100svh;height:100dvh;
-  display:flex;flex-direction:column;
-  padding:calc(env(safe-area-inset-top,0px) + 8px) calc(env(safe-area-inset-right,0px) + 12px) calc(env(safe-area-inset-bottom,0px) + 10px) calc(env(safe-area-inset-left,0px) + 12px);
-}
-
-/* ---------- top bar ---------- */
-#topbar{
-  display:flex;align-items:center;justify-content:space-between;
-  gap:8px;height:26px;flex:0 0 auto;
-}
-#wordmark{font-size:14px;letter-spacing:.14em;color:var(--fg3);line-height:26px;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
-#topright{display:flex;align-items:center;gap:10px}
-#connstate{font-size:14px;color:var(--fg2);line-height:26px;white-space:nowrap}
-.hue-btn{
-  font-size:16px;letter-spacing:.12em;color:var(--fg2);
-  border:1px solid var(--line);border-radius:5px;
-  padding:0 11px;line-height:26px;min-height:26px;
-}
-.hue-btn.on{color:var(--acc);border-color:var(--acc-dim)}
-
-/* ---------- screens ---------- */
-.screen{flex:1 1 auto;min-height:0;display:none;flex-direction:column}
-.screen.show{display:flex}
-
-/* home */
-#home{justify-content:center;gap:14px;padding-bottom:6vh}
-#home .brand{text-align:center;margin-bottom:18px}
-#home .brand .t{font-size:52px;letter-spacing:.06em;line-height:1.05}
-#home .brand .s{font-size:15px;color:var(--fg3);letter-spacing:.2em;margin-top:6px;line-height:1.2}
-.big-btn{
-  display:block;width:100%;min-height:64px;
-  background:var(--bg-elev);border:1px solid var(--line);border-radius:10px;
-  font-size:22px;letter-spacing:.04em;color:var(--fg);
-  padding:12px;line-height:1.2;
-}
-.big-btn .sub{display:block;font-size:14px;color:var(--fg3);margin-top:4px;line-height:1.2}
-.big-btn.primary{border-color:var(--acc-dim);color:var(--acc)}
-.big-btn:active{background:var(--panel)}
-
-/* language switch (home corner) */
-#langbar{
-  position:absolute;
-  left:calc(env(safe-area-inset-left,0px) + 12px);
-  bottom:calc(env(safe-area-inset-bottom,0px) + 10px);
-  display:flex;gap:6px;
-}
-.lang-btn{
-  font-size:16px;letter-spacing:.1em;color:var(--fg3);
-  background:var(--bg-elev);border:1px solid var(--line);border-radius:6px;
-  min-height:44px;min-width:52px;padding:0 12px;line-height:1.2;
-}
-.lang-btn.on{color:var(--acc);border-color:var(--acc-dim)}
-.lang-btn:active{background:var(--panel)}
-
-/* join */
-#join{justify-content:center;align-items:center;gap:16px}
-#join .lab{font-size:15px;color:var(--fg2);letter-spacing:.14em;line-height:1.2}
-#codeinput{
-  width:100%;max-width:320px;text-align:center;
-  font-size:64px;letter-spacing:.22em;
-  background:var(--bg-elev);border:1px solid var(--line);border-radius:10px;
-  padding:10px 0 10px 12px;color:var(--fg);line-height:1.2;
-  text-transform:uppercase;
-}
-#codeinput:focus{outline:none;border-color:var(--acc-dim)}
-#joinmsg{font-size:14px;color:var(--fg3);min-height:18px;line-height:1.2}
-.row-btns{display:flex;gap:var(--gap);width:100%}
-
-/* ---------- main ---------- */
-/* the whole leader column scrolls when the viewport is short, so the tempo /
-   meter / metronome cards scroll away instead of squeezing the cell grid */
-#main{gap:var(--gap);padding-top:6px;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
-.card{
-  background:var(--bg-elev);border:1px solid var(--line);border-radius:10px;
-  padding:var(--pad);flex:0 0 auto;
-}
-.card + .card{margin-top:0}
-
-/* room strip */
-#roomstrip{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 12px}
-#roomstrip .idbox{display:flex;align-items:baseline;gap:10px;min-width:0}
-#roomcode{font-size:34px;letter-spacing:.2em;color:var(--acc);line-height:1.15;white-space:nowrap}
-#roomlabel{font-size:14px;color:var(--fg3);letter-spacing:.16em;line-height:1.2}
-#leavebtn{flex:0 0 auto;font-size:16px;color:var(--fg2);border:1px solid var(--line);border-radius:6px;padding:0 14px;min-height:44px;line-height:1.2}
-
-/* tempo */
-#tempo{display:flex;align-items:center;gap:10px}
-#bpmbox{flex:0 0 auto;text-align:center;min-width:118px}
-#bpmval{font-size:66px;line-height:.95;letter-spacing:.02em}
-#bpmunit{font-size:14px;color:var(--fg3);letter-spacing:.22em;line-height:1.2;margin-top:2px}
-#nudge{display:flex;flex-direction:column;gap:6px;flex:0 0 auto}
-.nudge-btn{
-  width:52px;min-height:44px;border:1px solid var(--line);border-radius:8px;
-  background:var(--panel);font-size:22px;color:var(--fg);line-height:1.2;
-}
-.nudge-btn:active{background:var(--acc-dim)}
-#tapbtn{
-  flex:1 1 auto;min-height:88px;border:1px solid var(--acc-dim);border-radius:10px;
-  background:var(--panel);color:var(--acc);
-  font-size:30px;letter-spacing:.22em;line-height:1.2;
-}
-#tapbtn:active,#tapbtn.hit{background:var(--acc);color:#121212}
-#tapinfo{font-size:14px;color:var(--fg3);line-height:1.2;margin-top:5px;text-align:center}
-
-/* meter row */
-#meterrow{display:flex;gap:6px}
-.meter-btn{
-  flex:1 1 0;min-height:44px;border:1px solid var(--line);border-radius:8px;
-  background:var(--panel);font-size:19px;color:var(--fg2);line-height:1.2;
-}
-.meter-btn.on{border-color:var(--acc);color:var(--acc);background:var(--bg-elev)}
-
-/* metronome */
-#metrocard{display:flex;flex-direction:column;gap:8px}
-#dots{display:flex;align-items:center;justify-content:center;gap:10px;min-height:30px}
-.dot{
-  width:20px;height:20px;border-radius:50%;
-  background:var(--panel);border:1px solid var(--line);
-  flex:0 0 auto;transition:background .04s linear;
-}
-.dot.first{width:26px;height:26px}
-.dot.on{background:var(--fg)}
-.dot.first.on{background:var(--acc);border-color:var(--acc)}
-.dot.acc.on{background:var(--fg2)}
-#transport{display:flex;gap:6px}
-.tr-btn{
-  flex:1 1 0;min-height:44px;border:1px solid var(--line);border-radius:8px;
-  background:var(--panel);font-size:18px;color:var(--fg2);line-height:1.2;letter-spacing:.04em;
-}
-.tr-btn.on{border-color:var(--acc);color:var(--acc)}
-
-/* grid */
-#gridwrap{flex:1 0 auto;display:flex;flex-direction:column;gap:var(--gap)}
-#grid{
-  flex:1 0 auto;
-  display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);
-  grid-auto-rows:minmax(56px,1fr);
-}
-.cell{
-  border:1px solid var(--line);border-radius:10px;background:var(--bg-elev);
-  font-size:21px;color:var(--fg);line-height:1.2;padding:8px 6px;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
-  min-height:56px;
-}
-.cell .n{font-size:14px;color:var(--fg3);letter-spacing:.16em;line-height:1.2}
-.cell.bars{border-color:#3d3d3d}
-.cell.bars .lab{color:var(--fg)}
-.cell.armed{border-color:var(--acc);background:var(--acc-dim)}
-.cell.picked{border-color:var(--acc-glow)}
-.cell:active{background:var(--panel)}
-.cell.editing{border-style:dashed;border-color:var(--acc)}
-#pendingbar{display:flex;align-items:center;gap:var(--gap);flex:0 0 auto}
-#pendingtxt{flex:1 1 auto;font-size:14px;color:var(--fg2);line-height:1.25;white-space:pre-line}
-#startbtn{
-  flex:0 0 auto;min-width:118px;min-height:52px;border-radius:10px;
-  background:var(--acc);color:#121212;font-size:25px;letter-spacing:.16em;line-height:1.2;
-  border:1px solid var(--acc);
-}
-#cancelbtn{flex:0 0 auto;min-height:52px;padding:0 14px;border:1px solid var(--line);border-radius:10px;font-size:17px;color:var(--fg2);line-height:1.2}
-
-/* short viewports (iPhone Safari with toolbars, ~664 px and below):
-   compress the non-interactive display elements so the cell grid keeps
-   at least two visible rows. Touch targets stay at 44 px. */
-@media (max-height:700px){
-  #roomcode{font-size:28px}
-  #bpmval{font-size:52px}
-  #bpmbox{min-width:100px}
-  #tapbtn{min-height:70px;font-size:26px}
-  #tapinfo{margin-top:3px}
-  #dots{min-height:24px}
-  .dot{width:16px;height:16px}
-  .dot.first{width:22px;height:22px}
-  #metrocard{gap:6px}
-  :root{--pad:8px}
-}
-
-/* follower panel */
-#folinfo{display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;flex:1 1 auto;min-height:0}
-#folstate{font-size:24px;color:var(--fg2);letter-spacing:.08em;line-height:1.3;text-align:center}
-#folsub{font-size:15px;color:var(--fg3);line-height:1.3;text-align:center}
-
-/* ---------- overlays ---------- */
-.overlay{
-  position:fixed;left:0;right:0;top:0;
-  height:100vh;height:100svh;height:100dvh;
-  z-index:40;display:none;
-  flex-direction:column;align-items:center;justify-content:center;
-  padding:24px;text-align:center;background:var(--bg);
-}
-.overlay.show{display:flex}
-#countnum{font-size:min(44vh,40vw);line-height:.82;letter-spacing:-.02em;font-weight:400}
-#countlab{font-size:34px;letter-spacing:.1em;color:var(--fg2);margin-top:10px;line-height:1.25}
-#countsub{font-size:15px;color:var(--fg3);letter-spacing:.2em;margin-top:16px;line-height:1.2}
-#countdots{display:flex;align-items:center;justify-content:center;gap:10px;min-height:30px;margin-top:14px;flex-wrap:wrap}
-#ovcount.last{background:#3a1512}
-#ovcount.last .dot{background:#2a0f0d;border-color:#7a3a31}
-#ovcount.last .dot.on{background:var(--fg);border-color:var(--fg)}
-#ovcount.last .dot.first.on{background:var(--acc-glow);border-color:var(--acc-glow)}
-#ovcount.last #countnum{color:#ff6a55}
-#ovcount.last.blink #countnum{opacity:.15}
-#ovcount .cancel{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);font-size:17px;color:var(--fg3);border:1px solid var(--line);border-radius:8px;padding:10px 20px;min-height:44px;line-height:1.2}
-#ovflash{background:var(--acc);color:#121212;transition:opacity .35s linear}
-#ovflash.fade{opacity:0}
-#flashtxt{font-size:min(15vh,17vw);line-height:1.02;letter-spacing:.02em;font-weight:400;word-break:break-word}
-
-/* ---------- modal / hue ---------- */
-#scrim{position:fixed;inset:0;z-index:50;display:none;background:rgba(0,0,0,.6)}
-#scrim.show{display:block}
-#huepop{
-  position:fixed;z-index:60;display:none;
-  background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;
-  flex-direction:column;align-items:center;gap:8px;
-}
-#huepop.show{display:flex}
-#huecanvas{touch-action:none;display:block}
-#hueinfo{font-size:14px;color:var(--fg3);letter-spacing:.1em;line-height:1.2}
-
-#editor{
-  position:fixed;z-index:60;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);
-  display:none;flex-direction:column;gap:10px;
-  background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;
-}
-#editor.show{display:flex}
-#editor .h{font-size:15px;color:var(--fg3);letter-spacing:.16em;line-height:1.2}
-#edlabel{
-  width:100%;min-height:48px;font-size:22px;color:var(--fg);
-  background:var(--bg-elev);border:1px solid var(--line);border-radius:8px;padding:8px 10px;line-height:1.2;
-}
-#edlabel:focus{outline:none;border-color:var(--acc-dim)}
-.seg{display:flex;gap:6px}
-.seg button{
-  flex:1 1 0;min-height:44px;border:1px solid var(--line);border-radius:8px;
-  background:var(--bg-elev);font-size:18px;color:var(--fg2);line-height:1.2;
-}
-.seg button.on{border-color:var(--acc);color:var(--acc)}
-#ednrow{display:flex;align-items:center;gap:8px}
-#ednval{flex:1 1 auto;text-align:center;font-size:30px;line-height:1.2}
-#edbtns{display:flex;gap:6px}
-#edbtns button{flex:1 1 0;min-height:50px;border-radius:8px;border:1px solid var(--line);font-size:19px;line-height:1.2}
-#eddone{background:var(--acc);color:#121212;border-color:var(--acc)}
-#eddel{color:var(--warn);border-color:#4a2320}
-.hidden{display:none !important}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MADZINE — Session Guide</title>
+  <meta name="description" content="樂團即興指揮工具，多人手機同步顯示指令與小節倒數">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .bg-hero {
+      position: relative;
+      height: 50vh;
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+    }
+    .bg-hero__img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.1;
+    }
+    .bg-hero__gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 30%, var(--surface-base) 100%);
+    }
+    .bg-hero__content {
+      position: relative;
+      z-index: 1;
+      padding: var(--space-16) var(--padding-page-x) var(--space-8);
+      max-width: var(--content-narrow);
+      margin: 0 auto;
+      width: 100%;
+    }
+    .bg-hero__content h1 {
+      font-size: var(--text-4xl);
+      margin-bottom: var(--space-3);
+    }
+    .bg-hero__content .card__tag {
+      margin-bottom: var(--space-4);
+    }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-12);
+      align-items: start;
+    }
+    .col-text {
+      position: sticky;
+      top: var(--space-16);
+    }
+    .col-right {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-8);
+    }
+    .col-right > img {
+      width: 100%;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-default);
+      transition: opacity var(--duration-slow) var(--ease-default);
+      cursor: pointer;
+    }
+    .thumb-strip {
+      display: flex;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+    .thumb-strip__item {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      flex-shrink: 0;
+      border-radius: var(--radius-sm);
+      border: 2px solid var(--border-default);
+      cursor: pointer;
+      opacity: 0.6;
+      transition:
+        opacity var(--duration-normal) var(--ease-default),
+        border-color var(--duration-normal) var(--ease-default);
+    }
+    .thumb-strip__item:hover {
+      opacity: 0.85;
+    }
+    .thumb-strip__item.active {
+      opacity: 1;
+      border-color: var(--color-primary);
+    }
+    .feature-list {
+      padding-left: var(--space-6);
+      margin-top: var(--space-4);
+    }
+    .feature-list li {
+      margin-bottom: var(--space-2);
+      font-size: var(--text-base);
+      color: var(--text-secondary);
+    }
+    .tech-table {
+      margin-top: var(--space-4);
+      font-size: var(--text-base);
+    }
+    .tech-table dt {
+      color: var(--text-tertiary);
+      margin-top: var(--space-3);
+    }
+    .tech-table dd {
+      margin-left: 0;
+      color: var(--text-primary);
+    }
+    @media (max-width: 768px) {
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+      .col-text {
+        position: static;
+      }
+      .thumb-strip__item {
+        width: 80px;
+        height: 80px;
+      }
+    }
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      background: oklch(0.10 0.005 55 / 0.92);
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .lightbox.is-open {
+      display: flex;
+    }
+    .lightbox img {
+      max-width: 90vw;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: var(--radius-sm);
+    }
+    .launch-btn {
+      display: inline-block;
+      margin-top: var(--space-6);
+      padding: var(--space-3) var(--space-8);
+      font-size: var(--text-base);
+      font-weight: 600;
+      color: white;
+      background: var(--color-primary);
+      border: none;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      transition: opacity var(--duration-normal) var(--ease-default);
+    }
+    .launch-btn:hover {
+      opacity: 0.85;
+    }
+    .bottom-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) var(--space-6);
+      border-top: 1px solid var(--border-default);
+      font-size: var(--text-sm);
+    }
+    .bottom-bar__copyright { color: var(--text-tertiary); }
+    .bottom-bar__nav { display: flex; align-items: center; gap: var(--space-6); }
+    .bottom-bar__nav a { color: var(--text-secondary); text-decoration: none; transition: color var(--duration-normal) var(--ease-default); }
+    .bottom-bar__nav a:hover { color: var(--color-primary); }
+    .bottom-bar__controls { display: flex; align-items: center; gap: var(--space-4); }
+  </style>
 </head>
 <body>
 
-<div id="app">
-  <div id="topbar">
-    <div id="wordmark">SESSION GUIDE — MADZINE</div>
-    <div id="topright">
-      <div id="connstate"></div>
-      <button class="hue-btn" id="huebtn">HUE</button>
+  <!-- Hero background -->
+  <div class="bg-hero">
+    <img class="bg-hero__img" src="assets/images/software/SessionGuide_1.png" alt="Session Guide">
+    <div class="bg-hero__gradient"></div>
+    <div class="bg-hero__content">
+      <a href="software.html" class="section__back" style="color: var(--text-primary);">
+        <span data-i18n="common.back">返回</span>
+      </a>
+      <h1>Session Guide</h1>
+      <p class="card__tag">Web</p>
+      <p data-i18n="apps.sessionguide.desc">樂團即興指揮工具，多人手機同步顯示指令與小節倒數</p>
     </div>
   </div>
 
-  <!-- HOME -->
-  <div class="screen show" id="home">
-    <div class="brand">
-      <div class="t">Session Guide</div>
-      <div class="s" data-i18n="brand_sub"></div>
-    </div>
-    <button class="big-btn primary" id="btnCreate"><span data-i18n="home_create"></span><span class="sub" data-i18n="home_create_sub"></span></button>
-    <button class="big-btn" id="btnJoin"><span data-i18n="home_join"></span><span class="sub" data-i18n="home_join_sub"></span></button>
-    <button class="big-btn" id="btnLocal"><span data-i18n="home_local"></span><span class="sub" data-i18n="home_local_sub"></span></button>
-  </div>
+  <main>
+    <section class="section">
+      <div class="container">
+        <div class="two-col">
+          <div class="col-text">
+            <h2 data-i18n="common.intro">功能介紹</h2>
+            <p class="intro-text" data-i18n-html="apps.sessionguide.intro">Session Guide 是為樂團即興與現場演出設計的瀏覽器工具。團長在手機上發出指令，所有團員的手機同步顯示，取代排練與演出中不易傳達的手勢與眼神。<br><br>團長建立房間後會得到一組四字元房號，團員輸入房號即可加入。連線透過 WebRTC 點對點建立，不需要伺服器轉送資料。另有本地模式，不連線也能單機當視覺節拍器使用。<br><br>速度以 Tap Tempo 敲擊設定，取最近四次間隔平均計算 BPM，並支援 4/4、3/4、6/8、7/8、5/4 五種拍號。節拍器為純視覺圓點，拍數對應拍號分子，第一拍以強調色標示，另可選擇開啟提示音。<br><br>指令以自訂格子發送，預設包含「變吵」「變安靜」「SOLO」「回主題」等，可自行改字、新增與刪除，設定保存於瀏覽器。指令分兩種：即時指令按下後立刻在所有人畫面全螢幕閃示；小節數指令則進入倒數，剩餘小節以超大字顯示，最後一小節轉為紅色警示，歸零時閃示指令內容。<br><br>各裝置的節拍與倒數皆在本地依時間戳推算，不逐拍依賴網路，並以定期校時修正裝置間的時鐘差。介面為深色極簡設計，支援繁體中文、英文、日文，並在演出期間透過 Wake Lock 保持螢幕常亮。</p>
+          </div>
 
-  <!-- JOIN -->
-  <div class="screen" id="join">
-    <div class="lab" data-i18n="join_lab"></div>
-    <input id="codeinput" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" maxlength="4" placeholder="————">
-    <div id="joinmsg"></div>
-    <div class="row-btns">
-      <button class="big-btn" id="btnJoinBack" style="flex:0 0 34%" data-i18n="join_back"></button>
-      <button class="big-btn primary" id="btnJoinGo" style="flex:1 1 auto" data-i18n="join_go"></button>
-    </div>
-  </div>
+          <div class="col-right">
+            <img id="main-image" src="assets/images/software/SessionGuide_1.png" alt="Session Guide">
+            <div class="thumb-strip">
+              <img class="thumb-strip__item active" src="assets/images/software/SessionGuide_1.png" alt="Session Guide" data-full="assets/images/software/SessionGuide_1.png" onclick="switchImage(this)">
+              <img class="thumb-strip__item" src="assets/images/software/SessionGuide_2.png" alt="Session Guide" data-full="assets/images/software/SessionGuide_2.png" onclick="switchImage(this)">
+              <img class="thumb-strip__item" src="assets/images/software/SessionGuide_3.png" alt="Session Guide" data-full="assets/images/software/SessionGuide_3.png" onclick="switchImage(this)">
+              <img class="thumb-strip__item" src="assets/images/software/SessionGuide_4.png" alt="Session Guide" data-full="assets/images/software/SessionGuide_4.png" onclick="switchImage(this)">
+              <img class="thumb-strip__item" src="assets/images/software/SessionGuide_5.png" alt="Session Guide" data-full="assets/images/software/SessionGuide_5.png" onclick="switchImage(this)">
+              <img class="thumb-strip__item" src="assets/images/software/SessionGuide_6.png" alt="Session Guide" data-full="assets/images/software/SessionGuide_6.png" onclick="switchImage(this)">
+            </div>
 
-  <!-- MAIN -->
-  <div class="screen" id="main">
-    <div class="card" id="roomstrip">
-      <div class="idbox">
-        <div id="roomlabel">ROOM</div>
-        <div id="roomcode">————</div>
-      </div>
-      <button id="leavebtn" data-i18n="leave"></button>
-    </div>
+            <a href="sessionguide-app.html" target="_blank" class="launch-btn" data-i18n="apps.sessionguide.launch">開啟應用程式</a>
 
-    <div class="card" id="tempocard">
-      <div id="tempo">
-        <div id="bpmbox">
-          <div id="bpmval">120</div>
-          <div id="bpmunit">BPM</div>
+            <div>
+              <h2 data-i18n="common.features">特色一覽</h2>
+              <ul class="feature-list">
+                <li data-i18n="apps.sessionguide.features.sync">WebRTC 點對點連線，四字元房號加入，無需帳號</li>
+                <li data-i18n="apps.sessionguide.features.tap">Tap Tempo 設定速度，全員同步</li>
+                <li data-i18n="apps.sessionguide.features.meter">五種拍號：4/4、3/4、6/8、7/8、5/4</li>
+                <li data-i18n="apps.sessionguide.features.metronome">圖像式節拍器，第一拍強調，提示音可選</li>
+                <li data-i18n="apps.sessionguide.features.cues">自訂指令格子，即時閃示與小節倒數兩種模式</li>
+                <li data-i18n="apps.sessionguide.features.countdown">小節倒數全螢幕顯示，最後一小節紅色警示</li>
+                <li data-i18n="apps.sessionguide.features.local">本地模式，離線可當單機視覺節拍器</li>
+                <li data-i18n="apps.sessionguide.features.wakelock">Wake Lock 螢幕常亮，適合現場演出</li>
+                <li data-i18n="apps.sessionguide.features.multilang">三語介面（繁中 / EN / JP）</li>
+              </ul>
+            </div>
+
+            <div>
+              <h2 data-i18n="common.tech">技術資訊</h2>
+              <dl class="tech-table">
+                <dt data-i18n="common.platform">平台</dt>
+                <dd>Web (iOS Safari, Chrome)</dd>
+                <dt data-i18n="common.language">開發語言</dt>
+                <dd>HTML / CSS / JavaScript</dd>
+                <dt>Network</dt>
+                <dd>WebRTC (PeerJS)</dd>
+                <dt>Audio</dt>
+                <dd>Web Audio API</dd>
+                <dt>License</dt>
+                <dd>Open source</dd>
+              </dl>
+            </div>
+          </div>
         </div>
-        <div id="nudge">
-          <button class="nudge-btn" id="bpmup">+1</button>
-          <button class="nudge-btn" id="bpmdown">-1</button>
-        </div>
-        <button id="tapbtn">TAP</button>
       </div>
-      <div id="tapinfo"></div>
-    </div>
+    </section>
+  </main>
 
-    <div class="card" id="metercard">
-      <div id="meterrow"></div>
-    </div>
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <img id="lightbox-img" src="" alt="">
+  </div>
 
-    <div class="card" id="metrocard">
-      <div id="dots"></div>
-      <div id="transport">
-        <button class="tr-btn" id="metrobtn"></button>
-        <button class="tr-btn" id="soundbtn"></button>
-        <button class="tr-btn" id="editbtn"></button>
+  <!-- Bottom Bar -->
+  <div class="bottom-bar">
+    <span class="bottom-bar__copyright" data-i18n="footer.copyright">&copy; 2025 MADZINE. 保留所有權利。</span>
+    <nav class="bottom-bar__nav">
+      <a href="index.html" data-i18n="nav.home">首頁</a>
+      <a href="software.html" data-i18n="nav.software">軟體</a>
+      <a href="works.html" data-i18n="nav.works">作品</a>
+      <a href="contact.html" data-i18n="nav.contact">聯絡</a>
+    </nav>
+    <div class="bottom-bar__controls">
+      <div class="lang-switcher">
+        <button class="lang-btn" data-lang="zh-TW" onclick="I18N.setLang('zh-TW')">中</button>
+        <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
+        <button class="lang-btn" data-lang="ja" onclick="I18N.setLang('ja')">JP</button>
       </div>
-    </div>
-
-    <div id="gridwrap">
-      <div id="grid"></div>
-      <div id="pendingbar" class="hidden">
-        <div id="pendingtxt"></div>
-        <button id="cancelbtn" data-i18n="cancel"></button>
-        <button id="startbtn" data-i18n="start"></button>
-      </div>
-      <button class="big-btn" id="addcell" style="min-height:50px;font-size:18px;display:none" data-i18n="add_cell"></button>
-    </div>
-
-    <div id="folinfo" class="hidden">
-      <div id="folstate"></div>
-      <div id="folsub"></div>
+      <button id="mode-toggle" class="mode-toggle" aria-label="切換深色模式">☽</button>
     </div>
   </div>
 
-  <div id="langbar">
-    <button class="lang-btn" data-lang="zh-TW">中</button>
-    <button class="lang-btn" data-lang="en">EN</button>
-    <button class="lang-btn" data-lang="ja">JP</button>
-  </div>
-</div>
-
-<!-- COUNTDOWN OVERLAY -->
-<div class="overlay" id="ovcount">
-  <div id="countnum">4</div>
-  <div id="countlab"></div>
-  <div id="countdots"></div>
-  <div id="countsub" data-i18n="count_sub"></div>
-  <button class="cancel hidden" id="countcancel" data-i18n="count_cancel"></button>
-</div>
-
-<!-- FLASH OVERLAY -->
-<div class="overlay" id="ovflash"><div id="flashtxt"></div></div>
-
-<!-- HUE POPUP -->
-<div id="scrim"></div>
-<div id="huepop">
-  <canvas id="huecanvas" width="440" height="440" style="width:220px;height:220px"></canvas>
-  <div id="hueinfo" data-i18n="hue_hint"></div>
-</div>
-
-<!-- CELL EDITOR -->
-<div id="editor">
-  <div class="h" data-i18n="ed_title"></div>
-  <input id="edlabel" type="text" maxlength="12" data-i18n-ph="ed_name_ph">
-  <div class="seg" id="edtype">
-    <button data-type="cue" data-i18n="ed_type_cue"></button>
-    <button data-type="bars" data-i18n="ed_type_bars"></button>
-  </div>
-  <div id="ednrow" class="hidden">
-    <button class="nudge-btn" id="ednminus">-1</button>
-    <div id="ednval">4</div>
-    <button class="nudge-btn" id="ednplus">+1</button>
-  </div>
-  <div id="edbtns">
-    <button id="eddel" data-i18n="ed_delete"></button>
-    <button id="eddone" data-i18n="ed_done"></button>
-  </div>
-</div>
-
-<script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-<script>
-"use strict";
-(function(){
-
-/* =========================================================
-   I18N  (zh-TW / en / ja)
-   Strings are kept short enough for a 390 px wide viewport.
-   ========================================================= */
-var I18N = {
-"zh-TW":{
-  brand_sub:"現場指令系統",
-  home_create:"建立房間",     home_create_sub:"Leader — 發送指令給團員",
-  home_join:"加入房間",       home_join_sub:"Follower — 接收 leader 的指令",
-  home_local:"本地模式",      home_local_sub:"單機 — 不連線，功能全部可用",
-  join_lab:"輸入四位房號",
-  join_back:"返回",           join_go:"加入",
-  join_err_len:"房號需四位英數",
-  join_connecting:"連線中",
-  join_notfound:"找不到房間，確認房號後重試",
-  join_nopeer:"連線元件未載入，請確認網路後重整；仍可使用本地模式",
-  conn_notloaded:"元件未載入", conn_local:"本地模式",
-  conn_creating:"建立中",      conn_connecting:"連線中",
-  conn_connected:"已連線",     conn_reconnect:"重新連線中",
-  conn_error:"連線錯誤",       conn_none:"未連線",
-  conn_peers:"{n} 位團員",
-  room_label:"房號",           mode_label:"模式",
-  local_code:"本地",           leave:"離開",
-  tap_hint:"連點四下以上取得速度",
-  tap_count:"已點 {n} 下",     tap_done:"速度已更新",
-  metro_start:"節拍器 開始",   metro_stop:"節拍器 停止",
-  sound_on:"音效 開",          sound_off:"音效 關",
-  edit_on:"編輯格子",          edit_off:"完成編輯",
-  add_cell:"新增格子",         new_cell_label:"新指令",
-  bars_unit:"{n} 小節",
-  pending_bars:"{n} 小節倒數", pending_cue:"　指令 {label}",
-  pending_hint:"可再點一個指令格附加，或直接按開始",
-  cancel:"取消",               start:"開始",
-  count_sub:"小節倒數",        count_cancel:"取消倒數",
-  flash_default:"開始",
-  fol_wait:"等待 leader 指令",
-  hue_hint:"外環 色相 · 中心 上下拖曳 飽和度",
-  ed_title:"格子設定",         ed_name_ph:"名稱",
-  ed_type_cue:"即時指令",      ed_type_bars:"小節數",
-  ed_delete:"刪除",            ed_done:"完成",
-  cell_1:"4 小節後", cell_2:"8 小節後", cell_3:"變吵",   cell_4:"變安靜",
-  cell_5:"SOLO",     cell_6:"回主題",   cell_7:"結尾",   cell_8:"自由"
-},
-"en":{
-  brand_sub:"LIVE CUE SYSTEM",
-  home_create:"Create Room",  home_create_sub:"Leader — send cues to the band",
-  home_join:"Join Room",      home_join_sub:"Follower — receive leader cues",
-  home_local:"Local Mode",    home_local_sub:"Standalone — offline, all features",
-  join_lab:"ENTER 4 CHARACTER CODE",
-  join_back:"Back",           join_go:"Join",
-  join_err_len:"Code must be 4 letters or digits",
-  join_connecting:"Connecting",
-  join_notfound:"Room not found. Check the code and retry.",
-  join_nopeer:"Network module not loaded. Check your connection and reload; Local Mode still works.",
-  conn_notloaded:"No network", conn_local:"Local",
-  conn_creating:"Creating",    conn_connecting:"Connecting",
-  conn_connected:"Connected",  conn_reconnect:"Reconnecting",
-  conn_error:"Error",          conn_none:"Offline",
-  conn_peers:"{n} joined",
-  room_label:"ROOM",           mode_label:"MODE",
-  local_code:"LOCAL",          leave:"Leave",
-  tap_hint:"Tap 4 times or more to set tempo",
-  tap_count:"{n} taps",        tap_done:"Tempo updated",
-  metro_start:"Start Click",   metro_stop:"Stop Click",
-  sound_on:"Sound On",         sound_off:"Sound Off",
-  edit_on:"Edit Cells",        edit_off:"Done Editing",
-  add_cell:"Add Cell",         new_cell_label:"New Cue",
-  bars_unit:"{n} BARS",
-  pending_bars:"{n} bar countdown", pending_cue:" · Cue {label}",
-  pending_hint:"Tap a cue to attach, or press Start",
-  cancel:"Cancel",             start:"Start",
-  count_sub:"BARS TO GO",      count_cancel:"Cancel Countdown",
-  flash_default:"START",
-  fol_wait:"Waiting for leader cue",
-  hue_hint:"Ring hue · Center drag saturation",
-  ed_title:"CELL SETTINGS",    ed_name_ph:"Name",
-  ed_type_cue:"Instant Cue",   ed_type_bars:"Bar Count",
-  ed_delete:"Delete",          ed_done:"Done",
-  cell_1:"After 4 Bars", cell_2:"After 8 Bars", cell_3:"Louder", cell_4:"Quieter",
-  cell_5:"SOLO",         cell_6:"Back to Head", cell_7:"Ending", cell_8:"Free"
-},
-"ja":{
-  brand_sub:"ライブキューシステム",
-  home_create:"ルームを作成",  home_create_sub:"リーダー — メンバーへキュー送信",
-  home_join:"ルームに参加",    home_join_sub:"フォロワー — リーダーのキュー受信",
-  home_local:"ローカルモード", home_local_sub:"単体 — オフラインで全機能",
-  join_lab:"4文字のコードを入力",
-  join_back:"戻る",            join_go:"参加",
-  join_err_len:"コードは英数字4文字です",
-  join_connecting:"接続中",
-  join_notfound:"ルームが見つかりません。コードを確認",
-  join_nopeer:"通信モジュール未読込。ネットワークを確認して再読込。ローカルモードは使えます",
-  conn_notloaded:"通信不可",   conn_local:"ローカル",
-  conn_creating:"作成中",      conn_connecting:"接続中",
-  conn_connected:"接続済",     conn_reconnect:"再接続中",
-  conn_error:"接続エラー",     conn_none:"未接続",
-  conn_peers:"{n} 人接続",
-  room_label:"ルーム",          mode_label:"モード",
-  local_code:"ローカル",        leave:"退出",
-  tap_hint:"4回以上タップでテンポ設定",
-  tap_count:"{n} 回タップ",     tap_done:"テンポ更新",
-  metro_start:"クリック開始",   metro_stop:"クリック停止",
-  sound_on:"音 オン",           sound_off:"音 オフ",
-  edit_on:"セル編集",           edit_off:"編集完了",
-  add_cell:"セルを追加",        new_cell_label:"新規キュー",
-  bars_unit:"{n} 小節",
-  pending_bars:"{n} 小節カウント", pending_cue:"　キュー {label}",
-  pending_hint:"キューをタップで追加、または開始",
-  cancel:"キャンセル",          start:"スタート",
-  count_sub:"小節カウント",     count_cancel:"カウント中止",
-  flash_default:"スタート",
-  fol_wait:"リーダーのキュー待ち",
-  hue_hint:"外周 色相 · 中央 上下ドラッグ 彩度",
-  ed_title:"セル設定",          ed_name_ph:"名前",
-  ed_type_cue:"即時キュー",     ed_type_bars:"小節数",
-  ed_delete:"削除",             ed_done:"完了",
-  cell_1:"4小節後", cell_2:"8小節後", cell_3:"強く",     cell_4:"静かに",
-  cell_5:"SOLO",    cell_6:"テーマへ", cell_7:"エンディング", cell_8:"フリー"
-}
-};
-
-function normLang(v){
-  if(!v) return null;
-  v = String(v).toLowerCase();
-  if(v.indexOf("zh")===0) return "zh-TW";
-  if(v.indexOf("ja")===0 || v.indexOf("jp")===0) return "ja";
-  if(v.indexOf("en")===0) return "en";
-  return null;
-}
-function initLang(){
-  var q = null;
-  try{
-    var m = /[?&]lang=([^&]+)/.exec(window.location.search);
-    if(m) q = normLang(decodeURIComponent(m[1]));
-  }catch(err){}
-  if(q){ try{ localStorage.setItem("sg_lang", q); }catch(e2){} return q; }
-  var stored = null;
-  try{ stored = normLang(localStorage.getItem("sg_lang")); }catch(e3){}
-  if(stored) return stored;
-  return normLang(navigator.language || (navigator.languages||[])[0]) || "en";
-}
-var lang = initLang();
-
-/* t(key, value) — {n} and {label} are both replaced by value */
-function t(k, v){
-  var dict = I18N[lang] || I18N.en;
-  var s = dict[k];
-  if(s === undefined) s = I18N.en[k];
-  if(s === undefined) return k;
-  return (v === undefined) ? s : s.replace(/\{n\}|\{label\}/g, v);
-}
-
-/* =========================================================
-   HUE THEME  (HSB, hue 0..1, saturation multiplier 0..2)
-   Ported from AnyAni src/hue.rs compute_accent_colors:
-   accent  S x 1.000 B 0.92
-   dim     S x 0.500 B 0.60
-   glow    S x 1.333 B 1.00
-   Backgrounds are pure grey (chroma 0), never tinted.
-   ========================================================= */
-var BASE_S = 0.54;               // coral pink reference saturation
-var DEFAULT_HUE = 12/360;        // MADZINE brand H=12
-var DEFAULT_SAT = 1.0;           // multiplier
-
-var hue = readNum("sg_hue", DEFAULT_HUE);
-var satMul = readNum("sg_sat", DEFAULT_SAT);
-
-function readNum(k, d){
-  var v = parseFloat(localStorage.getItem(k));
-  return isFinite(v) ? v : d;
-}
-function clamp(v,a,b){ return v<a?a:(v>b?b:v); }
-
-function hsb(h,s,b){
-  h = ((h % 1) + 1) % 1;
-  s = clamp(s,0,1); b = clamp(b,0,1);
-  var i = Math.floor(h*6), f = h*6 - i;
-  var p = b*(1-s), q = b*(1-s*f), t = b*(1-s*(1-f));
-  var r,g,bl;
-  switch(i%6){
-    case 0: r=b; g=t; bl=p; break;
-    case 1: r=q; g=b; bl=p; break;
-    case 2: r=p; g=b; bl=t; break;
-    case 3: r=p; g=q; bl=b; break;
-    case 4: r=t; g=p; bl=b; break;
-    default: r=b; g=p; bl=q; break;
-  }
-  return "rgb("+Math.round(r*255)+","+Math.round(g*255)+","+Math.round(bl*255)+")";
-}
-function applyTheme(){
-  var s = BASE_S * satMul;
-  var root = document.documentElement.style;
-  root.setProperty("--acc",      hsb(hue, s*1.000, 0.92));
-  root.setProperty("--acc-dim",  hsb(hue, s*0.500, 0.60));
-  root.setProperty("--acc-glow", hsb(hue, s*1.333, 1.00));
-  var m = document.querySelector('meta[name="theme-color"]');
-  if(m) m.setAttribute("content","#121212");
-  drawWheel();
-}
-
-/* ---------- HUE wheel canvas ---------- */
-var hueCanvas = document.getElementById("huecanvas");
-var hctx = hueCanvas.getContext("2d");
-var HC = 220, HR_OUT = 104, HR_IN = 64;   // css px
-function drawWheel(){
-  var d = 2; // retina scale (canvas is 440 for 220 css px)
-  hctx.setTransform(d,0,0,d,0,0);
-  hctx.clearRect(0,0,HC,HC);
-  var cx = HC/2, cy = HC/2;
-  var segs = 360, step = Math.PI*2/segs;
-  var s = clamp(BASE_S*satMul,0,1);
-  for(var i=0;i<segs;i++){
-    var a0 = i*step - Math.PI/2;
-    var a1 = a0 + step + 0.012;
-    hctx.beginPath();
-    hctx.arc(cx,cy,HR_OUT,a0,a1,false);
-    hctx.arc(cx,cy,HR_IN,a1,a0,true);
-    hctx.closePath();
-    hctx.fillStyle = hsb(i/segs, 0.30, 0.92);
-    hctx.fill();
-  }
-  // center circle = current accent
-  hctx.beginPath();
-  hctx.arc(cx,cy,HR_IN-6,0,Math.PI*2);
-  hctx.fillStyle = hsb(hue, s, 0.92);
-  hctx.fill();
-  // chevrons (drawn lines, no unicode glyphs)
-  hctx.strokeStyle = "rgba(0,0,0,0.70)";
-  hctx.lineWidth = 2; hctx.lineCap = "round"; hctx.lineJoin = "round";
-  var w = 13, yTop = cy-26, yBot = cy+26;
-  hctx.beginPath();
-  hctx.moveTo(cx-w, yTop+7); hctx.lineTo(cx, yTop); hctx.lineTo(cx+w, yTop+7);
-  hctx.moveTo(cx-w, yBot-7); hctx.lineTo(cx, yBot); hctx.lineTo(cx+w, yBot-7);
-  hctx.stroke();
-  hctx.fillStyle = "rgba(0,0,0,0.70)";
-  hctx.font = '300 15px "Barlow Condensed", sans-serif';
-  hctx.textAlign = "center"; hctx.textBaseline = "middle";
-  hctx.fillText("SATURATION", cx, cy);
-  // hue marker: white solid dot + dark shadow
-  var ang = hue*Math.PI*2 - Math.PI/2;
-  var mr = (HR_OUT+HR_IN)/2;
-  var mx = cx + Math.cos(ang)*mr, my = cy + Math.sin(ang)*mr;
-  hctx.beginPath(); hctx.arc(mx+1,my+1,9,0,Math.PI*2);
-  hctx.fillStyle = "rgba(0,0,0,0.45)"; hctx.fill();
-  hctx.beginPath(); hctx.arc(mx,my,8,0,Math.PI*2);
-  hctx.fillStyle = "#ffffff"; hctx.fill();
-}
-
-var hueZone = 0; // 0 none, 1 ring, 2 center
-var lastY = 0;
-function huePos(e){
-  var r = hueCanvas.getBoundingClientRect();
-  var p = (e.touches && e.touches[0]) ? e.touches[0] : e;
-  return { x:p.clientX - r.left - HC/2, y:p.clientY - r.top - HC/2, cy:p.clientY };
-}
-function hueDown(e){
-  e.preventDefault();
-  var p = huePos(e), d = Math.sqrt(p.x*p.x+p.y*p.y);
-  hueZone = d > HR_IN-6 ? 1 : 2;
-  lastY = p.cy;
-  if(hueZone===1) hueMove(e); else e.stopPropagation();
-}
-function hueMove(e){
-  if(!hueZone) return;
-  e.preventDefault();
-  var p = huePos(e);
-  if(hueZone===1){
-    var a = Math.atan2(p.y,p.x) + Math.PI/2;
-    hue = ((a/(Math.PI*2))%1+1)%1;
-  }else{
-    satMul = clamp(satMul - (p.cy-lastY)*0.01, 0, 2);
-    lastY = p.cy;
-  }
-  applyTheme();
-}
-function hueUp(){
-  if(!hueZone) return;
-  if(hueZone===1) localStorage.setItem("sg_hue", String(hue));
-  else localStorage.setItem("sg_sat", String(satMul));
-  hueZone = 0;
-}
-hueCanvas.addEventListener("pointerdown", function(e){ hueCanvas.setPointerCapture(e.pointerId); hueDown(e); });
-hueCanvas.addEventListener("pointermove", hueMove);
-hueCanvas.addEventListener("pointerup", hueUp);
-hueCanvas.addEventListener("pointercancel", hueUp);
-
-var huebtn = document.getElementById("huebtn");
-var huepop = document.getElementById("huepop");
-var scrim  = document.getElementById("scrim");
-function openHue(){
-  huepop.classList.add("show");
-  huebtn.classList.add("on");
-  scrim.classList.add("show");
-  var r = huebtn.getBoundingClientRect();
-  var w = 244;
-  var left = clamp(r.right - w, 8, window.innerWidth - w - 8);
-  huepop.style.left = left+"px";
-  huepop.style.top  = (r.bottom + 8)+"px";
-  drawWheel();
-}
-function closeHue(){
-  huepop.classList.remove("show");
-  huebtn.classList.remove("on");
-  scrim.classList.remove("show");
-}
-huebtn.addEventListener("click", function(e){
-  e.stopPropagation();
-  if(huepop.classList.contains("show")) closeHue(); else openHue();
-});
-// tap anywhere outside closes (mandatory behaviour)
-scrim.addEventListener("pointerdown", function(){ closeHue(); closeEditor(); });
-huepop.addEventListener("pointerdown", function(e){ e.stopPropagation(); });
-
-/* =========================================================
-   STATE
-   ========================================================= */
-var METERS = [
-  {name:"4/4", n:4, d:4, acc:[0]},
-  {name:"3/4", n:3, d:4, acc:[0]},
-  {name:"6/8", n:6, d:8, acc:[0,3]},
-  {name:"7/8", n:7, d:8, acc:[0,4]},
-  {name:"5/4", n:5, d:4, acc:[0,3]}
-];
-var DEFAULT_CELL_DEFS = [
-  {id:"c1", key:"cell_1", type:"bars", n:4},
-  {id:"c2", key:"cell_2", type:"bars", n:8},
-  {id:"c3", key:"cell_3", type:"cue"},
-  {id:"c4", key:"cell_4", type:"cue"},
-  {id:"c5", key:"cell_5", type:"cue"},
-  {id:"c6", key:"cell_6", type:"cue"},
-  {id:"c7", key:"cell_7", type:"cue"},
-  {id:"c8", key:"cell_8", type:"cue"}
-];
-/* Built in the current language. Once the user edits a cell the set is written
-   to localStorage and is never regenerated on a language switch. */
-function defaultCells(){
-  return DEFAULT_CELL_DEFS.map(function(c){
-    var o = {id:c.id, label:t(c.key), type:c.type};
-    if(c.n !== undefined) o.n = c.n;
-    return o;
-  });
-}
-function cellsAreCustom(){
-  try{ return !!localStorage.getItem("sg_cells"); }catch(err){ return false; }
-}
-
-var S = {
-  role:"none",            // none | leader | follower | local
-  code:"",
-  bpm:  clamp(readNum("sg_bpm",120), 30, 300),
-  meter: clamp(readNum("sg_meter",0), 0, METERS.length-1)|0,
-  sound: localStorage.getItem("sg_sound") === "1",
-  metroRunning:false,
-  metroStart:0,
-  cells: loadCells(),
-  pending:null,           // {bars, label}
-  count:null,             // {startAt, bars, label}
-  flashUntil:0,
-  flashText:"",
-  editMode:false,
-  editId:null,
-  connKey:null, connArg:null,   // live-translated status strings
-  joinKey:null,
-  tapKey:null,  tapArg:null
-};
-
-function loadCells(){
-  try{
-    var raw = localStorage.getItem("sg_cells");
-    if(raw){
-      var a = JSON.parse(raw);
-      if(Array.isArray(a) && a.length) return a;
-    }
-  }catch(err){}
-  return defaultCells();
-}
-function saveCells(){ localStorage.setItem("sg_cells", JSON.stringify(S.cells)); }
-function meter(){ return METERS[S.meter]; }
-function beatDur(){ return (60000/S.bpm) * (4/meter().d); }
-function barDur(){ return beatDur() * meter().n; }
-function isLeader(){ return S.role==="leader" || S.role==="local"; }
-
-/* =========================================================
-   NETWORK (PeerJS)
-   ========================================================= */
-var peer=null, conns=[], hostConn=null, clockOffset=0, retryTimer=null, retryDelay=1200;
-var PREFIX = "madzine-sessionguide-";
-var CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-
-function now(){ return Date.now() + clockOffset; }
-function makeCode(){
-  var s=""; for(var i=0;i<4;i++) s += CODE_CHARS[Math.floor(Math.random()*CODE_CHARS.length)];
-  return s;
-}
-function send(obj){
-  if(S.role!=="leader") return;
-  var msg = JSON.stringify(obj);
-  for(var i=0;i<conns.length;i++){
-    var c = conns[i];
-    if(c && c.open){ try{ c.send(msg); }catch(err){} }
-  }
-}
-function stateMsg(){
-  return {t:"sync", bpm:S.bpm, meter:S.meter,
-          metroRunning:S.metroRunning, metroStart:S.metroStart,
-          count:S.count};
-}
-function setConnState(key, arg){
-  S.connKey = key || null;
-  S.connArg = (arg === undefined) ? null : arg;
-  renderConnState();
-}
-function renderConnState(){
-  document.getElementById("connstate").textContent =
-    S.connKey ? t(S.connKey, S.connArg === null ? undefined : S.connArg) : "";
-}
-function setJoinMsg(key){
-  S.joinKey = key || null;
-  renderJoinMsg();
-}
-function renderJoinMsg(){
-  document.getElementById("joinmsg").textContent = S.joinKey ? t(S.joinKey) : "";
-}
-
-function peerReady(){
-  if(typeof Peer !== "undefined") return true;
-  setConnState("conn_notloaded");
-  setJoinMsg("join_nopeer");
-  return false;
-}
-function hostRoom(attempt){
-  if(!peerReady()){ S.role="local"; showMain(); setConnState("conn_local"); return; }
-  S.code = makeCode();
-  S.role = "leader";
-  showMain();
-  setConnState("conn_creating");
-  peer = new Peer(PREFIX + S.code, {debug:0});
-  peer.on("open", function(){
-    document.getElementById("roomcode").textContent = S.code;
-    updateConn();
-  });
-  peer.on("connection", function(c){
-    conns.push(c);
-    c.on("open", function(){ updateConn(); try{ c.send(JSON.stringify(stateMsg())); }catch(err){} });
-    c.on("data", function(raw){
-      var m = parse(raw); if(!m) return;
-      if(m.t==="ping" && c.open){ try{ c.send(JSON.stringify({t:"pong", c:m.c, s:Date.now()})); }catch(err){} }
-    });
-    c.on("close", function(){ conns = conns.filter(function(x){return x!==c;}); updateConn(); });
-    c.on("error", function(){ conns = conns.filter(function(x){return x!==c;}); updateConn(); });
-  });
-  peer.on("disconnected", function(){ setConnState("conn_reconnect"); try{ peer.reconnect(); }catch(err){} });
-  peer.on("error", function(err){
-    if(err && err.type==="unavailable-id" && (attempt||0) < 5){
-      try{ peer.destroy(); }catch(e2){}
-      hostRoom((attempt||0)+1); return;
-    }
-    setConnState("conn_error");
-  });
-}
-function updateConn(){
-  if(S.role==="leader") setConnState("conn_peers", conns.filter(function(c){return c.open;}).length);
-}
-
-function joinRoom(code){
-  if(!peerReady()) return;
-  S.code = code; S.role = "follower";
-  setJoinMsg("join_connecting");
-  peer = new Peer({debug:0});
-  peer.on("open", function(){ connectHost(); });
-  peer.on("disconnected", function(){ setConnState("conn_reconnect"); try{ peer.reconnect(); }catch(err){} });
-  peer.on("error", function(){
-    if(S.role!=="follower") return;
-    setJoinMsg("join_notfound");
-    setConnState("conn_none");
-    scheduleRetry();
-  });
-}
-function connectHost(){
-  if(!peer || S.role!=="follower") return;
-  setConnState("conn_connecting");
-  var c = peer.connect(PREFIX + S.code, {reliable:true});
-  hostConn = c;
-  c.on("open", function(){
-    retryDelay = 1200;
-    showMain();
-    document.getElementById("roomcode").textContent = S.code;
-    setConnState("conn_connected");
-    pingHost();
-  });
-  c.on("data", function(raw){ onHostData(parse(raw)); });
-  c.on("close", function(){ setConnState("conn_reconnect"); scheduleRetry(); });
-  c.on("error", function(){ setConnState("conn_reconnect"); scheduleRetry(); });
-}
-function scheduleRetry(){
-  if(S.role!=="follower") return;
-  clearTimeout(retryTimer);
-  retryTimer = setTimeout(function(){
-    retryDelay = Math.min(retryDelay*1.6, 8000);
-    if(peer && peer.disconnected && !peer.destroyed){ try{ peer.reconnect(); }catch(err){} }
-    connectHost();
-  }, retryDelay);
-}
-function parse(raw){
-  try{ return typeof raw==="string" ? JSON.parse(raw) : raw; }catch(err){ return null; }
-}
-var pingSentAt = 0;
-function pingHost(){
-  if(!hostConn || !hostConn.open) return;
-  pingSentAt = Date.now();
-  try{ hostConn.send(JSON.stringify({t:"ping", c:pingSentAt})); }catch(err){}
-  setTimeout(pingHost, 5000);
-}
-function onHostData(m){
-  if(!m) return;
-  if(m.t==="pong"){
-    var rtt = Date.now() - m.c;
-    clockOffset = (m.s + rtt/2) - Date.now();
-    return;
-  }
-  if(m.t==="sync"){
-    S.bpm = m.bpm; S.meter = m.meter;
-    S.metroRunning = m.metroRunning; S.metroStart = m.metroStart;
-    S.count = m.count || null;
-    renderAll();
-    return;
-  }
-  if(m.t==="flash"){ startFlash(m.text, m.dur); return; }
-  if(m.t==="count"){ S.count = {startAt:m.startAt, bars:m.bars, label:m.label||""}; return; }
-  if(m.t==="countcancel"){ S.count = null; hideCount(); return; }
-}
-
-/* =========================================================
-   SCREENS
-   ========================================================= */
-var scrHome = document.getElementById("home");
-var scrJoin = document.getElementById("join");
-var scrMain = document.getElementById("main");
-var langbar = document.getElementById("langbar");
-function show(el){
-  [scrHome,scrJoin,scrMain].forEach(function(s){ s.classList.remove("show"); });
-  el.classList.add("show");
-  langbar.classList.toggle("hidden", el !== scrHome);   // corner switch is home only
-}
-function showMain(){
-  show(scrMain);
-  var leader = isLeader();
-  document.getElementById("tempocard").classList.toggle("hidden", !leader);
-  document.getElementById("metercard").classList.toggle("hidden", !leader);
-  document.getElementById("gridwrap").classList.toggle("hidden", !leader);
-  document.getElementById("folinfo").classList.toggle("hidden", leader);
-  document.getElementById("editbtn").classList.toggle("hidden", !leader);
-  document.getElementById("metrobtn").classList.toggle("hidden", !leader);
-  renderAll();
-  if(S.role==="local") setConnState("conn_local");
-  requestWakeLock();
-}
-
-document.getElementById("btnCreate").addEventListener("click", function(){ hostRoom(0); });
-document.getElementById("btnLocal").addEventListener("click", function(){
-  S.role = "local"; S.code = ""; showMain(); setConnState("conn_local");
-});
-document.getElementById("btnJoin").addEventListener("click", function(){
-  show(scrJoin); setJoinMsg(null);
-  document.getElementById("codeinput").focus();
-});
-document.getElementById("btnJoinBack").addEventListener("click", function(){ show(scrHome); });
-document.getElementById("btnJoinGo").addEventListener("click", function(){
-  var v = (document.getElementById("codeinput").value||"").toUpperCase().replace(/[^A-Z0-9]/g,"");
-  if(v.length!==4){ setJoinMsg("join_err_len"); return; }
-  joinRoom(v);
-});
-document.getElementById("codeinput").addEventListener("input", function(){
-  this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g,"");
-});
-document.getElementById("leavebtn").addEventListener("click", function(){
-  try{ if(peer) peer.destroy(); }catch(err){}
-  peer=null; conns=[]; hostConn=null; clearTimeout(retryTimer);
-  S.role="none"; S.count=null; S.metroRunning=false; S.pending=null;
-  hideCount(); setConnState(null); show(scrHome);
-});
-
-/* ---------- language switch ---------- */
-function setLang(v){
-  var n = normLang(v); if(!n || n === lang) return;
-  lang = n;
-  try{ localStorage.setItem("sg_lang", lang); }catch(err){}
-  if(!cellsAreCustom()) S.cells = defaultCells();   // untouched defaults follow the language
-  applyLang();
-}
-Array.prototype.forEach.call(document.querySelectorAll(".lang-btn"), function(b){
-  b.addEventListener("click", function(){ setLang(b.getAttribute("data-lang")); });
-});
-function applyLang(){
-  document.documentElement.setAttribute("lang", lang === "zh-TW" ? "zh-Hant" : lang);
-  Array.prototype.forEach.call(document.querySelectorAll("[data-i18n]"), function(el){
-    el.textContent = t(el.getAttribute("data-i18n"));
-  });
-  Array.prototype.forEach.call(document.querySelectorAll("[data-i18n-ph]"), function(el){
-    el.setAttribute("placeholder", t(el.getAttribute("data-i18n-ph")));
-  });
-  Array.prototype.forEach.call(document.querySelectorAll(".lang-btn"), function(b){
-    b.classList.toggle("on", b.getAttribute("data-lang") === lang);
-  });
-  renderConnState(); renderJoinMsg(); renderTapInfo();
-  renderAll();
-}
-
-/* =========================================================
-   TEMPO / TAP
-   ========================================================= */
-var taps = [];
-var tapbtn = document.getElementById("tapbtn");
-function renderTapInfo(){
-  document.getElementById("tapinfo").textContent =
-    S.tapKey ? t(S.tapKey, S.tapArg === null ? undefined : S.tapArg) : t("tap_hint");
-}
-function doTap(){
-  var t = performance.now();
-  if(taps.length && (t - taps[taps.length-1]) > beatDur()*8) taps = [];
-  taps.push(t);
-  if(taps.length > 5) taps.shift();
-  if(taps.length >= 2){
-    var iv=[], i;
-    for(i=1;i<taps.length;i++) iv.push(taps[i]-taps[i-1]);
-    var sum=0; for(i=0;i<iv.length;i++) sum += iv[i];
-    var avg = sum/iv.length;
-    setBpm(clamp(Math.round(60000/avg),30,300));   // BPM is quarter-note based
-  }
-  if(taps.length < 4){ S.tapKey = "tap_count"; S.tapArg = taps.length; }
-  else { S.tapKey = "tap_done"; S.tapArg = null; }
-  renderTapInfo();
-  tapbtn.classList.add("hit");
-  setTimeout(function(){ tapbtn.classList.remove("hit"); }, 70);
-}
-tapbtn.addEventListener("pointerdown", function(e){ e.preventDefault(); doTap(); });
-function setBpm(v){
-  S.bpm = clamp(Math.round(v),30,300);
-  localStorage.setItem("sg_bpm", String(S.bpm));
-  document.getElementById("bpmval").textContent = S.bpm;
-  send(stateMsg());
-}
-document.getElementById("bpmup").addEventListener("click", function(){ setBpm(S.bpm+1); });
-document.getElementById("bpmdown").addEventListener("click", function(){ setBpm(S.bpm-1); });
-
-/* =========================================================
-   METER
-   ========================================================= */
-function renderMeters(){
-  var row = document.getElementById("meterrow");
-  row.innerHTML = "";
-  METERS.forEach(function(m, i){
-    var b = document.createElement("button");
-    b.className = "meter-btn" + (i===S.meter ? " on" : "");
-    b.textContent = m.name;
-    b.addEventListener("click", function(){
-      S.meter = i;
-      localStorage.setItem("sg_meter", String(i));
-      renderMeters(); renderDots(); send(stateMsg());
-    });
-    row.appendChild(b);
-  });
-}
-
-/* =========================================================
-   METRONOME  (local clock, leader broadcasts start stamp)
-   ========================================================= */
-var dotEls = [], countDotEls = [];
-function buildDots(wrap){
-  wrap.innerHTML = "";
-  var els = [], m = meter();
-  for(var i=0;i<m.n;i++){
-    var d = document.createElement("div");
-    d.className = "dot" + (i===0 ? " first" : (m.acc.indexOf(i)>=0 ? " acc" : ""));
-    wrap.appendChild(d); els.push(d);
-  }
-  return els;
-}
-function renderDots(){
-  dotEls      = buildDots(document.getElementById("dots"));
-  countDotEls = buildDots(document.getElementById("countdots"));
-  lastBeat = -1; lastCountBeat = -1;
-}
-function toggleMetro(){
-  S.metroRunning = !S.metroRunning;
-  S.metroStart = S.metroRunning ? now() + 120 : 0;
-  nextClickBeat = -1;
-  document.getElementById("metrobtn").textContent = t(S.metroRunning ? "metro_stop" : "metro_start");
-  document.getElementById("metrobtn").classList.toggle("on", S.metroRunning);
-  send(stateMsg());
-}
-document.getElementById("metrobtn").addEventListener("click", toggleMetro);
-
-var soundbtn = document.getElementById("soundbtn");
-function renderSound(){
-  soundbtn.textContent = t(S.sound ? "sound_on" : "sound_off");
-  soundbtn.classList.toggle("on", S.sound);
-}
-soundbtn.addEventListener("click", function(){
-  S.sound = !S.sound;
-  localStorage.setItem("sg_sound", S.sound ? "1" : "0");
-  if(S.sound) initAudio();
-  renderSound();
-});
-
-var actx = null;
-function initAudio(){
-  if(actx) { if(actx.state==="suspended") actx.resume(); return; }
-  var AC = window.AudioContext || window.webkitAudioContext;
-  if(!AC) return;
-  actx = new AC();
-  if(actx.state==="suspended") actx.resume();
-}
-function click(when, strong){
-  if(!actx) return;
-  var o = actx.createOscillator(), g = actx.createGain();
-  o.type = "square";
-  o.frequency.value = strong ? 1600 : 900;
-  g.gain.setValueAtTime(0.0001, when);
-  g.gain.exponentialRampToValueAtTime(strong?0.32:0.16, when+0.002);
-  g.gain.exponentialRampToValueAtTime(0.0001, when+0.045);
-  o.connect(g); g.connect(actx.destination);
-  o.start(when); o.stop(when+0.06);
-}
-
-/* =========================================================
-   CELLS / GRID
-   ========================================================= */
-var gridEl = document.getElementById("grid");
-function renderGrid(){
-  gridEl.innerHTML = "";
-  S.cells.forEach(function(c){
-    var b = document.createElement("button");
-    b.className = "cell " + (c.type==="bars" ? "bars" : "cue");
-    if(S.editMode) b.className += " editing";
-    if(S.pending && S.pending.cellId===c.id) b.className += " armed";
-    if(S.pending && S.pending.label===c.label && c.type==="cue") b.className += " picked";
-    var lab = document.createElement("div");
-    lab.className = "lab"; lab.textContent = c.label;
-    b.appendChild(lab);
-    if(c.type==="bars"){
-      var n = document.createElement("div");
-      n.className = "n"; n.textContent = t("bars_unit", c.n);
-      b.appendChild(n);
-    }
-    var lpTimer=null, moved=false;
-    b.addEventListener("pointerdown", function(){
-      moved = false;
-      lpTimer = setTimeout(function(){ lpTimer=null; openEditor(c.id); }, 600);
-    });
-    b.addEventListener("pointermove", function(){ moved = true; });
-    b.addEventListener("pointerup", function(){
-      if(lpTimer){ clearTimeout(lpTimer); lpTimer=null; if(!moved) cellTap(c); }
-    });
-    b.addEventListener("pointercancel", function(){ clearTimeout(lpTimer); lpTimer=null; });
-    gridEl.appendChild(b);
-  });
-  document.getElementById("addcell").style.display = S.editMode ? "block" : "none";
-  renderPending();
-}
-function cellTap(c){
-  if(S.editMode){ openEditor(c.id); return; }
-  if(c.type==="bars"){
-    S.pending = {cellId:c.id, bars:c.n, label:(S.pending && S.pending.label) || ""};
-    renderGrid();
-    return;
-  }
-  if(S.pending){                       // attach cue to the armed bar count
-    S.pending.label = (S.pending.label===c.label) ? "" : c.label;
-    renderGrid();
-    return;
-  }
-  fireCue(c.label);                    // immediate cue
-}
-function renderPending(){
-  var bar = document.getElementById("pendingbar");
-  var txt = document.getElementById("pendingtxt");
-  if(!S.pending){ bar.classList.add("hidden"); return; }
-  bar.classList.remove("hidden");
-  txt.textContent = t("pending_bars", S.pending.bars)
-    + (S.pending.label ? t("pending_cue", S.pending.label) : "")
-    + "\n" + t("pending_hint");
-}
-document.getElementById("cancelbtn").addEventListener("click", function(){
-  S.pending = null; renderGrid();
-});
-document.getElementById("startbtn").addEventListener("click", function(){
-  if(!S.pending) return;
-  startCountdown(S.pending.bars, S.pending.label);
-  S.pending = null; renderGrid();
-});
-document.getElementById("editbtn").addEventListener("click", function(){
-  S.editMode = !S.editMode;
-  document.getElementById("editbtn").classList.toggle("on", S.editMode);
-  document.getElementById("editbtn").textContent = t(S.editMode ? "edit_off" : "edit_on");
-  if(S.editMode) S.pending = null;
-  renderGrid();
-});
-document.getElementById("addcell").addEventListener("click", function(){
-  var c = {id:"c"+Date.now(), label:t("new_cell_label"), type:"cue", n:4};
-  S.cells.push(c); saveCells(); renderGrid(); openEditor(c.id);
-});
-
-/* ---------- cell editor ---------- */
-var editorEl = document.getElementById("editor");
-function openEditor(id){
-  var c = S.cells.filter(function(x){return x.id===id;})[0];
-  if(!c) return;
-  S.editId = id;
-  document.getElementById("edlabel").value = c.label;
-  document.getElementById("ednval").textContent = c.n || 4;
-  setEdType(c.type);
-  editorEl.classList.add("show");
-  scrim.classList.add("show");
-}
-function closeEditor(){
-  if(!editorEl.classList.contains("show")) return;
-  var c = S.cells.filter(function(x){return x.id===S.editId;})[0];
-  if(c){
-    var v = document.getElementById("edlabel").value.trim();
-    c.label = v || c.label;
-    c.type = curEdType;
-    c.n = parseInt(document.getElementById("ednval").textContent,10) || 4;
-    saveCells();
-  }
-  editorEl.classList.remove("show");
-  scrim.classList.remove("show");
-  S.editId = null;
-  renderGrid();
-}
-var curEdType = "cue";
-function setEdType(t){
-  curEdType = t;
-  var btns = document.querySelectorAll("#edtype button");
-  for(var i=0;i<btns.length;i++) btns[i].classList.toggle("on", btns[i].getAttribute("data-type")===t);
-  document.getElementById("ednrow").classList.toggle("hidden", t!=="bars");
-}
-Array.prototype.forEach.call(document.querySelectorAll("#edtype button"), function(b){
-  b.addEventListener("click", function(){ setEdType(b.getAttribute("data-type")); });
-});
-document.getElementById("ednminus").addEventListener("click", function(){
-  var v = parseInt(document.getElementById("ednval").textContent,10)||4;
-  document.getElementById("ednval").textContent = clamp(v-1,1,64);
-});
-document.getElementById("ednplus").addEventListener("click", function(){
-  var v = parseInt(document.getElementById("ednval").textContent,10)||4;
-  document.getElementById("ednval").textContent = clamp(v+1,1,64);
-});
-document.getElementById("eddone").addEventListener("click", closeEditor);
-document.getElementById("eddel").addEventListener("click", function(){
-  S.cells = S.cells.filter(function(x){return x.id!==S.editId;});
-  saveCells();
-  editorEl.classList.remove("show");
-  scrim.classList.remove("show");
-  S.editId = null;
-  renderGrid();
-});
-editorEl.addEventListener("pointerdown", function(e){ e.stopPropagation(); });
-
-/* =========================================================
-   CUES / COUNTDOWN
-   ========================================================= */
-function fireCue(text){
-  var dur = Math.round(barDur()*2);
-  dur = clamp(dur, 1500, 6000);
-  send({t:"flash", text:text, dur:dur});
-  startFlash(text, dur);
-}
-function startFlash(text, dur){
-  S.flashText = text || "";
-  S.flashUntil = now() + (dur || 2000);
-  var ov = document.getElementById("ovflash");
-  document.getElementById("flashtxt").textContent = S.flashText;
-  ov.classList.remove("fade");
-  ov.classList.add("show");
-}
-function endFlash(){
-  var ov = document.getElementById("ovflash");
-  ov.classList.add("fade");
-  setTimeout(function(){ ov.classList.remove("show"); ov.classList.remove("fade"); }, 360);
-  S.flashUntil = 0;
-}
-function startCountdown(bars, label){
-  var t = now() + 150;
-  if(S.metroRunning && S.metroStart){
-    var bd = barDur();
-    var k = Math.ceil((t - S.metroStart)/bd);
-    t = S.metroStart + k*bd;
-  }
-  S.count = {startAt:t, bars:bars, label:label||""};
-  send({t:"count", startAt:t, bars:bars, label:label||""});
-}
-function cancelCountdown(){
-  S.count = null; hideCount(); send({t:"countcancel"});
-}
-document.getElementById("countcancel").addEventListener("click", cancelCountdown);
-function hideCount(){
-  var ov = document.getElementById("ovcount");
-  ov.classList.remove("show","last","blink");
-  lastCountBeat = -1;
-  for(var i=0;i<countDotEls.length;i++) countDotEls[i].classList.remove("on");
-}
-
-/* =========================================================
-   MAIN LOOP
-   ========================================================= */
-var lastBeat = -1, nextClickBeat = -1, lastCountBeat = -1;
-var ovcount = document.getElementById("ovcount");
-var countnum = document.getElementById("countnum");
-var countlab = document.getElementById("countlab");
-var countcancelBtn = document.getElementById("countcancel");
-
-/* update() is idempotent: every value is derived from timestamps, so it is safe
-   to drive it from both rAF (smooth) and a setInterval net (survives rAF throttling). */
-function update(){
-  var t = now();
-  var bd = beatDur(), br = barDur();
-
-  /* metronome visuals */
-  if(S.metroRunning && S.metroStart && t >= S.metroStart){
-    var beats = Math.floor((t - S.metroStart)/bd);
-    var idx = ((beats % meter().n) + meter().n) % meter().n;
-    if(beats !== lastBeat){
-      lastBeat = beats;
-      for(var i=0;i<dotEls.length;i++) dotEls[i].classList.toggle("on", i===idx);
-    }
-    /* click scheduling, 150 ms lookahead */
-    if(S.sound && actx){
-      if(nextClickBeat < 0) nextClickBeat = Math.max(0, beats+1);
-      while(true){
-        var bt = S.metroStart + nextClickBeat*bd;
-        if(bt - t > 150) break;
-        var bi = ((nextClickBeat % meter().n) + meter().n) % meter().n;
-        var when = actx.currentTime + Math.max(0,(bt - t))/1000;
-        click(when, bi===0);
-        nextClickBeat++;
-        if(nextClickBeat > beats + 64) break;
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    function switchImage(thumb) {
+      var mainImg = document.getElementById('main-image');
+      mainImg.src = thumb.dataset.full;
+      mainImg.alt = thumb.alt;
+      var allThumbs = document.querySelectorAll('.thumb-strip__item');
+      for (var i = 0; i < allThumbs.length; i++) {
+        allThumbs[i].classList.remove('active');
       }
+      thumb.classList.add('active');
     }
-  } else if(lastBeat !== -1){
-    lastBeat = -1;
-    for(var j=0;j<dotEls.length;j++) dotEls[j].classList.remove("on");
-  }
 
-  /* countdown */
-  if(S.count){
-    var endAt = S.count.startAt + S.count.bars*br;
-    var rem = endAt - t;
-    if(rem <= 0){
-      var lbl = S.count.label;
-      S.count = null; hideCount();
-      startFlash(lbl || t("flash_default"), clamp(Math.round(br*2),1500,6000));
-    }else{
-      var left = Math.max(1, Math.ceil(rem/br));
-      ovcount.classList.add("show");
-      countcancelBtn.classList.toggle("hidden", !isLeader());
-      if(countnum.textContent !== String(left)) countnum.textContent = left;
-      countlab.textContent = S.count.label || "";
-      /* countdown metronome dots — same timebase as the countdown itself, so
-         they run even when the metronome transport is stopped */
-      var cbeats = Math.floor((t - S.count.startAt)/bd);
-      if(cbeats !== lastCountBeat){
-        lastCountBeat = cbeats;
-        var cidx = cbeats < 0 ? -1 : ((cbeats % meter().n) + meter().n) % meter().n;
-        for(var k=0;k<countDotEls.length;k++) countDotEls[k].classList.toggle("on", k===cidx);
-      }
-      var last = left === 1;
-      ovcount.classList.toggle("last", last);
-      if(last){
-        ovcount.classList.toggle("blink", Math.floor(rem/(bd/2)) % 2 === 1);
-      }else{
-        ovcount.classList.remove("blink");
-      }
+    document.getElementById('main-image').addEventListener('click', function() {
+      var lb = document.getElementById('lightbox');
+      document.getElementById('lightbox-img').src = this.src;
+      document.getElementById('lightbox-img').alt = this.alt;
+      lb.classList.add('is-open');
+    });
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('is-open');
     }
-  }
 
-  /* flash */
-  if(S.flashUntil && t >= S.flashUntil) endFlash();
-}
-function tick(){ update(); requestAnimationFrame(tick); }
-
-/* =========================================================
-   RENDER / INIT
-   ========================================================= */
-function renderAll(){
-  document.getElementById("bpmval").textContent = S.bpm;
-  document.getElementById("roomlabel").textContent = t((S.role==="local") ? "mode_label" : "room_label");
-  document.getElementById("roomcode").textContent =
-    (S.role==="local") ? t("local_code") : (S.code || "————");
-  renderMeters(); renderDots(); renderSound(); renderGrid();
-  document.getElementById("metrobtn").textContent = t(S.metroRunning ? "metro_stop" : "metro_start");
-  document.getElementById("metrobtn").classList.toggle("on", S.metroRunning);
-  document.getElementById("editbtn").textContent = t(S.editMode ? "edit_off" : "edit_on");
-  document.getElementById("folstate").textContent = t("fol_wait");
-  if(S.role==="follower"){
-    document.getElementById("folsub").textContent = S.bpm + " BPM · " + meter().name;
-  }
-}
-
-/* wake lock */
-var wakeLock = null;
-function requestWakeLock(){
-  if(!("wakeLock" in navigator)) return;
-  navigator.wakeLock.request("screen").then(function(w){
-    wakeLock = w;
-    w.addEventListener("release", function(){ wakeLock = null; });
-  }).catch(function(){});
-}
-document.addEventListener("visibilitychange", function(){
-  if(document.visibilityState==="visible" && !wakeLock && S.role!=="none") requestWakeLock();
-});
-
-/* unlock audio on first interaction */
-document.addEventListener("pointerdown", function once(){
-  if(S.sound) initAudio();
-}, {passive:true});
-
-document.addEventListener("gesturestart", function(e){ e.preventDefault(); });
-
-applyTheme();
-applyLang();     // also runs renderAll()
-requestAnimationFrame(tick);
-setInterval(update, 100);
-
-})();
-</script>
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeLightbox();
+    });
+  </script>
 </body>
 </html>

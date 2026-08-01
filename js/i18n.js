@@ -121,7 +121,20 @@ const I18N = {
         sessionguide: {
           name: 'Session Guide',
           desc: '樂團即興指揮工具，多人手機同步顯示指令與小節倒數',
-          platform: 'Web'
+          platform: 'Web',
+          launch: '開啟應用程式',
+          intro: 'Session Guide 是為樂團即興與現場演出設計的瀏覽器工具。團長在手機上發出指令，所有團員的手機同步顯示，取代排練與演出中不易傳達的手勢與眼神。<br><br>團長建立房間後會得到一組四字元房號，團員輸入房號即可加入。連線透過 WebRTC 點對點建立，不需要伺服器轉送資料。另有本地模式，不連線也能單機當視覺節拍器使用。<br><br>速度以 Tap Tempo 敲擊設定，取最近四次間隔平均計算 BPM，並支援 4/4、3/4、6/8、7/8、5/4 五種拍號。節拍器為純視覺圓點，拍數對應拍號分子，第一拍以強調色標示，另可選擇開啟提示音。<br><br>指令以自訂格子發送，預設包含「變吵」「變安靜」「SOLO」「回主題」等，可自行改字、新增與刪除，設定保存於瀏覽器。指令分兩種：即時指令按下後立刻在所有人畫面全螢幕閃示；小節數指令則進入倒數，剩餘小節以超大字顯示，最後一小節轉為紅色警示，歸零時閃示指令內容。<br><br>各裝置的節拍與倒數皆在本地依時間戳推算，不逐拍依賴網路，並以定期校時修正裝置間的時鐘差。介面為深色極簡設計，支援繁體中文、英文、日文，並在演出期間透過 Wake Lock 保持螢幕常亮。',
+          features: {
+            sync: 'WebRTC 點對點連線，四字元房號加入，無需帳號',
+            tap: 'Tap Tempo 設定速度，全員同步',
+            meter: '五種拍號：4/4、3/4、6/8、7/8、5/4',
+            metronome: '圖像式節拍器，第一拍強調，提示音可選',
+            cues: '自訂指令格子，即時閃示與小節倒數兩種模式',
+            countdown: '小節倒數全螢幕顯示，最後一小節紅色警示',
+            local: '本地模式，離線可當單機視覺節拍器',
+            wakelock: 'Wake Lock 螢幕常亮，適合現場演出',
+            multilang: '三語介面（繁中 / EN / JP）'
+          }
         },
         watchnext: {
           name: 'WatchNext',
@@ -537,7 +550,20 @@ const I18N = {
         sessionguide: {
           name: 'Session Guide',
           desc: 'Band conducting tool with synced cues and bar countdown across phones',
-          platform: 'Web'
+          platform: 'Web',
+          launch: 'Launch App',
+          intro: 'Session Guide is a browser tool for band improvisation and live performance. The band leader sends cues from a phone and every member sees them at the same moment, replacing hand signals and eye contact that rarely carry across a stage.<br><br>The leader creates a room and receives a four-character code; members join by entering that code. Connections are peer-to-peer over WebRTC, so no server relays the data. A local mode is also available, running everything on a single device as a visual metronome.<br><br>Tempo is set by tapping, averaging the last four intervals to derive BPM, with five time signatures: 4/4, 3/4, 6/8, 7/8 and 5/4. The metronome is purely visual — one dot per beat, the downbeat marked in the accent color — with an optional click tone.<br><br>Cues are sent from customizable pads, preset with LOUDER, QUIETER, SOLO, BACK TO HEAD and others, all editable and stored in the browser. Instant cues flash full-screen on every device immediately; bar cues start a countdown showing the remaining bars in oversized type, turning red on the final bar and flashing the cue when it reaches zero.<br><br>Each device derives beats and countdowns locally from timestamps rather than depending on the network beat by beat, with periodic clock synchronization correcting drift between devices. The interface is dark and minimal, available in Traditional Chinese, English and Japanese, and keeps the screen awake during performance via the Wake Lock API.',
+          features: {
+            sync: 'Peer-to-peer WebRTC, join with a four-character room code, no accounts',
+            tap: 'Tap tempo, synced across all devices',
+            meter: 'Five time signatures: 4/4, 3/4, 6/8, 7/8, 5/4',
+            metronome: 'Visual metronome with accented downbeat, optional click',
+            cues: 'Custom cue pads, instant flash or bar countdown',
+            countdown: 'Full-screen bar countdown with red final-bar warning',
+            local: 'Local mode works offline as a standalone visual metronome',
+            wakelock: 'Wake Lock keeps the screen on during performance',
+            multilang: 'Trilingual interface (ZH / EN / JP)'
+          }
         },
         watchnext: {
           name: 'WatchNext',
@@ -953,7 +979,20 @@ const I18N = {
         sessionguide: {
           name: 'Session Guide',
           desc: 'バンド即興指揮ツール、複数スマホでキューと小節カウントダウンを同期表示',
-          platform: 'Web'
+          platform: 'Web',
+          launch: 'アプリを開く',
+          intro: 'Session Guide はバンドの即興演奏とライブのために設計されたブラウザツールです。バンドリーダーがスマートフォンからキューを送ると、全メンバーの画面に同時に表示され、ステージ上で伝わりにくいハンドサインやアイコンタクトを代替します。<br><br>リーダーがルームを作成すると4文字のルームコードが発行され、メンバーはそのコードを入力して参加します。接続は WebRTC によるピアツーピアで、サーバーがデータを中継しません。接続せずに単体のビジュアルメトロノームとして使うローカルモードも用意しています。<br><br>テンポはタップで設定し、直近4回の間隔の平均から BPM を算出します。拍子は 4/4、3/4、6/8、7/8、5/4 の5種類に対応。メトロノームは音を出さないドット表示で、拍子の分子と同数のドットが並び、1拍目はアクセントカラーで示されます。クリック音は任意でオンにできます。<br><br>キューはカスタマイズ可能なパッドから送信します。初期設定には「大きく」「静かに」「SOLO」「テーマに戻る」などが含まれ、文言の変更・追加・削除が可能で、設定はブラウザに保存されます。即時キューは押した瞬間に全員の画面へ全画面表示され、小節キューはカウントダウンを開始して残り小節数を特大表示、最終小節で赤く警告し、ゼロでキュー内容を表示します。<br><br>各デバイスはタイムスタンプからビートとカウントダウンをローカルに算出するため、1拍ごとにネットワークへ依存しません。定期的な時刻同期によりデバイス間のずれを補正します。インターフェースはダークでミニマルな設計、繁体字中国語・英語・日本語に対応し、演奏中は Wake Lock API で画面の点灯を維持します。',
+          features: {
+            sync: 'WebRTC ピアツーピア接続、4文字のルームコードで参加、アカウント不要',
+            tap: 'タップテンポでテンポ設定、全員に同期',
+            meter: '5種類の拍子：4/4、3/4、6/8、7/8、5/4',
+            metronome: 'ビジュアルメトロノーム、1拍目アクセント、クリック音は任意',
+            cues: 'カスタムキューパッド、即時表示と小節カウントダウンの2モード',
+            countdown: '小節カウントダウンを全画面表示、最終小節は赤で警告',
+            local: 'ローカルモード、オフラインでも単体ビジュアルメトロノームとして使用可',
+            wakelock: 'Wake Lock で画面常時点灯、ライブ演奏に対応',
+            multilang: '3言語インターフェース（繁体字中国語 / EN / JP）'
+          }
         },
         watchnext: {
           name: 'WatchNext',
