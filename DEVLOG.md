@@ -2,6 +2,14 @@
 
 ## 2026-08-02
 
+### Session Guide：移除動作格的漸變楔形
+
+- 動作格上的 cresc./decresc. 楔形圖示移除；「逐漸」已是獨立槽，動作格不再自帶漸變語意
+- 編輯器方向鈕的楔形一併移除，文字由「漸強 / 漸弱」改為「吵 / 安靜」
+- `.wedge` CSS、`#eddir.tempo` 隱藏規則與對應的 classList.toggle 一併刪除，無死碼
+- 速度動作格的 `+10% / -10%` 保留（幅度，非漸變）
+- `ramp_up / ramp_down`（漸強 / 漸弱）仍用於漸變執行中的畫面顯示
+
 ### Session Guide：動作標籤改為狀態
 
 - 「逐漸/馬上」已獨立成槽，動作格不應再帶變化語意：變吵→吵、變安靜→安靜、變快→快、變慢→慢；英文 Louder/Quieter/Faster/Slower → Loud/Quiet/Fast/Slow

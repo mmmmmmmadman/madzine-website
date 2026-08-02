@@ -233,9 +233,6 @@ button{background:none;border:none;cursor:pointer}
 }
 .cell.addc{color:var(--fg2);border-style:dashed;font-size:18px}
 /* CSS-drawn hairpin: widening = crescendo, narrowing = diminuendo */
-.wedge{width:46px;height:11px;background:var(--acc);flex:0 0 auto}
-.wedge.up{clip-path:polygon(0 46%,100% 0,100% 100%,0 54%)}
-.wedge.down{clip-path:polygon(0 0,100% 46%,100% 54%,0 100%)}
 .cell:active{background:var(--panel)}
 .cell.editing{border-style:dashed;border-color:var(--acc)}
 
@@ -370,7 +367,6 @@ button{background:none;border:none;cursor:pointer}
 #ednrow,#edpctrow{display:flex;align-items:center;gap:8px}
 #ednval,#edpctval{flex:1 1 auto;text-align:center;font-size:30px;line-height:1.2}
 .rl{flex:0 0 auto;font-size:15px;color:var(--fg3);letter-spacing:.1em;line-height:1.2;min-width:76px}
-#eddir.tempo .wedge{display:none}
 #edbtns{display:flex;gap:6px}
 #edbtns button{flex:1 1 0;min-height:50px;border-radius:8px;border:1px solid var(--line);font-size:19px;line-height:1.2}
 #eddone{background:var(--acc);color:#121212;border-color:var(--acc)}
@@ -542,8 +538,8 @@ button{background:none;border:none;cursor:pointer}
     <button data-fx="tempo" data-i18n="ed_fx_tempo"></button>
   </div>
   <div class="seg hidden" id="eddir">
-    <button data-dir="up"><span class="dl"></span><i class="wedge up" style="margin-left:8px;display:inline-block;vertical-align:middle;width:32px;height:9px"></i></button>
-    <button data-dir="down"><span class="dl"></span><i class="wedge down" style="margin-left:8px;display:inline-block;vertical-align:middle;width:32px;height:9px"></i></button>
+    <button data-dir="up"><span class="dl"></span></button>
+    <button data-dir="down"><span class="dl"></span></button>
   </div>
   <div id="ednrow" class="hidden">
     <div class="rl" data-i18n="ed_bars_lab"></div>
@@ -1798,11 +1794,8 @@ function renderGrid(){
         sl.textContent = (S.cmp.actId === c.id) ? "3" : "4";
         b.appendChild(sl);
       }
-      if(c.fx === "dyn"){
-        var w = document.createElement("div");
-        w.className = "wedge " + (c.dir === "down" ? "down" : "up");
-        b.appendChild(w);
-      }
+      /* no cresc./decresc. wedge here: "gradually" is its own slot now, so a
+         dynamics action carries no shape of its own — only its label */
       if(c.fx === "tempo"){
         var p = document.createElement("div");
         p.className = "n";
@@ -1998,12 +1991,12 @@ function updEdRows(){
   var isTime = curEdKind === "time";
   document.getElementById("ednrow").classList.toggle("hidden", !isTime);
   document.getElementById("eddir").classList.toggle("hidden", isTime || curEdFx === "none");
-  document.getElementById("eddir").classList.toggle("tempo", curEdFx === "tempo");
   document.getElementById("edpctrow").classList.toggle("hidden", isTime || curEdFx !== "tempo");
   var labs = document.querySelectorAll("#eddir .dl");
   if(labs.length === 2){
-    labs[0].textContent = t(curEdFx === "tempo" ? "act_faster" : "ramp_up");
-    labs[1].textContent = t(curEdFx === "tempo" ? "act_slower" : "ramp_down");
+    /* direction names the target state, not a change: 吵 / 安靜, 快 / 慢 */
+    labs[0].textContent = t(curEdFx === "tempo" ? "act_faster" : "act_louder");
+    labs[1].textContent = t(curEdFx === "tempo" ? "act_slower" : "act_quieter");
   }
 }
 Array.prototype.forEach.call(document.querySelectorAll("#edkind button"), function(b){
