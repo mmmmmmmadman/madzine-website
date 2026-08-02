@@ -2,6 +2,15 @@
 
 ## 2026-08-02
 
+### Session Guide：首頁加下載原始碼
+
+- 程式本身就是單一 HTML 檔，下載原始碼即下載該檔本身
+- 連結 href 由 `location.pathname` 產生而非寫死：repo 內是 `index.html`、網站上是 `sessionguide-app.html`，寫死任一個都會在另一邊失效；pathname 以 `/` 結尾時補 `index.html`
+- 存檔名固定 `SessionGuide.html`
+- 放在首頁三顆大按鈕下方，不進主操作畫面，避免演出中誤觸
+- 三語：下載原始碼 / Download source / ソースをダウンロード
+- 首頁預覽截圖一併重生（首頁正是該截圖的畫面）
+
 ### Session Guide：倒數與漸變畫面顯示下一個動作
 
 - 選了槽 4 時，倒數畫面與漸變畫面顯示「然後 X」，讓所有人在事情發生前就知道接下來是什麼

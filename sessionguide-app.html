@@ -83,6 +83,13 @@ button{background:none;border:none;cursor:pointer}
   padding:12px;line-height:1.2;
 }
 .big-btn .sub{display:block;font-size:14px;color:var(--fg3);margin-top:4px;line-height:1.2}
+/* self-download: the app is one file, so the page hands out its own source */
+#srcbox{text-align:center;margin-top:10px}
+#srcdl{display:inline-flex;align-items:center;justify-content:center;min-height:44px;
+  padding:0 14px;font-size:17px;letter-spacing:.08em;color:var(--fg2);
+  border-bottom:1px solid var(--line);cursor:pointer}
+#srcdl:active{color:var(--acc)}
+#srcnote{font-size:14px;color:var(--fg3);line-height:1.35;margin-top:4px;padding:0 8px}
 .big-btn.primary{border-color:var(--acc-dim);color:var(--acc)}
 .big-btn:active{background:var(--panel)}
 
@@ -397,6 +404,10 @@ button{background:none;border:none;cursor:pointer}
     <button class="big-btn primary" id="btnCreate"><span data-i18n="home_create"></span><span class="sub" data-i18n="home_create_sub"></span></button>
     <button class="big-btn" id="btnJoin"><span data-i18n="home_join"></span><span class="sub" data-i18n="home_join_sub"></span></button>
     <button class="big-btn" id="btnLocal"><span data-i18n="home_local"></span><span class="sub" data-i18n="home_local_sub"></span></button>
+    <div id="srcbox">
+      <a id="srcdl" download="SessionGuide.html" data-i18n="src_dl"></a>
+      <div id="srcnote" data-i18n="src_note"></div>
+    </div>
   </div>
 
   <!-- JOIN -->
@@ -579,6 +590,8 @@ var I18N = {
   home_create:"建立房間",     home_create_sub:"Leader — 發送指令給團員",
   home_join:"加入房間",       home_join_sub:"Follower — 接收 leader 的指令",
   home_local:"本地模式",      home_local_sub:"單機 — 不連線，功能全部可用",
+  src_dl:"下載原始碼",
+  src_note:"整個程式就是這一個 HTML 檔，下載到的即完整原始碼",
   join_lab:"輸入四位房號",
   join_name_lab:"你的暱稱（可留空）",
   join_name_ph:"暱稱",
@@ -645,6 +658,8 @@ var I18N = {
   home_create:"Create Room",  home_create_sub:"Leader — send cues to the band",
   home_join:"Join Room",      home_join_sub:"Follower — receive leader cues",
   home_local:"Local Mode",    home_local_sub:"Standalone — offline, all features",
+  src_dl:"Download source",
+  src_note:"The whole app is this one HTML file — the download is the full source",
   join_lab:"ENTER 4 CHARACTER CODE",
   join_name_lab:"YOUR NAME (OPTIONAL)",
   join_name_ph:"Name",
@@ -711,6 +726,8 @@ var I18N = {
   home_create:"ルームを作成",  home_create_sub:"リーダー — メンバーへキュー送信",
   home_join:"ルームに参加",    home_join_sub:"フォロワー — リーダーのキュー受信",
   home_local:"ローカルモード", home_local_sub:"単体 — オフラインで全機能",
+  src_dl:"ソースをダウンロード",
+  src_note:"アプリ全体がこの HTML 1 ファイル。ダウンロードしたものが完全なソース",
   join_lab:"4文字のコードを入力",
   join_name_lab:"ニックネーム（任意）",
   join_name_ph:"名前",
@@ -2438,6 +2455,15 @@ document.addEventListener("gesturestart", function(e){ e.preventDefault(); });
 applyTheme();
 if(needMigrateSave){ try{ saveCells(); }catch(err){} }   // v1 -> v2, written once
 applyLang();     // also runs renderAll()
+/* The source link points at this very file rather than a hard-coded name: the
+   app is index.html in the repo and sessionguide-app.html on the site, so any
+   fixed path would break on one of them. */
+(function(){
+  var a = document.getElementById("srcdl");
+  if(!a) return;
+  var p = location.pathname;
+  a.href = /\/$/.test(p) ? p + "index.html" : p;
+})();
 requestAnimationFrame(tick);
 setInterval(update, 100);
 
