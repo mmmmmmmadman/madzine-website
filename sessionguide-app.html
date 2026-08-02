@@ -632,8 +632,8 @@ var I18N = {
   ed_kind_time:"時間",         ed_kind_act:"動作",
   ed_fx_none:"一般",           ed_fx_dyn:"力度",         ed_fx_tempo:"速度",
   ed_bars_lab:"小節數",        ed_pct_lab:"幅度",
-  act_louder:"變吵",           act_quieter:"變安靜",
-  act_faster:"變快",           act_slower:"變慢",
+  act_louder:"吵",             act_quieter:"安靜",
+  act_faster:"快",             act_slower:"慢",
   act_solo:"SOLO",             act_head:"回主題",
   act_ending:"結尾",           act_stop:"停止",
   act_free:"自由"
@@ -697,8 +697,8 @@ var I18N = {
   ed_kind_time:"Bars",         ed_kind_act:"Action",
   ed_fx_none:"Plain",          ed_fx_dyn:"Dynamics",     ed_fx_tempo:"Tempo",
   ed_bars_lab:"BARS",          ed_pct_lab:"AMOUNT",
-  act_louder:"Louder",         act_quieter:"Quieter",
-  act_faster:"Faster",         act_slower:"Slower",
+  act_louder:"Loud",           act_quieter:"Quiet",
+  act_faster:"Fast",           act_slower:"Slow",
   act_solo:"SOLO",             act_head:"Back to Head",
   act_ending:"Ending",         act_stop:"Stop",
   act_free:"Free"
@@ -995,7 +995,7 @@ var METERS = [
      time + gradually = duration   -> spreads the change across N bars
    Slot 4 runs the instant the first segment ends and carries no time of its own.
    --------------------------------------------------------- */
-var CELLS_VER = 3;
+var CELLS_VER = 4;
 var DEFAULT_TIME_DEFS = [2, 4, 8, 16];
 var DEFAULT_MODE_DEFS = [
   {id:"mn", mode:"now"},
@@ -1097,7 +1097,26 @@ function loadCells(){
   var ver = (a && !Array.isArray(a) && a.v) ? a.v : 1;
   if(ver >= CELLS_VER) return ensureModeCells(arr);
   needMigrateSave = true;                    // written back once, right after init
-  return ensureModeCells(ver >= 2 ? migrateV2(arr) : migrateV1(arr));
+  if(ver < 3) arr = ver >= 2 ? migrateV2(arr) : migrateV1(arr);
+  return ensureModeCells(migrateV3(arr));
+}
+/* ---------------------------------------------------------
+   v3 -> v4
+   "immediately / gradually" became its own slot, so the four built-in dynamics
+   and tempo actions are states, not changes: 變吵 -> 吵, Louder -> Loud, ...
+   Only a label that still reads exactly as one of the labels v3 generated is
+   rewritten; anything the user typed is left alone. Japanese labels (強く /
+   静かに / 速く / 遅く) were already stateful and are not in the table.
+   --------------------------------------------------------- */
+function migrateV3(arr){
+  var REN = {
+    "變吵":"吵", "變安靜":"安靜", "變快":"快", "變慢":"慢",
+    "Louder":"Loud", "Quieter":"Quiet", "Faster":"Fast", "Slower":"Slow"
+  };
+  arr.forEach(function(c){
+    if(c && c.kind === "act" && REN[c.label]) c.label = REN[c.label];
+  });
+  return arr;
 }
 /* Label templates that v2 generated for its modifier cells, in every language.
    A stored label matching one of them was never typed by the user and is
