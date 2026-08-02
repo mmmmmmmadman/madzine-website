@@ -124,9 +124,14 @@ button{background:none;border:none;cursor:pointer}
 .row-btns{display:flex;gap:var(--gap);width:100%;flex:0 0 auto}
 
 /* ---------- main ---------- */
-/* the whole leader column scrolls when the viewport is short, so the tempo /
-   meter / metronome cards scroll away instead of squeezing the cell grid */
-#main{gap:var(--gap);padding-top:6px;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+/* the leader column scrolls when the viewport is short, so the tempo /
+   meter / metronome cards scroll away instead of squeezing the cell grid.
+   The sentence + START bar sits OUTSIDE that scroller and is always reachable. */
+#main{gap:var(--gap);padding-top:6px}
+#mainscroll{
+  flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:var(--gap);
+  overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+}
 .card{
   background:var(--bg-elev);border:1px solid var(--line);border-radius:10px;
   padding:var(--pad);flex:0 0 auto;
@@ -201,23 +206,31 @@ button{background:none;border:none;cursor:pointer}
 }
 .tr-btn.on{border-color:var(--acc);color:var(--acc)}
 
-/* grid: two zones — modifiers (how) above, actions (what) below */
+/* grid: three zones, one per sentence slot type.
+   1 how long (time)   2 at once / gradually (mode)   3+4 what (action) */
 #gridwrap{flex:1 0 auto;display:flex;flex-direction:column;gap:var(--gap)}
 .gsec{display:flex;flex-direction:column;gap:6px;flex:0 0 auto}
 .ghead{font-size:14px;color:var(--fg3);letter-spacing:.16em;line-height:1.2;padding-left:2px}
 .ggrid{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);grid-auto-rows:minmax(56px,auto)}
+.ggrid.c4{grid-template-columns:1fr 1fr 1fr 1fr;grid-auto-rows:minmax(48px,auto)}
+.ggrid.c2{grid-auto-rows:minmax(48px,auto)}
 .cell{
   border:1px solid var(--line);border-radius:10px;background:var(--bg-elev);
   font-size:21px;color:var(--fg);line-height:1.2;padding:8px 6px;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
-  min-height:56px;
+  min-height:56px;position:relative;
 }
 .cell .n{font-size:14px;color:var(--fg3);letter-spacing:.16em;line-height:1.2}
-/* modifier cells read as a lower, quieter band; actions are the loud row */
-.cell.mod{background:var(--panel);border-color:#3d3d3d;font-size:19px;min-height:52px;border-radius:26px}
-.cell.mod.sel{border-color:var(--acc);background:var(--acc-dim);color:var(--fg)}
+/* time cells: small pills. mode cells: wider pills. actions: the loud block row */
+.cell.time{background:var(--panel);border-color:#3d3d3d;font-size:18px;min-height:48px;border-radius:24px;padding:6px 4px}
+.cell.mode{background:var(--panel);border-color:#3d3d3d;font-size:19px;min-height:48px;border-radius:10px;border-style:dashed}
 .cell.act{background:var(--bg-elev)}
-.cell.act.recent{border-color:var(--acc-glow)}
+.cell.sel{border-color:var(--acc);background:var(--acc-dim);color:var(--fg);border-style:solid}
+/* slot number badge on a picked action: 3 = what, 4 = then what */
+.cell .slot{
+  position:absolute;top:4px;right:8px;font-size:14px;line-height:1.2;
+  color:var(--acc-glow);letter-spacing:.08em;
+}
 .cell.addc{color:var(--fg2);border-style:dashed;font-size:18px}
 /* CSS-drawn hairpin: widening = crescendo, narrowing = diminuendo */
 .wedge{width:46px;height:11px;background:var(--acc);flex:0 0 auto}
@@ -225,10 +238,35 @@ button{background:none;border:none;cursor:pointer}
 .wedge.down{clip-path:polygon(0 0,100% 46%,100% 54%,0 100%)}
 .cell:active{background:var(--panel)}
 .cell.editing{border-style:dashed;border-color:var(--acc)}
-#pendingbar{display:flex;align-items:center;gap:var(--gap);flex:0 0 auto;min-height:52px}
-#pendingtxt{flex:1 1 auto;font-size:16px;color:var(--fg2);line-height:1.25;white-space:pre-line}
-#pendingtxt.warn{color:var(--acc-glow)}
-#cancelbtn{flex:0 0 auto;min-height:52px;padding:0 16px;border:1px solid var(--line);border-radius:10px;font-size:17px;color:var(--fg2);line-height:1.2}
+
+/* ---------- sentence + START bar (never scrolls away) ---------- */
+#composebar{
+  flex:0 0 auto;display:flex;flex-direction:column;gap:6px;
+  background:var(--bg-elev);border:1px solid var(--line);border-radius:10px;
+  padding:8px var(--pad);
+}
+#sentence{
+  font-size:18px;color:var(--fg);line-height:1.3;min-height:24px;
+  overflow:hidden;text-overflow:ellipsis;
+}
+#sentence.dim{color:var(--fg3)}
+#sentence.warn{color:var(--acc-glow)}
+#composebtns{display:flex;gap:var(--gap)}
+#clearbtn{
+  flex:0 0 34%;min-height:48px;border:1px solid var(--line);border-radius:10px;
+  background:var(--panel);font-size:18px;color:var(--fg2);line-height:1.2;
+}
+#startbtn{
+  flex:1 1 auto;min-height:48px;border-radius:10px;
+  background:var(--acc);border:1px solid var(--acc);color:#121212;
+  font-size:22px;letter-spacing:.14em;line-height:1.2;
+}
+#startbtn:active{background:var(--acc-glow);border-color:var(--acc-glow)}
+/* disabled: no fill, dashed outline, struck-through weight — not just faded */
+#startbtn.off{
+  background:transparent;border:2px dashed var(--fg3);color:var(--fg3);
+  cursor:default;letter-spacing:.08em;
+}
 
 /* short viewports (iPhone Safari with toolbars, ~664 px and below):
    compress the non-interactive display elements so the cell grid keeps
@@ -247,6 +285,8 @@ button{background:none;border:none;cursor:pointer}
   #join{gap:12px}
   #rampbar{height:32px;margin-top:14px}
   #ramprem{font-size:32px;margin-top:10px}
+  #composebar{padding:6px 8px;gap:4px}
+  #sentence{font-size:16px;min-height:21px}
   :root{--pad:8px}
 }
 
@@ -379,6 +419,7 @@ button{background:none;border:none;cursor:pointer}
 
   <!-- MAIN -->
   <div class="screen" id="main">
+   <div id="mainscroll">
     <div class="card" id="roomstrip">
       <div class="idbox">
         <div id="roomlabel">ROOM</div>
@@ -418,22 +459,31 @@ button{background:none;border:none;cursor:pointer}
 
     <div id="gridwrap">
       <div class="gsec">
-        <div class="ghead" data-i18n="sec_how"></div>
-        <div class="ggrid" id="gridmods"></div>
+        <div class="ghead" data-i18n="sec_time"></div>
+        <div class="ggrid c4" id="gridtime"></div>
       </div>
       <div class="gsec">
-        <div class="ghead" data-i18n="sec_what"></div>
-        <div class="ggrid" id="gridacts"></div>
+        <div class="ghead" data-i18n="sec_mode"></div>
+        <div class="ggrid c2" id="gridmode"></div>
       </div>
-      <div id="pendingbar" class="hidden">
-        <div id="pendingtxt"></div>
-        <button id="cancelbtn" data-i18n="cancel"></button>
+      <div class="gsec">
+        <div class="ghead" data-i18n="sec_act"></div>
+        <div class="ggrid" id="gridacts"></div>
       </div>
     </div>
 
     <div id="folinfo" class="hidden">
       <div id="folstate"></div>
       <div id="folsub"></div>
+    </div>
+   </div>
+
+    <div id="composebar">
+      <div id="sentence"></div>
+      <div id="composebtns">
+        <button id="clearbtn" data-i18n="clear_all"></button>
+        <button id="startbtn" class="off"></button>
+      </div>
     </div>
   </div>
 
@@ -483,13 +533,8 @@ button{background:none;border:none;cursor:pointer}
   <div class="h" data-i18n="ed_title"></div>
   <input id="edlabel" type="text" maxlength="12" data-i18n-ph="ed_name_ph">
   <div class="seg" id="edkind">
-    <button data-kind="mod" data-i18n="ed_kind_mod"></button>
+    <button data-kind="time" data-i18n="ed_kind_time"></button>
     <button data-kind="act" data-i18n="ed_kind_act"></button>
-  </div>
-  <div class="seg hidden" id="edmode">
-    <button data-mode="now" data-i18n="ed_mode_now"></button>
-    <button data-mode="gradual" data-i18n="ed_mode_grad"></button>
-    <button data-mode="after" data-i18n="ed_mode_after"></button>
   </div>
   <div class="seg hidden" id="edfx">
     <button data-fx="none" data-i18n="ed_fx_none"></button>
@@ -560,7 +605,7 @@ var I18N = {
   edit_on:"編輯格子",          edit_off:"完成編輯",
   add_cell:"新增格子",         new_cell_label:"新指令",
   bars_unit:"{n} 小節",
-  cancel:"取消",               start:"開始",
+  clear_all:"清空",            start:"開始",
   count_sub:"小節倒數",        count_cancel:"取消倒數",
   flash_default:"開始",
   fol_wait:"等待 leader 指令",
@@ -570,23 +615,28 @@ var I18N = {
   ramp_sub:"剩餘小節",         ramp_cancel:"取消漸變",
   ramp_cell:"{n} 小節漸變",
   ed_delete:"刪除",            ed_done:"完成",
-  sec_how:"修飾 — 何時、怎麼變",  sec_what:"動作 — 變成什麼",
-  mod_now:"立刻",              mod_grad:"逐漸 {n} 小節",
-  mod_after:"{n} 小節後",
-  sel_hint:"已選 {label} · 再點一個動作格送出",
-  recent_hint:"已送出 {label}（立刻）· 可再點修飾格改送",
+  sec_time:"1 — 經過多久（可省略）",
+  sec_mode:"2 — 馬上或逐漸（可省略）",
+  sec_act:"3 — 做什麼（必選）· 再點一格 = 然後做什麼",
+  slot_now:"馬上",             slot_grad:"逐漸",
+  sent_now:"馬上 {a}",
+  sent_after:"{n} 小節後 {a}",
+  sent_grad:"{n} 小節內逐漸 {a}",
+  sent_then:"{a}，然後 {b}",
+  hint_pick_act:"先選一個動作格，再按開始",
+  warn_need_bars:"「逐漸」需要先選小節數",
   tempo_host_only:"速度變化只有房主可以發送",
   bars_over:"{n} 小節內",
-  add_mod:"新增修飾格",        add_act:"新增動作格",
-  new_mod_label:"新修飾",      new_act_label:"新動作",
-  ed_kind_mod:"修飾",          ed_kind_act:"動作",
-  ed_mode_now:"立刻",          ed_mode_grad:"逐漸",      ed_mode_after:"之後",
+  add_time:"新增時間格",       add_act:"新增動作格",
+  new_act_label:"新動作",
+  ed_kind_time:"時間",         ed_kind_act:"動作",
   ed_fx_none:"一般",           ed_fx_dyn:"力度",         ed_fx_tempo:"速度",
   ed_bars_lab:"小節數",        ed_pct_lab:"幅度",
   act_louder:"變吵",           act_quieter:"變安靜",
   act_faster:"變快",           act_slower:"變慢",
   act_solo:"SOLO",             act_head:"回主題",
-  act_ending:"結尾",           act_free:"自由"
+  act_ending:"結尾",           act_stop:"停止",
+  act_free:"自由"
 },
 "en":{
   brand_sub:"LIVE CUE SYSTEM",
@@ -620,7 +670,7 @@ var I18N = {
   edit_on:"Edit Cells",        edit_off:"Done Editing",
   add_cell:"Add Cell",         new_cell_label:"New Cue",
   bars_unit:"{n} BARS",
-  cancel:"Cancel",             start:"Start",
+  clear_all:"Clear",           start:"Start",
   count_sub:"BARS TO GO",      count_cancel:"Cancel Countdown",
   flash_default:"START",
   fol_wait:"Waiting for leader cue",
@@ -630,23 +680,28 @@ var I18N = {
   ramp_sub:"BARS REMAINING",   ramp_cancel:"Cancel Gradual",
   ramp_cell:"OVER {n} BARS",
   ed_delete:"Delete",          ed_done:"Done",
-  sec_how:"HOW — WHEN AND IN WHAT WAY", sec_what:"WHAT — THE CHANGE",
-  mod_now:"Now",               mod_grad:"Over {n} Bars",
-  mod_after:"After {n} Bars",
-  sel_hint:"{label} selected · tap an action to send",
-  recent_hint:"{label} sent (now) · tap a modifier to resend",
+  sec_time:"1 — HOW LONG (OPTIONAL)",
+  sec_mode:"2 — AT ONCE OR GRADUALLY (OPTIONAL)",
+  sec_act:"3 — WHAT (REQUIRED) · SECOND TAP = NEXT",
+  slot_now:"At Once",          slot_grad:"Gradually",
+  sent_now:"Now: {a}",
+  sent_after:"After {n} bars: {a}",
+  sent_grad:"Gradually over {n} bars: {a}",
+  sent_then:"{a}, then {b}",
+  hint_pick_act:"Pick an action, then press Start",
+  warn_need_bars:"Gradually needs a bar count",
   tempo_host_only:"Tempo changes can only be sent by the host",
   bars_over:"OVER {n} BARS",
-  add_mod:"Add Modifier",      add_act:"Add Action",
-  new_mod_label:"New Modifier", new_act_label:"New Action",
-  ed_kind_mod:"Modifier",      ed_kind_act:"Action",
-  ed_mode_now:"Now",           ed_mode_grad:"Over",      ed_mode_after:"After",
+  add_time:"Add Bars Cell",    add_act:"Add Action",
+  new_act_label:"New Action",
+  ed_kind_time:"Bars",         ed_kind_act:"Action",
   ed_fx_none:"Plain",          ed_fx_dyn:"Dynamics",     ed_fx_tempo:"Tempo",
   ed_bars_lab:"BARS",          ed_pct_lab:"AMOUNT",
   act_louder:"Louder",         act_quieter:"Quieter",
   act_faster:"Faster",         act_slower:"Slower",
   act_solo:"SOLO",             act_head:"Back to Head",
-  act_ending:"Ending",         act_free:"Free"
+  act_ending:"Ending",         act_stop:"Stop",
+  act_free:"Free"
 },
 "ja":{
   brand_sub:"ライブキューシステム",
@@ -680,7 +735,7 @@ var I18N = {
   edit_on:"セル編集",           edit_off:"編集完了",
   add_cell:"セルを追加",        new_cell_label:"新規キュー",
   bars_unit:"{n} 小節",
-  cancel:"キャンセル",          start:"スタート",
+  clear_all:"クリア",           start:"スタート",
   count_sub:"小節カウント",     count_cancel:"カウント中止",
   flash_default:"スタート",
   fol_wait:"リーダーのキュー待ち",
@@ -690,23 +745,28 @@ var I18N = {
   ramp_sub:"残り小節",          ramp_cancel:"変化を中止",
   ramp_cell:"{n} 小節かけて",
   ed_delete:"削除",             ed_done:"完了",
-  sec_how:"修飾 — いつ・どのように", sec_what:"アクション — 何を変える",
-  mod_now:"すぐに",             mod_grad:"{n} 小節かけて",
-  mod_after:"{n} 小節後",
-  sel_hint:"{label} を選択中 · アクションをタップで送信",
-  recent_hint:"{label} を送信（すぐに）· 修飾をタップで送り直し",
+  sec_time:"1 — どれくらい後（省略可）",
+  sec_mode:"2 — すぐに か 徐々に（省略可）",
+  sec_act:"3 — 何をする（必須）· もう一つ選ぶと その後",
+  slot_now:"すぐに",            slot_grad:"徐々に",
+  sent_now:"すぐに {a}",
+  sent_after:"{n} 小節後 {a}",
+  sent_grad:"{n} 小節かけて徐々に {a}",
+  sent_then:"{a}、その後 {b}",
+  hint_pick_act:"アクションを選んでからスタート",
+  warn_need_bars:"「徐々に」には小節数が必要です",
   tempo_host_only:"テンポ変更はホストのみ送信できます",
   bars_over:"{n} 小節かけて",
-  add_mod:"修飾セルを追加",     add_act:"アクションセルを追加",
-  new_mod_label:"新規修飾",     new_act_label:"新規アクション",
-  ed_kind_mod:"修飾",           ed_kind_act:"アクション",
-  ed_mode_now:"すぐに",         ed_mode_grad:"かけて",   ed_mode_after:"後",
+  add_time:"小節セルを追加",    add_act:"アクションセルを追加",
+  new_act_label:"新規アクション",
+  ed_kind_time:"小節",          ed_kind_act:"アクション",
   ed_fx_none:"通常",            ed_fx_dyn:"強弱",        ed_fx_tempo:"テンポ",
   ed_bars_lab:"小節数",         ed_pct_lab:"変化量",
   act_louder:"強く",            act_quieter:"静かに",
   act_faster:"速く",            act_slower:"遅く",
   act_solo:"SOLO",              act_head:"テーマへ",
-  act_ending:"エンディング",     act_free:"フリー"
+  act_ending:"エンディング",     act_stop:"停止",
+  act_free:"フリー"
 }
 };
 
@@ -739,6 +799,17 @@ function t(k, v){
   if(s === undefined) s = I18N.en[k];
   if(s === undefined) return k;
   return (v === undefined) ? s : s.replace(/\{n\}|\{label\}/g, v);
+}
+/* tf(key, {n:.., a:.., b:..}) — sentence templates carry the word order of each
+   language, so a clause is never assembled by concatenating fragments. */
+function tf(k, map){
+  var dict = I18N[lang] || I18N.en;
+  var s = dict[k];
+  if(s === undefined) s = I18N.en[k];
+  if(s === undefined) return k;
+  return s.replace(/\{(n|a|b)\}/g, function(_, g){
+    return (map && map[g] !== undefined && map[g] !== null) ? String(map[g]) : "";
+  });
 }
 
 /* =========================================================
@@ -913,17 +984,22 @@ var METERS = [
   {name:"5/4", n:5, d:4, acc:[0,3]}
 ];
 /* ---------------------------------------------------------
-   Cell model (v2): a command is a MODIFIER + an ACTION.
-     modifier  {kind:"mod", mode:"now"|"gradual"|"after", n}
-     action    {kind:"act", fx:"none"|"dyn"|"tempo", dir:"up"|"down", pct}
-   Tapping an action on its own means "now", which keeps the old one-tap feel.
+   Cell model (v3): a command is a four slot sentence.
+     1 time   {kind:"time", n}                      optional -> now
+     2 mode   {kind:"mode", mode:"now"|"gradual"}   optional -> at once
+     3 action {kind:"act", fx, dir, pct}            REQUIRED
+     4 action (a second tap on the action grid)     optional
+
+   Slot 1 is read through slot 2:
+     time + at once   = delay      -> fires in one go after N bars
+     time + gradually = duration   -> spreads the change across N bars
+   Slot 4 runs the instant the first segment ends and carries no time of its own.
    --------------------------------------------------------- */
-var CELLS_VER = 2;
-var DEFAULT_MOD_DEFS = [
-  {id:"m1", mode:"now"},
-  {id:"m2", mode:"gradual", n:4},
-  {id:"m3", mode:"after", n:4},
-  {id:"m4", mode:"after", n:8}
+var CELLS_VER = 3;
+var DEFAULT_TIME_DEFS = [2, 4, 8, 16];
+var DEFAULT_MODE_DEFS = [
+  {id:"mn", mode:"now"},
+  {id:"mg", mode:"gradual"}
 ];
 var DEFAULT_ACT_DEFS = [
   {id:"a1", key:"act_louder",  fx:"dyn",   dir:"up"},
@@ -933,19 +1009,24 @@ var DEFAULT_ACT_DEFS = [
   {id:"a5", key:"act_solo",    fx:"none"},
   {id:"a6", key:"act_head",    fx:"none"},
   {id:"a7", key:"act_ending",  fx:"none"},
-  {id:"a8", key:"act_free",    fx:"none"}
+  {id:"a8", key:"act_stop",    fx:"none"},
+  {id:"a9", key:"act_free",    fx:"none"}
 ];
-/* the visible text of a modifier is derived from its mode + bar count */
-function modAutoLabel(mode, n){
-  if(mode === "gradual") return t("mod_grad", n || 4);
-  if(mode === "after")   return t("mod_after", n || 4);
-  return t("mod_now");
+/* Time and mode cells have no stored text unless the user typed one, so their
+   face always reads correctly after a language switch. */
+function cellText(c){
+  if(c.kind === "time") return c.label || t("bars_unit", clamp(parseInt(c.n,10)||4,1,64));
+  if(c.kind === "mode") return t(c.mode === "gradual" ? "slot_grad" : "slot_now");
+  return c.label || t("new_act_label");
 }
 /* Built in the current language. Once the user edits a cell the set is written
    to localStorage and is never regenerated on a language switch. */
 function defaultCells(){
-  var out = DEFAULT_MOD_DEFS.map(function(c){
-    return {id:c.id, kind:"mod", mode:c.mode, n:c.n || 4, label:modAutoLabel(c.mode, c.n)};
+  var out = DEFAULT_TIME_DEFS.map(function(n){
+    return {id:"t"+n, kind:"time", n:n};
+  });
+  DEFAULT_MODE_DEFS.forEach(function(c){
+    out.push({id:c.id, kind:"mode", mode:c.mode});
   });
   DEFAULT_ACT_DEFS.forEach(function(c){
     out.push({id:c.id, kind:"act", label:t(c.key), fx:c.fx,
@@ -956,13 +1037,21 @@ function defaultCells(){
 function cellsAreCustom(){
   try{ return !!localStorage.getItem("sg_cells"); }catch(err){ return false; }
 }
-function modCells(){ return S.cells.filter(function(c){ return c.kind === "mod"; }); }
-function actCells(){ return S.cells.filter(function(c){ return c.kind !== "mod"; }); }
 function cellById(id){ return S.cells.filter(function(c){ return c.id === id; })[0] || null; }
+/* the two mode cells are structural: a set that lost them gets them back */
+function ensureModeCells(arr){
+  var have = {};
+  arr.forEach(function(c){ if(c.kind === "mode") have[c.mode] = 1; });
+  var add = [];
+  DEFAULT_MODE_DEFS.forEach(function(d){
+    if(!have[d.mode]) add.push({id:d.id, kind:"mode", mode:d.mode});
+  });
+  return add.length ? arr.concat(add) : arr;
+}
 
-/* set by loadCells() when a v1 payload was upgraded; the flag has to be
-   declared before S, because S.cells calls loadCells() during this same
-   statement sequence and a later "= false" would wipe it. */
+/* set by loadCells() when an older payload was upgraded. It has to be declared
+   AND initialised before S, because S.cells calls loadCells() while S is being
+   built and a later "= false" would wipe the flag before it is read. */
 var needMigrateSave = false;
 
 var S = {
@@ -980,8 +1069,8 @@ var S = {
   metroStart:0,
   metroBeat0:0,           // absolute beat position of the metronome downbeat
   cells: loadCells(),
-  selMod:null,            // id of the armed modifier cell
-  recent:null,            // {actId, at, undoBpm} — window for action-then-modifier
+  /* the sentence under construction; nothing leaves the device until START */
+  cmp:{timeId:null, modeId:null, actId:null, act2Id:null},
   warnKey:null, warnUntil:0,
   count:null,             // {startAt, startBeat, bars, label, from, fx}
   ramp:null,              // {startAt, startBeat, bars, label, dir, from, fx}
@@ -996,55 +1085,98 @@ var S = {
 };
 
 function loadCells(){
+  var a = null;
+  /* only the storage read and the parse are guarded: a throw inside the
+     migration itself must not be swallowed into a silent reset to defaults */
   try{
     var raw = localStorage.getItem("sg_cells");
-    if(raw){
-      var a = JSON.parse(raw);
-      var arr = Array.isArray(a) ? a : (a && Array.isArray(a.cells) ? a.cells : null);
-      var ver = (a && !Array.isArray(a) && a.v) ? a.v : 1;
-      if(arr && arr.length){
-        if(ver >= CELLS_VER) return arr;
-        needMigrateSave = true;              // written back once, right after init
-        return migrateCells(arr);
-      }
-    }
-  }catch(err){}
-  return defaultCells();
+    if(raw) a = JSON.parse(raw);
+  }catch(err){ a = null; }
+  var arr = Array.isArray(a) ? a : (a && Array.isArray(a.cells) ? a.cells : null);
+  if(!arr || !arr.length) return defaultCells();
+  var ver = (a && !Array.isArray(a) && a.v) ? a.v : 1;
+  if(ver >= CELLS_VER) return ensureModeCells(arr);
+  needMigrateSave = true;                    // written back once, right after init
+  return ensureModeCells(ver >= 2 ? migrateV2(arr) : migrateV1(arr));
+}
+/* Label templates that v2 generated for its modifier cells, in every language.
+   A stored label matching one of them was never typed by the user and is
+   dropped; anything else is carried over as a custom time cell label.
+   The list lives inside the function on purpose: loadCells() runs while S is
+   still being built, so any `var` declared further down would be undefined. */
+function isLegacyAutoLabel(label, n){
+  var TPL = [
+    "逐漸 {n} 小節", "Over {n} Bars", "{n} 小節かけて",
+    "{n} 小節後",    "After {n} Bars",
+    "立刻", "Now", "すぐに"
+  ];
+  if(!label) return true;
+  for(var i=0;i<TPL.length;i++){
+    if(TPL[i].replace("{n}", n) === label) return true;
+  }
+  return false;
+}
+function newAct(id, label, fx, dir, pct){
+  return {id:id, kind:"act", label:label, fx:fx || "none",
+          dir:dir === "down" ? "down" : "up", pct:clamp(parseInt(pct,10)||10,0,90)};
 }
 /* ---------------------------------------------------------
-   v1 -> v2 migration
-     cue  -> action
-     bars -> action, and a "after N bars" modifier is provisioned for it
-     ramp -> action (dynamics, keeps its direction), and a
-             "over N bars" modifier is provisioned for it
-   Custom labels are preserved verbatim; nothing is dropped.
+   v2 -> v3
+     modifier "now"                  -> covered by the fixed 2 mode cells
+     modifier "gradual N" / "after N" -> one time cell of N bars (deduped)
+     action                           -> carried over unchanged
+   A modifier label the user typed is kept on the time cell.
    --------------------------------------------------------- */
-function migrateCells(old){
-  var acts = [], after = {}, grad = {}, i;
+function migrateV2(old){
+  var times = [], acts = [], seen = {};
   old.forEach(function(c){
-    var lab = (c && c.label) || t("new_act_label");
-    var id  = (c && c.id) || ("a" + Math.random().toString(36).slice(2,8));
-    if(c && c.type === "bars"){
-      after[clamp(parseInt(c.n,10) || 4, 1, 64)] = 1;
-      acts.push({id:id, kind:"act", label:lab, fx:"none", dir:"up", pct:10});
-    }else if(c && c.type === "ramp"){
-      grad[clamp(parseInt(c.n,10) || 4, 1, 64)] = 1;
-      acts.push({id:id, kind:"act", label:lab, fx:"dyn",
-                 dir:(c.dir === "down" ? "down" : "up"), pct:10});
+    if(!c) return;
+    if(c.kind === "mod"){
+      if(c.mode === "now") return;
+      var n = clamp(parseInt(c.n,10) || 4, 1, 64);
+      if(seen[n]) return;
+      seen[n] = 1;
+      var cell = {id:"t"+n, kind:"time", n:n};
+      if(!isLegacyAutoLabel(c.label, n)) cell.label = String(c.label).slice(0,12);
+      times.push(cell);
     }else{
-      acts.push({id:id, kind:"act", label:lab, fx:"none", dir:"up", pct:10});
+      acts.push(newAct(c.id || ("a"+Math.random().toString(36).slice(2,8)),
+                       c.label || t("new_act_label"), c.fx, c.dir, c.pct));
     }
   });
-  if(!Object.keys(grad).length)  grad[4] = 1;
-  if(!Object.keys(after).length){ after[4] = 1; after[8] = 1; }
-  var mods = [{id:"m1", kind:"mod", mode:"now", n:4, label:modAutoLabel("now",4)}];
-  Object.keys(grad).sort(function(a,b){return a-b;}).forEach(function(n){
-    mods.push({id:"mg"+n, kind:"mod", mode:"gradual", n:+n, label:modAutoLabel("gradual",+n)});
+  if(!times.length) times = DEFAULT_TIME_DEFS.map(function(n){ return {id:"t"+n, kind:"time", n:n}; });
+  times.sort(function(a,b){ return a.n - b.n; });
+  return times.concat(acts);
+}
+/* ---------------------------------------------------------
+   v1 -> v3
+     cue  -> action
+     bars -> action, plus a time cell of N bars
+     ramp -> action (dynamics, keeps its direction), plus a time cell of N bars
+   Custom labels are preserved verbatim; nothing is dropped.
+   --------------------------------------------------------- */
+function migrateV1(old){
+  var acts = [], ns = {};
+  old.forEach(function(c){
+    if(!c) return;
+    var lab = c.label || t("new_act_label");
+    var id  = c.id || ("a" + Math.random().toString(36).slice(2,8));
+    if(c.type === "bars"){
+      ns[clamp(parseInt(c.n,10) || 4, 1, 64)] = 1;
+      acts.push(newAct(id, lab, "none", "up", 10));
+    }else if(c.type === "ramp"){
+      ns[clamp(parseInt(c.n,10) || 4, 1, 64)] = 1;
+      acts.push(newAct(id, lab, "dyn", c.dir, 10));
+    }else{
+      acts.push(newAct(id, lab, "none", "up", 10));
+    }
   });
-  Object.keys(after).sort(function(a,b){return a-b;}).forEach(function(n){
-    mods.push({id:"ma"+n, kind:"mod", mode:"after", n:+n, label:modAutoLabel("after",+n)});
+  var keys = Object.keys(ns);
+  if(!keys.length) keys = DEFAULT_TIME_DEFS.map(String);
+  var times = keys.sort(function(a,b){ return a-b; }).map(function(n){
+    return {id:"t"+n, kind:"time", n:+n};
   });
-  return mods.concat(acts);
+  return times.concat(acts);
 }
 function saveCells(){
   localStorage.setItem("sg_cells", JSON.stringify({v:CELLS_VER, cells:S.cells}));
@@ -1330,7 +1462,6 @@ function onHostData(m){
     return;
   }
   if(m.t==="flash"){ startFlash(m.text, m.dur, m.from); return; }
-  if(m.t==="flashend"){ endFlash(); return; }
   if(m.t==="count"){
     S.ramp = null; hideRamp(); endFlash();
     S.count = {startAt:m.startAt, startBeat:m.startBeat, bars:m.bars,
@@ -1610,9 +1741,9 @@ function click(when, strong){
 /* =========================================================
    CELLS / GRID
    ========================================================= */
-var gridMods = document.getElementById("gridmods");
+var gridTime = document.getElementById("gridtime");
+var gridMode = document.getElementById("gridmode");
 var gridActs = document.getElementById("gridacts");
-var RECENT_MS = 4000;      // window in which an already fired action can be re-sent with a modifier
 
 function bindCell(b, id, onTap){
   var lpTimer=null, moved=false;
@@ -1626,128 +1757,159 @@ function bindCell(b, id, onTap){
   });
   b.addEventListener("pointercancel", function(){ clearTimeout(lpTimer); lpTimer=null; });
 }
+function gridOf(kind){
+  return kind === "time" ? gridTime : (kind === "mode" ? gridMode : gridActs);
+}
 function renderGrid(){
-  gridMods.innerHTML = ""; gridActs.innerHTML = "";
+  gridTime.innerHTML = ""; gridMode.innerHTML = ""; gridActs.innerHTML = "";
   S.cells.forEach(function(c){
-    var isMod = c.kind === "mod";
+    var kind = (c.kind === "time" || c.kind === "mode") ? c.kind : "act";
     var b = document.createElement("button");
-    b.className = "cell " + (isMod ? "mod" : "act");
-    if(S.editMode) b.className += " editing";
-    if(isMod && S.selMod === c.id) b.className += " sel";
-    if(!isMod && S.recent && S.recent.actId === c.id) b.className += " recent";
+    b.className = "cell " + kind;
+    /* mode cells are structural, so they are never in the editable set */
+    if(S.editMode && kind !== "mode") b.className += " editing";
+    if(isPicked(c)) b.className += " sel";
     var lab = document.createElement("div");
-    lab.className = "lab"; lab.textContent = c.label;
+    lab.className = "lab"; lab.textContent = cellText(c);
     b.appendChild(lab);
-    if(!isMod && c.fx === "dyn"){
-      var w = document.createElement("div");
-      w.className = "wedge " + (c.dir === "down" ? "down" : "up");
-      b.appendChild(w);
+    if(kind === "act"){
+      if(S.cmp.actId === c.id || S.cmp.act2Id === c.id){
+        var sl = document.createElement("div");
+        sl.className = "slot";
+        sl.textContent = (S.cmp.actId === c.id) ? "3" : "4";
+        b.appendChild(sl);
+      }
+      if(c.fx === "dyn"){
+        var w = document.createElement("div");
+        w.className = "wedge " + (c.dir === "down" ? "down" : "up");
+        b.appendChild(w);
+      }
+      if(c.fx === "tempo"){
+        var p = document.createElement("div");
+        p.className = "n";
+        p.textContent = (c.dir === "down" ? "-" : "+") + (c.pct || 10) + "%";
+        b.appendChild(p);
+      }
     }
-    if(!isMod && c.fx === "tempo"){
-      var p = document.createElement("div");
-      p.className = "n";
-      p.textContent = (c.dir === "down" ? "-" : "+") + (c.pct || 10) + "%";
-      b.appendChild(p);
-    }
-    bindCell(b, c.id, function(){ cellTap(c); });
-    (isMod ? gridMods : gridActs).appendChild(b);
+    bindCell(b, kind === "mode" ? null : c.id, function(){ cellTap(c); });
+    gridOf(kind).appendChild(b);
   });
   if(S.editMode){
-    gridMods.appendChild(addButton("mod"));
+    gridTime.appendChild(addButton("time"));
     gridActs.appendChild(addButton("act"));
   }
-  renderPending();
+  renderCompose();
+}
+function isPicked(c){
+  if(c.kind === "time") return S.cmp.timeId === c.id;
+  if(c.kind === "mode") return S.cmp.modeId === c.id;
+  return S.cmp.actId === c.id || S.cmp.act2Id === c.id;
 }
 function addButton(kind){
   var b = document.createElement("button");
-  b.className = "cell addc " + (kind === "mod" ? "mod" : "act");
-  b.textContent = t(kind === "mod" ? "add_mod" : "add_act");
+  b.className = "cell addc " + kind;
+  b.textContent = t(kind === "time" ? "add_time" : "add_act");
   b.addEventListener("click", function(){ addCell(kind); });
   return b;
 }
 function addCell(kind){
-  var c = (kind === "mod")
-    ? {id:"m"+Date.now(), kind:"mod", mode:"after", n:4, label:modAutoLabel("after",4)}
+  var c = (kind === "time")
+    ? {id:"t"+Date.now(), kind:"time", n:4}
     : {id:"a"+Date.now(), kind:"act", label:t("new_act_label"), fx:"none", dir:"up", pct:10};
   S.cells.push(c); saveCells(); renderGrid(); openEditor(c.id);
 }
 
-/* ---------- composition: modifier + action ---------- */
+/* =========================================================
+   SENTENCE COMPOSITION  (nothing is broadcast before START)
+   ========================================================= */
 function clearCompose(){
-  S.selMod = null; S.recent = null; S.warnKey = null; S.warnUntil = 0;
+  S.cmp = {timeId:null, modeId:null, actId:null, act2Id:null};
+  S.warnKey = null; S.warnUntil = 0;
 }
 function warn(key){
   S.warnKey = key; S.warnUntil = now() + 3000;
-  renderPending();
+  renderCompose();
 }
 function cellTap(c){
-  if(S.editMode){ openEditor(c.id); return; }
+  if(S.editMode){ if(c.kind !== "mode") openEditor(c.id); return; }
   if(!canCue()) return;
   S.warnKey = null;
-  if(c.kind === "mod"){
-    /* an action fired a moment ago is still re-sendable: tapping a modifier
-       now replaces that instant command with the modified one */
-    if(S.recent){
-      var a = cellById(S.recent.actId);
-      if(a){ revokeRecent(); S.selMod = null; fire(c, a); renderGrid(); return; }
-      S.recent = null;
+  if(c.kind === "time"){
+    S.cmp.timeId = (S.cmp.timeId === c.id) ? null : c.id;      // tap again = cancel
+  }else if(c.kind === "mode"){
+    S.cmp.modeId = (S.cmp.modeId === c.id) ? null : c.id;
+  }else{
+    if(S.cmp.actId === c.id){
+      /* cancelling slot 3 promotes slot 4, so slot 4 is never left orphaned */
+      S.cmp.actId = S.cmp.act2Id; S.cmp.act2Id = null;
+    }else if(S.cmp.act2Id === c.id){
+      S.cmp.act2Id = null;
+    }else if(!S.cmp.actId){
+      S.cmp.actId = c.id;
+    }else{
+      S.cmp.act2Id = c.id;                                     // third tap replaces slot 4
     }
-    S.selMod = (S.selMod === c.id) ? null : c.id;
-    renderGrid();
-    return;
   }
-  var mod = S.selMod ? cellById(S.selMod) : null;
-  S.selMod = null;
-  if(mod){ fire(mod, c); renderGrid(); return; }
-  fire(null, c);                       // no modifier tapped: run it now
   renderGrid();
 }
-/* undo the instant command that is still inside the re-send window */
-function revokeRecent(){
-  var r = S.recent; S.recent = null;
-  if(!r) return;
-  if(isHost() && r.undoBpm){
-    S.bpm = r.undoBpm;
-    localStorage.setItem("sg_bpm", String(S.bpm));
-    setConstBpm(now(), S.bpm);
-    nextClickBeat = -1;
-    send(stateMsg());
+function cmpTime(){  return S.cmp.timeId ? cellById(S.cmp.timeId) : null; }
+function cmpMode(){  return S.cmp.modeId ? cellById(S.cmp.modeId) : null; }
+function cmpAct(){   return S.cmp.actId  ? cellById(S.cmp.actId)  : null; }
+function cmpAct2(){  return S.cmp.act2Id ? cellById(S.cmp.act2Id) : null; }
+function isGradual(){ var m = cmpMode(); return !!m && m.mode === "gradual"; }
+function barsOf(c){ return clamp(parseInt(c && c.n,10) || 4, 1, 64); }
+
+/* the sentence as one readable line, assembled from per-language templates */
+function sentenceText(){
+  var act = cmpAct();
+  if(!act) return "";
+  var tc = cmpTime(), s;
+  if(!tc)              s = tf("sent_now",   {a:cellText(act)});
+  else if(isGradual()) s = tf("sent_grad",  {n:barsOf(tc), a:cellText(act)});
+  else                 s = tf("sent_after", {n:barsOf(tc), a:cellText(act)});
+  var a2 = cmpAct2();
+  if(a2) s = tf("sent_then", {a:s, b:cellText(a2)});
+  return s;
+}
+function actPayload(c){
+  return {label:cellText(c), fx:c.fx || "none",
+          dir:c.dir === "down" ? "down" : "up",
+          pct:clamp(parseInt(c.pct,10) || 0, 0, 90)};
+}
+function renderCompose(){
+  var bar = document.getElementById("composebar");
+  var line = document.getElementById("sentence");
+  var btn  = document.getElementById("startbtn");
+  bar.classList.toggle("hidden", !canCue());
+  btn.textContent = t("start");
+  var ready = !!cmpAct();
+  btn.classList.toggle("off", !ready);
+  btn.disabled = !ready;
+  var msg = S.warnKey ? t(S.warnKey) : (ready ? sentenceText() : t("hint_pick_act"));
+  line.classList.toggle("warn", !!S.warnKey);
+  line.classList.toggle("dim", !S.warnKey && !ready);
+  if(line.textContent !== msg) line.textContent = msg;
+}
+/* START is the only path out of this device */
+function sendSentence(){
+  var act = cmpAct();
+  if(!act){ warn("hint_pick_act"); return; }
+  var tc = cmpTime();
+  if(isGradual() && !tc){ warn("warn_need_bars"); return; }   // gradual needs a duration
+  var a2 = cmpAct2();
+  var cmd = actPayload(act);
+  cmd.mode = !tc ? "now" : (isGradual() ? "gradual" : "after");
+  cmd.n    = tc ? barsOf(tc) : 0;
+  cmd.next = a2 ? actPayload(a2) : null;
+  if(!isHost() && (cmd.fx === "tempo" || (cmd.next && cmd.next.fx === "tempo"))){
+    warn("tempo_host_only"); return;
   }
-  endFlashBroadcast();
+  if(runCmd(cmd, "", false) === false){ warn("tempo_host_only"); return; }
+  clearCompose();
+  renderGrid();
 }
-function fire(modCell, actCell){
-  var cmd = {
-    mode: modCell ? (modCell.mode || "now") : "now",
-    n:    modCell ? clamp(parseInt(modCell.n,10) || 4, 1, 64) : 0,
-    label: actCell.label,
-    fx:   actCell.fx || "none",
-    dir:  actCell.dir === "down" ? "down" : "up",
-    pct:  clamp(parseInt(actCell.pct,10) || 0, 0, 90)
-  };
-  if(cmd.fx === "tempo" && !isHost()){ warn("tempo_host_only"); return; }
-  var res = runCmd(cmd, "", false);
-  if(res === false) return;
-  if(cmd.mode === "now"){
-    S.recent = {actId:actCell.id, at:now(), undoBpm:(res && res.undoBpm) || 0};
-  }else{
-    S.recent = null;
-  }
-}
-function renderPending(){
-  var bar = document.getElementById("pendingbar");
-  var txt = document.getElementById("pendingtxt");
-  var mod = S.selMod ? cellById(S.selMod) : null;
-  var rec = S.recent ? cellById(S.recent.actId) : null;
-  var msg = "";
-  txt.classList.toggle("warn", !!S.warnKey);
-  if(S.warnKey) msg = t(S.warnKey);
-  else if(mod) msg = t("sel_hint", mod.label);
-  else if(rec) msg = t("recent_hint", rec.label);
-  if(!msg){ bar.classList.add("hidden"); return; }
-  bar.classList.remove("hidden");
-  txt.textContent = msg;
-}
-document.getElementById("cancelbtn").addEventListener("click", function(){
+document.getElementById("startbtn").addEventListener("click", sendSentence);
+document.getElementById("clearbtn").addEventListener("click", function(){
   clearCompose(); renderGrid();
 });
 document.getElementById("editbtn").addEventListener("click", function(){
@@ -1760,18 +1922,17 @@ document.getElementById("editbtn").addEventListener("click", function(){
 
 /* ---------- cell editor ---------- */
 var editorEl = document.getElementById("editor");
-var curEdKind = "act", curEdMode = "now", curEdFx = "none", curEdDir = "up";
+var curEdKind = "act", curEdFx = "none", curEdDir = "up";
 function openEditor(id){
   var c = cellById(id);
-  if(!c) return;
+  if(!c || c.kind === "mode") return;          // the two mode cells are fixed
   S.editId = id;
-  document.getElementById("edlabel").value = c.label;
+  document.getElementById("edlabel").value = c.label || "";
   document.getElementById("ednval").textContent = clamp(parseInt(c.n,10)||4,1,64);
   document.getElementById("edpctval").textContent = clamp(parseInt(c.pct,10)||10,0,90) + "%";
   setEdDir(c.dir === "down" ? "down" : "up");
   setEdFx(c.fx || "none");
-  setEdMode(c.mode || "after");
-  setEdKind(c.kind === "mod" ? "mod" : "act");
+  setEdKind(c.kind === "time" ? "time" : "act");
   editorEl.classList.add("show");
   scrim.classList.add("show");
 }
@@ -1781,16 +1942,14 @@ function closeEditor(){
   if(c){
     var v = document.getElementById("edlabel").value.trim();
     var n = clamp(parseInt(document.getElementById("ednval").textContent,10)||4,1,64);
-    var wasAuto = (c.kind === "mod") && (c.label === modAutoLabel(c.mode||"now", c.n||4));
     c.kind = curEdKind;
-    c.n = n;
-    if(curEdKind === "mod"){
-      c.mode = curEdMode;
-      /* a label the user never touched keeps following mode + bar count */
-      c.label = (wasAuto || !v) ? modAutoLabel(curEdMode, n) : v;
+    if(curEdKind === "time"){
+      c.n = n;
+      /* an empty name means "follow the language", so the face stays correct */
+      if(v) c.label = v; else delete c.label;
       c.fx = "none";
     }else{
-      c.label = v || c.label;
+      c.label = v || c.label || t("new_act_label");
       c.fx = curEdFx;
       c.dir = curEdDir;
       c.pct = clamp(parseInt(document.getElementById("edpctval").textContent,10)||10,0,90);
@@ -1800,6 +1959,7 @@ function closeEditor(){
   editorEl.classList.remove("show");
   scrim.classList.remove("show");
   S.editId = null;
+  clearCompose();               // an edited cell may no longer fit its slot
   renderGrid();
 }
 function segOn(sel, attr, v){
@@ -1810,20 +1970,17 @@ function segOn(sel, attr, v){
 function setEdKind(v){
   curEdKind = v;
   segOn("#edkind button","data-kind",v);
-  document.getElementById("edmode").classList.toggle("hidden", v !== "mod");
-  document.getElementById("edfx").classList.toggle("hidden", v === "mod");
+  document.getElementById("edfx").classList.toggle("hidden", v === "time");
   updEdRows();
 }
-function setEdMode(v){ curEdMode = v; segOn("#edmode button","data-mode",v); updEdRows(); }
 function setEdFx(v){   curEdFx   = v; segOn("#edfx button","data-fx",v);     updEdRows(); }
 function setEdDir(v){  curEdDir  = v; segOn("#eddir button","data-dir",v); }
 function updEdRows(){
-  var isMod = curEdKind === "mod";
-  /* bar count belongs to "over N bars" and "after N bars" only */
-  document.getElementById("ednrow").classList.toggle("hidden", !(isMod && curEdMode !== "now"));
-  document.getElementById("eddir").classList.toggle("hidden", isMod || curEdFx === "none");
+  var isTime = curEdKind === "time";
+  document.getElementById("ednrow").classList.toggle("hidden", !isTime);
+  document.getElementById("eddir").classList.toggle("hidden", isTime || curEdFx === "none");
   document.getElementById("eddir").classList.toggle("tempo", curEdFx === "tempo");
-  document.getElementById("edpctrow").classList.toggle("hidden", isMod || curEdFx !== "tempo");
+  document.getElementById("edpctrow").classList.toggle("hidden", isTime || curEdFx !== "tempo");
   var labs = document.querySelectorAll("#eddir .dl");
   if(labs.length === 2){
     labs[0].textContent = t(curEdFx === "tempo" ? "act_faster" : "ramp_up");
@@ -1832,9 +1989,6 @@ function updEdRows(){
 }
 Array.prototype.forEach.call(document.querySelectorAll("#edkind button"), function(b){
   b.addEventListener("click", function(){ setEdKind(b.getAttribute("data-kind")); });
-});
-Array.prototype.forEach.call(document.querySelectorAll("#edmode button"), function(b){
-  b.addEventListener("click", function(){ setEdMode(b.getAttribute("data-mode")); });
 });
 Array.prototype.forEach.call(document.querySelectorAll("#edfx button"), function(b){
   b.addEventListener("click", function(){ setEdFx(b.getAttribute("data-fx")); });
@@ -1865,6 +2019,7 @@ document.getElementById("eddel").addEventListener("click", function(){
   editorEl.classList.remove("show");
   scrim.classList.remove("show");
   S.editId = null;
+  clearCompose();
   renderGrid();
 });
 editorEl.addEventListener("pointerdown", function(e){ e.stopPropagation(); });
@@ -1887,40 +2042,46 @@ function onCueRequest(m, from){
   else if(m.k==="cancelcount") cancelCountdown();
   else if(m.k==="cancelramp")  cancelRamp();
 }
-function sanitizeCmd(c){
+function sanitizeAct(c){
+  if(!c) return null;
   return {
-    mode: (c.mode==="gradual" || c.mode==="after") ? c.mode : "now",
-    n:    clamp(parseInt(c.n,10) || 4, 1, 64),
     label:String(c.label || "").slice(0,24),
     fx:   (c.fx==="tempo" || c.fx==="dyn") ? c.fx : "none",
     dir:  c.dir==="down" ? "down" : "up",
     pct:  clamp(parseInt(c.pct,10) || 0, 0, 90)
   };
 }
-/* returns false when refused, otherwise {undoBpm} */
+function sanitizeCmd(c){
+  var out = sanitizeAct(c);
+  out.mode = (c.mode==="gradual" || c.mode==="after") ? c.mode : "now";
+  out.n    = clamp(parseInt(c.n,10) || 4, 1, 64);
+  out.next = c.next ? sanitizeAct(c.next) : null;   // slot 4 carries no time
+  return out;
+}
+/* returns false when refused, true when accepted */
 function runCmd(cmd, from, remote){
+  var wantsTempo = cmd.fx === "tempo" || (cmd.next && cmd.next.fx === "tempo");
   if(!isHost()){
-    if(cmd.fx === "tempo") return false;         // tempo is the host's alone
+    if(wantsTempo) return false;                 // tempo is the host's alone
     req({t:"req", k:"cmd", cmd:cmd});
-    return {undoBpm:0};
+    return true;
   }
-  if(remote && cmd.fx === "tempo") return false;
+  if(remote && wantsTempo) return false;
   var src = from || myName();
   if(cmd.mode === "gradual") return startGradual(cmd, src);
   if(cmd.mode === "after")   return startCountdown(cmd, src);
-  return fireNow(cmd, src);
+  fireNow(cmd, src);
+  if(cmd.next) fireNow(cmd.next, src);           // no time in front of it: right away
+  return true;
 }
 function tempoTarget(dir, pct, base){
   return clamp(Math.round(base * (1 + (dir === "down" ? -1 : 1) * pct/100)), 30, 300);
 }
 function fireNow(cmd, src){
-  var undo = 0;
   if(cmd.fx === "tempo"){
-    undo = Math.round(bpmAt(now()));
-    applyTempoJump(tempoTarget(cmd.dir, cmd.pct, undo));
+    applyTempoJump(tempoTarget(cmd.dir, cmd.pct, Math.round(bpmAt(now()))));
   }
   fireCue(cmd.label, src);
-  return {undoBpm:undo};
 }
 function applyTempoJump(target){
   S.bpm = target;
@@ -1935,11 +2096,6 @@ function fireCue(text, from){                    // host only, reached via runCm
   var src = from || myName();
   send({t:"flash", text:text, dur:dur, from:src});
   startFlash(text, dur, src);
-}
-function endFlashBroadcast(){
-  if(!S.flashUntil) return;
-  endFlash();
-  if(isHost()) send({t:"flashend"});
 }
 function startFlash(text, dur, from){
   S.flashText = text || "";
@@ -1971,11 +2127,12 @@ function startCountdown(cmd, from){
   }
   var fx = (cmd.fx === "tempo") ? {type:"tempo", dir:cmd.dir, pct:cmd.pct} : null;
   var src = from || myName();
-  S.ramp = null; hideRamp(); endFlashBroadcast();   // countdown and gradual are exclusive
-  S.count = {startAt:t0, startBeat:startBeat, bars:cmd.n, label:cmd.label, from:src, fx:fx};
+  S.ramp = null; hideRamp(); endFlash();           // countdown and gradual are exclusive
+  S.count = {startAt:t0, startBeat:startBeat, bars:cmd.n, label:cmd.label,
+             from:src, fx:fx, next:cmd.next || null};
   send({t:"count", startAt:t0, startBeat:startBeat, bars:cmd.n,
         label:cmd.label, from:src, fx:fx});
-  return {undoBpm:0};
+  return true;
 }
 function cancelCountdown(){
   if(!isHost()){ req({t:"req", k:"cancelcount"}); return; }
@@ -1994,7 +2151,7 @@ function startGradual(cmd, from){
   var startAt = now() + 150;                 // "from now", no bar snapping
   var src = from || myName();
   var startBeat, bpmFrom = 0, bpmTo = 0;
-  S.count = null; hideCount(); endFlashBroadcast();
+  S.count = null; hideCount(); endFlash();
   if(cmd.fx === "tempo"){
     var base = Math.round(bpmAt(startAt));
     bpmTo = tempoTarget(cmd.dir, cmd.pct, base);
@@ -2008,11 +2165,11 @@ function startGradual(cmd, from){
   }
   S.ramp = {startAt:startAt, startBeat:startBeat, bars:cmd.n, label:cmd.label,
             dir:(cmd.fx === "none" ? null : cmd.dir), from:src, fx:cmd.fx,
-            bpmFrom:bpmFrom, bpmTo:bpmTo};
+            bpmFrom:bpmFrom, bpmTo:bpmTo, next:cmd.next || null};
   send(stateMsg());                          // carries the new timebase first
   send({t:"ramp", startAt:startAt, startBeat:startBeat, bars:cmd.n, label:cmd.label,
         dir:S.ramp.dir, from:src, fx:cmd.fx, bpmFrom:bpmFrom, bpmTo:bpmTo});
-  return {undoBpm:0};
+  return true;
 }
 function cancelRamp(){
   if(!isHost()){ req({t:"req", k:"cancelramp"}); return; }
@@ -2109,11 +2266,14 @@ function update(){
     var remB = cTotal - cRel;
     if(remB <= 0){
       var lbl = S.count.label, lfrom = S.count.from || "", cfx = S.count.fx;
+      var cnext = S.count.next || null;
       S.count = null; hideCount();
       if(cfx && cfx.type === "tempo" && isHost()){
         applyTempoJump(tempoTarget(cfx.dir, cfx.pct, Math.round(bpmAt(nt))));
       }
       startFlash(lbl || t("flash_default"), clamp(Math.round(barDur()*2),1500,6000), lfrom);
+      /* slot 4 runs the instant the first segment lands; the host owns it */
+      if(isHost() && cnext) fireNow(cnext, lfrom);
     }else{
       /* the countdown is snapped to the next bar line, so during the pre-roll
          fraction remB is slightly above the full length; clamp so a 4-bar
@@ -2147,7 +2307,9 @@ function update(){
     var rTotal = S.ramp.bars*n;
     var rRemB = rTotal - rRel;
     if(rRemB <= 0){
+      var rnext = S.ramp.next || null, rfrom = S.ramp.from || "";
       S.ramp = null; hideRamp();
+      if(isHost() && rnext) fireNow(rnext, rfrom);   // slot 4, at the end of the ramp
     }else{
       ovramp.classList.add("show");
       rampcancelBtn.classList.toggle("hidden", !canCue());
@@ -2181,9 +2343,8 @@ function update(){
     }
   }
 
-  /* composition helpers time out on their own */
-  if(S.recent && nt - S.recent.at > RECENT_MS){ S.recent = null; renderGrid(); }
-  if(S.warnKey && nt > S.warnUntil){ S.warnKey = null; renderPending(); }
+  /* the warning line clears itself; the sentence itself never expires */
+  if(S.warnKey && nt > S.warnUntil){ S.warnKey = null; renderCompose(); }
 
   /* flash */
   if(S.flashUntil && nt >= S.flashUntil) endFlash();

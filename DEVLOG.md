@@ -2,6 +2,23 @@
 
 ## 2026-08-02
 
+### Session Guide：四槽指令文法與 START 按鈕
+
+- 指令改為四槽組句：經過多久（可省略）+ 馬上或逐漸（可省略）+ 做什麼（必填）+ 然後做什麼（可省略）
+- 槽 1 語意由槽 2 決定：配「馬上」為延遲（倒數），配「逐漸」為期間（漸變）
+- 槽 4 在第一段結束瞬間執行，自身不帶時間與漸變
+- 「逐漸」未選小節數時拒送並提示，句子保留不清空
+- 新增「停止」動作格；不帶時間即為急停
+- 句子以整句模板 `sent_now / sent_after / sent_grad / sent_then` 組出，三語各自語序，非片段串接
+- 加回 START：組好句子才送出，槽 3 未填時為停用（虛線邊 + 灰字），送出後清空
+- 移除 4 秒回收窗全套機制（RECENT_MS / revokeRecent / renderPending / pendingbar / flashend），無死碼
+- `#main` 拆為可捲的 `#mainscroll` + 不捲的 `#composebar`，START 在 390×600 不被擠掉
+- 資料遷移至 v3，v1 與 v2 各自一次性升級
+
+### 修正
+
+- `LEGACY_MOD_TPL` 宣告在 `S` 之後，`loadCells()` 建構期取到 undefined 而拋錯，被大 try/catch 吞掉導致自訂格子靜默重置。模板移入函式體，try/catch 縮到只包 storage 讀取與 JSON.parse
+
 ### Session Guide：速度漸變與格子組合模型
 
 - 格子改為兩區：修飾格（立刻 / 逐漸 N 小節 / N 小節後）+ 動作格（變吵 / 變安靜 / 變快 / 變慢 / SOLO / 回主題 / 結尾 / 自由）
