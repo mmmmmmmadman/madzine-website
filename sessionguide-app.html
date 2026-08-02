@@ -201,13 +201,11 @@ button{background:none;border:none;cursor:pointer}
 }
 .tr-btn.on{border-color:var(--acc);color:var(--acc)}
 
-/* grid */
+/* grid: two zones — modifiers (how) above, actions (what) below */
 #gridwrap{flex:1 0 auto;display:flex;flex-direction:column;gap:var(--gap)}
-#grid{
-  flex:1 0 auto;
-  display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);
-  grid-auto-rows:minmax(56px,1fr);
-}
+.gsec{display:flex;flex-direction:column;gap:6px;flex:0 0 auto}
+.ghead{font-size:14px;color:var(--fg3);letter-spacing:.16em;line-height:1.2;padding-left:2px}
+.ggrid{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);grid-auto-rows:minmax(56px,auto)}
 .cell{
   border:1px solid var(--line);border-radius:10px;background:var(--bg-elev);
   font-size:21px;color:var(--fg);line-height:1.2;padding:8px 6px;
@@ -215,25 +213,22 @@ button{background:none;border:none;cursor:pointer}
   min-height:56px;
 }
 .cell .n{font-size:14px;color:var(--fg3);letter-spacing:.16em;line-height:1.2}
-.cell.bars{border-color:#3d3d3d}
-.cell.bars .lab{color:var(--fg)}
-.cell.ramp{border-color:var(--acc-dim)}
+/* modifier cells read as a lower, quieter band; actions are the loud row */
+.cell.mod{background:var(--panel);border-color:#3d3d3d;font-size:19px;min-height:52px;border-radius:26px}
+.cell.mod.sel{border-color:var(--acc);background:var(--acc-dim);color:var(--fg)}
+.cell.act{background:var(--bg-elev)}
+.cell.act.recent{border-color:var(--acc-glow)}
+.cell.addc{color:var(--fg2);border-style:dashed;font-size:18px}
 /* CSS-drawn hairpin: widening = crescendo, narrowing = diminuendo */
 .wedge{width:46px;height:11px;background:var(--acc);flex:0 0 auto}
 .wedge.up{clip-path:polygon(0 46%,100% 0,100% 100%,0 54%)}
 .wedge.down{clip-path:polygon(0 0,100% 46%,100% 54%,0 100%)}
-.cell.armed{border-color:var(--acc);background:var(--acc-dim)}
-.cell.picked{border-color:var(--acc-glow)}
 .cell:active{background:var(--panel)}
 .cell.editing{border-style:dashed;border-color:var(--acc)}
-#pendingbar{display:flex;align-items:center;gap:var(--gap);flex:0 0 auto}
-#pendingtxt{flex:1 1 auto;font-size:14px;color:var(--fg2);line-height:1.25;white-space:pre-line}
-#startbtn{
-  flex:0 0 auto;min-width:118px;min-height:52px;border-radius:10px;
-  background:var(--acc);color:#121212;font-size:25px;letter-spacing:.16em;line-height:1.2;
-  border:1px solid var(--acc);
-}
-#cancelbtn{flex:0 0 auto;min-height:52px;padding:0 14px;border:1px solid var(--line);border-radius:10px;font-size:17px;color:var(--fg2);line-height:1.2}
+#pendingbar{display:flex;align-items:center;gap:var(--gap);flex:0 0 auto;min-height:52px}
+#pendingtxt{flex:1 1 auto;font-size:16px;color:var(--fg2);line-height:1.25;white-space:pre-line}
+#pendingtxt.warn{color:var(--acc-glow)}
+#cancelbtn{flex:0 0 auto;min-height:52px;padding:0 16px;border:1px solid var(--line);border-radius:10px;font-size:17px;color:var(--fg2);line-height:1.2}
 
 /* short viewports (iPhone Safari with toolbars, ~664 px and below):
    compress the non-interactive display elements so the cell grid keeps
@@ -332,8 +327,10 @@ button{background:none;border:none;cursor:pointer}
   background:var(--bg-elev);font-size:18px;color:var(--fg2);line-height:1.2;
 }
 .seg button.on{border-color:var(--acc);color:var(--acc)}
-#ednrow{display:flex;align-items:center;gap:8px}
-#ednval{flex:1 1 auto;text-align:center;font-size:30px;line-height:1.2}
+#ednrow,#edpctrow{display:flex;align-items:center;gap:8px}
+#ednval,#edpctval{flex:1 1 auto;text-align:center;font-size:30px;line-height:1.2}
+.rl{flex:0 0 auto;font-size:15px;color:var(--fg3);letter-spacing:.1em;line-height:1.2;min-width:76px}
+#eddir.tempo .wedge{display:none}
 #edbtns{display:flex;gap:6px}
 #edbtns button{flex:1 1 0;min-height:50px;border-radius:8px;border:1px solid var(--line);font-size:19px;line-height:1.2}
 #eddone{background:var(--acc);color:#121212;border-color:var(--acc)}
@@ -420,13 +417,18 @@ button{background:none;border:none;cursor:pointer}
     </div>
 
     <div id="gridwrap">
-      <div id="grid"></div>
+      <div class="gsec">
+        <div class="ghead" data-i18n="sec_how"></div>
+        <div class="ggrid" id="gridmods"></div>
+      </div>
+      <div class="gsec">
+        <div class="ghead" data-i18n="sec_what"></div>
+        <div class="ggrid" id="gridacts"></div>
+      </div>
       <div id="pendingbar" class="hidden">
         <div id="pendingtxt"></div>
         <button id="cancelbtn" data-i18n="cancel"></button>
-        <button id="startbtn" data-i18n="start"></button>
       </div>
-      <button class="big-btn" id="addcell" style="min-height:50px;font-size:18px;display:none" data-i18n="add_cell"></button>
     </div>
 
     <div id="folinfo" class="hidden">
@@ -480,19 +482,35 @@ button{background:none;border:none;cursor:pointer}
 <div id="editor">
   <div class="h" data-i18n="ed_title"></div>
   <input id="edlabel" type="text" maxlength="12" data-i18n-ph="ed_name_ph">
-  <div class="seg" id="edtype">
-    <button data-type="cue" data-i18n="ed_type_cue"></button>
-    <button data-type="bars" data-i18n="ed_type_bars"></button>
-    <button data-type="ramp" data-i18n="ed_type_ramp"></button>
+  <div class="seg" id="edkind">
+    <button data-kind="mod" data-i18n="ed_kind_mod"></button>
+    <button data-kind="act" data-i18n="ed_kind_act"></button>
+  </div>
+  <div class="seg hidden" id="edmode">
+    <button data-mode="now" data-i18n="ed_mode_now"></button>
+    <button data-mode="gradual" data-i18n="ed_mode_grad"></button>
+    <button data-mode="after" data-i18n="ed_mode_after"></button>
+  </div>
+  <div class="seg hidden" id="edfx">
+    <button data-fx="none" data-i18n="ed_fx_none"></button>
+    <button data-fx="dyn" data-i18n="ed_fx_dyn"></button>
+    <button data-fx="tempo" data-i18n="ed_fx_tempo"></button>
   </div>
   <div class="seg hidden" id="eddir">
-    <button data-dir="up"><span data-i18n="ramp_up"></span><i class="wedge up" style="margin-left:8px;display:inline-block;vertical-align:middle;width:32px;height:9px"></i></button>
-    <button data-dir="down"><span data-i18n="ramp_down"></span><i class="wedge down" style="margin-left:8px;display:inline-block;vertical-align:middle;width:32px;height:9px"></i></button>
+    <button data-dir="up"><span class="dl"></span><i class="wedge up" style="margin-left:8px;display:inline-block;vertical-align:middle;width:32px;height:9px"></i></button>
+    <button data-dir="down"><span class="dl"></span><i class="wedge down" style="margin-left:8px;display:inline-block;vertical-align:middle;width:32px;height:9px"></i></button>
   </div>
   <div id="ednrow" class="hidden">
+    <div class="rl" data-i18n="ed_bars_lab"></div>
     <button class="nudge-btn" id="ednminus">-1</button>
     <div id="ednval">4</div>
     <button class="nudge-btn" id="ednplus">+1</button>
+  </div>
+  <div id="edpctrow" class="hidden">
+    <div class="rl" data-i18n="ed_pct_lab"></div>
+    <button class="nudge-btn" id="edpctminus">-1</button>
+    <div id="edpctval">10%</div>
+    <button class="nudge-btn" id="edpctplus">+1</button>
   </div>
   <div id="edbtns">
     <button id="eddel" data-i18n="ed_delete"></button>
@@ -542,23 +560,33 @@ var I18N = {
   edit_on:"編輯格子",          edit_off:"完成編輯",
   add_cell:"新增格子",         new_cell_label:"新指令",
   bars_unit:"{n} 小節",
-  pending_bars:"{n} 小節倒數", pending_cue:"　指令 {label}",
-  pending_hint:"可再點一個指令格附加，或直接按開始",
   cancel:"取消",               start:"開始",
   count_sub:"小節倒數",        count_cancel:"取消倒數",
   flash_default:"開始",
   fol_wait:"等待 leader 指令",
   hue_hint:"外環 色相 · 中心 上下拖曳 飽和度",
   ed_title:"格子設定",         ed_name_ph:"名稱",
-  ed_type_cue:"即時指令",      ed_type_bars:"小節數",
-  ed_type_ramp:"漸變",
   ramp_up:"漸強",              ramp_down:"漸弱",
   ramp_sub:"剩餘小節",         ramp_cancel:"取消漸變",
   ramp_cell:"{n} 小節漸變",
   ed_delete:"刪除",            ed_done:"完成",
-  cell_1:"4 小節後", cell_2:"8 小節後", cell_3:"變吵",   cell_4:"變安靜",
-  cell_5:"SOLO",     cell_6:"回主題",   cell_7:"結尾",   cell_8:"自由",
-  cell_9:"漸強",     cell_10:"漸弱"
+  sec_how:"修飾 — 何時、怎麼變",  sec_what:"動作 — 變成什麼",
+  mod_now:"立刻",              mod_grad:"逐漸 {n} 小節",
+  mod_after:"{n} 小節後",
+  sel_hint:"已選 {label} · 再點一個動作格送出",
+  recent_hint:"已送出 {label}（立刻）· 可再點修飾格改送",
+  tempo_host_only:"速度變化只有房主可以發送",
+  bars_over:"{n} 小節內",
+  add_mod:"新增修飾格",        add_act:"新增動作格",
+  new_mod_label:"新修飾",      new_act_label:"新動作",
+  ed_kind_mod:"修飾",          ed_kind_act:"動作",
+  ed_mode_now:"立刻",          ed_mode_grad:"逐漸",      ed_mode_after:"之後",
+  ed_fx_none:"一般",           ed_fx_dyn:"力度",         ed_fx_tempo:"速度",
+  ed_bars_lab:"小節數",        ed_pct_lab:"幅度",
+  act_louder:"變吵",           act_quieter:"變安靜",
+  act_faster:"變快",           act_slower:"變慢",
+  act_solo:"SOLO",             act_head:"回主題",
+  act_ending:"結尾",           act_free:"自由"
 },
 "en":{
   brand_sub:"LIVE CUE SYSTEM",
@@ -592,23 +620,33 @@ var I18N = {
   edit_on:"Edit Cells",        edit_off:"Done Editing",
   add_cell:"Add Cell",         new_cell_label:"New Cue",
   bars_unit:"{n} BARS",
-  pending_bars:"{n} bar countdown", pending_cue:" · Cue {label}",
-  pending_hint:"Tap a cue to attach, or press Start",
   cancel:"Cancel",             start:"Start",
   count_sub:"BARS TO GO",      count_cancel:"Cancel Countdown",
   flash_default:"START",
   fol_wait:"Waiting for leader cue",
   hue_hint:"Ring hue · Center drag saturation",
   ed_title:"CELL SETTINGS",    ed_name_ph:"Name",
-  ed_type_cue:"Instant Cue",   ed_type_bars:"Bar Count",
-  ed_type_ramp:"Gradual",
   ramp_up:"Build Up",          ramp_down:"Wind Down",
   ramp_sub:"BARS REMAINING",   ramp_cancel:"Cancel Gradual",
   ramp_cell:"OVER {n} BARS",
   ed_delete:"Delete",          ed_done:"Done",
-  cell_1:"After 4 Bars", cell_2:"After 8 Bars", cell_3:"Louder", cell_4:"Quieter",
-  cell_5:"SOLO",         cell_6:"Back to Head", cell_7:"Ending", cell_8:"Free",
-  cell_9:"Build Up",     cell_10:"Wind Down"
+  sec_how:"HOW — WHEN AND IN WHAT WAY", sec_what:"WHAT — THE CHANGE",
+  mod_now:"Now",               mod_grad:"Over {n} Bars",
+  mod_after:"After {n} Bars",
+  sel_hint:"{label} selected · tap an action to send",
+  recent_hint:"{label} sent (now) · tap a modifier to resend",
+  tempo_host_only:"Tempo changes can only be sent by the host",
+  bars_over:"OVER {n} BARS",
+  add_mod:"Add Modifier",      add_act:"Add Action",
+  new_mod_label:"New Modifier", new_act_label:"New Action",
+  ed_kind_mod:"Modifier",      ed_kind_act:"Action",
+  ed_mode_now:"Now",           ed_mode_grad:"Over",      ed_mode_after:"After",
+  ed_fx_none:"Plain",          ed_fx_dyn:"Dynamics",     ed_fx_tempo:"Tempo",
+  ed_bars_lab:"BARS",          ed_pct_lab:"AMOUNT",
+  act_louder:"Louder",         act_quieter:"Quieter",
+  act_faster:"Faster",         act_slower:"Slower",
+  act_solo:"SOLO",             act_head:"Back to Head",
+  act_ending:"Ending",         act_free:"Free"
 },
 "ja":{
   brand_sub:"ライブキューシステム",
@@ -642,23 +680,33 @@ var I18N = {
   edit_on:"セル編集",           edit_off:"編集完了",
   add_cell:"セルを追加",        new_cell_label:"新規キュー",
   bars_unit:"{n} 小節",
-  pending_bars:"{n} 小節カウント", pending_cue:"　キュー {label}",
-  pending_hint:"キューをタップで追加、または開始",
   cancel:"キャンセル",          start:"スタート",
   count_sub:"小節カウント",     count_cancel:"カウント中止",
   flash_default:"スタート",
   fol_wait:"リーダーのキュー待ち",
   hue_hint:"外周 色相 · 中央 上下ドラッグ 彩度",
   ed_title:"セル設定",          ed_name_ph:"名前",
-  ed_type_cue:"即時キュー",     ed_type_bars:"小節数",
-  ed_type_ramp:"グラデーション",
   ramp_up:"だんだん強く",       ramp_down:"だんだん弱く",
   ramp_sub:"残り小節",          ramp_cancel:"変化を中止",
   ramp_cell:"{n} 小節かけて",
   ed_delete:"削除",             ed_done:"完了",
-  cell_1:"4小節後", cell_2:"8小節後", cell_3:"強く",     cell_4:"静かに",
-  cell_5:"SOLO",    cell_6:"テーマへ", cell_7:"エンディング", cell_8:"フリー",
-  cell_9:"だんだん強く", cell_10:"だんだん弱く"
+  sec_how:"修飾 — いつ・どのように", sec_what:"アクション — 何を変える",
+  mod_now:"すぐに",             mod_grad:"{n} 小節かけて",
+  mod_after:"{n} 小節後",
+  sel_hint:"{label} を選択中 · アクションをタップで送信",
+  recent_hint:"{label} を送信（すぐに）· 修飾をタップで送り直し",
+  tempo_host_only:"テンポ変更はホストのみ送信できます",
+  bars_over:"{n} 小節かけて",
+  add_mod:"修飾セルを追加",     add_act:"アクションセルを追加",
+  new_mod_label:"新規修飾",     new_act_label:"新規アクション",
+  ed_kind_mod:"修飾",           ed_kind_act:"アクション",
+  ed_mode_now:"すぐに",         ed_mode_grad:"かけて",   ed_mode_after:"後",
+  ed_fx_none:"通常",            ed_fx_dyn:"強弱",        ed_fx_tempo:"テンポ",
+  ed_bars_lab:"小節数",         ed_pct_lab:"変化量",
+  act_louder:"強く",            act_quieter:"静かに",
+  act_faster:"速く",            act_slower:"遅く",
+  act_solo:"SOLO",              act_head:"テーマへ",
+  act_ending:"エンディング",     act_free:"フリー"
 }
 };
 
@@ -864,31 +912,58 @@ var METERS = [
   {name:"7/8", n:7, d:8, acc:[0,4]},
   {name:"5/4", n:5, d:4, acc:[0,3]}
 ];
-var DEFAULT_CELL_DEFS = [
-  {id:"c1", key:"cell_1", type:"bars", n:4},
-  {id:"c2", key:"cell_2", type:"bars", n:8},
-  {id:"c3", key:"cell_3", type:"cue"},
-  {id:"c4", key:"cell_4", type:"cue"},
-  {id:"c5", key:"cell_5", type:"cue"},
-  {id:"c6", key:"cell_6", type:"cue"},
-  {id:"c7", key:"cell_7", type:"cue"},
-  {id:"c8", key:"cell_8", type:"cue"},
-  {id:"c9", key:"cell_9", type:"ramp", n:4, dir:"up"},
-  {id:"c10", key:"cell_10", type:"ramp", n:4, dir:"down"}
+/* ---------------------------------------------------------
+   Cell model (v2): a command is a MODIFIER + an ACTION.
+     modifier  {kind:"mod", mode:"now"|"gradual"|"after", n}
+     action    {kind:"act", fx:"none"|"dyn"|"tempo", dir:"up"|"down", pct}
+   Tapping an action on its own means "now", which keeps the old one-tap feel.
+   --------------------------------------------------------- */
+var CELLS_VER = 2;
+var DEFAULT_MOD_DEFS = [
+  {id:"m1", mode:"now"},
+  {id:"m2", mode:"gradual", n:4},
+  {id:"m3", mode:"after", n:4},
+  {id:"m4", mode:"after", n:8}
 ];
+var DEFAULT_ACT_DEFS = [
+  {id:"a1", key:"act_louder",  fx:"dyn",   dir:"up"},
+  {id:"a2", key:"act_quieter", fx:"dyn",   dir:"down"},
+  {id:"a3", key:"act_faster",  fx:"tempo", dir:"up",   pct:10},
+  {id:"a4", key:"act_slower",  fx:"tempo", dir:"down", pct:10},
+  {id:"a5", key:"act_solo",    fx:"none"},
+  {id:"a6", key:"act_head",    fx:"none"},
+  {id:"a7", key:"act_ending",  fx:"none"},
+  {id:"a8", key:"act_free",    fx:"none"}
+];
+/* the visible text of a modifier is derived from its mode + bar count */
+function modAutoLabel(mode, n){
+  if(mode === "gradual") return t("mod_grad", n || 4);
+  if(mode === "after")   return t("mod_after", n || 4);
+  return t("mod_now");
+}
 /* Built in the current language. Once the user edits a cell the set is written
    to localStorage and is never regenerated on a language switch. */
 function defaultCells(){
-  return DEFAULT_CELL_DEFS.map(function(c){
-    var o = {id:c.id, label:t(c.key), type:c.type};
-    if(c.n !== undefined) o.n = c.n;
-    if(c.dir !== undefined) o.dir = c.dir;
-    return o;
+  var out = DEFAULT_MOD_DEFS.map(function(c){
+    return {id:c.id, kind:"mod", mode:c.mode, n:c.n || 4, label:modAutoLabel(c.mode, c.n)};
   });
+  DEFAULT_ACT_DEFS.forEach(function(c){
+    out.push({id:c.id, kind:"act", label:t(c.key), fx:c.fx,
+              dir:c.dir || "up", pct:c.pct || 10});
+  });
+  return out;
 }
 function cellsAreCustom(){
   try{ return !!localStorage.getItem("sg_cells"); }catch(err){ return false; }
 }
+function modCells(){ return S.cells.filter(function(c){ return c.kind === "mod"; }); }
+function actCells(){ return S.cells.filter(function(c){ return c.kind !== "mod"; }); }
+function cellById(id){ return S.cells.filter(function(c){ return c.id === id; })[0] || null; }
+
+/* set by loadCells() when a v1 payload was upgraded; the flag has to be
+   declared before S, because S.cells calls loadCells() during this same
+   statement sequence and a later "= false" would wipe it. */
+var needMigrateSave = false;
 
 var S = {
   /* role  = network endpoint: none | leader (host) | follower | local
@@ -903,10 +978,13 @@ var S = {
   sound: localStorage.getItem("sg_sound") === "1",
   metroRunning:false,
   metroStart:0,
+  metroBeat0:0,           // absolute beat position of the metronome downbeat
   cells: loadCells(),
-  pending:null,           // {bars, label}
-  count:null,             // {startAt, bars, label}
-  ramp:null,              // {startAt, bars, label, dir, from}
+  selMod:null,            // id of the armed modifier cell
+  recent:null,            // {actId, at, undoBpm} — window for action-then-modifier
+  warnKey:null, warnUntil:0,
+  count:null,             // {startAt, startBeat, bars, label, from, fx}
+  ramp:null,              // {startAt, startBeat, bars, label, dir, from, fx}
   flashUntil:0,
   flashText:"",
   flashFrom:"",
@@ -922,20 +1000,153 @@ function loadCells(){
     var raw = localStorage.getItem("sg_cells");
     if(raw){
       var a = JSON.parse(raw);
-      if(Array.isArray(a) && a.length) return a;
+      var arr = Array.isArray(a) ? a : (a && Array.isArray(a.cells) ? a.cells : null);
+      var ver = (a && !Array.isArray(a) && a.v) ? a.v : 1;
+      if(arr && arr.length){
+        if(ver >= CELLS_VER) return arr;
+        needMigrateSave = true;              // written back once, right after init
+        return migrateCells(arr);
+      }
     }
   }catch(err){}
   return defaultCells();
 }
-function saveCells(){ localStorage.setItem("sg_cells", JSON.stringify(S.cells)); }
+/* ---------------------------------------------------------
+   v1 -> v2 migration
+     cue  -> action
+     bars -> action, and a "after N bars" modifier is provisioned for it
+     ramp -> action (dynamics, keeps its direction), and a
+             "over N bars" modifier is provisioned for it
+   Custom labels are preserved verbatim; nothing is dropped.
+   --------------------------------------------------------- */
+function migrateCells(old){
+  var acts = [], after = {}, grad = {}, i;
+  old.forEach(function(c){
+    var lab = (c && c.label) || t("new_act_label");
+    var id  = (c && c.id) || ("a" + Math.random().toString(36).slice(2,8));
+    if(c && c.type === "bars"){
+      after[clamp(parseInt(c.n,10) || 4, 1, 64)] = 1;
+      acts.push({id:id, kind:"act", label:lab, fx:"none", dir:"up", pct:10});
+    }else if(c && c.type === "ramp"){
+      grad[clamp(parseInt(c.n,10) || 4, 1, 64)] = 1;
+      acts.push({id:id, kind:"act", label:lab, fx:"dyn",
+                 dir:(c.dir === "down" ? "down" : "up"), pct:10});
+    }else{
+      acts.push({id:id, kind:"act", label:lab, fx:"none", dir:"up", pct:10});
+    }
+  });
+  if(!Object.keys(grad).length)  grad[4] = 1;
+  if(!Object.keys(after).length){ after[4] = 1; after[8] = 1; }
+  var mods = [{id:"m1", kind:"mod", mode:"now", n:4, label:modAutoLabel("now",4)}];
+  Object.keys(grad).sort(function(a,b){return a-b;}).forEach(function(n){
+    mods.push({id:"mg"+n, kind:"mod", mode:"gradual", n:+n, label:modAutoLabel("gradual",+n)});
+  });
+  Object.keys(after).sort(function(a,b){return a-b;}).forEach(function(n){
+    mods.push({id:"ma"+n, kind:"mod", mode:"after", n:+n, label:modAutoLabel("after",+n)});
+  });
+  return mods.concat(acts);
+}
+function saveCells(){
+  localStorage.setItem("sg_cells", JSON.stringify({v:CELLS_VER, cells:S.cells}));
+}
 function meter(){ return METERS[S.meter]; }
-function beatDur(){ return (60000/S.bpm) * (4/meter().d); }
+function beatDur(){ return (60000/curBpm()) * (4/meter().d); }
 function barDur(){ return beatDur() * meter().n; }
 /* host  = the single state authority (room creator, or a standalone device)
    canCue = may issue cues; every host is a conductor, a follower may be one too */
 function isHost(){ return S.role==="leader" || S.role==="local"; }
 function canCue(){ return isHost() || S.canCue===true; }
 function myName(){ return S.name || t(isHost() ? "host_name" : "player_n", 1); }
+
+/* =========================================================
+   TIMEBASE  (beat position as the integral of the beat rate)
+   ---------------------------------------------------------
+   The metronome, the click lookahead, the bar countdown and the gradual
+   overlays all read beat positions from here, so a tempo ramp bends every
+   one of them with the same curve. Nothing anywhere may assume a fixed
+   beat duration.
+
+   k = meter denominator / 4   (the pulse the meter counts in)
+   beat rate:            r(B) = k*B/60000            beats per millisecond
+   ramp, BPM linear in TIME (not in beats):
+                         B(tau) = B0 + (B1-B0)*tau/T,   0 <= tau <= T
+   cumulative beats is therefore quadratic in time:
+       phi(tau) = integral_0^tau r(B(x)) dx
+                = k/60000 * ( B0*tau + (B1-B0)*tau^2/(2T) )
+   after the ramp:
+       phi(tau) = phi(T) + r(B1)*(tau-T),  phi(T) = k*T*(B0+B1)/120000
+
+   Analytic inverse (time of a given beat) — solve phi(tau) = beta:
+       a*tau^2 + b*tau - beta = 0,
+       a = k*(B1-B0)/(120000*T),   b = k*B0/60000
+       tau = (-b + sqrt(b^2 + 4*a*beta)) / (2a)
+   which is evaluated in the algebraically equal but numerically stable form
+       tau = 2*beta / (b + sqrt(b^2 + 4*a*beta))
+   (no cancellation as a -> 0, and it degrades cleanly to tau = beta/b).
+
+   Ramp length for exactly N bars: phi(T) = N*n gives
+       T = 120000*N*n / (k*(B0+B1))                (average-tempo identity)
+   ========================================================= */
+var TB = {t0:Date.now(), beat0:0, bpm0:S.bpm, bpm1:S.bpm, T:0};
+function kFac(){ return meter().d/4; }
+function rateOf(b){ return kFac()*b/60000; }
+function phiFull(){ return kFac()*TB.T*(TB.bpm0+TB.bpm1)/120000; }
+function phiAt(tau){
+  if(TB.T > 0){
+    if(tau <= 0) return rateOf(TB.bpm0)*tau;
+    if(tau < TB.T) return kFac()/60000*(TB.bpm0*tau + (TB.bpm1-TB.bpm0)*tau*tau/(2*TB.T));
+    return phiFull() + rateOf(TB.bpm1)*(tau - TB.T);
+  }
+  return rateOf(TB.bpm0)*tau;
+}
+function tauOfPhi(beta){
+  if(TB.T > 0){
+    if(beta <= 0) return beta/rateOf(TB.bpm0);
+    var full = phiFull();
+    if(beta < full){
+      var a = kFac()*(TB.bpm1-TB.bpm0)/(120000*TB.T);
+      var b = kFac()*TB.bpm0/60000;
+      if(Math.abs(a) < 1e-15) return beta/b;
+      var disc = b*b + 4*a*beta;
+      if(disc < 0) disc = 0;
+      return 2*beta/(b + Math.sqrt(disc));
+    }
+    return TB.T + (beta - full)/rateOf(TB.bpm1);
+  }
+  return beta/rateOf(TB.bpm0);
+}
+function beatAt(t){ return TB.beat0 + phiAt(t - TB.t0); }
+function timeOfBeat(beat){ return TB.t0 + tauOfPhi(beat - TB.beat0); }
+function bpmAt(t){
+  if(TB.T > 0){
+    var tau = t - TB.t0;
+    if(tau <= 0) return TB.bpm0;
+    if(tau < TB.T) return TB.bpm0 + (TB.bpm1-TB.bpm0)*tau/TB.T;
+  }
+  return TB.bpm1;
+}
+function curBpm(){ return bpmAt(now()); }
+function rampActive(){ return TB.T > 0; }
+/* Re-anchor at t without moving the beat position: any stored absolute beat
+   (countdown / gradual anchors) stays valid, and a meter change only affects
+   the integration from t onwards. */
+function rebaseTB(t){
+  var b = beatAt(t), bp = bpmAt(t);
+  var rem = (TB.T > 0) ? Math.max(0, TB.T - (t - TB.t0)) : 0;
+  TB = {t0:t, beat0:b, bpm0:bp, bpm1:(rem > 0 ? TB.bpm1 : bp), T:rem};
+}
+function setConstBpm(t, bpm){
+  var b = beatAt(t);
+  TB = {t0:t, beat0:b, bpm0:bpm, bpm1:bpm, T:0};
+}
+/* start a tempo ramp that lasts exactly `bars` bars of the current meter */
+function startTempoRamp(startAt, bars, target){
+  var b0 = beatAt(startAt), from = bpmAt(startAt);
+  var n = meter().n;
+  var T = 120000*bars*n/(kFac()*(from + target));
+  TB = {t0:startAt, beat0:b0, bpm0:from, bpm1:target, T:T};
+  return {from:from, to:target, startBeat:b0};
+}
 
 /* =========================================================
    NETWORK (PeerJS)
@@ -966,6 +1177,7 @@ function req(obj){
 function stateMsg(){
   return {t:"sync", bpm:S.bpm, meter:S.meter,
           metroRunning:S.metroRunning, metroStart:S.metroStart,
+          metroBeat0:S.metroBeat0, tb:TB,
           count:S.count, ramp:S.ramp};
 }
 function setConnState(key, arg){
@@ -1108,22 +1320,29 @@ function onHostData(m){
   if(m.t==="sync"){
     S.bpm = m.bpm; S.meter = m.meter;
     S.metroRunning = m.metroRunning; S.metroStart = m.metroStart;
+    S.metroBeat0 = m.metroBeat0 || 0;
+    if(m.tb && isFinite(m.tb.t0)) TB = {t0:m.tb.t0, beat0:m.tb.beat0, bpm0:m.tb.bpm0, bpm1:m.tb.bpm1, T:m.tb.T};
     S.count = m.count || null;
     S.ramp  = m.ramp  || null;
     if(!S.ramp) hideRamp();
+    nextClickBeat = -1;
     renderAll();
     return;
   }
   if(m.t==="flash"){ startFlash(m.text, m.dur, m.from); return; }
+  if(m.t==="flashend"){ endFlash(); return; }
   if(m.t==="count"){
-    S.ramp = null; hideRamp();
-    S.count = {startAt:m.startAt, bars:m.bars, label:m.label||"", from:m.from||""};
+    S.ramp = null; hideRamp(); endFlash();
+    S.count = {startAt:m.startAt, startBeat:m.startBeat, bars:m.bars,
+               label:m.label||"", from:m.from||"", fx:m.fx||null};
     return;
   }
   if(m.t==="countcancel"){ S.count = null; hideCount(); return; }
   if(m.t==="ramp"){
-    S.count = null; hideCount();
-    S.ramp = {startAt:m.startAt, bars:m.bars, label:m.label||"", dir:m.dir||"up", from:m.from||""};
+    S.count = null; hideCount(); endFlash();
+    S.ramp = {startAt:m.startAt, startBeat:m.startBeat, bars:m.bars, label:m.label||"",
+              dir:m.dir||null, from:m.from||"", fx:m.fx||"none",
+              bpmFrom:m.bpmFrom||0, bpmTo:m.bpmTo||0};
     return;
   }
   if(m.t==="rampcancel"){ S.ramp = null; hideRamp(); return; }
@@ -1167,7 +1386,7 @@ function applyPermissions(){
     S.editMode = false;
     document.getElementById("editbtn").classList.remove("on");
   }
-  if(!cue) S.pending = null;
+  if(!cue) clearCompose();
   renderRoleBtn();
   renderTapInfo();
 }
@@ -1226,7 +1445,7 @@ document.getElementById("leavebtn").addEventListener("click", function(){
   try{ if(peer) peer.destroy(); }catch(err){}
   peer=null; conns=[]; hostConn=null; clearTimeout(retryTimer); peerSeq=0;
   S.role="none"; S.canCue=false; S.count=null; S.ramp=null;
-  S.metroRunning=false; S.pending=null;
+  S.metroRunning=false; clearCompose();
   hideCount(); hideRamp(); setConnState(null); show(scrHome);
 });
 
@@ -1289,6 +1508,9 @@ function setBpm(v){
   if(!isHost()) return;                 // tempo is host-only
   S.bpm = clamp(Math.round(v),30,300);
   localStorage.setItem("sg_bpm", String(S.bpm));
+  setConstBpm(now(), S.bpm);            // a manual tempo edit ends any ramp
+  if(S.ramp && S.ramp.fx === "tempo"){ S.ramp = null; hideRamp(); send({t:"rampcancel"}); }
+  nextClickBeat = -1;
   document.getElementById("bpmval").textContent = S.bpm;
   send(stateMsg());
 }
@@ -1307,8 +1529,12 @@ function renderMeters(){
     b.textContent = m.name;
     b.addEventListener("click", function(){
       if(!isHost()) return;             // meter is host-only
+      /* re-anchor first: the beat rate depends on the meter denominator, so
+         the integral has to be closed off under the old value */
+      rebaseTB(now());
       S.meter = i;
       localStorage.setItem("sg_meter", String(i));
+      nextClickBeat = -1;
       renderMeters(); renderDots(); send(stateMsg());
     });
     row.appendChild(b);
@@ -1339,6 +1565,9 @@ function toggleMetro(){
   if(!isHost()) return;                 // transport is host-only
   S.metroRunning = !S.metroRunning;
   S.metroStart = S.metroRunning ? now() + 120 : 0;
+  /* the downbeat phase is an absolute beat position, so it survives tempo
+     ramps, BPM edits and meter changes without being recomputed */
+  S.metroBeat0 = S.metroRunning ? beatAt(S.metroStart) : 0;
   nextClickBeat = -1;
   document.getElementById("metrobtn").textContent = t(S.metroRunning ? "metro_stop" : "metro_start");
   document.getElementById("metrobtn").classList.toggle("on", S.metroRunning);
@@ -1381,116 +1610,191 @@ function click(when, strong){
 /* =========================================================
    CELLS / GRID
    ========================================================= */
-var gridEl = document.getElementById("grid");
+var gridMods = document.getElementById("gridmods");
+var gridActs = document.getElementById("gridacts");
+var RECENT_MS = 4000;      // window in which an already fired action can be re-sent with a modifier
+
+function bindCell(b, id, onTap){
+  var lpTimer=null, moved=false;
+  b.addEventListener("pointerdown", function(){
+    moved = false;
+    lpTimer = setTimeout(function(){ lpTimer=null; if(id) openEditor(id); }, 600);
+  });
+  b.addEventListener("pointermove", function(){ moved = true; });
+  b.addEventListener("pointerup", function(){
+    if(lpTimer){ clearTimeout(lpTimer); lpTimer=null; if(!moved) onTap(); }
+  });
+  b.addEventListener("pointercancel", function(){ clearTimeout(lpTimer); lpTimer=null; });
+}
 function renderGrid(){
-  gridEl.innerHTML = "";
+  gridMods.innerHTML = ""; gridActs.innerHTML = "";
   S.cells.forEach(function(c){
+    var isMod = c.kind === "mod";
     var b = document.createElement("button");
-    b.className = "cell " + (c.type==="bars" ? "bars" : (c.type==="ramp" ? "ramp" : "cue"));
+    b.className = "cell " + (isMod ? "mod" : "act");
     if(S.editMode) b.className += " editing";
-    if(S.pending && S.pending.cellId===c.id) b.className += " armed";
-    if(S.pending && S.pending.label===c.label && c.type==="cue") b.className += " picked";
+    if(isMod && S.selMod === c.id) b.className += " sel";
+    if(!isMod && S.recent && S.recent.actId === c.id) b.className += " recent";
     var lab = document.createElement("div");
     lab.className = "lab"; lab.textContent = c.label;
     b.appendChild(lab);
-    if(c.type==="bars"){
-      var n = document.createElement("div");
-      n.className = "n"; n.textContent = t("bars_unit", c.n);
-      b.appendChild(n);
-    }
-    if(c.type==="ramp"){
+    if(!isMod && c.fx === "dyn"){
       var w = document.createElement("div");
-      w.className = "wedge " + (c.dir==="down" ? "down" : "up");
+      w.className = "wedge " + (c.dir === "down" ? "down" : "up");
       b.appendChild(w);
-      var rn = document.createElement("div");
-      rn.className = "n"; rn.textContent = t("ramp_cell", c.n || 4);
-      b.appendChild(rn);
     }
-    var lpTimer=null, moved=false;
-    b.addEventListener("pointerdown", function(){
-      moved = false;
-      lpTimer = setTimeout(function(){ lpTimer=null; openEditor(c.id); }, 600);
-    });
-    b.addEventListener("pointermove", function(){ moved = true; });
-    b.addEventListener("pointerup", function(){
-      if(lpTimer){ clearTimeout(lpTimer); lpTimer=null; if(!moved) cellTap(c); }
-    });
-    b.addEventListener("pointercancel", function(){ clearTimeout(lpTimer); lpTimer=null; });
-    gridEl.appendChild(b);
+    if(!isMod && c.fx === "tempo"){
+      var p = document.createElement("div");
+      p.className = "n";
+      p.textContent = (c.dir === "down" ? "-" : "+") + (c.pct || 10) + "%";
+      b.appendChild(p);
+    }
+    bindCell(b, c.id, function(){ cellTap(c); });
+    (isMod ? gridMods : gridActs).appendChild(b);
   });
-  document.getElementById("addcell").style.display = S.editMode ? "block" : "none";
+  if(S.editMode){
+    gridMods.appendChild(addButton("mod"));
+    gridActs.appendChild(addButton("act"));
+  }
+  renderPending();
+}
+function addButton(kind){
+  var b = document.createElement("button");
+  b.className = "cell addc " + (kind === "mod" ? "mod" : "act");
+  b.textContent = t(kind === "mod" ? "add_mod" : "add_act");
+  b.addEventListener("click", function(){ addCell(kind); });
+  return b;
+}
+function addCell(kind){
+  var c = (kind === "mod")
+    ? {id:"m"+Date.now(), kind:"mod", mode:"after", n:4, label:modAutoLabel("after",4)}
+    : {id:"a"+Date.now(), kind:"act", label:t("new_act_label"), fx:"none", dir:"up", pct:10};
+  S.cells.push(c); saveCells(); renderGrid(); openEditor(c.id);
+}
+
+/* ---------- composition: modifier + action ---------- */
+function clearCompose(){
+  S.selMod = null; S.recent = null; S.warnKey = null; S.warnUntil = 0;
+}
+function warn(key){
+  S.warnKey = key; S.warnUntil = now() + 3000;
   renderPending();
 }
 function cellTap(c){
   if(S.editMode){ openEditor(c.id); return; }
   if(!canCue()) return;
-  if(c.type==="ramp"){                 // starts now, no arming step
-    fireRamp(c.n || 4, c.label, c.dir==="down" ? "down" : "up");
-    return;
-  }
-  if(c.type==="bars"){
-    S.pending = {cellId:c.id, bars:c.n, label:(S.pending && S.pending.label) || ""};
+  S.warnKey = null;
+  if(c.kind === "mod"){
+    /* an action fired a moment ago is still re-sendable: tapping a modifier
+       now replaces that instant command with the modified one */
+    if(S.recent){
+      var a = cellById(S.recent.actId);
+      if(a){ revokeRecent(); S.selMod = null; fire(c, a); renderGrid(); return; }
+      S.recent = null;
+    }
+    S.selMod = (S.selMod === c.id) ? null : c.id;
     renderGrid();
     return;
   }
-  if(S.pending){                       // attach cue to the armed bar count
-    S.pending.label = (S.pending.label===c.label) ? "" : c.label;
-    renderGrid();
-    return;
+  var mod = S.selMod ? cellById(S.selMod) : null;
+  S.selMod = null;
+  if(mod){ fire(mod, c); renderGrid(); return; }
+  fire(null, c);                       // no modifier tapped: run it now
+  renderGrid();
+}
+/* undo the instant command that is still inside the re-send window */
+function revokeRecent(){
+  var r = S.recent; S.recent = null;
+  if(!r) return;
+  if(isHost() && r.undoBpm){
+    S.bpm = r.undoBpm;
+    localStorage.setItem("sg_bpm", String(S.bpm));
+    setConstBpm(now(), S.bpm);
+    nextClickBeat = -1;
+    send(stateMsg());
   }
-  fireCue(c.label);                    // immediate cue
+  endFlashBroadcast();
+}
+function fire(modCell, actCell){
+  var cmd = {
+    mode: modCell ? (modCell.mode || "now") : "now",
+    n:    modCell ? clamp(parseInt(modCell.n,10) || 4, 1, 64) : 0,
+    label: actCell.label,
+    fx:   actCell.fx || "none",
+    dir:  actCell.dir === "down" ? "down" : "up",
+    pct:  clamp(parseInt(actCell.pct,10) || 0, 0, 90)
+  };
+  if(cmd.fx === "tempo" && !isHost()){ warn("tempo_host_only"); return; }
+  var res = runCmd(cmd, "", false);
+  if(res === false) return;
+  if(cmd.mode === "now"){
+    S.recent = {actId:actCell.id, at:now(), undoBpm:(res && res.undoBpm) || 0};
+  }else{
+    S.recent = null;
+  }
 }
 function renderPending(){
   var bar = document.getElementById("pendingbar");
   var txt = document.getElementById("pendingtxt");
-  if(!S.pending){ bar.classList.add("hidden"); return; }
+  var mod = S.selMod ? cellById(S.selMod) : null;
+  var rec = S.recent ? cellById(S.recent.actId) : null;
+  var msg = "";
+  txt.classList.toggle("warn", !!S.warnKey);
+  if(S.warnKey) msg = t(S.warnKey);
+  else if(mod) msg = t("sel_hint", mod.label);
+  else if(rec) msg = t("recent_hint", rec.label);
+  if(!msg){ bar.classList.add("hidden"); return; }
   bar.classList.remove("hidden");
-  txt.textContent = t("pending_bars", S.pending.bars)
-    + (S.pending.label ? t("pending_cue", S.pending.label) : "")
-    + "\n" + t("pending_hint");
+  txt.textContent = msg;
 }
 document.getElementById("cancelbtn").addEventListener("click", function(){
-  S.pending = null; renderGrid();
-});
-document.getElementById("startbtn").addEventListener("click", function(){
-  if(!S.pending) return;
-  startCountdown(S.pending.bars, S.pending.label);
-  S.pending = null; renderGrid();
+  clearCompose(); renderGrid();
 });
 document.getElementById("editbtn").addEventListener("click", function(){
   S.editMode = !S.editMode;
   document.getElementById("editbtn").classList.toggle("on", S.editMode);
   document.getElementById("editbtn").textContent = t(S.editMode ? "edit_off" : "edit_on");
-  if(S.editMode) S.pending = null;
+  if(S.editMode) clearCompose();
   renderGrid();
-});
-document.getElementById("addcell").addEventListener("click", function(){
-  var c = {id:"c"+Date.now(), label:t("new_cell_label"), type:"cue", n:4, dir:"up"};
-  S.cells.push(c); saveCells(); renderGrid(); openEditor(c.id);
 });
 
 /* ---------- cell editor ---------- */
 var editorEl = document.getElementById("editor");
+var curEdKind = "act", curEdMode = "now", curEdFx = "none", curEdDir = "up";
 function openEditor(id){
-  var c = S.cells.filter(function(x){return x.id===id;})[0];
+  var c = cellById(id);
   if(!c) return;
   S.editId = id;
   document.getElementById("edlabel").value = c.label;
-  document.getElementById("ednval").textContent = c.n || 4;
+  document.getElementById("ednval").textContent = clamp(parseInt(c.n,10)||4,1,64);
+  document.getElementById("edpctval").textContent = clamp(parseInt(c.pct,10)||10,0,90) + "%";
   setEdDir(c.dir === "down" ? "down" : "up");
-  setEdType(c.type);
+  setEdFx(c.fx || "none");
+  setEdMode(c.mode || "after");
+  setEdKind(c.kind === "mod" ? "mod" : "act");
   editorEl.classList.add("show");
   scrim.classList.add("show");
 }
 function closeEditor(){
   if(!editorEl.classList.contains("show")) return;
-  var c = S.cells.filter(function(x){return x.id===S.editId;})[0];
+  var c = cellById(S.editId);
   if(c){
     var v = document.getElementById("edlabel").value.trim();
-    c.label = v || c.label;
-    c.type = curEdType;
-    c.n = parseInt(document.getElementById("ednval").textContent,10) || 4;
-    c.dir = curEdDir;
+    var n = clamp(parseInt(document.getElementById("ednval").textContent,10)||4,1,64);
+    var wasAuto = (c.kind === "mod") && (c.label === modAutoLabel(c.mode||"now", c.n||4));
+    c.kind = curEdKind;
+    c.n = n;
+    if(curEdKind === "mod"){
+      c.mode = curEdMode;
+      /* a label the user never touched keeps following mode + bar count */
+      c.label = (wasAuto || !v) ? modAutoLabel(curEdMode, n) : v;
+      c.fx = "none";
+    }else{
+      c.label = v || c.label;
+      c.fx = curEdFx;
+      c.dir = curEdDir;
+      c.pct = clamp(parseInt(document.getElementById("edpctval").textContent,10)||10,0,90);
+    }
     saveCells();
   }
   editorEl.classList.remove("show");
@@ -1498,22 +1802,42 @@ function closeEditor(){
   S.editId = null;
   renderGrid();
 }
-var curEdType = "cue", curEdDir = "up";
-function setEdType(v){
-  curEdType = v;
-  var btns = document.querySelectorAll("#edtype button");
-  for(var i=0;i<btns.length;i++) btns[i].classList.toggle("on", btns[i].getAttribute("data-type")===v);
-  /* bar count is used by both "after N bars" and "over N bars" */
-  document.getElementById("ednrow").classList.toggle("hidden", v==="cue");
-  document.getElementById("eddir").classList.toggle("hidden", v!=="ramp");
+function segOn(sel, attr, v){
+  Array.prototype.forEach.call(document.querySelectorAll(sel), function(b){
+    b.classList.toggle("on", b.getAttribute(attr) === v);
+  });
 }
-function setEdDir(v){
-  curEdDir = v;
-  var btns = document.querySelectorAll("#eddir button");
-  for(var i=0;i<btns.length;i++) btns[i].classList.toggle("on", btns[i].getAttribute("data-dir")===v);
+function setEdKind(v){
+  curEdKind = v;
+  segOn("#edkind button","data-kind",v);
+  document.getElementById("edmode").classList.toggle("hidden", v !== "mod");
+  document.getElementById("edfx").classList.toggle("hidden", v === "mod");
+  updEdRows();
 }
-Array.prototype.forEach.call(document.querySelectorAll("#edtype button"), function(b){
-  b.addEventListener("click", function(){ setEdType(b.getAttribute("data-type")); });
+function setEdMode(v){ curEdMode = v; segOn("#edmode button","data-mode",v); updEdRows(); }
+function setEdFx(v){   curEdFx   = v; segOn("#edfx button","data-fx",v);     updEdRows(); }
+function setEdDir(v){  curEdDir  = v; segOn("#eddir button","data-dir",v); }
+function updEdRows(){
+  var isMod = curEdKind === "mod";
+  /* bar count belongs to "over N bars" and "after N bars" only */
+  document.getElementById("ednrow").classList.toggle("hidden", !(isMod && curEdMode !== "now"));
+  document.getElementById("eddir").classList.toggle("hidden", isMod || curEdFx === "none");
+  document.getElementById("eddir").classList.toggle("tempo", curEdFx === "tempo");
+  document.getElementById("edpctrow").classList.toggle("hidden", isMod || curEdFx !== "tempo");
+  var labs = document.querySelectorAll("#eddir .dl");
+  if(labs.length === 2){
+    labs[0].textContent = t(curEdFx === "tempo" ? "act_faster" : "ramp_up");
+    labs[1].textContent = t(curEdFx === "tempo" ? "act_slower" : "ramp_down");
+  }
+}
+Array.prototype.forEach.call(document.querySelectorAll("#edkind button"), function(b){
+  b.addEventListener("click", function(){ setEdKind(b.getAttribute("data-kind")); });
+});
+Array.prototype.forEach.call(document.querySelectorAll("#edmode button"), function(b){
+  b.addEventListener("click", function(){ setEdMode(b.getAttribute("data-mode")); });
+});
+Array.prototype.forEach.call(document.querySelectorAll("#edfx button"), function(b){
+  b.addEventListener("click", function(){ setEdFx(b.getAttribute("data-fx")); });
 });
 Array.prototype.forEach.call(document.querySelectorAll("#eddir button"), function(b){
   b.addEventListener("click", function(){ setEdDir(b.getAttribute("data-dir")); });
@@ -1525,6 +1849,14 @@ document.getElementById("ednminus").addEventListener("click", function(){
 document.getElementById("ednplus").addEventListener("click", function(){
   var v = parseInt(document.getElementById("ednval").textContent,10)||4;
   document.getElementById("ednval").textContent = clamp(v+1,1,64);
+});
+document.getElementById("edpctminus").addEventListener("click", function(){
+  var v = parseInt(document.getElementById("edpctval").textContent,10)||10;
+  document.getElementById("edpctval").textContent = clamp(v-1,0,90) + "%";
+});
+document.getElementById("edpctplus").addEventListener("click", function(){
+  var v = parseInt(document.getElementById("edpctval").textContent,10)||10;
+  document.getElementById("edpctval").textContent = clamp(v+1,0,90) + "%";
 });
 document.getElementById("eddone").addEventListener("click", closeEditor);
 document.getElementById("eddel").addEventListener("click", function(){
@@ -1551,20 +1883,63 @@ editorEl.addEventListener("pointerdown", function(e){ e.stopPropagation(); });
    --------------------------------------------------------- */
 function onCueRequest(m, from){
   if(!isHost()) return;
-  if(m.k==="flash")       fireCue(m.text, from);
-  else if(m.k==="count")  startCountdown(m.bars, m.label, from);
-  else if(m.k==="ramp")   fireRamp(m.bars, m.label, m.dir, from);
+  if(m.k==="cmd" && m.cmd) runCmd(sanitizeCmd(m.cmd), from, true);
   else if(m.k==="cancelcount") cancelCountdown();
   else if(m.k==="cancelramp")  cancelRamp();
 }
-
-function fireCue(text, from){
-  if(!isHost()){ req({t:"req", k:"flash", text:text}); return; }
-  var dur = Math.round(barDur()*2);
-  dur = clamp(dur, 1500, 6000);
+function sanitizeCmd(c){
+  return {
+    mode: (c.mode==="gradual" || c.mode==="after") ? c.mode : "now",
+    n:    clamp(parseInt(c.n,10) || 4, 1, 64),
+    label:String(c.label || "").slice(0,24),
+    fx:   (c.fx==="tempo" || c.fx==="dyn") ? c.fx : "none",
+    dir:  c.dir==="down" ? "down" : "up",
+    pct:  clamp(parseInt(c.pct,10) || 0, 0, 90)
+  };
+}
+/* returns false when refused, otherwise {undoBpm} */
+function runCmd(cmd, from, remote){
+  if(!isHost()){
+    if(cmd.fx === "tempo") return false;         // tempo is the host's alone
+    req({t:"req", k:"cmd", cmd:cmd});
+    return {undoBpm:0};
+  }
+  if(remote && cmd.fx === "tempo") return false;
+  var src = from || myName();
+  if(cmd.mode === "gradual") return startGradual(cmd, src);
+  if(cmd.mode === "after")   return startCountdown(cmd, src);
+  return fireNow(cmd, src);
+}
+function tempoTarget(dir, pct, base){
+  return clamp(Math.round(base * (1 + (dir === "down" ? -1 : 1) * pct/100)), 30, 300);
+}
+function fireNow(cmd, src){
+  var undo = 0;
+  if(cmd.fx === "tempo"){
+    undo = Math.round(bpmAt(now()));
+    applyTempoJump(tempoTarget(cmd.dir, cmd.pct, undo));
+  }
+  fireCue(cmd.label, src);
+  return {undoBpm:undo};
+}
+function applyTempoJump(target){
+  S.bpm = target;
+  localStorage.setItem("sg_bpm", String(S.bpm));
+  setConstBpm(now(), target);
+  nextClickBeat = -1;
+  document.getElementById("bpmval").textContent = S.bpm;
+  send(stateMsg());
+}
+function fireCue(text, from){                    // host only, reached via runCmd
+  var dur = clamp(Math.round(barDur()*2), 1500, 6000);
   var src = from || myName();
   send({t:"flash", text:text, dur:dur, from:src});
   startFlash(text, dur, src);
+}
+function endFlashBroadcast(){
+  if(!S.flashUntil) return;
+  endFlash();
+  if(isHost()) send({t:"flashend"});
 }
 function startFlash(text, dur, from){
   S.flashText = text || "";
@@ -1582,18 +1957,25 @@ function endFlash(){
   setTimeout(function(){ ov.classList.remove("show"); ov.classList.remove("fade"); }, 360);
   S.flashUntil = 0;
 }
-function startCountdown(bars, label, from){
-  if(!isHost()){ req({t:"req", k:"count", bars:bars, label:label||""}); return; }
-  var t = now() + 150;
+/* "N bars later": snapped to the metronome bar grid in absolute beat units, so
+   a tempo ramp running underneath does not shift the musical landing point */
+function startCountdown(cmd, from){
+  var t0 = now() + 150;
+  var n = meter().n, startBeat;
   if(S.metroRunning && S.metroStart){
-    var bd = barDur();
-    var k = Math.ceil((t - S.metroStart)/bd);
-    t = S.metroStart + k*bd;
+    var rel = beatAt(t0) - S.metroBeat0;
+    startBeat = S.metroBeat0 + Math.ceil(rel/n - 1e-9)*n;
+    t0 = timeOfBeat(startBeat);
+  }else{
+    startBeat = beatAt(t0);
   }
+  var fx = (cmd.fx === "tempo") ? {type:"tempo", dir:cmd.dir, pct:cmd.pct} : null;
   var src = from || myName();
-  S.ramp = null; hideRamp();                 // countdown and ramp are exclusive
-  S.count = {startAt:t, bars:bars, label:label||"", from:src};
-  send({t:"count", startAt:t, bars:bars, label:label||"", from:src});
+  S.ramp = null; hideRamp(); endFlashBroadcast();   // countdown and gradual are exclusive
+  S.count = {startAt:t0, startBeat:startBeat, bars:cmd.n, label:cmd.label, from:src, fx:fx};
+  send({t:"count", startAt:t0, startBeat:startBeat, bars:cmd.n,
+        label:cmd.label, from:src, fx:fx});
+  return {undoBpm:0};
 }
 function cancelCountdown(){
   if(!isHost()){ req({t:"req", k:"cancelcount"}); return; }
@@ -1607,17 +1989,40 @@ function hideCount(){
   for(var i=0;i<countDotEls.length;i++) countDotEls[i].classList.remove("on");
 }
 
-/* ---------- gradual change (ramp): starts now, runs across N bars ---------- */
-function fireRamp(bars, label, dir, from){
-  if(!isHost()){ req({t:"req", k:"ramp", bars:bars, label:label||"", dir:dir}); return; }
+/* ---------- gradual change: starts now, runs across N bars ---------- */
+function startGradual(cmd, from){
   var startAt = now() + 150;                 // "from now", no bar snapping
   var src = from || myName();
-  S.count = null; hideCount();               // ramp and countdown are exclusive
-  S.ramp = {startAt:startAt, bars:bars, label:label||"", dir:dir==="down"?"down":"up", from:src};
-  send({t:"ramp", startAt:startAt, bars:bars, label:label||"", dir:S.ramp.dir, from:src});
+  var startBeat, bpmFrom = 0, bpmTo = 0;
+  S.count = null; hideCount(); endFlashBroadcast();
+  if(cmd.fx === "tempo"){
+    var base = Math.round(bpmAt(startAt));
+    bpmTo = tempoTarget(cmd.dir, cmd.pct, base);
+    var r = startTempoRamp(startAt, cmd.n, bpmTo);
+    startBeat = r.startBeat; bpmFrom = r.from;
+    S.bpm = bpmTo;                           // the nominal tempo after the ramp
+    localStorage.setItem("sg_bpm", String(S.bpm));
+    nextClickBeat = -1;
+  }else{
+    startBeat = beatAt(startAt);
+  }
+  S.ramp = {startAt:startAt, startBeat:startBeat, bars:cmd.n, label:cmd.label,
+            dir:(cmd.fx === "none" ? null : cmd.dir), from:src, fx:cmd.fx,
+            bpmFrom:bpmFrom, bpmTo:bpmTo};
+  send(stateMsg());                          // carries the new timebase first
+  send({t:"ramp", startAt:startAt, startBeat:startBeat, bars:cmd.n, label:cmd.label,
+        dir:S.ramp.dir, from:src, fx:cmd.fx, bpmFrom:bpmFrom, bpmTo:bpmTo});
+  return {undoBpm:0};
 }
 function cancelRamp(){
   if(!isHost()){ req({t:"req", k:"cancelramp"}); return; }
+  if(S.ramp && S.ramp.fx === "tempo" && rampActive()){
+    S.bpm = Math.round(bpmAt(now()));        // freeze where the ramp got to
+    localStorage.setItem("sg_bpm", String(S.bpm));
+    setConstBpm(now(), S.bpm);
+    nextClickBeat = -1;
+    send(stateMsg());
+  }
   S.ramp = null; hideRamp(); send({t:"rampcancel"});
 }
 document.getElementById("rampcancel").addEventListener("click", cancelRamp);
@@ -1648,26 +2053,44 @@ var rampcancelBtn = document.getElementById("rampcancel");
 
 /* update() is idempotent: every value is derived from timestamps, so it is safe
    to drive it from both rAF (smooth) and a setInterval net (survives rAF throttling). */
+var lastBpmShown = -1;
 function update(){
   /* nt, not t: t() is the translation function and must stay reachable here */
   var nt = now();
-  var bd = beatDur(), br = barDur();
+  var n = meter().n;
+  var beatNow = beatAt(nt);          // single source of musical position
+
+  /* a finished tempo ramp is closed off so the timebase is flat again */
+  if(rampActive() && nt >= TB.t0 + TB.T){
+    rebaseTB(TB.t0 + TB.T);
+    if(isHost()){
+      S.bpm = Math.round(TB.bpm1);
+      localStorage.setItem("sg_bpm", String(S.bpm));
+      send(stateMsg());
+    }
+  }
+  var shown = Math.round(bpmAt(nt));
+  if(shown !== lastBpmShown){
+    lastBpmShown = shown;
+    document.getElementById("bpmval").textContent = shown;
+  }
 
   /* metronome visuals */
   if(S.metroRunning && S.metroStart && nt >= S.metroStart){
-    var beats = Math.floor((nt - S.metroStart)/bd);
-    var idx = ((beats % meter().n) + meter().n) % meter().n;
+    var beats = Math.floor(beatNow - S.metroBeat0);
+    var idx = ((beats % n) + n) % n;
     if(beats !== lastBeat){
       lastBeat = beats;
       for(var i=0;i<dotEls.length;i++) dotEls[i].classList.toggle("on", i===idx);
     }
-    /* click scheduling, 150 ms lookahead */
+    /* click scheduling, 150 ms lookahead — beat times come from the analytic
+       inverse of the beat integral, so clicks bend with the ramp */
     if(S.sound && actx){
       if(nextClickBeat < 0) nextClickBeat = Math.max(0, beats+1);
       while(true){
-        var bt = S.metroStart + nextClickBeat*bd;
-        if(bt - nt > 150) break;
-        var bi = ((nextClickBeat % meter().n) + meter().n) % meter().n;
+        var bt = timeOfBeat(S.metroBeat0 + nextClickBeat);
+        if(!isFinite(bt) || bt - nt > 150) break;
+        var bi = ((nextClickBeat % n) + n) % n;
         var when = actx.currentTime + Math.max(0,(bt - nt))/1000;
         click(when, bi===0);
         nextClickBeat++;
@@ -1679,68 +2102,88 @@ function update(){
     for(var j=0;j<dotEls.length;j++) dotEls[j].classList.remove("on");
   }
 
-  /* countdown */
+  /* countdown — measured in beats, never in milliseconds */
   if(S.count){
-    var endAt = S.count.startAt + S.count.bars*br;
-    var rem = endAt - nt;
-    if(rem <= 0){
-      var lbl = S.count.label, lfrom = S.count.from || "";
+    var cRel = beatNow - S.count.startBeat;
+    var cTotal = S.count.bars*n;
+    var remB = cTotal - cRel;
+    if(remB <= 0){
+      var lbl = S.count.label, lfrom = S.count.from || "", cfx = S.count.fx;
       S.count = null; hideCount();
-      startFlash(lbl || t("flash_default"), clamp(Math.round(br*2),1500,6000), lfrom);
+      if(cfx && cfx.type === "tempo" && isHost()){
+        applyTempoJump(tempoTarget(cfx.dir, cfx.pct, Math.round(bpmAt(nt))));
+      }
+      startFlash(lbl || t("flash_default"), clamp(Math.round(barDur()*2),1500,6000), lfrom);
     }else{
-      var left = Math.max(1, Math.ceil(rem/br));
+      /* the countdown is snapped to the next bar line, so during the pre-roll
+         fraction remB is slightly above the full length; clamp so a 4-bar
+         countdown never flashes "5". */
+      var left = clamp(Math.ceil(remB/n), 1, S.count.bars);
       ovcount.classList.add("show");
       countcancelBtn.classList.toggle("hidden", !canCue());
       if(countnum.textContent !== String(left)) countnum.textContent = left;
       countlab.textContent = S.count.label || "";
       /* countdown metronome dots — same timebase as the countdown itself, so
          they run even when the metronome transport is stopped */
-      var cbeats = Math.floor((nt - S.count.startAt)/bd);
+      var cbeats = Math.floor(cRel);
       if(cbeats !== lastCountBeat){
         lastCountBeat = cbeats;
-        var cidx = cbeats < 0 ? -1 : ((cbeats % meter().n) + meter().n) % meter().n;
+        var cidx = cbeats < 0 ? -1 : ((cbeats % n) + n) % n;
         for(var k=0;k<countDotEls.length;k++) countDotEls[k].classList.toggle("on", k===cidx);
       }
       var last = left === 1;
       ovcount.classList.toggle("last", last);
       if(last){
-        ovcount.classList.toggle("blink", Math.floor(rem/(bd/2)) % 2 === 1);
+        ovcount.classList.toggle("blink", Math.floor(remB*2) % 2 === 1);
       }else{
         ovcount.classList.remove("blink");
       }
     }
   }
 
-  /* gradual change: local progress from the host timestamp, no per-beat traffic */
+  /* gradual change: local progress from the host anchor, no per-beat traffic */
   if(S.ramp){
-    var rTotal = S.ramp.bars*br;
-    var rEnd = S.ramp.startAt + rTotal;
-    var rRem = rEnd - nt;
-    if(rRem <= 0){
+    var rRel = beatNow - S.ramp.startBeat;
+    var rTotal = S.ramp.bars*n;
+    var rRemB = rTotal - rRel;
+    if(rRemB <= 0){
       S.ramp = null; hideRamp();
     }else{
       ovramp.classList.add("show");
       rampcancelBtn.classList.toggle("hidden", !canCue());
       var isDown = S.ramp.dir === "down";
+      var hasDir = !!S.ramp.dir;
       if(ramptxt.textContent !== S.ramp.label) ramptxt.textContent = S.ramp.label;
-      var dirTxt = t(isDown ? "ramp_down" : "ramp_up");
+      var dirTxt = "";
+      if(S.ramp.fx === "tempo"){
+        dirTxt = t(isDown ? "act_slower" : "act_faster") + "  "
+               + Math.round(S.ramp.bpmFrom) + " - " + Math.round(S.ramp.bpmTo) + " BPM";
+      }else if(hasDir){
+        dirTxt = t(isDown ? "ramp_down" : "ramp_up");
+      }else{
+        dirTxt = t("bars_over", S.ramp.bars);
+      }
       if(rampdirEl.textContent !== dirTxt) rampdirEl.textContent = dirTxt;
-      rampbar.classList.toggle("up", !isDown);
-      rampbar.classList.toggle("down", isDown);
-      var prog = clamp((nt - S.ramp.startAt)/rTotal, 0, 1);
+      rampbar.classList.toggle("up", hasDir && !isDown);
+      rampbar.classList.toggle("down", hasDir && isDown);
+      var prog = clamp(rRel/rTotal, 0, 1);
       rampfill.style.width = (prog*100).toFixed(1) + "%";
-      var rLeft = Math.max(1, Math.ceil(rRem/br));
+      var rLeft = Math.max(1, Math.ceil(rRemB/n));
       var remTxt = t("bars_unit", rLeft);
       if(rampremEl.textContent !== remTxt) rampremEl.textContent = remTxt;
       if(rampfromEl.textContent !== (S.ramp.from||"")) rampfromEl.textContent = S.ramp.from||"";
-      var rbeats = Math.floor((nt - S.ramp.startAt)/bd);
+      var rbeats = Math.floor(rRel);
       if(rbeats !== lastRampBeat){
         lastRampBeat = rbeats;
-        var ridx = rbeats < 0 ? -1 : ((rbeats % meter().n) + meter().n) % meter().n;
+        var ridx = rbeats < 0 ? -1 : ((rbeats % n) + n) % n;
         for(var q=0;q<rampDotEls.length;q++) rampDotEls[q].classList.toggle("on", q===ridx);
       }
     }
   }
+
+  /* composition helpers time out on their own */
+  if(S.recent && nt - S.recent.at > RECENT_MS){ S.recent = null; renderGrid(); }
+  if(S.warnKey && nt > S.warnUntil){ S.warnKey = null; renderPending(); }
 
   /* flash */
   if(S.flashUntil && nt >= S.flashUntil) endFlash();
@@ -1751,7 +2194,8 @@ function tick(){ update(); requestAnimationFrame(tick); }
    RENDER / INIT
    ========================================================= */
 function renderAll(){
-  document.getElementById("bpmval").textContent = S.bpm;
+  lastBpmShown = -1;                       // update() refreshes it from the timebase
+  document.getElementById("bpmval").textContent = Math.round(bpmAt(now()));
   document.getElementById("roomlabel").textContent = t((S.role==="local") ? "mode_label" : "room_label");
   document.getElementById("roomcode").textContent =
     (S.role==="local") ? t("local_code") : (S.code || "————");
@@ -1788,6 +2232,7 @@ document.addEventListener("pointerdown", function once(){
 document.addEventListener("gesturestart", function(e){ e.preventDefault(); });
 
 applyTheme();
+if(needMigrateSave){ try{ saveCells(); }catch(err){} }   // v1 -> v2, written once
 applyLang();     // also runs renderAll()
 requestAnimationFrame(tick);
 setInterval(update, 100);
