@@ -304,6 +304,9 @@ button{background:none;border:none;cursor:pointer}
 #countnum{font-size:min(44vh,40vw);line-height:.82;letter-spacing:-.02em;font-weight:400}
 #countlab{font-size:34px;letter-spacing:.1em;color:var(--fg2);margin-top:10px;line-height:1.25}
 #countsub{font-size:15px;color:var(--fg3);letter-spacing:.2em;margin-top:16px;line-height:1.2}
+/* slot 4 preview: what happens the instant the countdown / ramp lands */
+.nextline{display:none;font-size:20px;letter-spacing:.08em;color:var(--fg3);margin-top:8px;line-height:1.25}
+.nextline.on{display:block}
 #countdots{display:flex;align-items:center;justify-content:center;gap:10px;min-height:30px;margin-top:14px;flex-wrap:wrap}
 #ovcount.last{background:#3a1512}
 #ovcount.last .dot{background:#2a0f0d;border-color:#7a3a31}
@@ -494,6 +497,7 @@ button{background:none;border:none;cursor:pointer}
 <div class="overlay" id="ovcount">
   <div id="countnum">4</div>
   <div id="countlab"></div>
+  <div id="countnext" class="nextline"></div>
   <div id="countdots"></div>
   <div id="countsub" data-i18n="count_sub"></div>
   <button class="cancel hidden" id="countcancel" data-i18n="count_cancel"></button>
@@ -511,6 +515,7 @@ button{background:none;border:none;cursor:pointer}
   <div id="rampdir"></div>
   <div id="rampbar"><div id="rampfill"></div></div>
   <div id="ramprem"></div>
+  <div id="rampnext" class="nextline"></div>
   <div id="rampsub" data-i18n="ramp_sub"></div>
   <div id="rampdots"></div>
   <div id="rampfrom"></div>
@@ -619,6 +624,7 @@ var I18N = {
   sent_after:"{n} 小節後 {a}",
   sent_grad:"{n} 小節內逐漸 {a}",
   sent_then:"{a}，然後 {b}",
+  next_up:"然後 {a}",
   hint_pick_act:"先選一個動作格，再按開始",
   warn_need_bars:"「逐漸」需要先選小節數",
   tempo_host_only:"速度變化只有房主可以發送",
@@ -684,6 +690,7 @@ var I18N = {
   sent_after:"After {n} bars: {a}",
   sent_grad:"Gradually over {n} bars: {a}",
   sent_then:"{a}, then {b}",
+  next_up:"then {a}",
   hint_pick_act:"Pick an action, then press Start",
   warn_need_bars:"Gradually needs a bar count",
   tempo_host_only:"Tempo changes can only be sent by the host",
@@ -749,6 +756,7 @@ var I18N = {
   sent_after:"{n} 小節後 {a}",
   sent_grad:"{n} 小節かけて徐々に {a}",
   sent_then:"{a}、その後 {b}",
+  next_up:"その後 {a}",
   hint_pick_act:"アクションを選んでからスタート",
   warn_need_bars:"「徐々に」には小節数が必要です",
   tempo_host_only:"テンポ変更はホストのみ送信できます",
@@ -1479,8 +1487,11 @@ function onHostData(m){
   if(m.t==="flash"){ startFlash(m.text, m.dur, m.from); return; }
   if(m.t==="count"){
     S.ramp = null; hideRamp(); endFlash();
+    /* no `next` here on purpose: slot 4 is executed by the host alone,
+       a follower only ever displays nextLabel */
     S.count = {startAt:m.startAt, startBeat:m.startBeat, bars:m.bars,
-               label:m.label||"", from:m.from||"", fx:m.fx||null};
+               label:m.label||"", from:m.from||"", fx:m.fx||null,
+               nextLabel:String(m.nextLabel||"").slice(0,24)};
     return;
   }
   if(m.t==="countcancel"){ S.count = null; hideCount(); return; }
@@ -1488,7 +1499,8 @@ function onHostData(m){
     S.count = null; hideCount(); endFlash();
     S.ramp = {startAt:m.startAt, startBeat:m.startBeat, bars:m.bars, label:m.label||"",
               dir:m.dir||null, from:m.from||"", fx:m.fx||"none",
-              bpmFrom:m.bpmFrom||0, bpmTo:m.bpmTo||0};
+              bpmFrom:m.bpmFrom||0, bpmTo:m.bpmTo||0,
+              nextLabel:String(m.nextLabel||"").slice(0,24)};
     return;
   }
   if(m.t==="rampcancel"){ S.ramp = null; hideRamp(); return; }
@@ -2140,10 +2152,13 @@ function startCountdown(cmd, from){
   var fx = (cmd.fx === "tempo") ? {type:"tempo", dir:cmd.dir, pct:cmd.pct} : null;
   var src = from || myName();
   S.ramp = null; hideRamp(); endFlash();           // countdown and gradual are exclusive
+  /* next is the executable slot-4 action and stays on the host; nextLabel is
+     the display-only copy every device shows while the countdown runs */
+  var nlab = cmd.next ? (cmd.next.label || "") : "";
   S.count = {startAt:t0, startBeat:startBeat, bars:cmd.n, label:cmd.label,
-             from:src, fx:fx, next:cmd.next || null};
+             from:src, fx:fx, next:cmd.next || null, nextLabel:nlab};
   send({t:"count", startAt:t0, startBeat:startBeat, bars:cmd.n,
-        label:cmd.label, from:src, fx:fx});
+        label:cmd.label, from:src, fx:fx, nextLabel:nlab});
   return true;
 }
 function cancelCountdown(){
@@ -2151,9 +2166,18 @@ function cancelCountdown(){
   S.count = null; hideCount(); send({t:"countcancel"});
 }
 document.getElementById("countcancel").addEventListener("click", cancelCountdown);
+/* shows "then <label>" while a countdown or a ramp is running; hidden when the
+   cue has no slot 4 */
+function setNextLine(el, label){
+  if(!el) return;
+  var txt = label ? tf("next_up", {a:label}) : "";
+  if(el.textContent !== txt) el.textContent = txt;
+  el.classList.toggle("on", !!txt);
+}
 function hideCount(){
   var ov = document.getElementById("ovcount");
   ov.classList.remove("show","last","blink");
+  setNextLine(countnextEl, "");
   lastCountBeat = -1;
   for(var i=0;i<countDotEls.length;i++) countDotEls[i].classList.remove("on");
 }
@@ -2175,12 +2199,14 @@ function startGradual(cmd, from){
   }else{
     startBeat = beatAt(startAt);
   }
+  var rlab = cmd.next ? (cmd.next.label || "") : "";
   S.ramp = {startAt:startAt, startBeat:startBeat, bars:cmd.n, label:cmd.label,
             dir:(cmd.fx === "none" ? null : cmd.dir), from:src, fx:cmd.fx,
-            bpmFrom:bpmFrom, bpmTo:bpmTo, next:cmd.next || null};
+            bpmFrom:bpmFrom, bpmTo:bpmTo, next:cmd.next || null, nextLabel:rlab};
   send(stateMsg());                          // carries the new timebase first
   send({t:"ramp", startAt:startAt, startBeat:startBeat, bars:cmd.n, label:cmd.label,
-        dir:S.ramp.dir, from:src, fx:cmd.fx, bpmFrom:bpmFrom, bpmTo:bpmTo});
+        dir:S.ramp.dir, from:src, fx:cmd.fx, bpmFrom:bpmFrom, bpmTo:bpmTo,
+        nextLabel:rlab});
   return true;
 }
 function cancelRamp(){
@@ -2198,6 +2224,7 @@ document.getElementById("rampcancel").addEventListener("click", cancelRamp);
 function hideRamp(){
   var ov = document.getElementById("ovramp");
   ov.classList.remove("show");
+  setNextLine(rampnextEl, "");
   document.getElementById("rampfill").style.width = "0%";
   lastRampBeat = -1;
   for(var i=0;i<rampDotEls.length;i++) rampDotEls[i].classList.remove("on");
@@ -2210,6 +2237,7 @@ var lastBeat = -1, nextClickBeat = -1, lastCountBeat = -1, lastRampBeat = -1;
 var ovcount = document.getElementById("ovcount");
 var countnum = document.getElementById("countnum");
 var countlab = document.getElementById("countlab");
+var countnextEl = document.getElementById("countnext");
 var countcancelBtn = document.getElementById("countcancel");
 var ovramp = document.getElementById("ovramp");
 var ramptxt = document.getElementById("ramptxt");
@@ -2217,6 +2245,7 @@ var rampdirEl = document.getElementById("rampdir");
 var rampbar = document.getElementById("rampbar");
 var rampfill = document.getElementById("rampfill");
 var rampremEl = document.getElementById("ramprem");
+var rampnextEl = document.getElementById("rampnext");
 var rampfromEl = document.getElementById("rampfrom");
 var rampcancelBtn = document.getElementById("rampcancel");
 
@@ -2295,6 +2324,7 @@ function update(){
       countcancelBtn.classList.toggle("hidden", !canCue());
       if(countnum.textContent !== String(left)) countnum.textContent = left;
       countlab.textContent = S.count.label || "";
+      setNextLine(countnextEl, S.count.nextLabel);
       /* countdown metronome dots — same timebase as the countdown itself, so
          they run even when the metronome transport is stopped */
       var cbeats = Math.floor(cRel);
@@ -2338,6 +2368,7 @@ function update(){
         dirTxt = t("bars_over", S.ramp.bars);
       }
       if(rampdirEl.textContent !== dirTxt) rampdirEl.textContent = dirTxt;
+      setNextLine(rampnextEl, S.ramp.nextLabel);
       rampbar.classList.toggle("up", hasDir && !isDown);
       rampbar.classList.toggle("down", hasDir && isDown);
       var prog = clamp(rRel/rTotal, 0, 1);

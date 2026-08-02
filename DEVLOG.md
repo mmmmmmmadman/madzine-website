@@ -2,6 +2,14 @@
 
 ## 2026-08-02
 
+### Session Guide：倒數與漸變畫面顯示下一個動作
+
+- 選了槽 4 時，倒數畫面與漸變畫面顯示「然後 X」，讓所有人在事情發生前就知道接下來是什麼
+- 新增 i18n key `next_up`（然後 {a} / then {a} / その後 {a}），走整句模板不做片段串接
+- 訊息新增 `nextLabel`（純顯示字串），與 host 專用的可執行 `next` 物件分開：follower 存 `nextLabel` 但不存 `next`，槽 4 的執行權仍只在 host
+- 收到的 `nextLabel` 截斷 24 字元，與 `sanitizeAct` 的 label 上限一致
+- 沒有槽 4 時該行不佔版面（`display:none`），倒數/漸變結束時一併清除
+
 ### Session Guide：移除動作格的漸變楔形
 
 - 動作格上的 cresc./decresc. 楔形圖示移除；「逐漸」已是獨立槽，動作格不再自帶漸變語意
