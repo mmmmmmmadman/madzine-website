@@ -89,7 +89,7 @@ button{background:none;border:none;cursor:pointer}
   padding:0 14px;font-size:17px;letter-spacing:.08em;color:var(--fg2);
   border-bottom:1px solid var(--line);cursor:pointer}
 #srcdl:active{color:var(--acc)}
-#srcnote{font-size:14px;color:var(--fg3);line-height:1.35;margin-top:4px;padding:0 8px}
+#srcnote{font-size:17px;color:var(--fg2);line-height:1.35;margin-top:4px;padding:0 8px}
 .big-btn.primary{border-color:var(--acc-dim);color:var(--acc)}
 .big-btn:active{background:var(--panel)}
 
@@ -110,7 +110,7 @@ button{background:none;border:none;cursor:pointer}
 
 /* join */
 #join{justify-content:center;align-items:center;gap:14px;overflow-y:auto}
-#join .lab{font-size:15px;color:var(--fg2);letter-spacing:.14em;line-height:1.2;flex:0 0 auto}
+#join .lab{font-size:18px;color:var(--fg);letter-spacing:.14em;line-height:1.2;flex:0 0 auto}
 #nameinput{
   width:100%;max-width:320px;text-align:center;
   font-size:22px;letter-spacing:.04em;
@@ -127,7 +127,7 @@ button{background:none;border:none;cursor:pointer}
   text-transform:uppercase;flex:0 0 auto;
 }
 #codeinput:focus{outline:none;border-color:var(--acc-dim)}
-#joinmsg{font-size:14px;color:var(--fg3);min-height:18px;line-height:1.2;flex:0 0 auto}
+#joinmsg{font-size:18px;color:var(--fg2);min-height:22px;line-height:1.2;flex:0 0 auto}
 .row-btns{display:flex;gap:var(--gap);width:100%;flex:0 0 auto}
 
 /* ---------- main ---------- */
@@ -169,7 +169,7 @@ button{background:none;border:none;cursor:pointer}
   font-size:30px;letter-spacing:.22em;line-height:1.2;
 }
 #tapbtn:active,#tapbtn.hit{background:var(--acc);color:#121212}
-#tapinfo{font-size:14px;color:var(--fg3);line-height:1.2;margin-top:5px;text-align:center}
+#tapinfo{font-size:18px;color:var(--fg2);line-height:1.2;margin-top:5px;text-align:center}
 
 /* read-only tempo / meter (a conductor who is not the host) */
 /* the read-only tempo card collapses into a single compact strip so it does
@@ -217,10 +217,12 @@ button{background:none;border:none;cursor:pointer}
    1 how long (time)   2 at once / gradually (mode)   3+4 what (action) */
 #gridwrap{flex:1 0 auto;display:flex;flex-direction:column;gap:var(--gap)}
 .gsec{display:flex;flex-direction:column;gap:6px;flex:0 0 auto}
-.ghead{font-size:14px;color:var(--fg3);letter-spacing:.16em;line-height:1.2;padding-left:2px}
+.ghead{font-size:17px;color:var(--fg2);letter-spacing:.02em;line-height:1.2;padding-left:2px}
 .ggrid{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);grid-auto-rows:minmax(56px,auto)}
 .ggrid.c4{grid-template-columns:1fr 1fr 1fr 1fr;grid-auto-rows:minmax(48px,auto)}
 .ggrid.c2{grid-auto-rows:minmax(48px,auto)}
+/* number actions: dense row, still a 46px touch target on a 390px phone */
+.ggrid.cnum{grid-template-columns:repeat(6,1fr);gap:6px;grid-auto-rows:minmax(46px,auto)}
 .cell{
   border:1px solid var(--line);border-radius:10px;background:var(--bg-elev);
   font-size:21px;color:var(--fg);line-height:1.2;padding:8px 6px;
@@ -232,6 +234,8 @@ button{background:none;border:none;cursor:pointer}
 .cell.time{background:var(--panel);border-color:#3d3d3d;font-size:18px;min-height:48px;border-radius:24px;padding:6px 4px}
 .cell.mode{background:var(--panel);border-color:#3d3d3d;font-size:19px;min-height:48px;border-radius:10px;border-style:dashed}
 .cell.act{background:var(--bg-elev)}
+.cell.act.num{min-height:46px;font-size:22px;padding:6px 2px}
+.cell.act.num .slot{top:2px;right:5px;font-size:13px}
 .cell.sel{border-color:var(--acc);background:var(--acc-dim);color:var(--fg);border-style:solid}
 /* slot number badge on a picked action: 3 = what, 4 = then what */
 .cell .slot{
@@ -253,7 +257,7 @@ button{background:none;border:none;cursor:pointer}
   font-size:18px;color:var(--fg);line-height:1.3;min-height:24px;
   overflow:hidden;text-overflow:ellipsis;
 }
-#sentence.dim{color:var(--fg3)}
+#sentence.dim{color:var(--fg2)}
 #sentence.warn{color:var(--acc-glow)}
 #composebtns{display:flex;gap:var(--gap)}
 #clearbtn{
@@ -290,14 +294,14 @@ button{background:none;border:none;cursor:pointer}
   #rampbar{height:32px;margin-top:14px}
   #ramprem{font-size:32px;margin-top:10px}
   #composebar{padding:6px 8px;gap:4px}
-  #sentence{font-size:16px;min-height:21px}
+  #sentence{font-size:17px;min-height:22px}
   :root{--pad:8px}
 }
 
 /* follower panel */
 #folinfo{display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;flex:1 1 auto;min-height:0}
 #folstate{font-size:24px;color:var(--fg2);letter-spacing:.08em;line-height:1.3;text-align:center}
-#folsub{font-size:15px;color:var(--fg3);line-height:1.3;text-align:center}
+#folsub{font-size:17px;color:var(--fg2);line-height:1.3;text-align:center}
 
 /* ---------- overlays ---------- */
 .overlay{
@@ -310,7 +314,7 @@ button{background:none;border:none;cursor:pointer}
 .overlay.show{display:flex}
 #countnum{font-size:min(44vh,40vw);line-height:.82;letter-spacing:-.02em;font-weight:400}
 #countlab{font-size:34px;letter-spacing:.1em;color:var(--fg2);margin-top:10px;line-height:1.25}
-#countsub{font-size:15px;color:var(--fg3);letter-spacing:.2em;margin-top:16px;line-height:1.2}
+#countsub{font-size:17px;color:var(--fg2);letter-spacing:.2em;margin-top:16px;line-height:1.2}
 /* slot 4 preview: what happens the instant the countdown / ramp lands */
 .nextline{display:none;font-size:20px;letter-spacing:.08em;color:var(--fg3);margin-top:8px;line-height:1.25}
 .nextline.on{display:block}
@@ -324,7 +328,39 @@ button{background:none;border:none;cursor:pointer}
 #ovcount .cancel{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);font-size:17px;color:var(--fg3);border:1px solid var(--line);border-radius:8px;padding:10px 20px;min-height:44px;line-height:1.2}
 #ovflash{background:var(--acc);color:#121212;transition:opacity .35s linear}
 #ovflash.fade{opacity:0}
-#flashtxt{font-size:min(15vh,17vw);line-height:1.02;letter-spacing:.02em;font-weight:400;word-break:break-word}
+/* opening attention flash: a few pulses when an overlay first appears, then it
+   settles into its normal static look; kept at ~2.5 Hz max (photosensitivity) */
+#ovflash.intro{animation:introflash 3s steps(1,end)}
+@keyframes introflash{
+  0%,6%{background:#121212}
+  7%,13%{background:var(--acc)}
+  14%,20%{background:#121212}
+  21%,27%{background:var(--acc)}
+  28%,34%{background:#121212}
+  35%,41%{background:var(--acc)}
+  42%,48%{background:#121212}
+  49%,55%{background:var(--acc)}
+  56%,62%{background:#121212}
+  63%,69%{background:var(--acc)}
+  70%,76%{background:#121212}
+  77%,83%{background:var(--acc)}
+  84%,90%{background:#121212}
+  91%,100%{background:var(--acc)}
+}
+#ovcount.intro,#ovramp.intro{animation:introov 2s steps(1,end)}
+@keyframes introov{
+  0%,12%{background:var(--acc)}
+  13%,24%{background:var(--bg)}
+  25%,37%{background:var(--acc)}
+  38%,49%{background:var(--bg)}
+  50%,62%{background:var(--acc)}
+  63%,74%{background:var(--bg)}
+  75%,87%{background:var(--acc)}
+  88%,100%{background:var(--bg)}
+}
+/* cue text is meant to fill the screen; this is only the starting cap — fitFlashText()
+   scales it down per label so long cues still land inside the viewport */
+#flashtxt{font-size:min(75vh,85vw);line-height:1.02;letter-spacing:.02em;font-weight:400;word-break:break-word}
 /* source nickname stays visually subordinate to the cue text */
 #flashfrom{font-size:17px;letter-spacing:.14em;color:rgba(18,18,18,.55);margin-top:14px;line-height:1.2;max-width:90%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
@@ -339,7 +375,7 @@ button{background:none;border:none;cursor:pointer}
 #rampbar.down{clip-path:polygon(0 0,100% 46%,100% 54%,0 100%)}
 #rampfill{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--acc)}
 #ramprem{font-size:38px;letter-spacing:.06em;margin-top:14px;line-height:1.15}
-#rampsub{font-size:15px;color:var(--fg3);letter-spacing:.2em;margin-top:6px;line-height:1.2}
+#rampsub{font-size:17px;color:var(--fg2);letter-spacing:.2em;margin-top:6px;line-height:1.2}
 #rampdots{display:flex;align-items:center;justify-content:center;gap:10px;min-height:30px;margin-top:14px;flex-wrap:wrap}
 #rampfrom{font-size:15px;color:var(--fg3);letter-spacing:.14em;margin-top:12px;line-height:1.2}
 #ovramp .cancel{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);font-size:17px;color:var(--fg3);border:1px solid var(--line);border-radius:8px;padding:10px 20px;min-height:44px;line-height:1.2}
@@ -354,7 +390,7 @@ button{background:none;border:none;cursor:pointer}
 }
 #huepop.show{display:flex}
 #huecanvas{touch-action:none;display:block}
-#hueinfo{font-size:14px;color:var(--fg3);letter-spacing:.1em;line-height:1.2}
+#hueinfo{font-size:17px;color:var(--fg2);letter-spacing:.04em;line-height:1.3;max-width:220px;text-align:center}
 
 #editor{
   position:fixed;z-index:60;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);
@@ -479,6 +515,7 @@ button{background:none;border:none;cursor:pointer}
       <div class="gsec">
         <div class="ghead" data-i18n="sec_act"></div>
         <div class="ggrid" id="gridacts"></div>
+        <div class="ggrid cnum" id="gridnums"></div>
       </div>
     </div>
 
@@ -1016,7 +1053,7 @@ var METERS = [
      time + gradually = duration   -> spreads the change across N bars
    Slot 4 runs the instant the first segment ends and carries no time of its own.
    --------------------------------------------------------- */
-var CELLS_VER = 4;
+var CELLS_VER = 5;
 var DEFAULT_TIME_DEFS = [2, 4, 8, 16];
 var DEFAULT_MODE_DEFS = [
   {id:"mn", mode:"now"},
@@ -1033,6 +1070,25 @@ var DEFAULT_ACT_DEFS = [
   {id:"a8", key:"act_stop",    fx:"none"},
   {id:"a9", key:"act_free",    fx:"none"}
 ];
+/* Plain number actions 0..10. A digit reads the same in every language, so the
+   label is stored on the cell instead of going through an i18n key: a language
+   switch rebuilds it to exactly the same face. `num:true` only routes it to the
+   dense grid row — in every other respect it is an ordinary action cell. */
+var DEFAULT_NUM_DEFS = (function(){
+  var out = [];
+  for(var i=0;i<=10;i++) out.push({id:"n"+i, label:String(i)});
+  return out;
+})();
+function numCellsFromDefs(){
+  return DEFAULT_NUM_DEFS.map(function(d){
+    return {id:d.id, kind:"act", num:true, label:d.label, fx:"none", dir:"up", pct:10};
+  });
+}
+/* the dense row holds every action cell that was built as a number cell */
+function isNumCell(c){
+  if(!c || c.kind === "time" || c.kind === "mode") return false;
+  return c.num === true;
+}
 /* Time and mode cells have no stored text unless the user typed one, so their
    face always reads correctly after a language switch. */
 function cellText(c){
@@ -1053,6 +1109,7 @@ function defaultCells(){
     out.push({id:c.id, kind:"act", label:t(c.key), fx:c.fx,
               dir:c.dir || "up", pct:c.pct || 10});
   });
+  numCellsFromDefs().forEach(function(c){ out.push(c); });
   return out;
 }
 function cellsAreCustom(){
@@ -1119,7 +1176,22 @@ function loadCells(){
   if(ver >= CELLS_VER) return ensureModeCells(arr);
   needMigrateSave = true;                    // written back once, right after init
   if(ver < 3) arr = ver >= 2 ? migrateV2(arr) : migrateV1(arr);
-  return ensureModeCells(migrateV3(arr));
+  if(ver < 4) arr = migrateV3(arr);
+  return ensureModeCells(migrateV4(arr));
+}
+/* ---------------------------------------------------------
+   v4 -> v5
+   The built-in number actions 0..10 were added. A set saved before v5 has none
+   of them, so the missing ones are appended. A number cell the user already
+   deleted in this session cannot be told apart from one that never existed, so
+   this runs once per upgrade only — the result is written back at v5 and the
+   check never fires again.
+   --------------------------------------------------------- */
+function migrateV4(arr){
+  var have = {};
+  arr.forEach(function(c){ if(c && c.id) have[c.id] = 1; });
+  var add = numCellsFromDefs().filter(function(c){ return !have[c.id]; });
+  return add.length ? arr.concat(add) : arr;
 }
 /* ---------------------------------------------------------
    v3 -> v4
@@ -1788,6 +1860,7 @@ function click(when, strong){
 var gridTime = document.getElementById("gridtime");
 var gridMode = document.getElementById("gridmode");
 var gridActs = document.getElementById("gridacts");
+var gridNums = document.getElementById("gridnums");
 
 function bindCell(b, id, onTap){
   var lpTimer=null, moved=false;
@@ -1801,15 +1874,18 @@ function bindCell(b, id, onTap){
   });
   b.addEventListener("pointercancel", function(){ clearTimeout(lpTimer); lpTimer=null; });
 }
-function gridOf(kind){
-  return kind === "time" ? gridTime : (kind === "mode" ? gridMode : gridActs);
+function gridOf(kind, c){
+  if(kind === "time") return gridTime;
+  if(kind === "mode") return gridMode;
+  return isNumCell(c) ? gridNums : gridActs;
 }
 function renderGrid(){
-  gridTime.innerHTML = ""; gridMode.innerHTML = ""; gridActs.innerHTML = "";
+  gridTime.innerHTML = ""; gridMode.innerHTML = "";
+  gridActs.innerHTML = ""; gridNums.innerHTML = "";
   S.cells.forEach(function(c){
     var kind = (c.kind === "time" || c.kind === "mode") ? c.kind : "act";
     var b = document.createElement("button");
-    b.className = "cell " + kind;
+    b.className = "cell " + kind + (isNumCell(c) ? " num" : "");
     /* mode cells are structural, so they are never in the editable set */
     if(S.editMode && kind !== "mode") b.className += " editing";
     if(isPicked(c)) b.className += " sel";
@@ -1833,7 +1909,7 @@ function renderGrid(){
       }
     }
     bindCell(b, kind === "mode" ? null : c.id, function(){ cellTap(c); });
-    gridOf(kind).appendChild(b);
+    gridOf(kind, c).appendChild(b);
   });
   if(S.editMode){
     gridTime.appendChild(addButton("time"));
@@ -2133,10 +2209,46 @@ function applyTempoJump(target){
   send(stateMsg());
 }
 function fireCue(text, from){                    // host only, reached via runCmd
-  var dur = clamp(Math.round(barDur()*2), 1500, 6000);
+  var dur = clamp(Math.round(barDur()*2), 3500, 6000);
   var src = from || myName();
   send({t:"flash", text:text, dur:dur, from:src});
   startFlash(text, dur, src);
+}
+/* restarts the opening attention animation even if the class is already set:
+   remove, force a reflow, re-add — otherwise back-to-back cues only flash once */
+function introFlash(ov){
+  ov.classList.remove("intro");
+  void ov.offsetWidth;
+  ov.classList.add("intro");
+}
+/* the cue must be readable across a dark room, so it is grown until it nearly
+   fills the screen: start at the cap, take one proportional guess from the
+   measured box, then bisect a few times because wrapping changes the ratio */
+var FLASH_MIN_FS = 12;                       // px, floor for pathologically long cues
+function flashBox(){
+  var vw = window.innerWidth, vh = window.innerHeight;
+  return {w: vw*0.92, h: vh*0.78, cap: Math.min(vh*0.75, vw*0.85)};
+}
+function fitFlashText(){
+  var el = document.getElementById("flashtxt");
+  if(!el || !el.textContent) return;
+  var box = flashBox();
+  el.style.maxWidth = box.w + "px";
+  function fitsAt(fs){
+    el.style.fontSize = fs + "px";
+    return el.scrollWidth <= box.w + 1 && el.scrollHeight <= box.h + 1;
+  }
+  if(fitsAt(box.cap)) return;                // short cues keep the full cap size
+  /* proportional first guess off the overflowing box, then bisect to converge */
+  var guess = box.cap * Math.min(box.w/Math.max(el.scrollWidth,1),
+                                 box.h/Math.max(el.scrollHeight,1));
+  var lo = FLASH_MIN_FS, hi = box.cap;
+  if(guess > lo && guess < hi){ if(fitsAt(guess)) lo = guess; else hi = guess; }
+  for(var i = 0; i < 10 && hi - lo > 0.5; i++){
+    var mid = (lo + hi)/2;
+    if(fitsAt(mid)) lo = mid; else hi = mid;
+  }
+  el.style.fontSize = lo + "px";
 }
 function startFlash(text, dur, from){
   S.flashText = text || "";
@@ -2147,11 +2259,13 @@ function startFlash(text, dur, from){
   document.getElementById("flashfrom").textContent = S.flashFrom;
   ov.classList.remove("fade");
   ov.classList.add("show");
+  fitFlashText();                            // measure only once the overlay is laid out
+  introFlash(ov);                            // opening pulses, then static accent
 }
 function endFlash(){
   var ov = document.getElementById("ovflash");
   ov.classList.add("fade");
-  setTimeout(function(){ ov.classList.remove("show"); ov.classList.remove("fade"); }, 360);
+  setTimeout(function(){ ov.classList.remove("show"); ov.classList.remove("fade"); ov.classList.remove("intro"); }, 360);
   S.flashUntil = 0;
 }
 /* "N bars later": snapped to the metronome bar grid in absolute beat units, so
@@ -2193,7 +2307,7 @@ function setNextLine(el, label){
 }
 function hideCount(){
   var ov = document.getElementById("ovcount");
-  ov.classList.remove("show","last","blink");
+  ov.classList.remove("show","last","blink","intro");
   setNextLine(countnextEl, "");
   lastCountBeat = -1;
   for(var i=0;i<countDotEls.length;i++) countDotEls[i].classList.remove("on");
@@ -2240,7 +2354,7 @@ function cancelRamp(){
 document.getElementById("rampcancel").addEventListener("click", cancelRamp);
 function hideRamp(){
   var ov = document.getElementById("ovramp");
-  ov.classList.remove("show");
+  ov.classList.remove("show","intro");
   setNextLine(rampnextEl, "");
   document.getElementById("rampfill").style.width = "0%";
   lastRampBeat = -1;
@@ -2337,6 +2451,9 @@ function update(){
          fraction remB is slightly above the full length; clamp so a 4-bar
          countdown never flashes "5". */
       var left = clamp(Math.ceil(remB/n), 1, S.count.bars);
+      /* opening attention pulses, only on the hidden -> shown transition;
+         "show" itself is re-added every frame and must stay idempotent */
+      if(!ovcount.classList.contains("show")) introFlash(ovcount);
       ovcount.classList.add("show");
       countcancelBtn.classList.toggle("hidden", !canCue());
       if(countnum.textContent !== String(left)) countnum.textContent = left;
@@ -2370,6 +2487,7 @@ function update(){
       S.ramp = null; hideRamp();
       if(isHost() && rnext) fireNow(rnext, rfrom);   // slot 4, at the end of the ramp
     }else{
+      if(!ovramp.classList.contains("show")) introFlash(ovramp);   // same as ovcount
       ovramp.classList.add("show");
       rampcancelBtn.classList.toggle("hidden", !canCue());
       var isDown = S.ramp.dir === "down";
@@ -2451,6 +2569,12 @@ document.addEventListener("pointerdown", function once(){
 }, {passive:true});
 
 document.addEventListener("gesturestart", function(e){ e.preventDefault(); });
+
+/* rotating the device changes the fitting box, so refit whatever cue is showing */
+window.addEventListener("resize", function(){
+  var ov = document.getElementById("ovflash");
+  if(ov && ov.classList.contains("show")) fitFlashText();
+});
 
 applyTheme();
 if(needMigrateSave){ try{ saveCells(); }catch(err){} }   // v1 -> v2, written once
