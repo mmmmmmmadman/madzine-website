@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- version: v260806 — 每次部署到 madzine.work 前更新此版本號與 #wordmark -->
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
@@ -295,6 +296,14 @@ button{background:none;border:none;cursor:pointer}
   #ramprem{font-size:32px;margin-top:10px}
   #composebar{padding:6px 8px;gap:4px}
   #sentence{font-size:17px;min-height:22px}
+  /* overlays: keep number and label the same size, just a lower starting cap so
+     the dots / sub / cancel rows stay on screen; fitOverlayLabel() takes it from here */
+  #countnum,#countlab{font-size:min(24vh,32vw)}
+  #countsub{margin-top:10px}
+  #countdots{margin-top:10px;min-height:24px}
+  #ramptxt{font-size:min(18vh,24vw)}
+  #rampdots{margin-top:10px;min-height:24px}
+  #rampfrom{margin-top:8px}
   :root{--pad:8px}
 }
 
@@ -312,8 +321,12 @@ button{background:none;border:none;cursor:pointer}
   padding:24px;text-align:center;background:var(--bg);
 }
 .overlay.show{display:flex}
-#countnum{font-size:min(44vh,40vw);line-height:.82;letter-spacing:-.02em;font-weight:400}
-#countlab{font-size:34px;letter-spacing:.1em;color:var(--fg2);margin-top:10px;line-height:1.25}
+/* the cue label is as loud as the bar number: same font-size cap for both, stacked
+   number over label. fitOverlayLabel() scales the label down when a long cue would
+   not fit the space the other rows leave. */
+#countnum{font-size:min(26vh,38vw);line-height:.86;letter-spacing:-.02em;font-weight:400}
+#countlab{font-size:min(26vh,38vw);line-height:1.02;letter-spacing:.02em;font-weight:400;
+  color:var(--fg2);margin-top:6px;max-width:92vw;word-break:break-word}
 #countsub{font-size:17px;color:var(--fg2);letter-spacing:.2em;margin-top:16px;line-height:1.2}
 /* slot 4 preview: what happens the instant the countdown / ramp lands */
 .nextline{display:none;font-size:20px;letter-spacing:.08em;color:var(--fg3);margin-top:8px;line-height:1.25}
@@ -328,35 +341,29 @@ button{background:none;border:none;cursor:pointer}
 #ovcount .cancel{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);font-size:17px;color:var(--fg3);border:1px solid var(--line);border-radius:8px;padding:10px 20px;min-height:44px;line-height:1.2}
 #ovflash{background:var(--acc);color:#121212;transition:opacity .35s linear}
 #ovflash.fade{opacity:0}
-/* opening attention flash: a few pulses when an overlay first appears, then it
-   settles into its normal static look; kept at ~2.5 Hz max (photosensitivity) */
-#ovflash.intro{animation:introflash 3s steps(1,end)}
+/* cue flash: pulses for the whole time the overlay is shown, until endFlash()
+   fades it out; ~2.3 Hz, kept under the 3 Hz photosensitivity ceiling */
+#ovflash.intro{animation:introflash .44s steps(1,end) infinite}
 @keyframes introflash{
-  0%,6%{background:#121212}
-  7%,13%{background:var(--acc)}
-  14%,20%{background:#121212}
-  21%,27%{background:var(--acc)}
-  28%,34%{background:#121212}
-  35%,41%{background:var(--acc)}
-  42%,48%{background:#121212}
-  49%,55%{background:var(--acc)}
-  56%,62%{background:#121212}
-  63%,69%{background:var(--acc)}
-  70%,76%{background:#121212}
-  77%,83%{background:var(--acc)}
-  84%,90%{background:#121212}
-  91%,100%{background:var(--acc)}
+  0%,49%{background:#121212}
+  50%,100%{background:var(--acc)}
 }
-#ovcount.intro,#ovramp.intro{animation:introov 2s steps(1,end)}
+/* opening attention pulses for countdown/ramp: finite, ends on the static bg
+   so the numbers stay readable; 6 cycles over 3 s = 2 Hz */
+#ovcount.intro,#ovramp.intro{animation:introov 3s steps(1,end)}
 @keyframes introov{
-  0%,12%{background:var(--acc)}
-  13%,24%{background:var(--bg)}
-  25%,37%{background:var(--acc)}
-  38%,49%{background:var(--bg)}
-  50%,62%{background:var(--acc)}
-  63%,74%{background:var(--bg)}
-  75%,87%{background:var(--acc)}
-  88%,100%{background:var(--bg)}
+  0%,8%{background:var(--acc)}
+  9%,16%{background:var(--bg)}
+  17%,24%{background:var(--acc)}
+  25%,33%{background:var(--bg)}
+  34%,41%{background:var(--acc)}
+  42%,49%{background:var(--bg)}
+  50%,58%{background:var(--acc)}
+  59%,66%{background:var(--bg)}
+  67%,74%{background:var(--acc)}
+  75%,83%{background:var(--bg)}
+  84%,91%{background:var(--acc)}
+  92%,100%{background:var(--bg)}
 }
 /* cue text is meant to fill the screen; this is only the starting cap — fitFlashText()
    scales it down per label so long cues still land inside the viewport */
@@ -365,7 +372,10 @@ button{background:none;border:none;cursor:pointer}
 #flashfrom{font-size:17px;letter-spacing:.14em;color:rgba(18,18,18,.55);margin-top:14px;line-height:1.2;max-width:90%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /* ---------- ramp overlay ---------- */
-#ramptxt{font-size:min(11vh,13vw);line-height:1.04;letter-spacing:.02em;font-weight:400;word-break:break-word}
+/* same rule as #countlab: display-sized cue text, shrunk by fitOverlayLabel()
+   when the bar / remaining / dots rows do not leave enough room */
+#ramptxt{font-size:min(22vh,30vw);line-height:1.02;letter-spacing:.02em;font-weight:400;
+  max-width:92vw;word-break:break-word}
 #rampdir{font-size:22px;letter-spacing:.18em;color:var(--fg2);margin-top:8px;line-height:1.2}
 #rampbar{
   position:relative;width:min(78vw,320px);height:38px;margin-top:20px;
@@ -424,7 +434,7 @@ button{background:none;border:none;cursor:pointer}
 
 <div id="app">
   <div id="topbar">
-    <div id="wordmark">SESSION GUIDE — MADZINE</div>
+    <div id="wordmark">SESSION GUIDE — MADZINE · v260806</div>
     <div id="topright">
       <div id="connstate"></div>
       <button class="hue-btn" id="huebtn">HUE</button>
@@ -2260,7 +2270,7 @@ function startFlash(text, dur, from){
   ov.classList.remove("fade");
   ov.classList.add("show");
   fitFlashText();                            // measure only once the overlay is laid out
-  introFlash(ov);                            // opening pulses, then static accent
+  introFlash(ov);                            // pulses for the whole display time
 }
 function endFlash(){
   var ov = document.getElementById("ovflash");
@@ -2268,6 +2278,56 @@ function endFlash(){
   setTimeout(function(){ ov.classList.remove("show"); ov.classList.remove("fade"); ov.classList.remove("intro"); }, 360);
   S.flashUntil = 0;
 }
+
+/* ---------- overlay cue labels ----------
+   #countlab and #ramptxt are set as large as the countdown number, so a long cue
+   would push the dots / sub / cancel rows off screen. Same shape as fitFlashText()
+   (measure, one proportional guess, then bisect), but the height budget is what the
+   *other* rows of that overlay actually leave: the cap comes from the stylesheet
+   (so the max-height media query is respected for free) and the leftover box is
+   measured live. Callers only run this when the label text changed — never per frame. */
+var OVLAB_MIN_FS = 14;                       // px, matches the non-interactive floor
+function fitOverlayLabel(el, ov){
+  if(!el || !ov || !ov.classList.contains("show")) return;
+  el.style.fontSize = "";                    // back to the stylesheet cap before measuring
+  if(!el.textContent) return;
+  var cap = parseFloat(getComputedStyle(el).fontSize) || 0;
+  if(!cap) return;
+  var ovs = getComputedStyle(ov);
+  var inner = ov.clientHeight - (parseFloat(ovs.paddingTop)||0) - (parseFloat(ovs.paddingBottom)||0);
+  var others = 0, reserve = 0, kids = ov.children;
+  for(var i=0;i<kids.length;i++){
+    var k = kids[i], ks = getComputedStyle(k);
+    if(ks.display === "none") continue;
+    if(ks.position === "absolute"){           // the cancel button is pinned to the bottom
+      reserve = Math.max(reserve, k.offsetHeight + (parseFloat(ks.bottom)||0) + 12);
+      continue;
+    }
+    if(k === el) continue;
+    others += k.offsetHeight + (parseFloat(ks.marginTop)||0) + (parseFloat(ks.marginBottom)||0);
+  }
+  var els = getComputedStyle(el);
+  others += (parseFloat(els.marginTop)||0) + (parseFloat(els.marginBottom)||0);
+  /* the stack is vertically centred, so the free space splits evenly top and bottom:
+     the block has to clear the pinned button on both sides to stay above it */
+  var boxH = Math.max(OVLAB_MIN_FS*2, inner - reserve*2 - others);
+  var boxW = window.innerWidth*0.92;
+  function fitsAt(fs){
+    el.style.fontSize = fs + "px";
+    return el.scrollWidth <= boxW+1 && el.scrollHeight <= boxH+1;
+  }
+  if(fitsAt(cap)){ el.style.fontSize = ""; return; }   // short cues keep the full cap
+  var guess = cap * Math.min(boxW/Math.max(el.scrollWidth,1),
+                             boxH/Math.max(el.scrollHeight,1));
+  var lo = OVLAB_MIN_FS, hi = cap;
+  if(guess > lo && guess < hi){ if(fitsAt(guess)) lo = guess; else hi = guess; }
+  for(var b = 0; b < 10 && hi - lo > 0.5; b++){
+    var mid = (lo + hi)/2;
+    if(fitsAt(mid)) lo = mid; else hi = mid;
+  }
+  el.style.fontSize = lo + "px";
+}
+
 /* "N bars later": snapped to the metronome bar grid in absolute beat units, so
    a tempo ramp running underneath does not shift the musical landing point */
 function startCountdown(cmd, from){
@@ -2309,6 +2369,8 @@ function hideCount(){
   var ov = document.getElementById("ovcount");
   ov.classList.remove("show","last","blink","intro");
   setNextLine(countnextEl, "");
+  /* drop the fitted size with the text: the next cue measures itself from the cap */
+  if(countlab){ countlab.textContent = ""; countlab.style.fontSize = ""; }
   lastCountBeat = -1;
   for(var i=0;i<countDotEls.length;i++) countDotEls[i].classList.remove("on");
 }
@@ -2356,6 +2418,7 @@ function hideRamp(){
   var ov = document.getElementById("ovramp");
   ov.classList.remove("show","intro");
   setNextLine(rampnextEl, "");
+  if(ramptxt){ ramptxt.textContent = ""; ramptxt.style.fontSize = ""; }
   document.getElementById("rampfill").style.width = "0%";
   lastRampBeat = -1;
   for(var i=0;i<rampDotEls.length;i++) rampDotEls[i].classList.remove("on");
@@ -2457,8 +2520,11 @@ function update(){
       ovcount.classList.add("show");
       countcancelBtn.classList.toggle("hidden", !canCue());
       if(countnum.textContent !== String(left)) countnum.textContent = left;
-      countlab.textContent = S.count.label || "";
-      setNextLine(countnextEl, S.count.nextLabel);
+      setNextLine(countnextEl, S.count.nextLabel);   // before the fit: it eats height too
+      var clab = S.count.label || "";
+      /* refit only when the text actually changes — measuring every frame would
+         reflow the overlay 60 times a second */
+      if(countlab.textContent !== clab){ countlab.textContent = clab; fitOverlayLabel(countlab, ovcount); }
       /* countdown metronome dots — same timebase as the countdown itself, so
          they run even when the metronome transport is stopped */
       var cbeats = Math.floor(cRel);
@@ -2492,7 +2558,8 @@ function update(){
       rampcancelBtn.classList.toggle("hidden", !canCue());
       var isDown = S.ramp.dir === "down";
       var hasDir = !!S.ramp.dir;
-      if(ramptxt.textContent !== S.ramp.label) ramptxt.textContent = S.ramp.label;
+      var rFit = false;
+      if(ramptxt.textContent !== S.ramp.label){ ramptxt.textContent = S.ramp.label; rFit = true; }
       var dirTxt = "";
       if(S.ramp.fx === "tempo"){
         dirTxt = t(isDown ? "act_slower" : "act_faster") + "  "
@@ -2512,6 +2579,9 @@ function update(){
       var remTxt = t("bars_unit", rLeft);
       if(rampremEl.textContent !== remTxt) rampremEl.textContent = remTxt;
       if(rampfromEl.textContent !== (S.ramp.from||"")) rampfromEl.textContent = S.ramp.from||"";
+      /* fitted last: the direction / bar / remaining / source rows are all in place
+         by now, so the leftover height the cue text gets is the real one */
+      if(rFit) fitOverlayLabel(ramptxt, ovramp);
       var rbeats = Math.floor(rRel);
       if(rbeats !== lastRampBeat){
         lastRampBeat = rbeats;
@@ -2574,6 +2644,8 @@ document.addEventListener("gesturestart", function(e){ e.preventDefault(); });
 window.addEventListener("resize", function(){
   var ov = document.getElementById("ovflash");
   if(ov && ov.classList.contains("show")) fitFlashText();
+  fitOverlayLabel(countlab, ovcount);      // no-ops unless that overlay is showing
+  fitOverlayLabel(ramptxt, ovramp);
 });
 
 applyTheme();
