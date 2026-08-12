@@ -310,8 +310,6 @@ button{background:none;border:none;cursor:pointer}
   #metrocard{gap:6px}
   #codeinput{font-size:48px}
   #join{gap:12px}
-  #rampbar{height:32px;margin-top:14px}
-  #ramprem{font-size:32px;margin-top:10px}
   #composebar{padding:6px 8px;gap:4px}
   #sentence{font-size:17px;min-height:22px}
   /* the action step keeps its display type on short screens: only the box
@@ -323,14 +321,10 @@ button{background:none;border:none;cursor:pointer}
   #secact .cell.act.num{font-size:27px;min-height:54px;padding:4px 2px}
   #secact .cell.act .n{font-size:17px}
   #secact .cell.addc{font-size:20px}
-  /* overlays: keep number and label the same size, just a lower starting cap so
-     the dots / sub / cancel rows stay on screen; fitOverlayLabel() takes it from here */
-  #countnum,#countlab{font-size:min(24vh,32vw)}
-  #countsub{margin-top:10px}
-  #countdots{margin-top:10px;min-height:24px}
-  #ramptxt{font-size:min(18vh,24vw)}
-  #rampdots{margin-top:10px;min-height:24px}
-  #rampfrom{margin-top:8px}
+  /* NOTE: the overlay / ramp short-screen rules live in the second
+     @media (max-height:700px) block at the end of the overlay section — they have
+     to come *after* the base overlay rules or they lose the cascade on equal
+     specificity and silently do nothing. */
   :root{--pad:8px}
 }
 
@@ -354,9 +348,13 @@ button{background:none;border:none;cursor:pointer}
 #countnum{font-size:min(26vh,38vw);line-height:.86;letter-spacing:-.02em;font-weight:400}
 #countlab{font-size:min(26vh,38vw);line-height:1.02;letter-spacing:.02em;font-weight:400;
   color:var(--fg2);margin-top:6px;max-width:92vw;word-break:break-word}
-#countsub{font-size:17px;color:var(--fg2);letter-spacing:.2em;margin-top:16px;line-height:1.2}
-/* slot 4 preview: what happens the instant the countdown / ramp lands */
-.nextline{display:none;font-size:20px;letter-spacing:.08em;color:var(--fg3);margin-top:8px;line-height:1.25}
+/* stage-readable subtitle: viewport-scaled, never below the 24 px floor a dark
+   room at distance needs. Stays a clear step under .nextline. */
+#countsub{font-size:clamp(24px,min(4.2vh,6vw),40px);color:var(--fg2);letter-spacing:.16em;margin-top:14px;line-height:1.2}
+/* slot 4 preview: what happens the instant the countdown / ramp lands. Display
+   type, roughly a third of the cue cap (min(26vh,38vw)), so it reads from the
+   back of the room; fitOverlayLabel() sees this height and shrinks the cue to fit. */
+.nextline{display:none;font-size:clamp(26px,min(8vh,12vw),96px);letter-spacing:.06em;color:var(--fg3);margin-top:14px;line-height:1.15}
 .nextline.on{display:block}
 #countdots{display:flex;align-items:center;justify-content:center;gap:10px;min-height:30px;margin-top:14px;flex-wrap:wrap}
 #ovcount.last{background:#3a1512}
@@ -396,7 +394,7 @@ button{background:none;border:none;cursor:pointer}
    scales it down per label so long cues still land inside the viewport */
 #flashtxt{font-size:min(75vh,85vw);line-height:1.02;letter-spacing:.02em;font-weight:400;word-break:break-word}
 /* source nickname stays visually subordinate to the cue text */
-#flashfrom{font-size:17px;letter-spacing:.14em;color:rgba(18,18,18,.55);margin-top:14px;line-height:1.2;max-width:90%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#flashfrom{font-size:clamp(22px,min(3.2vh,4.6vw),40px);letter-spacing:.14em;color:rgba(18,18,18,.55);margin-top:14px;line-height:1.2;max-width:90%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /* ---------- ramp overlay ---------- */
 /* same rule as #countlab: display-sized cue text, shrunk by fitOverlayLabel()
@@ -412,10 +410,32 @@ button{background:none;border:none;cursor:pointer}
 #rampbar.down{clip-path:polygon(0 0,100% 46%,100% 54%,0 100%)}
 #rampfill{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--acc)}
 #ramprem{font-size:38px;letter-spacing:.06em;margin-top:14px;line-height:1.15}
-#rampsub{font-size:17px;color:var(--fg2);letter-spacing:.2em;margin-top:6px;line-height:1.2}
+/* same stage-readable step as #countsub: the two overlays stay in one type scale */
+#rampsub{font-size:clamp(24px,min(4.2vh,6vw),40px);color:var(--fg2);letter-spacing:.16em;margin-top:8px;line-height:1.2}
 #rampdots{display:flex;align-items:center;justify-content:center;gap:10px;min-height:30px;margin-top:14px;flex-wrap:wrap}
 #rampfrom{font-size:15px;color:var(--fg3);letter-spacing:.14em;margin-top:12px;line-height:1.2}
 #ovramp .cancel{position:absolute;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);font-size:17px;color:var(--fg3);border:1px solid var(--line);border-radius:8px;padding:10px 20px;min-height:44px;line-height:1.2}
+
+/* short screens, overlays only. This block has to sit after every base overlay
+   rule above: the earlier @media (max-height:700px) block is declared before them,
+   so an override placed there would lose the cascade on equal specificity. */
+@media (max-height:700px){
+  /* keep number and label the same size, just a lower starting cap so the
+     next / dots / sub / cancel rows stay on screen; fitOverlayLabel() takes it from here */
+  #countnum,#countlab{font-size:min(24vh,32vw)}
+  /* the slot-4 line and the subtitle stay display type on short screens — only the
+     cap and the gaps come down, so the stack still clears the dots / cancel rows */
+  .nextline{font-size:clamp(22px,min(7vh,10vw),64px);margin-top:10px}
+  #countsub{font-size:clamp(22px,min(3.6vh,5vw),30px);margin-top:10px}
+  #countdots{margin-top:10px;min-height:24px}
+  #flashfrom{font-size:clamp(20px,min(3vh,4.2vw),28px);margin-top:10px}
+  #ramptxt{font-size:min(18vh,24vw)}
+  #rampbar{height:32px;margin-top:14px}
+  #ramprem{font-size:32px;margin-top:10px}
+  #rampsub{font-size:clamp(22px,min(3.6vh,5vw),30px);margin-top:6px}
+  #rampdots{margin-top:10px;min-height:24px}
+  #rampfrom{margin-top:8px}
+}
 
 /* ---------- modal / hue ---------- */
 #scrim{position:fixed;inset:0;z-index:50;display:none;background:rgba(0,0,0,.6)}
