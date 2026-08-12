@@ -28,7 +28,7 @@
   --pad:10px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%}
+html,body{height:100%;touch-action:manipulation}
 body{
   background:var(--bg);
   color:var(--fg);
@@ -41,7 +41,7 @@ body{
   -webkit-user-select:none;user-select:none;
   overscroll-behavior:none;
 }
-button,input{font-family:var(--font);font-weight:300;line-height:1.2;color:inherit}
+button,input{font-family:var(--font);font-weight:300;line-height:1.2;color:inherit;touch-action:manipulation}
 button{background:none;border:none;cursor:pointer}
 
 #app{
@@ -248,6 +248,24 @@ button{background:none;border:none;cursor:pointer}
 .cell:active{background:var(--panel)}
 .cell.editing{border-style:dashed;border-color:var(--acc)}
 
+/* ---------- slot 3/4 action step: read at a distance, in the dark ----------
+   this is the second tap of every cue, so every string inside #secact is set
+   at display size. the grid rows grow with the type; long labels wrap instead
+   of shrinking. */
+#secact .ghead{font-size:24px;letter-spacing:.03em;color:var(--fg2)}
+#secact .ggrid{grid-auto-rows:minmax(76px,auto)}
+#secact .ggrid.cnum{grid-auto-rows:minmax(62px,auto)}
+#secact .cell.act{
+  font-size:28px;line-height:1.1;min-height:76px;padding:10px 8px;
+  overflow-wrap:anywhere;
+}
+#secact .cell.act .lab{text-align:center}
+#secact .cell.act .n{font-size:19px;letter-spacing:.1em}
+#secact .cell.act .slot{top:5px;right:9px;font-size:20px}
+#secact .cell.act.num{font-size:30px;min-height:62px;padding:6px 2px}
+#secact .cell.act.num .slot{top:2px;right:5px;font-size:16px}
+#secact .cell.addc{font-size:22px}
+
 /* ---------- sentence + START bar (never scrolls away) ---------- */
 #composebar{
   flex:0 0 auto;display:flex;flex-direction:column;gap:6px;
@@ -296,6 +314,15 @@ button{background:none;border:none;cursor:pointer}
   #ramprem{font-size:32px;margin-top:10px}
   #composebar{padding:6px 8px;gap:4px}
   #sentence{font-size:17px;min-height:22px}
+  /* the action step keeps its display type on short screens: only the box
+     heights and padding come down, never the font size */
+  #secact .ghead{font-size:21px}
+  #secact .ggrid{grid-auto-rows:minmax(64px,auto)}
+  #secact .ggrid.cnum{grid-auto-rows:minmax(54px,auto)}
+  #secact .cell.act{font-size:26px;min-height:64px;padding:6px 6px}
+  #secact .cell.act.num{font-size:27px;min-height:54px;padding:4px 2px}
+  #secact .cell.act .n{font-size:17px}
+  #secact .cell.addc{font-size:20px}
   /* overlays: keep number and label the same size, just a lower starting cap so
      the dots / sub / cancel rows stay on screen; fitOverlayLabel() takes it from here */
   #countnum,#countlab{font-size:min(24vh,32vw)}
@@ -522,7 +549,7 @@ button{background:none;border:none;cursor:pointer}
         <div class="ghead" data-i18n="sec_mode"></div>
         <div class="ggrid c2" id="gridmode"></div>
       </div>
-      <div class="gsec">
+      <div class="gsec" id="secact">
         <div class="ghead" data-i18n="sec_act"></div>
         <div class="ggrid" id="gridacts"></div>
         <div class="ggrid cnum" id="gridnums"></div>
@@ -1636,10 +1663,10 @@ function applyPermissions(){
   meterCard.classList.toggle("ro", !host);
   document.getElementById("gridwrap").classList.toggle("hidden", !cue);
   document.getElementById("folinfo").classList.toggle("hidden", cue);
-  document.getElementById("editbtn").classList.toggle("hidden", !cue);
+  document.getElementById("editbtn").classList.toggle("hidden", !host);   // cell editing: host only
   document.getElementById("metrobtn").classList.toggle("hidden", !host);
   document.getElementById("rolebtn").classList.toggle("hidden", host);
-  if(S.editMode && !cue){
+  if(S.editMode && !host){
     S.editMode = false;
     document.getElementById("editbtn").classList.remove("on");
   }
@@ -1876,7 +1903,7 @@ function bindCell(b, id, onTap){
   var lpTimer=null, moved=false;
   b.addEventListener("pointerdown", function(){
     moved = false;
-    lpTimer = setTimeout(function(){ lpTimer=null; if(id) openEditor(id); }, 600);
+    lpTimer = setTimeout(function(){ lpTimer=null; if(id && isHost()) openEditor(id); }, 600);
   });
   b.addEventListener("pointermove", function(){ moved = true; });
   b.addEventListener("pointerup", function(){
@@ -1958,7 +1985,7 @@ function warn(key){
   renderCompose();
 }
 function cellTap(c){
-  if(S.editMode){ if(c.kind !== "mode") openEditor(c.id); return; }
+  if(S.editMode && isHost()){ if(c.kind !== "mode") openEditor(c.id); return; }
   if(!canCue()) return;
   S.warnKey = null;
   if(c.kind === "time"){
@@ -2040,6 +2067,7 @@ document.getElementById("clearbtn").addEventListener("click", function(){
   clearCompose(); renderGrid();
 });
 document.getElementById("editbtn").addEventListener("click", function(){
+  if(!isHost()) return;                        // cell editing is host-only
   S.editMode = !S.editMode;
   document.getElementById("editbtn").classList.toggle("on", S.editMode);
   document.getElementById("editbtn").textContent = t(S.editMode ? "edit_off" : "edit_on");
@@ -2051,6 +2079,7 @@ document.getElementById("editbtn").addEventListener("click", function(){
 var editorEl = document.getElementById("editor");
 var curEdKind = "act", curEdFx = "none", curEdDir = "up";
 function openEditor(id){
+  if(!isHost()) return;                        // cell editing is host-only
   var c = cellById(id);
   if(!c || c.kind === "mode") return;          // the two mode cells are fixed
   S.editId = id;
