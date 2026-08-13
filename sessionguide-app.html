@@ -354,7 +354,7 @@ button{background:none;border:none;cursor:pointer}
 /* slot 4 preview: what happens the instant the countdown / ramp lands. Display
    type, roughly a third of the cue cap (min(26vh,38vw)), so it reads from the
    back of the room; fitOverlayLabel() sees this height and shrinks the cue to fit. */
-.nextline{display:none;font-size:clamp(26px,min(8vh,12vw),96px);letter-spacing:.06em;color:var(--fg3);margin-top:14px;line-height:1.15}
+.nextline{display:none;font-size:clamp(52px,min(16vh,24vw),192px);letter-spacing:.06em;color:var(--fg3);margin-top:14px;line-height:1.15}
 .nextline.on{display:block}
 #countdots{display:flex;align-items:center;justify-content:center;gap:10px;min-height:30px;margin-top:14px;flex-wrap:wrap}
 #ovcount.last{background:#3a1512}
@@ -425,7 +425,7 @@ button{background:none;border:none;cursor:pointer}
   #countnum,#countlab{font-size:min(24vh,32vw)}
   /* the slot-4 line and the subtitle stay display type on short screens — only the
      cap and the gaps come down, so the stack still clears the dots / cancel rows */
-  .nextline{font-size:clamp(22px,min(7vh,10vw),64px);margin-top:10px}
+  .nextline{font-size:clamp(44px,min(14vh,20vw),128px);margin-top:10px}
   #countsub{font-size:clamp(22px,min(3.6vh,5vw),30px);margin-top:10px}
   #countdots{margin-top:10px;min-height:24px}
   #flashfrom{font-size:clamp(20px,min(3vh,4.2vw),28px);margin-top:10px}
@@ -2360,12 +2360,16 @@ function fitOverlayLabel(el, ov){
   /* the stack is vertically centred, so the free space splits evenly top and bottom:
      the block has to clear the pinned button on both sides to stay above it */
   var boxH = Math.max(OVLAB_MIN_FS*2, inner - reserve*2 - others);
-  var boxW = window.innerWidth*0.92;
+  shrinkToBox(el, cap, window.innerWidth*0.92, boxH);
+}
+/* binary-searches the largest font size at which el still fits boxW x boxH. The
+   stylesheet value is the cap — it is never exceeded, only walked down from. */
+function shrinkToBox(el, cap, boxW, boxH){
   function fitsAt(fs){
     el.style.fontSize = fs + "px";
     return el.scrollWidth <= boxW+1 && el.scrollHeight <= boxH+1;
   }
-  if(fitsAt(cap)){ el.style.fontSize = ""; return; }   // short cues keep the full cap
+  if(fitsAt(cap)){ el.style.fontSize = ""; return; }   // short text keeps the full cap
   var guess = cap * Math.min(boxW/Math.max(el.scrollWidth,1),
                              boxH/Math.max(el.scrollHeight,1));
   var lo = OVLAB_MIN_FS, hi = cap;
@@ -2375,6 +2379,58 @@ function fitOverlayLabel(el, ov){
     if(fitsAt(mid)) lo = mid; else hi = mid;
   }
   el.style.fontSize = lo + "px";
+}
+/* Slot 4 is display type, but it is a preview of what comes after the cue — so it
+   must never outrank the cue itself. Two rules, in this order:
+     1. it may take at most half of the height the cue and it have to split, so a
+        long "then <label>" cannot starve the cue down to OVLAB_MIN_FS;
+     2. after the cue has been fitted, it is clamped to the cue's own size, so the
+        type hierarchy holds even when the cue was shrunk by its own long text.
+   The share is measured against what is left after the fixed rows and the cancel
+   reserve, not the raw overlay height, so it degrades with the viewport. */
+var NEXTLINE_MAX_SHARE = 0.5;
+function nextLineBox(el, ov, labEl){
+  var ovs = getComputedStyle(ov);
+  var inner = ov.clientHeight - (parseFloat(ovs.paddingTop)||0) - (parseFloat(ovs.paddingBottom)||0);
+  var others = 0, reserve = 0, kids = ov.children;
+  for(var i=0;i<kids.length;i++){
+    var k = kids[i], ks = getComputedStyle(k);
+    if(ks.display === "none") continue;
+    if(ks.position === "absolute"){          // the cancel button is pinned to the bottom
+      reserve = Math.max(reserve, k.offsetHeight + (parseFloat(ks.bottom)||0) + 12);
+      continue;
+    }
+    if(k === el || k === labEl) continue;    // the two that share what is left
+    others += k.offsetHeight + (parseFloat(ks.marginTop)||0) + (parseFloat(ks.marginBottom)||0);
+  }
+  var els = getComputedStyle(el);
+  others += (parseFloat(els.marginTop)||0) + (parseFloat(els.marginBottom)||0);
+  return Math.max(OVLAB_MIN_FS*2, (inner - reserve*2 - others)*NEXTLINE_MAX_SHARE);
+}
+/* fits the slot-4 line and the cue together — always call this rather than
+   fitOverlayLabel() alone when the overlay has a .nextline */
+function fitOverlayPair(labEl, nxEl, ov){
+  if(!ov || !ov.classList.contains("show")) return;
+  var live = nxEl && nxEl.classList.contains("on") && nxEl.textContent;
+  if(!live){
+    if(nxEl) nxEl.style.fontSize = "";
+    fitOverlayLabel(labEl, ov);
+    return;
+  }
+  nxEl.style.fontSize = "";
+  var cap = parseFloat(getComputedStyle(nxEl).fontSize) || 0;
+  var boxW = window.innerWidth*0.92;
+  if(cap) shrinkToBox(nxEl, cap, boxW, nextLineBox(nxEl, ov, labEl));
+  fitOverlayLabel(labEl, ov);
+  /* rule 2: the preview never ends up larger than the cue it previews */
+  var labFs = parseFloat(getComputedStyle(labEl).fontSize) || 0;
+  var nxFs  = parseFloat(getComputedStyle(nxEl).fontSize) || 0;
+  if(labFs && nxFs > labFs){
+    /* set outright rather than re-running shrinkToBox: this size is strictly
+       smaller than the one that already fit, so it cannot overflow either axis */
+    nxEl.style.fontSize = labFs + "px";
+    fitOverlayLabel(labEl, ov);            // the cue gets the freed height back
+  }
 }
 
 /* "N bars later": snapped to the metronome bar grid in absolute beat units, so
@@ -2408,17 +2464,22 @@ function cancelCountdown(){
 document.getElementById("countcancel").addEventListener("click", cancelCountdown);
 /* shows "then <label>" while a countdown or a ramp is running; hidden when the
    cue has no slot 4 */
+/* returns true when the line actually changed, so the caller knows the cue below
+   has to be refitted against the new leftover height */
 function setNextLine(el, label){
-  if(!el) return;
+  if(!el) return false;
   var txt = label ? tf("next_up", {a:label}) : "";
-  if(el.textContent !== txt) el.textContent = txt;
+  if(el.textContent === txt) return false;
+  el.textContent = txt;
   el.classList.toggle("on", !!txt);
+  return true;
 }
 function hideCount(){
   var ov = document.getElementById("ovcount");
   ov.classList.remove("show","last","blink","intro");
   setNextLine(countnextEl, "");
   /* drop the fitted size with the text: the next cue measures itself from the cap */
+  if(countnextEl) countnextEl.style.fontSize = "";
   if(countlab){ countlab.textContent = ""; countlab.style.fontSize = ""; }
   lastCountBeat = -1;
   for(var i=0;i<countDotEls.length;i++) countDotEls[i].classList.remove("on");
@@ -2467,6 +2528,7 @@ function hideRamp(){
   var ov = document.getElementById("ovramp");
   ov.classList.remove("show","intro");
   setNextLine(rampnextEl, "");
+  if(rampnextEl) rampnextEl.style.fontSize = "";
   if(ramptxt){ ramptxt.textContent = ""; ramptxt.style.fontSize = ""; }
   document.getElementById("rampfill").style.width = "0%";
   lastRampBeat = -1;
@@ -2569,11 +2631,14 @@ function update(){
       ovcount.classList.add("show");
       countcancelBtn.classList.toggle("hidden", !canCue());
       if(countnum.textContent !== String(left)) countnum.textContent = left;
-      setNextLine(countnextEl, S.count.nextLabel);   // before the fit: it eats height too
+      var nChanged = setNextLine(countnextEl, S.count.nextLabel);
       var clab = S.count.label || "";
       /* refit only when the text actually changes — measuring every frame would
-         reflow the overlay 60 times a second */
-      if(countlab.textContent !== clab){ countlab.textContent = clab; fitOverlayLabel(countlab, ovcount); }
+         reflow the overlay 60 times a second. A changed slot-4 line changes the
+         box the cue gets too, so it forces a refit even when the cue is the same. */
+      var cChanged = countlab.textContent !== clab;
+      if(cChanged) countlab.textContent = clab;
+      if(cChanged || nChanged) fitOverlayPair(countlab, countnextEl, ovcount);
       /* countdown metronome dots — same timebase as the countdown itself, so
          they run even when the metronome transport is stopped */
       var cbeats = Math.floor(cRel);
@@ -2619,7 +2684,7 @@ function update(){
         dirTxt = t("bars_over", S.ramp.bars);
       }
       if(rampdirEl.textContent !== dirTxt) rampdirEl.textContent = dirTxt;
-      setNextLine(rampnextEl, S.ramp.nextLabel);
+      if(setNextLine(rampnextEl, S.ramp.nextLabel)) rFit = true;
       rampbar.classList.toggle("up", hasDir && !isDown);
       rampbar.classList.toggle("down", hasDir && isDown);
       var prog = clamp(rRel/rTotal, 0, 1);
@@ -2630,7 +2695,7 @@ function update(){
       if(rampfromEl.textContent !== (S.ramp.from||"")) rampfromEl.textContent = S.ramp.from||"";
       /* fitted last: the direction / bar / remaining / source rows are all in place
          by now, so the leftover height the cue text gets is the real one */
-      if(rFit) fitOverlayLabel(ramptxt, ovramp);
+      if(rFit) fitOverlayPair(ramptxt, rampnextEl, ovramp);
       var rbeats = Math.floor(rRel);
       if(rbeats !== lastRampBeat){
         lastRampBeat = rbeats;
@@ -2693,8 +2758,8 @@ document.addEventListener("gesturestart", function(e){ e.preventDefault(); });
 window.addEventListener("resize", function(){
   var ov = document.getElementById("ovflash");
   if(ov && ov.classList.contains("show")) fitFlashText();
-  fitOverlayLabel(countlab, ovcount);      // no-ops unless that overlay is showing
-  fitOverlayLabel(ramptxt, ovramp);
+  fitOverlayPair(countlab, countnextEl, ovcount);   // no-ops unless that overlay is showing
+  fitOverlayPair(ramptxt, rampnextEl, ovramp);
 });
 
 applyTheme();
