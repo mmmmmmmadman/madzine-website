@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- version: v260820 — 每次部署到 madzine.work 前更新此版本號與 #wordmark -->
+<!-- version: v260821 — 每次部署到 madzine.work 前更新此版本號與 #wordmark -->
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
@@ -35,7 +35,7 @@
 body.tl-on{--tl-h:calc(96px + env(safe-area-inset-bottom,0px))}
 /* edit mode grows the same variable instead of floating a panel: #app shrinks
    by exactly as much as the timeline gains, so the two never overlap */
-body.tl-on.tl-edit{--tl-h:calc(min(352px,58vh) + env(safe-area-inset-bottom,0px))}
+body.tl-on.tl-edit{--tl-h:calc(min(500px,66vh) + env(safe-area-inset-bottom,0px))}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;touch-action:manipulation}
 body{
@@ -370,7 +370,7 @@ body.tl-on #app{padding-bottom:10px}
      44 px transport row does not. Declared after the base rule at the top of
      the sheet, so it wins the cascade on equal specificity. */
   body.tl-on{--tl-h:calc(86px + env(safe-area-inset-bottom,0px))}
-  body.tl-on.tl-edit{--tl-h:calc(min(312px,58vh) + env(safe-area-inset-bottom,0px))}
+  body.tl-on.tl-edit{--tl-h:calc(min(440px,66vh) + env(safe-area-inset-bottom,0px))}
   #timeline{gap:4px}
   #tltrack{height:26px}
   #tlnow{font-size:20px}
@@ -502,9 +502,13 @@ body.tl-on #app{padding-bottom:10px}
           calc(env(safe-area-inset-bottom,0px) + 6px) calc(env(safe-area-inset-left,0px) + 12px);
 }
 body.tl-on #timeline{display:flex}
-#tlbar{display:flex;align-items:center;gap:8px;height:44px;flex:0 0 auto}
+/* four fixed claims and one elastic one. At 390 the row has 366 px to give:
+   clock 64 + transport 144 + edit 44 + three 6 px gaps = 270, and #tlcue takes
+   whatever is left (~96 px). The gap dropped 8 -> 6 and the edit button became
+   an icon purely to hand those pixels to the section label. */
+#tlbar{display:flex;align-items:center;gap:6px;height:44px;flex:0 0 auto}
 /* elapsed reads at the left end of the strip, as the running clock of the set */
-#tlclock{display:flex;flex-direction:column;justify-content:center;min-width:74px;flex:0 0 auto}
+#tlclock{display:flex;flex-direction:column;justify-content:center;min-width:64px;flex:0 0 auto}
 #tlnow{font-size:22px;line-height:1.1;letter-spacing:.02em;color:var(--acc)}
 #tltotal{font-size:14px;line-height:1.2;letter-spacing:.06em;color:var(--fg3)}
 #tltransport{display:flex;gap:6px;flex:0 0 auto}
@@ -517,12 +521,26 @@ body.tl-on #timeline{display:flex}
 .tl-btn.on{border-color:var(--acc)}
 .tl-btn.on svg{fill:var(--acc)}
 .tl-btn:active{background:var(--acc-dim)}
+/* the section label: what the playhead is standing in, in the player's own
+   words. Sits right of the transport because that is where the eye already is
+   after pressing start. display:block (not flex) so text-overflow can clip it —
+   one line only, since a second line would push the track down. */
+#tlcue{
+  flex:1 1 auto;min-width:0;height:44px;
+  border:1px solid var(--line);border-radius:8px;background:var(--panel);
+  padding:0 8px;font-size:15px;line-height:42px;letter-spacing:.02em;
+  color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+/* icon, not the word: the label to its left needs every pixel the row has */
 #tleditbtn{
-  flex:0 0 auto;margin-left:auto;min-height:44px;padding:0 14px;
-  font-size:16px;line-height:1.2;color:var(--fg2);
+  flex:0 0 auto;width:44px;height:44px;padding:0;
+  display:flex;align-items:center;justify-content:center;
   border:1px solid var(--line);border-radius:8px;background:var(--panel);
 }
-#tleditbtn.on{color:var(--acc);border-color:var(--acc)}
+#tleditbtn svg{width:18px;height:18px;display:block;fill:var(--fg2)}
+#tleditbtn.on{border-color:var(--acc)}
+#tleditbtn.on svg{fill:var(--acc)}
+#tleditbtn:active{background:var(--acc-dim)}
 /* the track: sections laid out by flex-grow, so width is proportional to the
    seconds each one holds and nothing has to be measured in pixels */
 #tltrack{
@@ -552,7 +570,21 @@ body.tl-edit #tledit{display:flex}
   flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;display:flex;flex-direction:column;gap:6px;
 }
-.tlrow{display:flex;align-items:center;gap:6px;flex:0 0 auto}
+/* two lines per section, not one: colour + seconds + delete already spend the
+   whole 366 px, so the name field gets a line of its own. A hairline instead of
+   a panel keeps every row in the same visual frame as the rest of the strip,
+   and the 26 px indent puts the field under the swatch it belongs to. */
+.tlrow{display:flex;flex-direction:column;gap:6px;flex:0 0 auto;
+  padding-bottom:6px;border-bottom:1px solid var(--line)}
+.tlrow:last-child{border-bottom:none;padding-bottom:0}
+.tlrow-top{display:flex;align-items:center;gap:6px}
+.tlrow-bot{display:flex;align-items:center;gap:6px;padding-left:26px}
+.tlname{
+  flex:1 1 auto;min-width:0;height:44px;padding:0 10px;
+  font-size:16px;line-height:1.2;color:var(--fg);
+  background:var(--panel);border:1px solid var(--line);border-radius:8px;
+}
+.tlname:focus{outline:none;border-color:var(--acc)}
 .tlrow .idx{flex:0 0 auto;width:20px;text-align:center;font-size:14px;color:var(--fg3);line-height:1.2}
 .tlsw{flex:0 0 auto;width:44px;height:44px;border:1px solid var(--line);border-radius:8px}
 .tlstep{
@@ -615,7 +647,7 @@ body.tl-edit #tledit{display:flex}
 
 <div id="app">
   <div id="topbar">
-    <div id="wordmark">SESSION GUIDE — MADZINE · v260820</div>
+    <div id="wordmark">SESSION GUIDE — MADZINE · v260821</div>
     <div id="topright">
       <div id="connstate"></div>
       <button class="hue-btn" id="huebtn">HUE</button>
@@ -763,7 +795,10 @@ body.tl-edit #tledit{display:flex}
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h3v16H5z"/><path d="M21 4L9 12l12 8z"/></svg>
       </button>
     </div>
-    <button id="tleditbtn"></button>
+    <div id="tlcue"></div>
+    <button id="tleditbtn">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+    </button>
   </div>
   <div id="tltrack">
     <div id="tlsegs"></div>
@@ -895,7 +930,8 @@ var I18N = {
   tl_edit:"編輯",              tl_edit_done:"完成",
   tl_add:"新增區段",           tl_empty:"還沒有區段",
   tl_color:"顏色",
-  tl_longer:"加長",            tl_shorter:"縮短"
+  tl_longer:"加長",            tl_shorter:"縮短",
+  tl_name_ph:"區段名稱（選填）"
 },
 "en":{
   brand_sub:"LIVE CUE SYSTEM",
@@ -971,7 +1007,8 @@ var I18N = {
   tl_edit:"Edit",              tl_edit_done:"Done",
   tl_add:"Add Section",        tl_empty:"No sections yet",
   tl_color:"Color",
-  tl_longer:"Longer",          tl_shorter:"Shorter"
+  tl_longer:"Longer",          tl_shorter:"Shorter",
+  tl_name_ph:"Section name (optional)"
 },
 "ja":{
   brand_sub:"ライブキューシステム",
@@ -1047,7 +1084,8 @@ var I18N = {
   tl_edit:"編集",               tl_edit_done:"完了",
   tl_add:"セクションを追加",     tl_empty:"セクションがありません",
   tl_color:"色",
-  tl_longer:"長く",             tl_shorter:"短く"
+  tl_longer:"長く",             tl_shorter:"短く",
+  tl_name_ph:"セクション名（任意）"
 }
 };
 
@@ -1310,10 +1348,13 @@ huepop.addEventListener("pointerdown", function(e){ e.stopPropagation(); });
    clock. The SECTIONS themselves are per-device (localStorage, like sg_cells)
    — a follower may keep a different set list without touching anybody else.
    ========================================================= */
-var TL_VER    = 2;          // v1 stored a palette index, v2 stores an absolute hue
+var TL_VER    = 3;          // v1 palette index -> v2 absolute hue -> v3 adds a name
 var TL_COLORS = 8;          // v1 palette size — kept only to migrate old indices
 var TL_MIN    = 5;          // seconds
 var TL_MAX    = 3600;
+/* a name is a landmark, not a description: it has to survive being read off a
+   ~96 px strip mid-set, so anything past this would only ever be an ellipsis */
+var TL_NAME_MAX = 24;
 
 var tlsegsEl  = document.getElementById("tlsegs");
 var tltrackEl = document.getElementById("tltrack");
@@ -1326,6 +1367,7 @@ var tlplayBtn = document.getElementById("tlplay");
 var tlstopBtn = document.getElementById("tlstop");
 var tlrewBtn  = document.getElementById("tlrew");
 var tleditBtn = document.getElementById("tleditbtn");
+var tlcueEl   = document.getElementById("tlcue");
 
 /* a section owns an ABSOLUTE hue, picked on the same HUE wheel the theme uses.
    It used to store a palette index so the strip turned with the theme, but the
@@ -1333,6 +1375,11 @@ var tleditBtn = document.getElementById("tleditbtn");
    stay green after somebody retints the app. Saturation is still the global
    satMul, so the strip stays in the same colour family as everything else. */
 function frac(h){ return ((h % 1) + 1) % 1; }
+/* one gate for every path a name can arrive on — typed, loaded or migrated —
+   so a stored payload can never be longer than what the field allows */
+function tlName(v){
+  return (typeof v === "string") ? v.slice(0, TL_NAME_MAX) : "";
+}
 var tlMigrated = false;     // set by loadTimeline when a v1 payload was read
 function tlColor(h, b){
   return hsb(h, clamp(BASE_S*satMul, 0, 1), b === undefined ? 0.92 : b);
@@ -1341,8 +1388,10 @@ function defaultTimeline(){
   /* four blocks of a plausible length, so the strip means something on first
      run and the edit rows have something to demonstrate on. A quarter turn
      apart off the current theme hue: four sections nobody can confuse. */
+  /* no names on the defaults: a set list nobody wrote has no section names, and
+     inventing "Section 1" would put words in the room's mouth */
   return [60,120,120,60].map(function(sec, i){
-    return {id:"tl"+i, sec:sec, h:frac(hue + i*0.25)};
+    return {id:"tl"+i, sec:sec, h:frac(hue + i*0.25), n:""};
   });
 }
 function loadTimeline(){
@@ -1364,16 +1413,19 @@ function loadTimeline(){
       h = hue + ((((parseInt(s.ci,10) || 0) % TL_COLORS) + TL_COLORS) % TL_COLORS)/TL_COLORS;
       tlMigrated = true;
     }
+    /* v1/v2 rows carry no n at all: an absent name is an empty one, so the
+       upgrade is silent — seconds and hue are read exactly as before */
     out.push({id:"tl"+i+"_"+Math.random().toString(36).slice(2,7),
               sec:clamp(parseInt(s.sec,10) || 60, TL_MIN, TL_MAX),
-              h:frac(h)});
+              h:frac(h),
+              n:tlName(s.n)});
   });
   return out.length ? out : defaultTimeline();
 }
 function saveTimeline(){
   try{
     localStorage.setItem("sg_timeline", JSON.stringify({v:TL_VER,
-      segs:S.tl.segs.map(function(s){ return {sec:s.sec, h:s.h}; })}));
+      segs:S.tl.segs.map(function(s){ return {sec:s.sec, h:s.h, n:s.n||""}; })}));
   }catch(err){}
 }
 function tlTotalMs(){
@@ -1422,6 +1474,9 @@ function renderTlSegs(){
   });
   tlemptyEl.classList.toggle("hidden", S.tl.segs.length > 0);
   tltotalEl.textContent = fmtClock(tlTotalMs());
+  /* forced, not compared: deleting a section can leave the playhead on the same
+     index while the section under it is a different one entirely */
+  renderTlCue(true);
 }
 /* hue drag runs at pointer rate, so recolouring must not rebuild the DOM — and
    rebuilding would also drop the swatch the popup is anchored to */
@@ -1433,10 +1488,43 @@ function tlRepaint(){
   var sw = tllistEl.querySelectorAll(".tlsw");
   for(var j=0;j<sw.length && j<S.tl.segs.length;j++)
     sw[j].style.background = tlColor(S.tl.segs[j].h);
+  renderTlCue(true);          // the label is tinted by the section it names
 }
 function renderTlTransport(){
   tlplayBtn.classList.toggle("on", !!S.tl.running);
-  tleditBtn.textContent = t(document.body.classList.contains("tl-edit") ? "tl_edit_done" : "tl_edit");
+  /* the edit button carries an icon, so its two states live in the outline and
+     in aria-label — writing textContent here would delete the SVG */
+  var ed = document.body.classList.contains("tl-edit");
+  tleditBtn.classList.toggle("on", ed);
+  var s = t(ed ? "tl_edit_done" : "tl_edit");
+  tleditBtn.setAttribute("aria-label", s);
+  tleditBtn.setAttribute("title", s);
+}
+/* which section the playhead is standing in. The end of the set belongs to the
+   last section rather than to nothing, so the label does not blank out on the
+   final frame of a run. */
+function tlSegIndexAt(ms){
+  var segs = S.tl.segs, cum = 0;
+  for(var i=0;i<segs.length;i++){
+    cum += segs[i].sec*1000;
+    if(ms < cum) return i;
+  }
+  return segs.length ? segs.length-1 : -1;
+}
+var tlCueIdx = -2;
+/* called every frame, so it costs an index compare unless the playhead actually
+   crossed a boundary. force is for the cases where the index did not move but
+   the section did change under it: a rename, a hue drag, a rebuilt list. */
+function renderTlCue(force){
+  if(!S || !S.tl) return;
+  var i   = tlSegIndexAt(tlElapsed());
+  if(!force && i === tlCueIdx) return;
+  tlCueIdx = i;
+  var seg = (i >= 0) ? S.tl.segs[i] : null;
+  /* an unnamed section shows nothing at all. A placeholder or an auto number
+     would be the app talking, and this strip only ever repeats the room. */
+  tlcueEl.textContent  = seg ? (seg.n || "") : "";
+  tlcueEl.style.color  = seg ? tlColor(seg.h) : "";
 }
 /* called every frame: only the two things that actually move are touched */
 var tlLastNow = "", tlLastPos = -1;
@@ -1451,6 +1539,7 @@ function tlTick(){
     tlLastPos = pos;
     tlheadEl.style.left = (pos*100).toFixed(3) + "%";
   }
+  renderTlCue(false);
   /* the host closes the run off at the end so the broadcast state matches what
      everybody already sees; followers just stop moving because of the clamp */
   if(S.tl.running && isHost() && total > 0 && el >= total) tlSet(false, total);
@@ -1543,9 +1632,35 @@ function tlRow(seg, i){
     S.tl.segs = S.tl.segs.filter(function(x){ return x !== seg; });
     saveTimeline(); renderTlSegs(); renderTlEdit(); tlTick();
   });
-  row.appendChild(idx); row.appendChild(sw);
-  row.appendChild(minus); row.appendChild(val); row.appendChild(plus);
-  row.appendChild(del);
+  /* the name field. Typing must not rebuild the list — that would blur the
+     field on every keystroke — so input only writes the model and the strip
+     label, and never calls renderTlEdit. */
+  var name = document.createElement("input");
+  name.className = "tlname";
+  name.type = "text";
+  name.setAttribute("autocomplete","off");
+  name.setAttribute("autocorrect","off");
+  name.setAttribute("spellcheck","false");
+  name.maxLength = TL_NAME_MAX;
+  name.setAttribute("data-i18n-ph", "tl_name_ph");
+  name.placeholder = t("tl_name_ph");
+  name.value = seg.n || "";
+  name.addEventListener("input", function(){
+    var v = tlName(name.value);
+    if(name.value !== v) name.value = v;   // paste can beat maxLength
+    seg.n = v;
+    saveTimeline();
+    renderTlCue(true);
+  });
+  var top = document.createElement("div");
+  top.className = "tlrow-top";
+  top.appendChild(idx); top.appendChild(sw);
+  top.appendChild(minus); top.appendChild(val); top.appendChild(plus);
+  top.appendChild(del);
+  var bot = document.createElement("div");
+  bot.className = "tlrow-bot";
+  bot.appendChild(name);
+  row.appendChild(top); row.appendChild(bot);
   return row;
 }
 function renderTlEdit(){
@@ -1558,14 +1673,14 @@ document.getElementById("tladd").addEventListener("click", function(){
   /* a new section lands an eighth of a turn on from the last one, so it is
      visibly a new block before anybody opens the wheel on it */
   var last = S.tl.segs.length ? S.tl.segs[S.tl.segs.length-1].h : hue;
-  S.tl.segs.push({id:"tl"+Date.now(), sec:60, h:frac(last + 1/TL_COLORS)});
+  S.tl.segs.push({id:"tl"+Date.now(), sec:60, h:frac(last + 1/TL_COLORS), n:""});
   saveTimeline(); renderTlSegs(); renderTlEdit(); tlTick();
 });
 function renderTimeline(){
   renderTlSegs();
   renderTlTransport();
   if(document.body.classList.contains("tl-edit")) renderTlEdit();
-  tlLastNow = ""; tlLastPos = -1;      // force the next tick to write both
+  tlLastNow = ""; tlLastPos = -1; tlCueIdx = -2;   // force the next tick to write all three
   tlTick();
 }
 
