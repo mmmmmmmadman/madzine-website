@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- version: v260817 — 每次部署到 madzine.work 前更新此版本號與 #wordmark -->
+<!-- version: v260818 — 每次部署到 madzine.work 前更新此版本號與 #wordmark -->
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
@@ -508,7 +508,7 @@ button{background:none;border:none;cursor:pointer}
 
 <div id="app">
   <div id="topbar">
-    <div id="wordmark">SESSION GUIDE — MADZINE · v260817</div>
+    <div id="wordmark">SESSION GUIDE — MADZINE · v260818</div>
     <div id="topright">
       <div id="connstate"></div>
       <button class="hue-btn" id="huebtn">HUE</button>
@@ -641,7 +641,6 @@ button{background:none;border:none;cursor:pointer}
 <div class="overlay" id="ovcount">
   <div id="countnum">4</div>
   <div id="countlab"></div>
-  <div id="countnext" class="nextline"></div>
   <div id="countdots"></div>
   <div id="countsub" data-i18n="count_sub"></div>
   <button class="cancel hidden" id="countcancel" data-i18n="count_cancel"></button>
@@ -741,6 +740,8 @@ var I18N = {
   hint_pick_act:"先選一個動作格，再按開始",
   warn_need_bars:"「逐漸」需要先選小節數",
   warn_need_tempo_dir:"速度要先選「快」或「慢」",
+  warn_next_gradual_only:"第二個動作只能接在「N 小節內逐漸」後面",
+  warn_locked_gradual:"已經有第二個動作了，要改時間請先清空",
   tempo_host_only:"速度變化只有房主可以發送",
   bars_over:"{n} 小節內",
   add_time:"新增時間格",       add_act:"新增動作格",
@@ -808,6 +809,8 @@ var I18N = {
   hint_pick_act:"Pick an action, then press Start",
   warn_need_bars:"Gradually needs a bar count",
   warn_need_tempo_dir:"Pick Fast or Slow before the amount",
+  warn_next_gradual_only:"A second action only follows \"gradually over N bars\"",
+  warn_locked_gradual:"A second action is already set — clear to change the timing",
   tempo_host_only:"Tempo changes can only be sent by the host",
   bars_over:"OVER {n} BARS",
   add_time:"Add Bars Cell",    add_act:"Add Action",
@@ -875,6 +878,8 @@ var I18N = {
   hint_pick_act:"アクションを選んでからスタート",
   warn_need_bars:"「徐々に」には小節数が必要です",
   warn_need_tempo_dir:"テンポは先に「速く」か「遅く」を選びます",
+  warn_next_gradual_only:"2つ目のアクションは「N 小節かけて徐々に」の後にのみ置けます",
+  warn_locked_gradual:"2つ目のアクションが設定済みです。時間を変えるにはクリアしてください",
   tempo_host_only:"テンポ変更はホストのみ送信できます",
   bars_over:"{n} 小節かけて",
   add_time:"小節セルを追加",    add_act:"アクションセルを追加",
@@ -1680,11 +1685,8 @@ function onHostData(m){
   if(m.t==="flash"){ startFlash(m.text, m.dur, m.from); return; }
   if(m.t==="count"){
     S.ramp = null; hideRamp(); endFlash();
-    /* no `next` here on purpose: slot 4 is executed by the host alone,
-       a follower only ever displays nextLabel */
     S.count = {startAt:m.startAt, startBeat:m.startBeat, bars:m.bars,
-               label:m.label||"", from:m.from||"", fx:m.fx||null,
-               nextLabel:String(m.nextLabel||"").slice(0,24)};
+               label:m.label||"", from:m.from||"", fx:m.fx||null};
     return;
   }
   if(m.t==="countcancel"){ S.count = null; hideCount(); return; }
@@ -2136,10 +2138,13 @@ function cellTap(c){
   if(S.editMode && isHost()){ if(isUserCell(c)) startCellEdit(c.id); return; }
   if(!canCue()) return;
   S.warnKey = null;
-  if(c.kind === "time"){
-    S.cmp.timeId = (S.cmp.timeId === c.id) ? null : c.id;      // tap again = cancel
-  }else if(c.kind === "mode"){
-    S.cmp.modeId = (S.cmp.modeId === c.id) ? null : c.id;
+  if(c.kind === "time" || c.kind === "mode"){
+    /* a locked second action only exists under "gradual over N bars"; letting
+       either of those two slots change now would strand it in a combination the
+       engine cannot run, so they freeze until the sentence is cleared */
+    if(S.cmp.lockedActId){ warn("warn_locked_gradual"); return; }
+    if(c.kind === "time") S.cmp.timeId = (S.cmp.timeId === c.id) ? null : c.id;
+    else                  S.cmp.modeId = (S.cmp.modeId === c.id) ? null : c.id;
   }else if(c.kind === "tdir"){
     S.cmp.tdirId = (S.cmp.tdirId === c.id) ? null : c.id;
   }else{
@@ -2152,12 +2157,21 @@ function cellTap(c){
 }
 /* ---------- the second action ----------
    The engine takes exactly two segments (cmd + cmd.next), so the button locks
-   the round in progress and is refused once a segment is already locked. */
+   the round in progress and is refused once a segment is already locked.
+
+   A second action is only offered under "gradual over N bars". The other two
+   shapes cannot carry one: the first segment is an instant event and the second
+   fires in the same frame, so both cues race for the same full-screen flash and
+   only the second one is ever seen. A gradual first segment is a stretch of time
+   with the second action landing on its end — the two never collide. */
 function canAddNext(){ return !!S.cmp.actId && !S.cmp.lockedActId; }
 function addNextAct(){
   if(!canAddNext()) return;
   var a = cmpAct();
   if(a && a.fixed === "tempo" && !S.cmp.tdirId){ warn("warn_need_tempo_dir"); return; }
+  /* the button stays pressable so this can explain itself; a dead button would
+     leave the reason invisible */
+  if(!isGradual() || !S.cmp.timeId){ warn("warn_next_gradual_only"); return; }
   S.cmp.lockedActId  = S.cmp.actId;
   S.cmp.lockedTdirId = S.cmp.tdirId;
   S.cmp.actId = null; S.cmp.tdirId = null;      // a fresh round picks segment 2
@@ -2234,6 +2248,7 @@ function sendSentence(){
   if(S.cmp.lockedActId && !a2){ warn("sent_pending"); return; }
   var tc = cmpTime();
   if(isGradual() && !tc){ warn("warn_need_bars"); return; }   // gradual needs a duration
+  if(a2 && (!isGradual() || !tc)){ warn("warn_next_gradual_only"); return; }
   /* each segment answers for its own direction */
   if(a1.fixed === "tempo" && !d1){ warn("warn_need_tempo_dir"); return; }
   if(a2 && a2.fixed === "tempo" && !d2){ warn("warn_need_tempo_dir"); return; }
@@ -2303,7 +2318,10 @@ function sanitizeCmd(c){
   var out = sanitizeAct(c);
   out.mode = (c.mode==="gradual" || c.mode==="after") ? c.mode : "now";
   out.n    = clamp(parseInt(c.n,10) || 4, 1, 64);
-  out.next = c.next ? sanitizeAct(c.next) : null;   // slot 4 carries no time
+  /* slot 4 carries no time of its own, and only a gradual first segment can hold
+     one at all — an older build or a tampered payload gets it stripped here
+     rather than reaching the two-cues-in-one-frame path */
+  out.next = (out.mode === "gradual" && c.next) ? sanitizeAct(c.next) : null;
   return out;
 }
 /* returns false when refused, true when accepted */
@@ -2318,8 +2336,7 @@ function runCmd(cmd, from, remote){
   var src = from || myName();
   if(cmd.mode === "gradual") return startGradual(cmd, src);
   if(cmd.mode === "after")   return startCountdown(cmd, src);
-  fireNow(cmd, src);
-  if(cmd.next) fireNow(cmd.next, src);           // no time in front of it: right away
+  fireNow(cmd, src);                             // next is null unless mode is gradual
   return true;
 }
 function tempoTarget(ratio, base){
@@ -2520,13 +2537,12 @@ function startCountdown(cmd, from){
   var fx = (cmd.fx === "tempo") ? {type:"tempo", dir:cmd.dir, ratio:cmd.ratio} : null;
   var src = from || myName();
   S.ramp = null; hideRamp(); endFlash();           // countdown and gradual are exclusive
-  /* next is the executable slot-4 action and stays on the host; nextLabel is
-     the display-only copy every device shows while the countdown runs */
-  var nlab = cmd.next ? (cmd.next.label || "") : "";
+  /* no slot 4 here: a second action only exists under "gradual", so a countdown
+     never has one to preview */
   S.count = {startAt:t0, startBeat:startBeat, bars:cmd.n, label:cmd.label,
-             from:src, fx:fx, next:cmd.next || null, nextLabel:nlab};
+             from:src, fx:fx};
   send({t:"count", startAt:t0, startBeat:startBeat, bars:cmd.n,
-        label:cmd.label, from:src, fx:fx, nextLabel:nlab});
+        label:cmd.label, from:src, fx:fx});
   return true;
 }
 function cancelCountdown(){
@@ -2534,9 +2550,8 @@ function cancelCountdown(){
   S.count = null; hideCount(); send({t:"countcancel"});
 }
 document.getElementById("countcancel").addEventListener("click", cancelCountdown);
-/* shows "then <label>" while a countdown or a ramp is running; hidden when the
-   cue has no slot 4 */
-/* returns true when the line actually changed, so the caller knows the cue below
+/* shows "then <label>" while a ramp is running; hidden when it has no slot 4.
+   Returns true when the line actually changed, so the caller knows the cue below
    has to be refitted against the new leftover height */
 function setNextLine(el, label){
   if(!el) return false;
@@ -2549,9 +2564,7 @@ function setNextLine(el, label){
 function hideCount(){
   var ov = document.getElementById("ovcount");
   ov.classList.remove("show","last","blink","intro");
-  setNextLine(countnextEl, "");
   /* drop the fitted size with the text: the next cue measures itself from the cap */
-  if(countnextEl) countnextEl.style.fontSize = "";
   if(countlab){ countlab.textContent = ""; countlab.style.fontSize = ""; }
   lastCountBeat = -1;
   for(var i=0;i<countDotEls.length;i++) countDotEls[i].classList.remove("on");
@@ -2614,7 +2627,6 @@ var lastBeat = -1, nextClickBeat = -1, lastCountBeat = -1, lastRampBeat = -1;
 var ovcount = document.getElementById("ovcount");
 var countnum = document.getElementById("countnum");
 var countlab = document.getElementById("countlab");
-var countnextEl = document.getElementById("countnext");
 var countcancelBtn = document.getElementById("countcancel");
 var ovramp = document.getElementById("ovramp");
 var ramptxt = document.getElementById("ramptxt");
@@ -2684,14 +2696,11 @@ function update(){
     var remB = cTotal - cRel;
     if(remB <= 0){
       var lbl = S.count.label, lfrom = S.count.from || "", cfx = S.count.fx;
-      var cnext = S.count.next || null;
       S.count = null; hideCount();
       if(cfx && cfx.type === "tempo" && isHost()){
         applyTempoJump(tempoTarget(cfx.ratio, Math.round(bpmAt(nt))));
       }
       startFlash(lbl || t("flash_default"), clamp(Math.round(barDur()*2),1500,6000), lfrom);
-      /* slot 4 runs the instant the first segment lands; the host owns it */
-      if(isHost() && cnext) fireNow(cnext, lfrom);
     }else{
       /* the countdown is snapped to the next bar line, so during the pre-roll
          fraction remB is slightly above the full length; clamp so a 4-bar
@@ -2703,14 +2712,13 @@ function update(){
       ovcount.classList.add("show");
       countcancelBtn.classList.toggle("hidden", !canCue());
       if(countnum.textContent !== String(left)) countnum.textContent = left;
-      var nChanged = setNextLine(countnextEl, S.count.nextLabel);
       var clab = S.count.label || "";
       /* refit only when the text actually changes — measuring every frame would
-         reflow the overlay 60 times a second. A changed slot-4 line changes the
-         box the cue gets too, so it forces a refit even when the cue is the same. */
-      var cChanged = countlab.textContent !== clab;
-      if(cChanged) countlab.textContent = clab;
-      if(cChanged || nChanged) fitOverlayPair(countlab, countnextEl, ovcount);
+         reflow the overlay 60 times a second */
+      if(countlab.textContent !== clab){
+        countlab.textContent = clab;
+        fitOverlayLabel(countlab, ovcount);
+      }
       /* countdown metronome dots — same timebase as the countdown itself, so
          they run even when the metronome transport is stopped */
       var cbeats = Math.floor(cRel);
@@ -2827,8 +2835,8 @@ document.addEventListener("gesturestart", function(e){ e.preventDefault(); });
 window.addEventListener("resize", function(){
   var ov = document.getElementById("ovflash");
   if(ov && ov.classList.contains("show")) fitFlashText();
-  fitOverlayPair(countlab, countnextEl, ovcount);   // no-ops unless that overlay is showing
-  fitOverlayPair(ramptxt, rampnextEl, ovramp);
+  if(ovcount.classList.contains("show")) fitOverlayLabel(countlab, ovcount);
+  fitOverlayPair(ramptxt, rampnextEl, ovramp);      // no-ops unless that overlay is showing
 });
 
 applyTheme();
