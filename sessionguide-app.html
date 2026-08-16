@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- version: v260818 — 每次部署到 madzine.work 前更新此版本號與 #wordmark -->
+<!-- version: v260820 — 每次部署到 madzine.work 前更新此版本號與 #wordmark -->
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
@@ -26,7 +26,16 @@
   --font:"Barlow Condensed","Noto Sans TC","Noto Sans JP","PingFang TC",-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif;
   --gap:8px;
   --pad:10px;
+  /* height the pinned timeline takes off the bottom of the viewport. Every
+     full-height box (#app and the three overlays) subtracts it, so the timeline
+     is the only thing that ever owns that strip — nothing has to be layered
+     over it and nothing can cover it. Zero until a room is open. */
+  --tl-h:0px;
 }
+body.tl-on{--tl-h:calc(96px + env(safe-area-inset-bottom,0px))}
+/* edit mode grows the same variable instead of floating a panel: #app shrinks
+   by exactly as much as the timeline gains, so the two never overlap */
+body.tl-on.tl-edit{--tl-h:calc(min(352px,58vh) + env(safe-area-inset-bottom,0px))}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;touch-action:manipulation}
 body{
@@ -48,10 +57,13 @@ button{background:none;border:none;cursor:pointer}
   /* dynamic viewport height: iOS Safari shrinks the visible area when the
      toolbars are shown, and position:fixed alone reports the LARGE viewport. */
   position:fixed;left:0;right:0;top:0;
-  height:100vh;height:100svh;height:100dvh;
+  height:calc(100vh - var(--tl-h));height:calc(100svh - var(--tl-h));height:calc(100dvh - var(--tl-h));
   display:flex;flex-direction:column;
   padding:calc(env(safe-area-inset-top,0px) + 8px) calc(env(safe-area-inset-right,0px) + 12px) calc(env(safe-area-inset-bottom,0px) + 10px) calc(env(safe-area-inset-left,0px) + 12px);
 }
+/* the timeline already carries the home-indicator inset, so #app must not pay
+   for it a second time once the strip is up */
+body.tl-on #app{padding-bottom:10px}
 
 /* ---------- top bar ---------- */
 #topbar{
@@ -354,6 +366,14 @@ button{background:none;border:none;cursor:pointer}
      to come *after* the base overlay rules or they lose the cascade on equal
      specificity and silently do nothing. */
   :root{--pad:8px}
+  /* the strip gives back 10 px on short screens: the track loses height, the
+     44 px transport row does not. Declared after the base rule at the top of
+     the sheet, so it wins the cascade on equal specificity. */
+  body.tl-on{--tl-h:calc(86px + env(safe-area-inset-bottom,0px))}
+  body.tl-on.tl-edit{--tl-h:calc(min(312px,58vh) + env(safe-area-inset-bottom,0px))}
+  #timeline{gap:4px}
+  #tltrack{height:26px}
+  #tlnow{font-size:20px}
 }
 
 /* follower panel */
@@ -362,9 +382,12 @@ button{background:none;border:none;cursor:pointer}
 #folsub{font-size:17px;color:var(--fg2);line-height:1.3;text-align:center}
 
 /* ---------- overlays ---------- */
+/* an overlay stops where the timeline starts: the strip must stay readable while
+   a cue fills the screen. fitOverlayLabel() / fitFlashText() measure the box live,
+   so the cue type follows the shorter height on its own. */
 .overlay{
   position:fixed;left:0;right:0;top:0;
-  height:100vh;height:100svh;height:100dvh;
+  height:calc(100vh - var(--tl-h));height:calc(100svh - var(--tl-h));height:calc(100dvh - var(--tl-h));
   z-index:40;display:none;
   flex-direction:column;align-items:center;justify-content:center;
   padding:24px;text-align:center;background:var(--bg);
@@ -465,6 +488,90 @@ button{background:none;border:none;cursor:pointer}
   #rampfrom{margin-top:8px}
 }
 
+/* ---------- global timeline ----------
+   Pinned to the bottom of the viewport, above every overlay (z 45 > 40) and
+   outside #mainscroll, so it is visible and in the same place whatever the
+   screen is doing. It is deliberately more compact than #composebar (96 px vs
+   146 px): the cell grid above it is what loses the room. */
+#timeline{
+  position:fixed;left:0;right:0;bottom:0;z-index:45;
+  height:var(--tl-h);
+  display:none;flex-direction:column;gap:6px;
+  background:var(--bg-elev);border-top:1px solid var(--line);
+  padding:6px calc(env(safe-area-inset-right,0px) + 12px)
+          calc(env(safe-area-inset-bottom,0px) + 6px) calc(env(safe-area-inset-left,0px) + 12px);
+}
+body.tl-on #timeline{display:flex}
+#tlbar{display:flex;align-items:center;gap:8px;height:44px;flex:0 0 auto}
+/* elapsed reads at the left end of the strip, as the running clock of the set */
+#tlclock{display:flex;flex-direction:column;justify-content:center;min-width:74px;flex:0 0 auto}
+#tlnow{font-size:22px;line-height:1.1;letter-spacing:.02em;color:var(--acc)}
+#tltotal{font-size:14px;line-height:1.2;letter-spacing:.06em;color:var(--fg3)}
+#tltransport{display:flex;gap:6px;flex:0 0 auto}
+.tl-btn{
+  width:44px;height:44px;flex:0 0 auto;
+  border:1px solid var(--line);border-radius:8px;background:var(--panel);
+  display:flex;align-items:center;justify-content:center;
+}
+.tl-btn svg{width:18px;height:18px;display:block;fill:var(--fg2)}
+.tl-btn.on{border-color:var(--acc)}
+.tl-btn.on svg{fill:var(--acc)}
+.tl-btn:active{background:var(--acc-dim)}
+#tleditbtn{
+  flex:0 0 auto;margin-left:auto;min-height:44px;padding:0 14px;
+  font-size:16px;line-height:1.2;color:var(--fg2);
+  border:1px solid var(--line);border-radius:8px;background:var(--panel);
+}
+#tleditbtn.on{color:var(--acc);border-color:var(--acc)}
+/* the track: sections laid out by flex-grow, so width is proportional to the
+   seconds each one holds and nothing has to be measured in pixels */
+#tltrack{
+  position:relative;flex:0 0 auto;height:34px;
+  border:1px solid var(--line);border-radius:6px;overflow:hidden;
+  background:var(--panel);touch-action:none;
+}
+#tlsegs{position:absolute;inset:0;display:flex}
+.tlseg{height:100%;min-width:2px;border-right:1px solid rgba(0,0,0,.5)}
+.tlseg:last-child{border-right:none}
+#tlempty{
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-size:14px;color:var(--fg3);letter-spacing:.06em;pointer-events:none;
+}
+#tlhead{position:absolute;top:0;bottom:0;left:0;width:2px;margin-left:-1px;background:var(--fg)}
+#tlhead::after{
+  content:"";position:absolute;left:-8px;top:0;width:18px;height:8px;
+  background:var(--fg);border-radius:0 0 3px 3px;
+}
+/* read-only: a device that is not the host follows the host playhead and owns
+   no transport, exactly as it owns no BPM */
+body.tl-ro #tltransport,body.tl-ro #tleditbtn{display:none}
+/* ---------- timeline edit mode ---------- */
+#tledit{display:none;flex:1 1 auto;min-height:0;flex-direction:column;gap:6px}
+body.tl-edit #tledit{display:flex}
+#tllist{
+  flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;display:flex;flex-direction:column;gap:6px;
+}
+.tlrow{display:flex;align-items:center;gap:6px;flex:0 0 auto}
+.tlrow .idx{flex:0 0 auto;width:20px;text-align:center;font-size:14px;color:var(--fg3);line-height:1.2}
+.tlsw{flex:0 0 auto;width:44px;height:44px;border:1px solid var(--line);border-radius:8px}
+.tlstep{
+  flex:0 0 auto;width:44px;height:44px;
+  border:1px solid var(--line);border-radius:8px;background:var(--panel);
+  font-size:22px;color:var(--fg);line-height:1;
+}
+.tlstep:active{background:var(--acc-dim)}
+.tlsec{flex:1 1 auto;min-width:0;text-align:center;font-size:18px;color:var(--fg);line-height:1.2}
+.tldel{
+  flex:0 0 auto;min-height:44px;padding:0 12px;
+  font-size:16px;line-height:1.2;color:var(--warn);
+  border:1px solid #4a2320;border-radius:8px;background:var(--panel);
+}
+#tladd{
+  flex:0 0 auto;min-height:44px;border:1px dashed var(--acc-dim);border-radius:8px;
+  background:var(--panel);color:var(--acc);font-size:17px;line-height:1.2;
+}
+
 /* ---------- modal / hue ---------- */
 #scrim{position:fixed;inset:0;z-index:50;display:none;background:rgba(0,0,0,.6)}
 #scrim.show{display:block}
@@ -508,7 +615,7 @@ button{background:none;border:none;cursor:pointer}
 
 <div id="app">
   <div id="topbar">
-    <div id="wordmark">SESSION GUIDE — MADZINE · v260818</div>
+    <div id="wordmark">SESSION GUIDE — MADZINE · v260820</div>
     <div id="topright">
       <div id="connstate"></div>
       <button class="hue-btn" id="huebtn">HUE</button>
@@ -637,6 +744,38 @@ button{background:none;border:none;cursor:pointer}
   </div>
 </div>
 
+<!-- GLOBAL TIMELINE — outside #app so no screen or overlay can scroll it away.
+     Icons are inline SVG: no glyph font, no unicode symbol. -->
+<div id="timeline">
+  <div id="tlbar">
+    <div id="tlclock">
+      <div id="tlnow">0:00</div>
+      <div id="tltotal">0:00</div>
+    </div>
+    <div id="tltransport">
+      <button class="tl-btn" id="tlplay" data-i18n-aria="tl_start">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l13 8-13 8z"/></svg>
+      </button>
+      <button class="tl-btn" id="tlstop" data-i18n-aria="tl_stop">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="1"/></svg>
+      </button>
+      <button class="tl-btn" id="tlrew" data-i18n-aria="tl_rewind">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h3v16H5z"/><path d="M21 4L9 12l12 8z"/></svg>
+      </button>
+    </div>
+    <button id="tleditbtn"></button>
+  </div>
+  <div id="tltrack">
+    <div id="tlsegs"></div>
+    <div id="tlempty" data-i18n="tl_empty"></div>
+    <div id="tlhead"></div>
+  </div>
+  <div id="tledit">
+    <div id="tllist"></div>
+    <button id="tladd" data-i18n="tl_add"></button>
+  </div>
+</div>
+
 <!-- COUNTDOWN OVERLAY -->
 <div class="overlay" id="ovcount">
   <div id="countnum">4</div>
@@ -722,6 +861,7 @@ var I18N = {
   flash_default:"開始",
   fol_wait:"等待 leader 指令",
   hue_hint:"外環 色相 · 中心 上下拖曳 飽和度",
+  hue_hint_seg:"外環 色相 · 只改這一格",
   ramp_sub:"剩餘小節",         ramp_cancel:"取消漸變",
   cell_name_ph:"格子名稱",     cell_bars_ph:"小節數",
   cell_done:"完成",            cell_delete:"刪除",
@@ -749,7 +889,13 @@ var I18N = {
   act_faster:"快",             act_slower:"慢",
   act_solo:"SOLO",             act_head:"回主題",
   act_ending:"結尾",           act_stop:"停止",
-  act_free:"自由"
+  act_free:"自由",
+  tl_start:"開始",             tl_stop:"停止",
+  tl_rewind:"回到最開頭",
+  tl_edit:"編輯",              tl_edit_done:"完成",
+  tl_add:"新增區段",           tl_empty:"還沒有區段",
+  tl_color:"顏色",
+  tl_longer:"加長",            tl_shorter:"縮短"
 },
 "en":{
   brand_sub:"LIVE CUE SYSTEM",
@@ -791,6 +937,7 @@ var I18N = {
   flash_default:"START",
   fol_wait:"Waiting for leader cue",
   hue_hint:"Ring hue · Center drag saturation",
+  hue_hint_seg:"Ring hue · This section only",
   ramp_sub:"BARS REMAINING",   ramp_cancel:"Cancel Gradual",
   cell_name_ph:"Cell name",    cell_bars_ph:"Bars",
   cell_done:"Done",            cell_delete:"Delete",
@@ -818,7 +965,13 @@ var I18N = {
   act_faster:"Fast",           act_slower:"Slow",
   act_solo:"SOLO",             act_head:"Back to Head",
   act_ending:"Ending",         act_stop:"Stop",
-  act_free:"Free"
+  act_free:"Free",
+  tl_start:"Start",            tl_stop:"Stop",
+  tl_rewind:"Back to Start",
+  tl_edit:"Edit",              tl_edit_done:"Done",
+  tl_add:"Add Section",        tl_empty:"No sections yet",
+  tl_color:"Color",
+  tl_longer:"Longer",          tl_shorter:"Shorter"
 },
 "ja":{
   brand_sub:"ライブキューシステム",
@@ -860,6 +1013,7 @@ var I18N = {
   flash_default:"スタート",
   fol_wait:"リーダーのキュー待ち",
   hue_hint:"外周 色相 · 中央 上下ドラッグ 彩度",
+  hue_hint_seg:"外周 色相 · この区間のみ",
   ramp_sub:"残り小節",          ramp_cancel:"変化を中止",
   cell_name_ph:"セル名",        cell_bars_ph:"小節数",
   cell_done:"完了",             cell_delete:"削除",
@@ -887,7 +1041,13 @@ var I18N = {
   act_faster:"速く",            act_slower:"遅く",
   act_solo:"SOLO",              act_head:"テーマへ",
   act_ending:"エンディング",     act_stop:"停止",
-  act_free:"フリー"
+  act_free:"フリー",
+  tl_start:"開始",              tl_stop:"停止",
+  tl_rewind:"先頭に戻る",
+  tl_edit:"編集",               tl_edit_done:"完了",
+  tl_add:"セクションを追加",     tl_empty:"セクションがありません",
+  tl_color:"色",
+  tl_longer:"長く",             tl_shorter:"短く"
 }
 };
 
@@ -979,9 +1139,17 @@ function applyTheme(){
   var m = document.querySelector('meta[name="theme-color"]');
   if(m) m.setAttribute("content","#121212");
   drawWheel();
+  tlRepaint();          // section hues are their own, but their saturation is not
 }
 
-/* ---------- HUE wheel canvas ---------- */
+/* ---------- HUE wheel canvas ----------
+   One wheel, one canvas, one set of handlers — what changes is the TARGET it
+   writes to. hueSeg === null means the global theme; otherwise it is a single
+   timeline section, which owns an absolute hue of its own. Duplicating the
+   wheel for the second case would mean two copies of the ring maths to keep in
+   step, so the target is a variable instead. */
+var hueSeg = null;
+function hueValue(){ return hueSeg ? hueSeg.h : hue; }
 var hueCanvas = document.getElementById("huecanvas");
 var hctx = hueCanvas.getContext("2d");
 var HC = 220, HR_OUT = 104, HR_IN = 64;   // css px
@@ -1002,25 +1170,30 @@ function drawWheel(){
     hctx.fillStyle = hsb(i/segs, 0.30, 0.92);
     hctx.fill();
   }
-  // center circle = current accent
+  // center circle = whatever colour the wheel is currently editing
   hctx.beginPath();
   hctx.arc(cx,cy,HR_IN-6,0,Math.PI*2);
-  hctx.fillStyle = hsb(hue, s, 0.92);
+  hctx.fillStyle = hsb(hueValue(), s, 0.92);
   hctx.fill();
-  // chevrons (drawn lines, no unicode glyphs)
-  hctx.strokeStyle = "rgba(0,0,0,0.70)";
-  hctx.lineWidth = 2; hctx.lineCap = "round"; hctx.lineJoin = "round";
-  var w = 13, yTop = cy-26, yBot = cy+26;
-  hctx.beginPath();
-  hctx.moveTo(cx-w, yTop+7); hctx.lineTo(cx, yTop); hctx.lineTo(cx+w, yTop+7);
-  hctx.moveTo(cx-w, yBot-7); hctx.lineTo(cx, yBot); hctx.lineTo(cx+w, yBot-7);
-  hctx.stroke();
-  hctx.fillStyle = "rgba(0,0,0,0.70)";
-  hctx.font = '300 15px "Barlow Condensed", sans-serif';
-  hctx.textAlign = "center"; hctx.textBaseline = "middle";
-  hctx.fillText("SATURATION", cx, cy);
+  /* the centre is the saturation control only for the global theme. A section
+     borrows the global satMul, so in section mode the centre carries no drag
+     affordance — it is a plain preview of that section's colour. */
+  if(!hueSeg){
+    // chevrons (drawn lines, no unicode glyphs)
+    hctx.strokeStyle = "rgba(0,0,0,0.70)";
+    hctx.lineWidth = 2; hctx.lineCap = "round"; hctx.lineJoin = "round";
+    var w = 13, yTop = cy-26, yBot = cy+26;
+    hctx.beginPath();
+    hctx.moveTo(cx-w, yTop+7); hctx.lineTo(cx, yTop); hctx.lineTo(cx+w, yTop+7);
+    hctx.moveTo(cx-w, yBot-7); hctx.lineTo(cx, yBot); hctx.lineTo(cx+w, yBot-7);
+    hctx.stroke();
+    hctx.fillStyle = "rgba(0,0,0,0.70)";
+    hctx.font = '300 15px "Barlow Condensed", sans-serif';
+    hctx.textAlign = "center"; hctx.textBaseline = "middle";
+    hctx.fillText("SATURATION", cx, cy);
+  }
   // hue marker: white solid dot + dark shadow
-  var ang = hue*Math.PI*2 - Math.PI/2;
+  var ang = hueValue()*Math.PI*2 - Math.PI/2;
   var mr = (HR_OUT+HR_IN)/2;
   var mx = cx + Math.cos(ang)*mr, my = cy + Math.sin(ang)*mr;
   hctx.beginPath(); hctx.arc(mx+1,my+1,9,0,Math.PI*2);
@@ -1039,7 +1212,7 @@ function huePos(e){
 function hueDown(e){
   e.preventDefault();
   var p = huePos(e), d = Math.sqrt(p.x*p.x+p.y*p.y);
-  hueZone = d > HR_IN-6 ? 1 : 2;
+  hueZone = d > HR_IN-6 ? 1 : (hueSeg ? 0 : 2);   // no centre zone in section mode
   lastY = p.cy;
   if(hueZone===1) hueMove(e); else e.stopPropagation();
 }
@@ -1049,7 +1222,13 @@ function hueMove(e){
   var p = huePos(e);
   if(hueZone===1){
     var a = Math.atan2(p.y,p.x) + Math.PI/2;
-    hue = ((a/(Math.PI*2))%1+1)%1;
+    var h = ((a/(Math.PI*2))%1+1)%1;
+    if(hueSeg){
+      hueSeg.h = h;
+      drawWheel(); tlRepaint();       // only the strip moves, the theme stays put
+      return;
+    }
+    hue = h;
   }else{
     satMul = clamp(satMul - (p.cy-lastY)*0.01, 0, 2);
     lastY = p.cy;
@@ -1058,11 +1237,15 @@ function hueMove(e){
 }
 function hueUp(){
   if(!hueZone) return;
-  if(hueZone===1) localStorage.setItem("sg_hue", String(hue));
+  if(hueSeg) saveTimeline();
+  else if(hueZone===1) localStorage.setItem("sg_hue", String(hue));
   else localStorage.setItem("sg_sat", String(satMul));
   hueZone = 0;
 }
-hueCanvas.addEventListener("pointerdown", function(e){ hueCanvas.setPointerCapture(e.pointerId); hueDown(e); });
+hueCanvas.addEventListener("pointerdown", function(e){
+  try{ hueCanvas.setPointerCapture(e.pointerId); }catch(err){}   // capture is an optimisation, not a precondition
+  hueDown(e);
+});
 hueCanvas.addEventListener("pointermove", hueMove);
 hueCanvas.addEventListener("pointerup", hueUp);
 hueCanvas.addEventListener("pointercancel", hueUp);
@@ -1070,29 +1253,321 @@ hueCanvas.addEventListener("pointercancel", hueUp);
 var huebtn = document.getElementById("huebtn");
 var huepop = document.getElementById("huepop");
 var scrim  = document.getElementById("scrim");
-function openHue(){
+/* anchor is whatever was tapped: the header button (global theme) or a section
+   swatch (that section only). seg === null keeps the old behaviour exactly. */
+function openHue(anchor, seg){
+  hueSeg = seg || null;
+  var info = document.getElementById("hueinfo");
+  /* the key is written back onto the element so a language change while the
+     wheel is open still lands on the right hint */
+  info.setAttribute("data-i18n", hueSeg ? "hue_hint_seg" : "hue_hint");
+  info.textContent = t(hueSeg ? "hue_hint_seg" : "hue_hint");
   huepop.classList.add("show");
-  huebtn.classList.add("on");
+  if(!hueSeg) huebtn.classList.add("on");
   scrim.classList.add("show");
-  var r = huebtn.getBoundingClientRect();
-  var w = 244;
-  var left = clamp(r.right - w, 8, window.innerWidth - w - 8);
+  /* measured after .show, because the popup only has a box once it is laid out
+     — a section swatch sits low on a 390x844 screen and the wheel has to flip
+     above it rather than run off the bottom */
+  var r = anchor.getBoundingClientRect();
+  var w = huepop.offsetWidth, h = huepop.offsetHeight;
+  var left = clamp(hueSeg ? r.left : r.right - w, 8, Math.max(8, window.innerWidth - w - 8));
+  var top  = r.bottom + 8;
+  if(top + h > window.innerHeight - 8) top = r.top - 8 - h;
   huepop.style.left = left+"px";
-  huepop.style.top  = (r.bottom + 8)+"px";
+  huepop.style.top  = Math.max(8, top)+"px";
   drawWheel();
 }
 function closeHue(){
   huepop.classList.remove("show");
   huebtn.classList.remove("on");
   scrim.classList.remove("show");
+  hueSeg = null;
 }
 huebtn.addEventListener("click", function(e){
   e.stopPropagation();
-  if(huepop.classList.contains("show")) closeHue(); else openHue();
+  if(huepop.classList.contains("show") && !hueSeg) closeHue();
+  else openHue(huebtn, null);
 });
 // tap anywhere outside closes (mandatory behaviour)
 scrim.addEventListener("pointerdown", function(){ closeHue(); });
 huepop.addEventListener("pointerdown", function(e){ e.stopPropagation(); });
+
+/* =========================================================
+   GLOBAL TIMELINE
+   ---------------------------------------------------------
+   A plain wall clock for the set: a row of coloured sections, each one a number
+   of SECONDS, with a playhead running across them.
+
+   Seconds, not bars: the timeline answers "how far into the set are we", which
+   is a wall-clock question the band asks of the whole piece. Bars would tie it
+   to BPM, and a tempo cue mid-set would then stretch or squash every section
+   after it — the 20-minute mark would move because somebody sped up. It is also
+   deliberately NOT wired to the cue engine: crossing a section boundary sends
+   nothing. It is a reference the whole room reads, not a sequencer.
+
+   Authority is the same shape as BPM: the host owns (running, startAt, base)
+   and broadcasts them, every device derives its own playhead from its own
+   clock. The SECTIONS themselves are per-device (localStorage, like sg_cells)
+   — a follower may keep a different set list without touching anybody else.
+   ========================================================= */
+var TL_VER    = 2;          // v1 stored a palette index, v2 stores an absolute hue
+var TL_COLORS = 8;          // v1 palette size — kept only to migrate old indices
+var TL_MIN    = 5;          // seconds
+var TL_MAX    = 3600;
+
+var tlsegsEl  = document.getElementById("tlsegs");
+var tltrackEl = document.getElementById("tltrack");
+var tlheadEl  = document.getElementById("tlhead");
+var tlemptyEl = document.getElementById("tlempty");
+var tlnowEl   = document.getElementById("tlnow");
+var tltotalEl = document.getElementById("tltotal");
+var tllistEl  = document.getElementById("tllist");
+var tlplayBtn = document.getElementById("tlplay");
+var tlstopBtn = document.getElementById("tlstop");
+var tlrewBtn  = document.getElementById("tlrew");
+var tleditBtn = document.getElementById("tleditbtn");
+
+/* a section owns an ABSOLUTE hue, picked on the same HUE wheel the theme uses.
+   It used to store a palette index so the strip turned with the theme, but the
+   set list is a fixed reference the room reads — an intro that was green should
+   stay green after somebody retints the app. Saturation is still the global
+   satMul, so the strip stays in the same colour family as everything else. */
+function frac(h){ return ((h % 1) + 1) % 1; }
+var tlMigrated = false;     // set by loadTimeline when a v1 payload was read
+function tlColor(h, b){
+  return hsb(h, clamp(BASE_S*satMul, 0, 1), b === undefined ? 0.92 : b);
+}
+function defaultTimeline(){
+  /* four blocks of a plausible length, so the strip means something on first
+     run and the edit rows have something to demonstrate on. A quarter turn
+     apart off the current theme hue: four sections nobody can confuse. */
+  return [60,120,120,60].map(function(sec, i){
+    return {id:"tl"+i, sec:sec, h:frac(hue + i*0.25)};
+  });
+}
+function loadTimeline(){
+  var a = null;
+  try{
+    var raw = localStorage.getItem("sg_timeline");
+    if(raw) a = JSON.parse(raw);
+  }catch(err){ a = null; }
+  var arr = (a && Array.isArray(a.segs)) ? a.segs : (Array.isArray(a) ? a : null);
+  if(!arr) return defaultTimeline();
+  var out = [];
+  arr.forEach(function(s, i){
+    if(!s) return;
+    /* v1 rows carry ci and no h: resolve the index the way v1 painted it, off
+       the hue in force right now, so the strip a user knows survives the
+       upgrade instead of collapsing to one colour */
+    var h = parseFloat(s.h);
+    if(!isFinite(h)){
+      h = hue + ((((parseInt(s.ci,10) || 0) % TL_COLORS) + TL_COLORS) % TL_COLORS)/TL_COLORS;
+      tlMigrated = true;
+    }
+    out.push({id:"tl"+i+"_"+Math.random().toString(36).slice(2,7),
+              sec:clamp(parseInt(s.sec,10) || 60, TL_MIN, TL_MAX),
+              h:frac(h)});
+  });
+  return out.length ? out : defaultTimeline();
+}
+function saveTimeline(){
+  try{
+    localStorage.setItem("sg_timeline", JSON.stringify({v:TL_VER,
+      segs:S.tl.segs.map(function(s){ return {sec:s.sec, h:s.h}; })}));
+  }catch(err){}
+}
+function tlTotalMs(){
+  var m = 0;
+  S.tl.segs.forEach(function(s){ m += s.sec*1000; });
+  return m;
+}
+/* the playhead is derived, never stored: base is where it was when the host
+   last touched it, startAt is when that was */
+function tlElapsed(){
+  var e = S.tl.running ? S.tl.base + (now() - S.tl.startAt) : S.tl.base;
+  return clamp(e, 0, tlTotalMs());
+}
+/* h:mm:ss past the hour, m:ss below it — no unit letters, so it reads the same
+   in all three languages and abbreviates nothing */
+function fmtClock(ms){
+  var s = Math.max(0, Math.round(ms/1000));
+  var h = Math.floor(s/3600), m = Math.floor((s % 3600)/60), ss = s % 60;
+  var mm = h ? (m < 10 ? "0"+m : ""+m) : ""+m;
+  return (h ? h+":" : "") + mm + ":" + (ss < 10 ? "0"+ss : ""+ss);
+}
+function tlMsg(){
+  return {t:"tl", running:S.tl.running, startAt:S.tl.startAt, base:S.tl.base};
+}
+/* the one writer of transport state. Host only: send() is already a no-op
+   elsewhere, but the guard keeps a follower from drifting its own playhead. */
+function tlSet(running, baseMs){
+  if(!isHost()) return;
+  S.tl.running = !!running;
+  S.tl.base    = clamp(baseMs, 0, tlTotalMs());
+  S.tl.startAt = now();
+  renderTlTransport();
+  tlTick();
+  send(tlMsg());
+}
+/* ---------- painting ---------- */
+function renderTlSegs(){
+  if(!S || !S.tl) return;
+  tlsegsEl.innerHTML = "";
+  S.tl.segs.forEach(function(s){
+    var d = document.createElement("div");
+    d.className = "tlseg";
+    d.style.flex = s.sec + " 0 0";      // width is proportional to the seconds
+    d.style.background = tlColor(s.h);
+    tlsegsEl.appendChild(d);
+  });
+  tlemptyEl.classList.toggle("hidden", S.tl.segs.length > 0);
+  tltotalEl.textContent = fmtClock(tlTotalMs());
+}
+/* hue drag runs at pointer rate, so recolouring must not rebuild the DOM — and
+   rebuilding would also drop the swatch the popup is anchored to */
+function tlRepaint(){
+  if(!S || !S.tl) return;
+  var kids = tlsegsEl.children;
+  if(kids.length !== S.tl.segs.length){ renderTlSegs(); return; }
+  for(var i=0;i<kids.length;i++) kids[i].style.background = tlColor(S.tl.segs[i].h);
+  var sw = tllistEl.querySelectorAll(".tlsw");
+  for(var j=0;j<sw.length && j<S.tl.segs.length;j++)
+    sw[j].style.background = tlColor(S.tl.segs[j].h);
+}
+function renderTlTransport(){
+  tlplayBtn.classList.toggle("on", !!S.tl.running);
+  tleditBtn.textContent = t(document.body.classList.contains("tl-edit") ? "tl_edit_done" : "tl_edit");
+}
+/* called every frame: only the two things that actually move are touched */
+var tlLastNow = "", tlLastPos = -1;
+function tlTick(){
+  if(!S || !S.tl) return;
+  var total = tlTotalMs();
+  var el    = tlElapsed();
+  var txt   = fmtClock(el);
+  if(txt !== tlLastNow){ tlLastNow = txt; tlnowEl.textContent = txt; }
+  var pos = total > 0 ? clamp(el/total, 0, 1) : 0;
+  if(Math.abs(pos - tlLastPos) > 0.0005){
+    tlLastPos = pos;
+    tlheadEl.style.left = (pos*100).toFixed(3) + "%";
+  }
+  /* the host closes the run off at the end so the broadcast state matches what
+     everybody already sees; followers just stop moving because of the clamp */
+  if(S.tl.running && isHost() && total > 0 && el >= total) tlSet(false, total);
+}
+/* ---------- transport + scrub ---------- */
+tlplayBtn.addEventListener("click", function(){
+  if(!isHost() || S.tl.running) return;
+  tlSet(true, tlElapsed());
+});
+tlstopBtn.addEventListener("click", function(){
+  if(!isHost()) return;
+  tlSet(false, tlElapsed());          // stop holds the position, rewind clears it
+});
+tlrewBtn.addEventListener("click", function(){
+  if(!isHost()) return;
+  tlSet(S.tl.running, 0);
+});
+var tlDragging = false;
+function tlSeek(e){
+  var r = tltrackEl.getBoundingClientRect();
+  var p = (e.touches && e.touches[0]) ? e.touches[0] : e;
+  var f = clamp((p.clientX - r.left)/Math.max(r.width, 1), 0, 1);
+  tlSet(S.tl.running, f*tlTotalMs());  // scrubbing while running keeps it running
+}
+tltrackEl.addEventListener("pointerdown", function(e){
+  if(!isHost()) return;
+  e.preventDefault();
+  tlDragging = true;
+  try{ tltrackEl.setPointerCapture(e.pointerId); }catch(err){}
+  tlSeek(e);
+});
+tltrackEl.addEventListener("pointermove", function(e){
+  if(!tlDragging) return;
+  e.preventDefault();
+  tlSeek(e);
+});
+tltrackEl.addEventListener("pointerup",     function(){ tlDragging = false; });
+tltrackEl.addEventListener("pointercancel", function(){ tlDragging = false; });
+
+/* ---------- edit mode ----------
+   No modal: the strip itself grows (--tl-h) and the section rows appear inside
+   it, in the same place the track already is. */
+function setTlEdit(v){
+  var on = !!v && isHost();
+  document.body.classList.toggle("tl-edit", on);
+  if(on) renderTlEdit();
+  renderTlTransport();
+}
+tleditBtn.addEventListener("click", function(){
+  if(!isHost()) return;
+  setTlEdit(!document.body.classList.contains("tl-edit"));
+});
+/* the step grows with the value: 5 s is the right nudge on a 30 s intro and a
+   useless one on a 20 minute set */
+function tlStep(sec){ return sec < 60 ? 5 : (sec < 300 ? 15 : 30); }
+function tlNudge(seg, up){
+  var v = up ? seg.sec + tlStep(seg.sec) : seg.sec - tlStep(seg.sec - 1);
+  seg.sec = clamp(Math.round(v), TL_MIN, TL_MAX);
+  saveTimeline();
+  renderTlSegs(); renderTlEdit(); tlTick();
+}
+function tlRow(seg, i){
+  var row = document.createElement("div");
+  row.className = "tlrow";
+  var idx = document.createElement("div");
+  idx.className = "idx"; idx.textContent = String(i+1);
+  var sw = document.createElement("button");
+  sw.className = "tlsw";
+  sw.style.background = tlColor(seg.h);
+  sw.setAttribute("aria-label", t("tl_color"));
+  /* the swatch is the wheel's anchor as well as its target, so the popup opens
+     next to the row being edited rather than under the header button */
+  sw.addEventListener("click", function(e){
+    e.stopPropagation();
+    openHue(sw, seg);
+  });
+  var minus = document.createElement("button");
+  minus.className = "tlstep"; minus.textContent = "-";
+  minus.setAttribute("aria-label", t("tl_shorter"));
+  minus.addEventListener("click", function(){ tlNudge(seg, false); });
+  var val = document.createElement("div");
+  val.className = "tlsec"; val.textContent = fmtClock(seg.sec*1000);
+  var plus = document.createElement("button");
+  plus.className = "tlstep"; plus.textContent = "+";
+  plus.setAttribute("aria-label", t("tl_longer"));
+  plus.addEventListener("click", function(){ tlNudge(seg, true); });
+  var del = document.createElement("button");
+  del.className = "tldel"; del.textContent = t("cell_delete");
+  del.addEventListener("click", function(){
+    S.tl.segs = S.tl.segs.filter(function(x){ return x !== seg; });
+    saveTimeline(); renderTlSegs(); renderTlEdit(); tlTick();
+  });
+  row.appendChild(idx); row.appendChild(sw);
+  row.appendChild(minus); row.appendChild(val); row.appendChild(plus);
+  row.appendChild(del);
+  return row;
+}
+function renderTlEdit(){
+  if(!S || !S.tl) return;
+  tllistEl.innerHTML = "";
+  S.tl.segs.forEach(function(seg, i){ tllistEl.appendChild(tlRow(seg, i)); });
+}
+document.getElementById("tladd").addEventListener("click", function(){
+  if(!isHost()) return;
+  /* a new section lands an eighth of a turn on from the last one, so it is
+     visibly a new block before anybody opens the wheel on it */
+  var last = S.tl.segs.length ? S.tl.segs[S.tl.segs.length-1].h : hue;
+  S.tl.segs.push({id:"tl"+Date.now(), sec:60, h:frac(last + 1/TL_COLORS)});
+  saveTimeline(); renderTlSegs(); renderTlEdit(); tlTick();
+});
+function renderTimeline(){
+  renderTlSegs();
+  renderTlTransport();
+  if(document.body.classList.contains("tl-edit")) renderTlEdit();
+  tlLastNow = ""; tlLastPos = -1;      // force the next tick to write both
+  tlTick();
+}
 
 /* =========================================================
    STATE
@@ -1244,6 +1719,9 @@ var S = {
   metroStart:0,
   metroBeat0:0,           // absolute beat position of the metronome downbeat
   cells: loadCells(),
+  /* the global timeline. segs is per-device; running / startAt / base are host
+     state and arrive through sync, exactly like the metronome anchor. */
+  tl:{segs:loadTimeline(), running:false, startAt:0, base:0},
   /* the sentence under construction; nothing leaves the device until START */
   /* one round picks exactly one action (actId) with its own direction (tdirId).
      "Add next action" freezes that pair into lockedActId / lockedTdirId and
@@ -1262,6 +1740,10 @@ var S = {
   joinKey:null,
   tapKey:null,  tapArg:null
 };
+/* a v1 payload is resolved against the hue in force at load time, so it has to
+   be written back at once — otherwise the next load with a different theme hue
+   would resolve the same indices to different colours */
+if(tlMigrated) saveTimeline();
 
 function loadCells(){
   var a = null;
@@ -1531,7 +2013,9 @@ function stateMsg(){
   return {t:"sync", bpm:S.bpm, meter:S.meter,
           metroRunning:S.metroRunning, metroStart:S.metroStart,
           metroBeat0:S.metroBeat0, tb:TB,
-          count:S.count, ramp:S.ramp};
+          count:S.count, ramp:S.ramp,
+          /* transport only — the section list never travels */
+          tl:{running:S.tl.running, startAt:S.tl.startAt, base:S.tl.base}};
 }
 function setConnState(key, arg){
   S.connKey = key || null;
@@ -1678,10 +2162,12 @@ function onHostData(m){
     S.count = m.count || null;
     S.ramp  = m.ramp  || null;
     if(!S.ramp) hideRamp();
+    if(m.tl) applyTlState(m.tl);
     nextClickBeat = -1;
     renderAll();
     return;
   }
+  if(m.t==="tl"){ applyTlState(m); return; }
   if(m.t==="flash"){ startFlash(m.text, m.dur, m.from); return; }
   if(m.t==="count"){
     S.ramp = null; hideRamp(); endFlash();
@@ -1700,6 +2186,15 @@ function onHostData(m){
   }
   if(m.t==="rampcancel"){ S.ramp = null; hideRamp(); return; }
 }
+/* the host anchor lands verbatim: startAt is a host timestamp and now() already
+   carries this device's clockOffset, so the playhead needs no conversion */
+function applyTlState(m){
+  S.tl.running = m.running === true;
+  S.tl.startAt = isFinite(m.startAt) ? m.startAt : 0;
+  S.tl.base    = isFinite(m.base) ? m.base : 0;
+  renderTlTransport();
+  tlTick();
+}
 
 /* =========================================================
    SCREENS
@@ -1715,6 +2210,7 @@ function show(el){
 }
 function showMain(){
   show(scrMain);
+  document.body.classList.add("tl-on");     // the strip exists only inside a room
   applyPermissions();
   renderAll();
   if(S.role==="local") setConnState("conn_local");
@@ -1736,6 +2232,9 @@ function applyPermissions(){
   document.getElementById("metrobtn").classList.toggle("hidden", !host);
   document.getElementById("rolebtn").classList.toggle("hidden", host);
   if(S.editMode && !host) setEditMode(false);
+  /* timeline transport follows the BPM rule: host writes, everybody reads */
+  document.body.classList.toggle("tl-ro", !host);
+  if(!host) setTlEdit(false);
   if(!cue) clearCompose();
   renderRoleBtn();
   renderTapInfo();
@@ -1796,6 +2295,8 @@ document.getElementById("leavebtn").addEventListener("click", function(){
   peer=null; conns=[]; hostConn=null; clearTimeout(retryTimer); peerSeq=0;
   S.role="none"; S.canCue=false; S.count=null; S.ramp=null;
   S.metroRunning=false; clearCompose();
+  S.tl.running=false; S.tl.base=0;
+  document.body.classList.remove("tl-on","tl-edit","tl-ro");
   hideCount(); hideRamp(); setConnState(null); show(scrHome);
 });
 
@@ -1817,6 +2318,12 @@ function applyLang(){
   });
   Array.prototype.forEach.call(document.querySelectorAll("[data-i18n-ph]"), function(el){
     el.setAttribute("placeholder", t(el.getAttribute("data-i18n-ph")));
+  });
+  /* icon-only buttons carry their name in aria-label / title instead of a face */
+  Array.prototype.forEach.call(document.querySelectorAll("[data-i18n-aria]"), function(el){
+    var s = t(el.getAttribute("data-i18n-aria"));
+    el.setAttribute("aria-label", s);
+    el.setAttribute("title", s);
   });
   Array.prototype.forEach.call(document.querySelectorAll(".lang-btn"), function(b){
     b.classList.toggle("on", b.getAttribute("data-lang") === lang);
@@ -2373,8 +2880,12 @@ function introFlash(ov){
    fills the screen: start at the cap, take one proportional guess from the
    measured box, then bisect a few times because wrapping changes the ratio */
 var FLASH_MIN_FS = 12;                       // px, floor for pathologically long cues
+/* measured off the overlay, not the viewport: the timeline strip takes a slice
+   off the bottom, and a cue sized to the full window would run under it */
 function flashBox(){
-  var vw = window.innerWidth, vh = window.innerHeight;
+  var ov = document.getElementById("ovflash");
+  var vw = window.innerWidth;
+  var vh = (ov && ov.clientHeight) || window.innerHeight;
   return {w: vw*0.92, h: vh*0.78, cap: Math.min(vh*0.75, vw*0.85)};
 }
 function fitFlashText(){
@@ -2787,6 +3298,9 @@ function update(){
 
   /* flash */
   if(S.flashUntil && nt >= S.flashUntil) endFlash();
+
+  /* the timeline playhead — derived from the host anchor, same as everything else */
+  tlTick();
 }
 function tick(){ update(); requestAnimationFrame(tick); }
 
@@ -2800,6 +3314,7 @@ function renderAll(){
   document.getElementById("roomcode").textContent =
     (S.role==="local") ? t("local_code") : (S.code || "————");
   renderMeters(); renderDots(); renderSound(); renderGrid(); renderRoleBtn();
+  renderTimeline();
   document.getElementById("metrobtn").textContent = t(S.metroRunning ? "metro_stop" : "metro_start");
   document.getElementById("metrobtn").classList.toggle("on", S.metroRunning);
   document.getElementById("editbtn").textContent = t(S.editMode ? "edit_off" : "edit_on");
