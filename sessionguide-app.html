@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- version: v260821 — 每次部署到 madzine.work 前更新此版本號與 #wordmark -->
+<!-- version: v260822 — 每次部署到 madzine.work 前更新此版本號與 #wordmark -->
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
@@ -373,7 +373,12 @@ body.tl-on #app{padding-bottom:10px}
   body.tl-on.tl-edit{--tl-h:calc(min(440px,66vh) + env(safe-area-inset-bottom,0px))}
   #timeline{gap:4px}
   #tltrack{height:26px}
-  #tlnow{font-size:20px}
+  /* there used to be a #tlnow{font-size:20px} here. It never applied: the base
+     #tlnow rule is declared LATER in this sheet at equal specificity, so it won
+     the cascade at every height — the same trap the overlay comment above warns
+     about. Removed rather than moved: a short screen is almost always a laptop
+     in landscape, i.e. a WIDE one, and the clock there should be reading off the
+     width scale like everything else on the strip, not shrinking. */
 }
 
 /* follower panel */
@@ -507,10 +512,20 @@ body.tl-on #timeline{display:flex}
    whatever is left (~96 px). The gap dropped 8 -> 6 and the edit button became
    an icon purely to hand those pixels to the section label. */
 #tlbar{display:flex;align-items:center;gap:6px;height:44px;flex:0 0 auto}
+/* ---------- strip type scale ----------
+   Everything in this row is read from across a room, mid-set, with one glance —
+   so the sizes are a function of the width the screen actually has instead of
+   one fixed px that has to satisfy a 390 phone and a 1280 laptop at once.
+   Shape is always clamp(phone floor, fixed base + vw growth, desktop ceiling):
+   the floor is what 390 gets, the ceiling is where growth stops being legible.
+   The ROW does not grow with them — #tlbar stays 44 px and every one of these
+   sits on a fixed line-height inside it, so bigger type never lifts the track. */
 /* elapsed reads at the left end of the strip, as the running clock of the set */
 #tlclock{display:flex;flex-direction:column;justify-content:center;min-width:64px;flex:0 0 auto}
-#tlnow{font-size:22px;line-height:1.1;letter-spacing:.02em;color:var(--acc)}
-#tltotal{font-size:14px;line-height:1.2;letter-spacing:.06em;color:var(--fg3)}
+#tlnow{font-size:clamp(22px,16px + 1.1vw,32px);line-height:1.1;letter-spacing:.02em;color:var(--acc);white-space:nowrap}
+/* the set length is reference, not readout: it stays the smallest thing here,
+   but never below the 14 px non-interactive floor */
+#tltotal{font-size:clamp(14px,10px + .6vw,20px);line-height:1.2;letter-spacing:.06em;color:var(--fg3);white-space:nowrap}
 #tltransport{display:flex;gap:6px;flex:0 0 auto}
 .tl-btn{
   width:44px;height:44px;flex:0 0 auto;
@@ -525,10 +540,16 @@ body.tl-on #timeline{display:flex}
    words. Sits right of the transport because that is where the eye already is
    after pressing start. display:block (not flex) so text-overflow can clip it —
    one line only, since a second line would push the track down. */
+/* the largest type on the strip: of everything in this row, the section name is
+   the one thing a player looks up mid-phrase. It also owns all the slack — the
+   four neighbours are fixed-width — so a wide screen spends its extra pixels
+   here first, which is exactly where the growth term belongs. line-height stays
+   a fixed 42 px (44 minus borders) so the box height is independent of the type
+   size, and ellipsis still clips the one line at 390. */
 #tlcue{
   flex:1 1 auto;min-width:0;height:44px;
   border:1px solid var(--line);border-radius:8px;background:var(--panel);
-  padding:0 8px;font-size:15px;line-height:42px;letter-spacing:.02em;
+  padding:0 8px;font-size:clamp(20px,14px + 1.6vw,34px);line-height:42px;letter-spacing:.02em;
   color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
 /* icon, not the word: the label to its left needs every pixel the row has */
@@ -647,7 +668,7 @@ body.tl-edit #tledit{display:flex}
 
 <div id="app">
   <div id="topbar">
-    <div id="wordmark">SESSION GUIDE — MADZINE · v260821</div>
+    <div id="wordmark">SESSION GUIDE — MADZINE · v260822</div>
     <div id="topright">
       <div id="connstate"></div>
       <button class="hue-btn" id="huebtn">HUE</button>
@@ -896,7 +917,7 @@ var I18N = {
   flash_default:"開始",
   fol_wait:"等待 leader 指令",
   hue_hint:"外環 色相 · 中心 上下拖曳 飽和度",
-  hue_hint_seg:"外環 色相 · 只改這一格",
+  hue_hint_seg:"外環 色相 · 中心 飽和度 · 只改這一格",
   ramp_sub:"剩餘小節",         ramp_cancel:"取消漸變",
   cell_name_ph:"格子名稱",     cell_bars_ph:"小節數",
   cell_done:"完成",            cell_delete:"刪除",
@@ -973,7 +994,7 @@ var I18N = {
   flash_default:"START",
   fol_wait:"Waiting for leader cue",
   hue_hint:"Ring hue · Center drag saturation",
-  hue_hint_seg:"Ring hue · This section only",
+  hue_hint_seg:"Ring hue · Center saturation · This section only",
   ramp_sub:"BARS REMAINING",   ramp_cancel:"Cancel Gradual",
   cell_name_ph:"Cell name",    cell_bars_ph:"Bars",
   cell_done:"Done",            cell_delete:"Delete",
@@ -1050,7 +1071,7 @@ var I18N = {
   flash_default:"スタート",
   fol_wait:"リーダーのキュー待ち",
   hue_hint:"外周 色相 · 中央 上下ドラッグ 彩度",
-  hue_hint_seg:"外周 色相 · この区間のみ",
+  hue_hint_seg:"外周 色相 · 中央 彩度 · この区間のみ",
   ramp_sub:"残り小節",          ramp_cancel:"変化を中止",
   cell_name_ph:"セル名",        cell_bars_ph:"小節数",
   cell_done:"完了",             cell_delete:"削除",
@@ -1177,7 +1198,11 @@ function applyTheme(){
   var m = document.querySelector('meta[name="theme-color"]');
   if(m) m.setAttribute("content","#121212");
   drawWheel();
-  tlRepaint();          // section hues are their own, but their saturation is not
+  /* sections now own both hue and saturation, so turning the global wheel does
+     not change a single pixel of the strip. The repaint stays anyway: the strip
+     also carries --acc-tinted chrome around the sections, and one cheap style
+     write per drag frame is a far smaller cost than a stale set list. */
+  tlRepaint();
 }
 
 /* ---------- HUE wheel canvas ----------
@@ -1185,9 +1210,15 @@ function applyTheme(){
    writes to. hueSeg === null means the global theme; otherwise it is a single
    timeline section, which owns an absolute hue of its own. Duplicating the
    wheel for the second case would mean two copies of the ring maths to keep in
-   step, so the target is a variable instead. */
+   step, so the target is a variable instead.
+
+   A section owns BOTH numbers now: its own hue and its own saturation. So the
+   wheel is the same instrument in both modes — ring writes hue, centre writes
+   saturation — and only the object being written changes. */
 var hueSeg = null;
 function hueValue(){ return hueSeg ? hueSeg.h : hue; }
+/* saturation of whatever the wheel is pointed at, as a multiplier of BASE_S */
+function hueSatValue(){ return hueSeg ? hueSeg.s : satMul; }
 var hueCanvas = document.getElementById("huecanvas");
 var hctx = hueCanvas.getContext("2d");
 var HC = 220, HR_OUT = 104, HR_IN = 64;   // css px
@@ -1197,7 +1228,7 @@ function drawWheel(){
   hctx.clearRect(0,0,HC,HC);
   var cx = HC/2, cy = HC/2;
   var segs = 360, step = Math.PI*2/segs;
-  var s = clamp(BASE_S*satMul,0,1);
+  var s = clamp(BASE_S*hueSatValue(),0,1);
   for(var i=0;i<segs;i++){
     var a0 = i*step - Math.PI/2;
     var a1 = a0 + step + 0.012;
@@ -1213,23 +1244,22 @@ function drawWheel(){
   hctx.arc(cx,cy,HR_IN-6,0,Math.PI*2);
   hctx.fillStyle = hsb(hueValue(), s, 0.92);
   hctx.fill();
-  /* the centre is the saturation control only for the global theme. A section
-     borrows the global satMul, so in section mode the centre carries no drag
-     affordance — it is a plain preview of that section's colour. */
-  if(!hueSeg){
-    // chevrons (drawn lines, no unicode glyphs)
-    hctx.strokeStyle = "rgba(0,0,0,0.70)";
-    hctx.lineWidth = 2; hctx.lineCap = "round"; hctx.lineJoin = "round";
-    var w = 13, yTop = cy-26, yBot = cy+26;
-    hctx.beginPath();
-    hctx.moveTo(cx-w, yTop+7); hctx.lineTo(cx, yTop); hctx.lineTo(cx+w, yTop+7);
-    hctx.moveTo(cx-w, yBot-7); hctx.lineTo(cx, yBot); hctx.lineTo(cx+w, yBot-7);
-    hctx.stroke();
-    hctx.fillStyle = "rgba(0,0,0,0.70)";
-    hctx.font = '300 15px "Barlow Condensed", sans-serif';
-    hctx.textAlign = "center"; hctx.textBaseline = "middle";
-    hctx.fillText("SATURATION", cx, cy);
-  }
+  /* the centre is a drag control in BOTH modes: global theme saturation, or the
+     saturation of the one section being edited. The affordance is therefore
+     always drawn — a centre that sometimes takes a drag and sometimes does not
+     is an instrument the hand cannot learn. */
+  // chevrons (drawn lines, no unicode glyphs)
+  hctx.strokeStyle = "rgba(0,0,0,0.70)";
+  hctx.lineWidth = 2; hctx.lineCap = "round"; hctx.lineJoin = "round";
+  var w = 13, yTop = cy-26, yBot = cy+26;
+  hctx.beginPath();
+  hctx.moveTo(cx-w, yTop+7); hctx.lineTo(cx, yTop); hctx.lineTo(cx+w, yTop+7);
+  hctx.moveTo(cx-w, yBot-7); hctx.lineTo(cx, yBot); hctx.lineTo(cx+w, yBot-7);
+  hctx.stroke();
+  hctx.fillStyle = "rgba(0,0,0,0.70)";
+  hctx.font = '300 15px "Barlow Condensed", sans-serif';
+  hctx.textAlign = "center"; hctx.textBaseline = "middle";
+  hctx.fillText("SATURATION", cx, cy);
   // hue marker: white solid dot + dark shadow
   var ang = hueValue()*Math.PI*2 - Math.PI/2;
   var mr = (HR_OUT+HR_IN)/2;
@@ -1250,7 +1280,7 @@ function huePos(e){
 function hueDown(e){
   e.preventDefault();
   var p = huePos(e), d = Math.sqrt(p.x*p.x+p.y*p.y);
-  hueZone = d > HR_IN-6 ? 1 : (hueSeg ? 0 : 2);   // no centre zone in section mode
+  hueZone = d > HR_IN-6 ? 1 : 2;   // same two zones whatever the wheel is editing
   lastY = p.cy;
   if(hueZone===1) hueMove(e); else e.stopPropagation();
 }
@@ -1268,8 +1298,18 @@ function hueMove(e){
     }
     hue = h;
   }else{
-    satMul = clamp(satMul - (p.cy-lastY)*0.01, 0, 2);
+    var dy = p.cy - lastY;
     lastY = p.cy;
+    /* in section mode this must NOT touch satMul, sg_sat or --acc: the point of
+       a per-section colour is that retinting one block of the set leaves the
+       app, and every other block, exactly where it was */
+    if(hueSeg){
+      var cur = isFinite(hueSeg.s) ? hueSeg.s : satMul;   // never drag off undefined
+      hueSeg.s = clamp(cur - dy*0.01, 0, TL_SAT_MAX);
+      drawWheel(); tlRepaint();
+      return;
+    }
+    satMul = clamp(satMul - dy*0.01, 0, 2);
   }
   applyTheme();
 }
@@ -1348,7 +1388,8 @@ huepop.addEventListener("pointerdown", function(e){ e.stopPropagation(); });
    clock. The SECTIONS themselves are per-device (localStorage, like sg_cells)
    — a follower may keep a different set list without touching anybody else.
    ========================================================= */
-var TL_VER    = 3;          // v1 palette index -> v2 absolute hue -> v3 adds a name
+/* v1 palette index -> v2 absolute hue -> v3 adds a name -> v4 adds saturation */
+var TL_VER    = 4;
 var TL_COLORS = 8;          // v1 palette size — kept only to migrate old indices
 var TL_MIN    = 5;          // seconds
 var TL_MAX    = 3600;
@@ -1369,21 +1410,36 @@ var tlrewBtn  = document.getElementById("tlrew");
 var tleditBtn = document.getElementById("tleditbtn");
 var tlcueEl   = document.getElementById("tlcue");
 
-/* a section owns an ABSOLUTE hue, picked on the same HUE wheel the theme uses.
-   It used to store a palette index so the strip turned with the theme, but the
-   set list is a fixed reference the room reads — an intro that was green should
-   stay green after somebody retints the app. Saturation is still the global
-   satMul, so the strip stays in the same colour family as everything else. */
+/* a section owns an ABSOLUTE colour — hue AND saturation — picked on the same
+   HUE wheel the theme uses. It used to store a palette index so the strip turned
+   with the theme, but the set list is a fixed reference the room reads: an intro
+   that was green should stay green after somebody retints the app. Saturation
+   was the last thing still borrowed from the global satMul, and it went the same
+   way for the same reason — a washed-out ambient block and a saturated peak are
+   a distinction the set list is entitled to keep on its own. */
 function frac(h){ return ((h % 1) + 1) % 1; }
+/* saturation is stored as the same 0..2 multiplier of BASE_S the global control
+   uses, so the two ends of the wheel mean the same thing wherever it is opened */
+var TL_SAT_MAX = 2;
+function tlSat(v){
+  var n = parseFloat(v);
+  return isFinite(n) ? clamp(n, 0, TL_SAT_MAX) : null;
+}
 /* one gate for every path a name can arrive on — typed, loaded or migrated —
    so a stored payload can never be longer than what the field allows */
 function tlName(v){
   return (typeof v === "string") ? v.slice(0, TL_NAME_MAX) : "";
 }
 var tlMigrated = false;     // set by loadTimeline when a v1 payload was read
-function tlColor(h, b){
-  return hsb(h, clamp(BASE_S*satMul, 0, 1), b === undefined ? 0.92 : b);
+/* sm is a section's own multiplier; a missing one falls back to the global so a
+   half-built object can never paint a section black */
+function tlColor(h, sm, b){
+  var m = isFinite(sm) ? sm : satMul;
+  return hsb(h, clamp(BASE_S*m, 0, 1), b === undefined ? 0.92 : b);
 }
+/* every paint path goes through this one, so "the colour of a section" has a
+   single definition and adding a third component later touches one line */
+function tlSegColor(seg, b){ return tlColor(seg.h, seg.s, b); }
 function defaultTimeline(){
   /* four blocks of a plausible length, so the strip means something on first
      run and the edit rows have something to demonstrate on. A quarter turn
@@ -1391,7 +1447,7 @@ function defaultTimeline(){
   /* no names on the defaults: a set list nobody wrote has no section names, and
      inventing "Section 1" would put words in the room's mouth */
   return [60,120,120,60].map(function(sec, i){
-    return {id:"tl"+i, sec:sec, h:frac(hue + i*0.25), n:""};
+    return {id:"tl"+i, sec:sec, h:frac(hue + i*0.25), s:satMul, n:""};
   });
 }
 function loadTimeline(){
@@ -1415,9 +1471,16 @@ function loadTimeline(){
     }
     /* v1/v2 rows carry no n at all: an absent name is an empty one, so the
        upgrade is silent — seconds and hue are read exactly as before */
+    /* v1/v2/v3 rows carry no s: they were painted with whatever satMul is in
+       force, so adopting that exact number is what makes the upgrade invisible.
+       Anything else (a constant 1.0, say) would repaint a set list the user has
+       already tuned, on a version bump they never asked for. */
+    var sv = tlSat(s.s);
+    if(sv === null) sv = clamp(satMul, 0, TL_SAT_MAX);
     out.push({id:"tl"+i+"_"+Math.random().toString(36).slice(2,7),
               sec:clamp(parseInt(s.sec,10) || 60, TL_MIN, TL_MAX),
               h:frac(h),
+              s:sv,
               n:tlName(s.n)});
   });
   return out.length ? out : defaultTimeline();
@@ -1425,7 +1488,9 @@ function loadTimeline(){
 function saveTimeline(){
   try{
     localStorage.setItem("sg_timeline", JSON.stringify({v:TL_VER,
-      segs:S.tl.segs.map(function(s){ return {sec:s.sec, h:s.h, n:s.n||""}; })}));
+      segs:S.tl.segs.map(function(s){
+        return {sec:s.sec, h:s.h, s:s.s, n:s.n||""};
+      })}));
   }catch(err){}
 }
 function tlTotalMs(){
@@ -1469,7 +1534,7 @@ function renderTlSegs(){
     var d = document.createElement("div");
     d.className = "tlseg";
     d.style.flex = s.sec + " 0 0";      // width is proportional to the seconds
-    d.style.background = tlColor(s.h);
+    d.style.background = tlSegColor(s);
     tlsegsEl.appendChild(d);
   });
   tlemptyEl.classList.toggle("hidden", S.tl.segs.length > 0);
@@ -1484,10 +1549,10 @@ function tlRepaint(){
   if(!S || !S.tl) return;
   var kids = tlsegsEl.children;
   if(kids.length !== S.tl.segs.length){ renderTlSegs(); return; }
-  for(var i=0;i<kids.length;i++) kids[i].style.background = tlColor(S.tl.segs[i].h);
+  for(var i=0;i<kids.length;i++) kids[i].style.background = tlSegColor(S.tl.segs[i]);
   var sw = tllistEl.querySelectorAll(".tlsw");
   for(var j=0;j<sw.length && j<S.tl.segs.length;j++)
-    sw[j].style.background = tlColor(S.tl.segs[j].h);
+    sw[j].style.background = tlSegColor(S.tl.segs[j]);
   renderTlCue(true);          // the label is tinted by the section it names
 }
 function renderTlTransport(){
@@ -1524,7 +1589,7 @@ function renderTlCue(force){
   /* an unnamed section shows nothing at all. A placeholder or an auto number
      would be the app talking, and this strip only ever repeats the room. */
   tlcueEl.textContent  = seg ? (seg.n || "") : "";
-  tlcueEl.style.color  = seg ? tlColor(seg.h) : "";
+  tlcueEl.style.color  = seg ? tlSegColor(seg) : "";
 }
 /* called every frame: only the two things that actually move are touched */
 var tlLastNow = "", tlLastPos = -1;
@@ -1608,7 +1673,7 @@ function tlRow(seg, i){
   idx.className = "idx"; idx.textContent = String(i+1);
   var sw = document.createElement("button");
   sw.className = "tlsw";
-  sw.style.background = tlColor(seg.h);
+  sw.style.background = tlSegColor(seg);
   sw.setAttribute("aria-label", t("tl_color"));
   /* the swatch is the wheel's anchor as well as its target, so the popup opens
      next to the row being edited rather than under the header button */
@@ -1671,9 +1736,14 @@ function renderTlEdit(){
 document.getElementById("tladd").addEventListener("click", function(){
   if(!isHost()) return;
   /* a new section lands an eighth of a turn on from the last one, so it is
-     visibly a new block before anybody opens the wheel on it */
-  var last = S.tl.segs.length ? S.tl.segs[S.tl.segs.length-1].h : hue;
-  S.tl.segs.push({id:"tl"+Date.now(), sec:60, h:frac(last + 1/TL_COLORS), n:""});
+     visibly a new block before anybody opens the wheel on it. Saturation is
+     inherited rather than reset: a set list tuned pale stays pale as it grows,
+     and only the hue is deliberately made different. */
+  var prev = S.tl.segs.length ? S.tl.segs[S.tl.segs.length-1] : null;
+  S.tl.segs.push({id:"tl"+Date.now(), sec:60,
+                  h:frac((prev ? prev.h : hue) + 1/TL_COLORS),
+                  s:prev ? prev.s : clamp(satMul, 0, TL_SAT_MAX),
+                  n:""});
   saveTimeline(); renderTlSegs(); renderTlEdit(); tlTick();
 });
 function renderTimeline(){
