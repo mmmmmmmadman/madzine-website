@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- version: v260806 — 每次部署到 madzine.work 前更新此版本號與 #wordmark -->
+<!-- version: v260816 — 每次部署到 madzine.work 前更新此版本號與 #wordmark -->
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
@@ -215,15 +215,20 @@ button{background:none;border:none;cursor:pointer}
 .tr-btn.on{border-color:var(--acc);color:var(--acc)}
 
 /* grid: three zones, one per sentence slot type.
-   1 how long (time)   2 at once / gradually (mode)   3+4 what (action) */
+   1 how long (time)   2 at once / gradually (mode)   3+4 what (action)
+   Slot 3/4 is itself three permanent groups: named actions, dynamics, tempo. */
 #gridwrap{flex:1 0 auto;display:flex;flex-direction:column;gap:var(--gap)}
 .gsec{display:flex;flex-direction:column;gap:6px;flex:0 0 auto}
 .ghead{font-size:17px;color:var(--fg2);letter-spacing:.02em;line-height:1.2;padding-left:2px}
+.gnote{font-size:15px;color:var(--fg3);letter-spacing:.02em;line-height:1.25;padding-left:2px}
 .ggrid{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);grid-auto-rows:minmax(56px,auto)}
 .ggrid.c4{grid-template-columns:1fr 1fr 1fr 1fr;grid-auto-rows:minmax(48px,auto)}
 .ggrid.c2{grid-auto-rows:minmax(48px,auto)}
-/* number actions: dense row, still a 46px touch target on a 390px phone */
-.ggrid.cnum{grid-template-columns:repeat(6,1fr);gap:6px;grid-auto-rows:minmax(46px,auto)}
+/* dynamics: 10 cells, 5 per row — 68 px wide, well over the 44 px floor at 390 px */
+.ggrid.cdyn{grid-template-columns:repeat(5,1fr);gap:6px;grid-auto-rows:minmax(46px,auto)}
+/* tempo: the fast / slow pair, then the six amounts three per row */
+.ggrid.ctdir{grid-template-columns:1fr 1fr;gap:6px;grid-auto-rows:minmax(46px,auto)}
+.ggrid.ctmp{grid-template-columns:repeat(3,1fr);gap:6px;grid-auto-rows:minmax(46px,auto)}
 .cell{
   border:1px solid var(--line);border-radius:10px;background:var(--bg-elev);
   font-size:21px;color:var(--fg);line-height:1.2;padding:8px 6px;
@@ -235,8 +240,10 @@ button{background:none;border:none;cursor:pointer}
 .cell.time{background:var(--panel);border-color:#3d3d3d;font-size:18px;min-height:48px;border-radius:24px;padding:6px 4px}
 .cell.mode{background:var(--panel);border-color:#3d3d3d;font-size:19px;min-height:48px;border-radius:10px;border-style:dashed}
 .cell.act{background:var(--bg-elev)}
-.cell.act.num{min-height:46px;font-size:22px;padding:6px 2px}
-.cell.act.num .slot{top:2px;right:5px;font-size:13px}
+.cell.act.dyn,.cell.act.tmp{min-height:46px;font-size:22px;padding:6px 2px}
+.cell.act.dyn .slot,.cell.act.tmp .slot{top:2px;right:5px;font-size:13px}
+/* tempo direction is a modifier, not an action: same dashed pill as the mode cells */
+.cell.tdir{background:var(--panel);border-color:#3d3d3d;font-size:19px;min-height:46px;border-radius:10px;border-style:dashed}
 .cell.sel{border-color:var(--acc);background:var(--acc-dim);color:var(--fg);border-style:solid}
 /* slot number badge on a picked action: 3 = what, 4 = then what */
 .cell .slot{
@@ -252,9 +259,12 @@ button{background:none;border:none;cursor:pointer}
    this is the second tap of every cue, so every string inside #secact is set
    at display size. the grid rows grow with the type; long labels wrap instead
    of shrinking. */
+#secact{display:flex;flex-direction:column;gap:12px;flex:0 0 auto}
+#secact .gsec{gap:6px}
 #secact .ghead{font-size:24px;letter-spacing:.03em;color:var(--fg2)}
+#secact .gnote{font-size:17px;color:var(--fg3)}
 #secact .ggrid{grid-auto-rows:minmax(76px,auto)}
-#secact .ggrid.cnum{grid-auto-rows:minmax(62px,auto)}
+#secact .ggrid.cdyn,#secact .ggrid.ctmp,#secact .ggrid.ctdir{grid-auto-rows:minmax(62px,auto)}
 #secact .cell.act{
   font-size:28px;line-height:1.1;min-height:76px;padding:10px 8px;
   overflow-wrap:anywhere;
@@ -262,8 +272,9 @@ button{background:none;border:none;cursor:pointer}
 #secact .cell.act .lab{text-align:center}
 #secact .cell.act .n{font-size:19px;letter-spacing:.1em}
 #secact .cell.act .slot{top:5px;right:9px;font-size:20px}
-#secact .cell.act.num{font-size:30px;min-height:62px;padding:6px 2px}
-#secact .cell.act.num .slot{top:2px;right:5px;font-size:16px}
+#secact .cell.act.dyn,#secact .cell.act.tmp{font-size:30px;min-height:62px;padding:6px 2px}
+#secact .cell.act.dyn .slot,#secact .cell.act.tmp .slot{top:2px;right:5px;font-size:16px}
+#secact .cell.tdir{font-size:26px;min-height:62px}
 #secact .cell.addc{font-size:22px}
 
 /* ---------- sentence + START bar (never scrolls away) ---------- */
@@ -314,11 +325,14 @@ button{background:none;border:none;cursor:pointer}
   #sentence{font-size:17px;min-height:22px}
   /* the action step keeps its display type on short screens: only the box
      heights and padding come down, never the font size */
+  #secact{gap:10px}
   #secact .ghead{font-size:21px}
+  #secact .gnote{font-size:16px}
   #secact .ggrid{grid-auto-rows:minmax(64px,auto)}
-  #secact .ggrid.cnum{grid-auto-rows:minmax(54px,auto)}
+  #secact .ggrid.cdyn,#secact .ggrid.ctmp,#secact .ggrid.ctdir{grid-auto-rows:minmax(54px,auto)}
   #secact .cell.act{font-size:26px;min-height:64px;padding:6px 6px}
-  #secact .cell.act.num{font-size:27px;min-height:54px;padding:4px 2px}
+  #secact .cell.act.dyn,#secact .cell.act.tmp{font-size:27px;min-height:54px;padding:4px 2px}
+  #secact .cell.tdir{font-size:23px;min-height:54px}
   #secact .cell.act .n{font-size:17px}
   #secact .cell.addc{font-size:20px}
   /* NOTE: the overlay / ramp short-screen rules live in the second
@@ -449,31 +463,30 @@ button{background:none;border:none;cursor:pointer}
 #huecanvas{touch-action:none;display:block}
 #hueinfo{font-size:17px;color:var(--fg2);letter-spacing:.04em;line-height:1.3;max-width:220px;text-align:center}
 
-#editor{
-  position:fixed;z-index:60;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);
-  display:none;flex-direction:column;gap:10px;
-  background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;
-}
-#editor.show{display:flex}
-#editor .h{font-size:15px;color:var(--fg3);letter-spacing:.16em;line-height:1.2}
-#edlabel{
-  width:100%;min-height:48px;font-size:22px;color:var(--fg);
-  background:var(--bg-elev);border:1px solid var(--line);border-radius:8px;padding:8px 10px;line-height:1.2;
-}
-#edlabel:focus{outline:none;border-color:var(--acc-dim)}
 .seg{display:flex;gap:6px}
 .seg button{
   flex:1 1 0;min-height:44px;border:1px solid var(--line);border-radius:8px;
   background:var(--bg-elev);font-size:18px;color:var(--fg2);line-height:1.2;
 }
 .seg button.on{border-color:var(--acc);color:var(--acc)}
-#ednrow,#edpctrow{display:flex;align-items:center;gap:8px}
-#ednval,#edpctval{flex:1 1 auto;text-align:center;font-size:30px;line-height:1.2}
-.rl{flex:0 0 auto;font-size:15px;color:var(--fg3);letter-spacing:.1em;line-height:1.2;min-width:76px}
-#edbtns{display:flex;gap:6px}
-#edbtns button{flex:1 1 0;min-height:50px;border-radius:8px;border:1px solid var(--line);font-size:19px;line-height:1.2}
-#eddone{background:var(--acc);color:#121212;border-color:var(--acc)}
-#eddel{color:var(--warn);border-color:#4a2320}
+
+/* ---------- inline cell edit (edit mode) ----------
+   the cell itself turns into one row: name field + done + delete. No modal, no
+   nested option panels — the only thing a user cell carries now is its text. */
+.cellform{grid-column:1 / -1;display:flex;gap:6px;align-items:stretch}
+.cellform input{
+  flex:1 1 auto;min-width:0;min-height:48px;font-size:18px;color:var(--fg);
+  background:var(--bg-elev);border:1px solid var(--acc-dim);border-radius:10px;
+  padding:8px 10px;line-height:1.2;
+}
+.cellform input:focus{outline:none;border-color:var(--acc)}
+.cellform button{
+  flex:0 0 auto;min-height:48px;min-width:64px;padding:0 12px;
+  border:1px solid var(--line);border-radius:10px;background:var(--panel);
+  font-size:17px;line-height:1.2;color:var(--fg2);
+}
+.cellform .cf-ok{background:var(--acc);color:#121212;border-color:var(--acc)}
+.cellform .cf-del{color:var(--warn);border-color:#4a2320}
 .hidden{display:none !important}
 </style>
 </head>
@@ -481,7 +494,7 @@ button{background:none;border:none;cursor:pointer}
 
 <div id="app">
   <div id="topbar">
-    <div id="wordmark">SESSION GUIDE — MADZINE · v260806</div>
+    <div id="wordmark">SESSION GUIDE — MADZINE · v260816</div>
     <div id="topright">
       <div id="connstate"></div>
       <button class="hue-btn" id="huebtn">HUE</button>
@@ -569,10 +582,21 @@ button{background:none;border:none;cursor:pointer}
         <div class="ghead" data-i18n="sec_mode"></div>
         <div class="ggrid c2" id="gridmode"></div>
       </div>
-      <div class="gsec" id="secact">
-        <div class="ghead" data-i18n="sec_act"></div>
-        <div class="ggrid" id="gridacts"></div>
-        <div class="ggrid cnum" id="gridnums"></div>
+      <div id="secact">
+        <div class="gsec">
+          <div class="ghead" data-i18n="sec_act"></div>
+          <div class="ggrid" id="gridacts"></div>
+        </div>
+        <div class="gsec">
+          <div class="ghead" data-i18n="sec_dyn"></div>
+          <div class="gnote" data-i18n="sec_dyn_note"></div>
+          <div class="ggrid cdyn" id="griddyn"></div>
+        </div>
+        <div class="gsec">
+          <div class="ghead" data-i18n="sec_tempo"></div>
+          <div class="ggrid ctdir" id="gridtdir"></div>
+          <div class="ggrid ctmp" id="gridtempo"></div>
+        </div>
       </div>
     </div>
 
@@ -634,41 +658,6 @@ button{background:none;border:none;cursor:pointer}
   <div id="hueinfo" data-i18n="hue_hint"></div>
 </div>
 
-<!-- CELL EDITOR -->
-<div id="editor">
-  <div class="h" data-i18n="ed_title"></div>
-  <input id="edlabel" type="text" maxlength="12" data-i18n-ph="ed_name_ph">
-  <div class="seg" id="edkind">
-    <button data-kind="time" data-i18n="ed_kind_time"></button>
-    <button data-kind="act" data-i18n="ed_kind_act"></button>
-  </div>
-  <div class="seg hidden" id="edfx">
-    <button data-fx="none" data-i18n="ed_fx_none"></button>
-    <button data-fx="dyn" data-i18n="ed_fx_dyn"></button>
-    <button data-fx="tempo" data-i18n="ed_fx_tempo"></button>
-  </div>
-  <div class="seg hidden" id="eddir">
-    <button data-dir="up"><span class="dl"></span></button>
-    <button data-dir="down"><span class="dl"></span></button>
-  </div>
-  <div id="ednrow" class="hidden">
-    <div class="rl" data-i18n="ed_bars_lab"></div>
-    <button class="nudge-btn" id="ednminus">-1</button>
-    <div id="ednval">4</div>
-    <button class="nudge-btn" id="ednplus">+1</button>
-  </div>
-  <div id="edpctrow" class="hidden">
-    <div class="rl" data-i18n="ed_pct_lab"></div>
-    <button class="nudge-btn" id="edpctminus">-1</button>
-    <div id="edpctval">10%</div>
-    <button class="nudge-btn" id="edpctplus">+1</button>
-  </div>
-  <div id="edbtns">
-    <button id="eddel" data-i18n="ed_delete"></button>
-    <button id="eddone" data-i18n="ed_done"></button>
-  </div>
-</div>
-
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <script>
 "use strict";
@@ -711,21 +700,21 @@ var I18N = {
   metro_start:"節拍器 開始",   metro_stop:"節拍器 停止",
   sound_on:"音效 開",          sound_off:"音效 關",
   edit_on:"編輯格子",          edit_off:"完成編輯",
-  add_cell:"新增格子",         new_cell_label:"新指令",
   bars_unit:"{n} 小節",
   clear_all:"清空",            start:"開始",
   count_sub:"小節倒數",        count_cancel:"取消倒數",
   flash_default:"開始",
   fol_wait:"等待 leader 指令",
   hue_hint:"外環 色相 · 中心 上下拖曳 飽和度",
-  ed_title:"格子設定",         ed_name_ph:"名稱",
-  ramp_up:"漸強",              ramp_down:"漸弱",
   ramp_sub:"剩餘小節",         ramp_cancel:"取消漸變",
-  ramp_cell:"{n} 小節漸變",
-  ed_delete:"刪除",            ed_done:"完成",
+  cell_name_ph:"格子名稱",     cell_bars_ph:"小節數",
+  cell_done:"完成",            cell_delete:"刪除",
   sec_time:"1 — 經過多久（可省略）",
   sec_mode:"2 — 馬上或逐漸（可省略）",
   sec_act:"3 — 做什麼（必選）· 再點一格 = 然後做什麼",
+  sec_dyn:"力度",
+  sec_dyn_note:"5 是中間力度 · 100 是超越全力",
+  sec_tempo:"速度 — 先選快或慢，再選幅度",
   slot_now:"馬上",             slot_grad:"逐漸",
   sent_now:"馬上 {a}",
   sent_after:"{n} 小節後 {a}",
@@ -734,14 +723,11 @@ var I18N = {
   next_up:"然後 {a}",
   hint_pick_act:"先選一個動作格，再按開始",
   warn_need_bars:"「逐漸」需要先選小節數",
+  warn_need_tempo_dir:"速度要先選「快」或「慢」",
   tempo_host_only:"速度變化只有房主可以發送",
   bars_over:"{n} 小節內",
   add_time:"新增時間格",       add_act:"新增動作格",
   new_act_label:"新動作",
-  ed_kind_time:"時間",         ed_kind_act:"動作",
-  ed_fx_none:"一般",           ed_fx_dyn:"力度",         ed_fx_tempo:"速度",
-  ed_bars_lab:"小節數",        ed_pct_lab:"幅度",
-  act_louder:"吵",             act_quieter:"安靜",
   act_faster:"快",             act_slower:"慢",
   act_solo:"SOLO",             act_head:"回主題",
   act_ending:"結尾",           act_stop:"停止",
@@ -779,21 +765,21 @@ var I18N = {
   metro_start:"Start Click",   metro_stop:"Stop Click",
   sound_on:"Sound On",         sound_off:"Sound Off",
   edit_on:"Edit Cells",        edit_off:"Done Editing",
-  add_cell:"Add Cell",         new_cell_label:"New Cue",
   bars_unit:"{n} BARS",
   clear_all:"Clear",           start:"Start",
   count_sub:"BARS TO GO",      count_cancel:"Cancel Countdown",
   flash_default:"START",
   fol_wait:"Waiting for leader cue",
   hue_hint:"Ring hue · Center drag saturation",
-  ed_title:"CELL SETTINGS",    ed_name_ph:"Name",
-  ramp_up:"Build Up",          ramp_down:"Wind Down",
   ramp_sub:"BARS REMAINING",   ramp_cancel:"Cancel Gradual",
-  ramp_cell:"OVER {n} BARS",
-  ed_delete:"Delete",          ed_done:"Done",
+  cell_name_ph:"Cell name",    cell_bars_ph:"Bars",
+  cell_done:"Done",            cell_delete:"Delete",
   sec_time:"1 — HOW LONG (OPTIONAL)",
   sec_mode:"2 — AT ONCE OR GRADUALLY (OPTIONAL)",
   sec_act:"3 — WHAT (REQUIRED) · SECOND TAP = NEXT",
+  sec_dyn:"INTENSITY",
+  sec_dyn_note:"5 is the middle · 100 is beyond everything",
+  sec_tempo:"TEMPO — PICK FAST OR SLOW, THEN THE AMOUNT",
   slot_now:"At Once",          slot_grad:"Gradually",
   sent_now:"Now: {a}",
   sent_after:"After {n} bars: {a}",
@@ -802,14 +788,11 @@ var I18N = {
   next_up:"then {a}",
   hint_pick_act:"Pick an action, then press Start",
   warn_need_bars:"Gradually needs a bar count",
+  warn_need_tempo_dir:"Pick Fast or Slow before the amount",
   tempo_host_only:"Tempo changes can only be sent by the host",
   bars_over:"OVER {n} BARS",
   add_time:"Add Bars Cell",    add_act:"Add Action",
   new_act_label:"New Action",
-  ed_kind_time:"Bars",         ed_kind_act:"Action",
-  ed_fx_none:"Plain",          ed_fx_dyn:"Dynamics",     ed_fx_tempo:"Tempo",
-  ed_bars_lab:"BARS",          ed_pct_lab:"AMOUNT",
-  act_louder:"Loud",           act_quieter:"Quiet",
   act_faster:"Fast",           act_slower:"Slow",
   act_solo:"SOLO",             act_head:"Back to Head",
   act_ending:"Ending",         act_stop:"Stop",
@@ -847,21 +830,21 @@ var I18N = {
   metro_start:"クリック開始",   metro_stop:"クリック停止",
   sound_on:"音 オン",           sound_off:"音 オフ",
   edit_on:"セル編集",           edit_off:"編集完了",
-  add_cell:"セルを追加",        new_cell_label:"新規キュー",
   bars_unit:"{n} 小節",
   clear_all:"クリア",           start:"スタート",
   count_sub:"小節カウント",     count_cancel:"カウント中止",
   flash_default:"スタート",
   fol_wait:"リーダーのキュー待ち",
   hue_hint:"外周 色相 · 中央 上下ドラッグ 彩度",
-  ed_title:"セル設定",          ed_name_ph:"名前",
-  ramp_up:"だんだん強く",       ramp_down:"だんだん弱く",
   ramp_sub:"残り小節",          ramp_cancel:"変化を中止",
-  ramp_cell:"{n} 小節かけて",
-  ed_delete:"削除",             ed_done:"完了",
+  cell_name_ph:"セル名",        cell_bars_ph:"小節数",
+  cell_done:"完了",             cell_delete:"削除",
   sec_time:"1 — どれくらい後（省略可）",
   sec_mode:"2 — すぐに か 徐々に（省略可）",
   sec_act:"3 — 何をする（必須）· もう一つ選ぶと その後",
+  sec_dyn:"強さ",
+  sec_dyn_note:"5 が中間 · 100 は全力を超える",
+  sec_tempo:"テンポ — 速く か 遅く を選んでから量を選ぶ",
   slot_now:"すぐに",            slot_grad:"徐々に",
   sent_now:"すぐに {a}",
   sent_after:"{n} 小節後 {a}",
@@ -870,14 +853,11 @@ var I18N = {
   next_up:"その後 {a}",
   hint_pick_act:"アクションを選んでからスタート",
   warn_need_bars:"「徐々に」には小節数が必要です",
+  warn_need_tempo_dir:"テンポは先に「速く」か「遅く」を選びます",
   tempo_host_only:"テンポ変更はホストのみ送信できます",
   bars_over:"{n} 小節かけて",
   add_time:"小節セルを追加",    add_act:"アクションセルを追加",
   new_act_label:"新規アクション",
-  ed_kind_time:"小節",          ed_kind_act:"アクション",
-  ed_fx_none:"通常",            ed_fx_dyn:"強弱",        ed_fx_tempo:"テンポ",
-  ed_bars_lab:"小節数",         ed_pct_lab:"変化量",
-  act_louder:"強く",            act_quieter:"静かに",
   act_faster:"速く",            act_slower:"遅く",
   act_solo:"SOLO",              act_head:"テーマへ",
   act_ending:"エンディング",     act_stop:"停止",
@@ -1085,7 +1065,7 @@ huebtn.addEventListener("click", function(e){
   if(huepop.classList.contains("show")) closeHue(); else openHue();
 });
 // tap anywhere outside closes (mandatory behaviour)
-scrim.addEventListener("pointerdown", function(){ closeHue(); closeEditor(); });
+scrim.addEventListener("pointerdown", function(){ closeHue(); });
 huepop.addEventListener("pointerdown", function(e){ e.stopPropagation(); });
 
 /* =========================================================
@@ -1102,56 +1082,83 @@ var METERS = [
    Cell model (v3): a command is a four slot sentence.
      1 time   {kind:"time", n}                      optional -> now
      2 mode   {kind:"mode", mode:"now"|"gradual"}   optional -> at once
-     3 action {kind:"act", fx, dir, pct}            REQUIRED
+     3 action {kind:"act", ...}                     REQUIRED
      4 action (a second tap on the action grid)     optional
 
    Slot 1 is read through slot 2:
      time + at once   = delay      -> fires in one go after N bars
      time + gradually = duration   -> spreads the change across N bars
    Slot 4 runs the instant the first segment ends and carries no time of its own.
+
+   Slot 3/4 is offered as three permanent groups:
+     a) user cells   — stored in sg_cells, editable, carry a name and nothing else
+     b) intensity    — built in, 1..9 and 100, display only (fx "none")
+     c) tempo        — built in, a fast/slow direction cell pair plus six amounts
+   b) and c) are program constants: they are never written to sg_cells, never
+   editable and never deletable.
    --------------------------------------------------------- */
-var CELLS_VER = 5;
+var CELLS_VER = 6;
 var DEFAULT_TIME_DEFS = [2, 4, 8, 16];
 var DEFAULT_MODE_DEFS = [
   {id:"mn", mode:"now"},
   {id:"mg", mode:"gradual"}
 ];
 var DEFAULT_ACT_DEFS = [
-  {id:"a1", key:"act_louder",  fx:"dyn",   dir:"up"},
-  {id:"a2", key:"act_quieter", fx:"dyn",   dir:"down"},
-  {id:"a3", key:"act_faster",  fx:"tempo", dir:"up",   pct:10},
-  {id:"a4", key:"act_slower",  fx:"tempo", dir:"down", pct:10},
-  {id:"a5", key:"act_solo",    fx:"none"},
-  {id:"a6", key:"act_head",    fx:"none"},
-  {id:"a7", key:"act_ending",  fx:"none"},
-  {id:"a8", key:"act_stop",    fx:"none"},
-  {id:"a9", key:"act_free",    fx:"none"}
+  {id:"a5", key:"act_solo"},
+  {id:"a6", key:"act_head"},
+  {id:"a7", key:"act_ending"},
+  {id:"a8", key:"act_stop"},
+  {id:"a9", key:"act_free"}
 ];
-/* Plain number actions 0..10. A digit reads the same in every language, so the
-   label is stored on the cell instead of going through an i18n key: a language
-   switch rebuilds it to exactly the same face. `num:true` only routes it to the
-   dense grid row — in every other respect it is an ordinary action cell. */
-var DEFAULT_NUM_DEFS = (function(){
-  var out = [];
-  for(var i=0;i<=10;i++) out.push({id:"n"+i, label:String(i)});
+/* ---------------------------------------------------------
+   Fixed cells (never stored, never edited)
+   Intensity is a display-only cue: the number itself is the instruction, so it
+   reads the same in every language and carries no engine side effect.
+   Tempo is a ratio applied to the tempo in force at the moment it lands:
+   fast x 1.1 / 1.2 / 1.3 / 2 / 3 / 4, slow being the reciprocal side of each.
+   --------------------------------------------------------- */
+var DYN_DEFS = ["1","2","3","4","5","6","7","8","9","100"];
+var TEMPO_DEFS = [
+  {id:"tr10", label:"10%", up:1.1, down:0.9},
+  {id:"tr20", label:"20%", up:1.2, down:0.8},
+  {id:"tr30", label:"30%", up:1.3, down:0.7},
+  {id:"tx2",  label:"x2",  up:2,   down:0.5},
+  {id:"tx3",  label:"x3",  up:3,   down:1/3},
+  {id:"tx4",  label:"x4",  up:4,   down:0.25}
+];
+var FIXED_CELLS = (function(){
+  var out = DYN_DEFS.map(function(v){
+    return {id:"d"+v, kind:"act", fixed:"dyn", label:v, fx:"none"};
+  });
+  TEMPO_DEFS.forEach(function(d){
+    out.push({id:d.id, kind:"act", fixed:"tempo", label:d.label,
+              fx:"tempo", up:d.up, down:d.down});
+  });
+  out.push({id:"tdu", kind:"tdir", dir:"up"});
+  out.push({id:"tdd", kind:"tdir", dir:"down"});
   return out;
 })();
-function numCellsFromDefs(){
-  return DEFAULT_NUM_DEFS.map(function(d){
-    return {id:d.id, kind:"act", num:true, label:d.label, fx:"none", dir:"up", pct:10};
-  });
-}
-/* the dense row holds every action cell that was built as a number cell */
-function isNumCell(c){
-  if(!c || c.kind === "time" || c.kind === "mode") return false;
-  return c.num === true;
-}
 /* Time and mode cells have no stored text unless the user typed one, so their
    face always reads correctly after a language switch. */
 function cellText(c){
   if(c.kind === "time") return c.label || t("bars_unit", clamp(parseInt(c.n,10)||4,1,64));
   if(c.kind === "mode") return t(c.mode === "gradual" ? "slot_grad" : "slot_now");
+  if(c.kind === "tdir") return t(c.dir === "down" ? "act_slower" : "act_faster");
   return c.label || t("new_act_label");
+}
+/* a user cell is the only kind that can be renamed or deleted */
+function isUserCell(c){ return !!c && !c.fixed && c.kind !== "mode" && c.kind !== "tdir"; }
+/* the direction picked in the tempo group; null until one is tapped */
+function tdirCell(){ return S.cmp.tdirId ? cellById(S.cmp.tdirId) : null; }
+function tdirDown(){ var d = tdirCell(); return !!d && d.dir === "down"; }
+/* the text a cell contributes to the sentence and to the cue overlay. A tempo
+   amount only means something together with its direction, so the direction
+   word is prefixed there and nowhere else. */
+function actLabel(c){
+  if(c.fixed === "tempo" && S.cmp.tdirId){
+    return t(tdirDown() ? "act_slower" : "act_faster") + " " + c.label;
+  }
+  return cellText(c);
 }
 /* Built in the current language. Once the user edits a cell the set is written
    to localStorage and is never regenerated on a language switch. */
@@ -1163,16 +1170,19 @@ function defaultCells(){
     out.push({id:c.id, kind:"mode", mode:c.mode});
   });
   DEFAULT_ACT_DEFS.forEach(function(c){
-    out.push({id:c.id, kind:"act", label:t(c.key), fx:c.fx,
-              dir:c.dir || "up", pct:c.pct || 10});
+    out.push({id:c.id, kind:"act", label:t(c.key), fx:"none"});
   });
-  numCellsFromDefs().forEach(function(c){ out.push(c); });
   return out;
 }
 function cellsAreCustom(){
   try{ return !!localStorage.getItem("sg_cells"); }catch(err){ return false; }
 }
-function cellById(id){ return S.cells.filter(function(c){ return c.id === id; })[0] || null; }
+/* the fixed groups are looked up here too: the compose slots only ever hold ids */
+function cellById(id){
+  var c = S.cells.filter(function(x){ return x.id === id; })[0];
+  if(c) return c;
+  return FIXED_CELLS.filter(function(x){ return x.id === id; })[0] || null;
+}
 /* the two mode cells are structural: a set that lost them gets them back */
 function ensureModeCells(arr){
   var have = {};
@@ -1205,7 +1215,7 @@ var S = {
   metroBeat0:0,           // absolute beat position of the metronome downbeat
   cells: loadCells(),
   /* the sentence under construction; nothing leaves the device until START */
-  cmp:{timeId:null, modeId:null, actId:null, act2Id:null},
+  cmp:{timeId:null, modeId:null, actId:null, act2Id:null, tdirId:null},
   warnKey:null, warnUntil:0,
   count:null,             // {startAt, startBeat, bars, label, from, fx}
   ramp:null,              // {startAt, startBeat, bars, label, dir, from, fx}
@@ -1234,21 +1244,33 @@ function loadCells(){
   needMigrateSave = true;                    // written back once, right after init
   if(ver < 3) arr = ver >= 2 ? migrateV2(arr) : migrateV1(arr);
   if(ver < 4) arr = migrateV3(arr);
-  return ensureModeCells(migrateV4(arr));
+  return ensureModeCells(migrateV5(arr));
 }
 /* ---------------------------------------------------------
-   v4 -> v5
-   The built-in number actions 0..10 were added. A set saved before v5 has none
-   of them, so the missing ones are appended. A number cell the user already
-   deleted in this session cannot be told apart from one that never existed, so
-   this runs once per upgrade only — the result is written back at v5 and the
-   check never fires again.
+   v5 (and earlier) -> v6
+   Intensity and tempo became built-in groups, so the stored set keeps nothing
+   but named actions and time cells:
+     - the number cells 0..10 (num:true) are dropped, the intensity group
+       replaces them;
+     - the four built-in modifier actions a1..a4 (loud / quiet / fast / slow)
+       are dropped, the intensity and tempo groups replace them;
+     - every remaining action loses fx / dir / pct — a user cell now carries a
+       name and nothing else;
+     - time cells pass through untouched.
+   A cell the user renamed but that still has id a1..a4 goes with them: the id
+   is the only thing that identifies the four built-ins.
    --------------------------------------------------------- */
-function migrateV4(arr){
-  var have = {};
-  arr.forEach(function(c){ if(c && c.id) have[c.id] = 1; });
-  var add = numCellsFromDefs().filter(function(c){ return !have[c.id]; });
-  return add.length ? arr.concat(add) : arr;
+function migrateV5(arr){
+  var DROP = {a1:1, a2:1, a3:1, a4:1};
+  return arr.filter(function(c){
+    return !!c && c.num !== true && !DROP[c.id];
+  }).map(function(c){
+    if(c.kind === "time" || c.kind === "mode") return c;
+    c.kind = "act";
+    c.fx = "none";
+    delete c.dir; delete c.pct; delete c.num;
+    return c;
+  });
 }
 /* ---------------------------------------------------------
    v3 -> v4
@@ -1285,9 +1307,10 @@ function isLegacyAutoLabel(label, n){
   }
   return false;
 }
-function newAct(id, label, fx, dir, pct){
-  return {id:id, kind:"act", label:label, fx:fx || "none",
-          dir:dir === "down" ? "down" : "up", pct:clamp(parseInt(pct,10)||10,0,90)};
+/* every migrated action lands as a plain named cue: intensity and tempo are
+   built-in groups now, so a stored cell carries no effect of its own */
+function newAct(id, label){
+  return {id:id, kind:"act", label:label, fx:"none"};
 }
 /* ---------------------------------------------------------
    v2 -> v3
@@ -1310,7 +1333,7 @@ function migrateV2(old){
       times.push(cell);
     }else{
       acts.push(newAct(c.id || ("a"+Math.random().toString(36).slice(2,8)),
-                       c.label || t("new_act_label"), c.fx, c.dir, c.pct));
+                       c.label || t("new_act_label")));
     }
   });
   if(!times.length) times = DEFAULT_TIME_DEFS.map(function(n){ return {id:"t"+n, kind:"time", n:n}; });
@@ -1321,7 +1344,7 @@ function migrateV2(old){
    v1 -> v3
      cue  -> action
      bars -> action, plus a time cell of N bars
-     ramp -> action (dynamics, keeps its direction), plus a time cell of N bars
+     ramp -> action, plus a time cell of N bars
    Custom labels are preserved verbatim; nothing is dropped.
    --------------------------------------------------------- */
 function migrateV1(old){
@@ -1330,15 +1353,10 @@ function migrateV1(old){
     if(!c) return;
     var lab = c.label || t("new_act_label");
     var id  = c.id || ("a" + Math.random().toString(36).slice(2,8));
-    if(c.type === "bars"){
+    if(c.type === "bars" || c.type === "ramp"){
       ns[clamp(parseInt(c.n,10) || 4, 1, 64)] = 1;
-      acts.push(newAct(id, lab, "none", "up", 10));
-    }else if(c.type === "ramp"){
-      ns[clamp(parseInt(c.n,10) || 4, 1, 64)] = 1;
-      acts.push(newAct(id, lab, "dyn", c.dir, 10));
-    }else{
-      acts.push(newAct(id, lab, "none", "up", 10));
     }
+    acts.push(newAct(id, lab));
   });
   var keys = Object.keys(ns);
   if(!keys.length) keys = DEFAULT_TIME_DEFS.map(String);
@@ -1686,10 +1704,7 @@ function applyPermissions(){
   document.getElementById("editbtn").classList.toggle("hidden", !host);   // cell editing: host only
   document.getElementById("metrobtn").classList.toggle("hidden", !host);
   document.getElementById("rolebtn").classList.toggle("hidden", host);
-  if(S.editMode && !host){
-    S.editMode = false;
-    document.getElementById("editbtn").classList.remove("on");
-  }
+  if(S.editMode && !host) setEditMode(false);
   if(!cue) clearCompose();
   renderRoleBtn();
   renderTapInfo();
@@ -1914,16 +1929,20 @@ function click(when, strong){
 /* =========================================================
    CELLS / GRID
    ========================================================= */
-var gridTime = document.getElementById("gridtime");
-var gridMode = document.getElementById("gridmode");
-var gridActs = document.getElementById("gridacts");
-var gridNums = document.getElementById("gridnums");
+var gridTime  = document.getElementById("gridtime");
+var gridMode  = document.getElementById("gridmode");
+var gridActs  = document.getElementById("gridacts");
+var gridDyn   = document.getElementById("griddyn");
+var gridTdir  = document.getElementById("gridtdir");
+var gridTempo = document.getElementById("gridtempo");
 
 function bindCell(b, id, onTap){
   var lpTimer=null, moved=false;
   b.addEventListener("pointerdown", function(){
     moved = false;
-    lpTimer = setTimeout(function(){ lpTimer=null; if(id && isHost()) openEditor(id); }, 600);
+    /* long press is a shortcut into edit mode for that one cell; only user
+       cells pass an id, so a fixed cell can never be reached this way */
+    lpTimer = setTimeout(function(){ lpTimer=null; if(id && isHost()) startCellEdit(id); }, 600);
   });
   b.addEventListener("pointermove", function(){ moved = true; });
   b.addEventListener("pointerup", function(){
@@ -1931,52 +1950,89 @@ function bindCell(b, id, onTap){
   });
   b.addEventListener("pointercancel", function(){ clearTimeout(lpTimer); lpTimer=null; });
 }
-function gridOf(kind, c){
-  if(kind === "time") return gridTime;
-  if(kind === "mode") return gridMode;
-  return isNumCell(c) ? gridNums : gridActs;
+function gridOf(c){
+  if(c.kind === "time") return gridTime;
+  if(c.kind === "mode") return gridMode;
+  if(c.kind === "tdir") return gridTdir;
+  if(c.fixed === "dyn")   return gridDyn;
+  if(c.fixed === "tempo") return gridTempo;
+  return gridActs;
+}
+/* the cell being renamed is replaced in place by one input + done + delete */
+var focusEditInput = false;
+function cellForm(c){
+  var wrap = document.createElement("div");
+  wrap.className = "cellform";
+  var isTime = c.kind === "time";
+  var inp = document.createElement("input");
+  inp.type = "text";
+  inp.maxLength = isTime ? 2 : 12;
+  inp.autocomplete = "off"; inp.spellcheck = false;
+  if(isTime){
+    inp.inputMode = "numeric";
+    inp.value = String(clamp(parseInt(c.n,10)||4,1,64));
+  }else{
+    inp.value = c.label || "";
+  }
+  inp.placeholder = t(isTime ? "cell_bars_ph" : "cell_name_ph");
+  inp.addEventListener("keydown", function(e){
+    if(e.key === "Enter") commitCellEdit(c.id, inp.value);
+  });
+  var ok = document.createElement("button");
+  ok.className = "cf-ok"; ok.textContent = t("cell_done");
+  ok.addEventListener("click", function(){ commitCellEdit(c.id, inp.value); });
+  var del = document.createElement("button");
+  del.className = "cf-del"; del.textContent = t("cell_delete");
+  del.addEventListener("click", function(){ deleteCell(c.id); });
+  wrap.appendChild(inp); wrap.appendChild(ok); wrap.appendChild(del);
+  return wrap;
+}
+function renderCell(c){
+  var grid = gridOf(c);
+  if(S.editMode && isHost() && S.editId === c.id && isUserCell(c)){
+    grid.appendChild(cellForm(c));
+    focusEditInput = true;
+    return;
+  }
+  var kind = (c.kind === "time" || c.kind === "mode" || c.kind === "tdir") ? c.kind : "act";
+  var b = document.createElement("button");
+  b.className = "cell " + kind + (c.fixed ? " " + (c.fixed === "dyn" ? "dyn" : "tmp") : "");
+  /* mode, tempo direction and the two fixed groups are structural: only user
+     cells ever enter the editable set */
+  if(S.editMode && isUserCell(c)) b.className += " editing";
+  if(isPicked(c)) b.className += " sel";
+  var lab = document.createElement("div");
+  lab.className = "lab"; lab.textContent = cellText(c);
+  b.appendChild(lab);
+  if(kind === "act" && (S.cmp.actId === c.id || S.cmp.act2Id === c.id)){
+    var sl = document.createElement("div");
+    sl.className = "slot";
+    sl.textContent = (S.cmp.actId === c.id) ? "3" : "4";
+    b.appendChild(sl);
+  }
+  bindCell(b, isUserCell(c) ? c.id : null, function(){ cellTap(c); });
+  grid.appendChild(b);
 }
 function renderGrid(){
-  gridTime.innerHTML = ""; gridMode.innerHTML = "";
-  gridActs.innerHTML = ""; gridNums.innerHTML = "";
-  S.cells.forEach(function(c){
-    var kind = (c.kind === "time" || c.kind === "mode") ? c.kind : "act";
-    var b = document.createElement("button");
-    b.className = "cell " + kind + (isNumCell(c) ? " num" : "");
-    /* mode cells are structural, so they are never in the editable set */
-    if(S.editMode && kind !== "mode") b.className += " editing";
-    if(isPicked(c)) b.className += " sel";
-    var lab = document.createElement("div");
-    lab.className = "lab"; lab.textContent = cellText(c);
-    b.appendChild(lab);
-    if(kind === "act"){
-      if(S.cmp.actId === c.id || S.cmp.act2Id === c.id){
-        var sl = document.createElement("div");
-        sl.className = "slot";
-        sl.textContent = (S.cmp.actId === c.id) ? "3" : "4";
-        b.appendChild(sl);
-      }
-      /* no cresc./decresc. wedge here: "gradually" is its own slot now, so a
-         dynamics action carries no shape of its own — only its label */
-      if(c.fx === "tempo"){
-        var p = document.createElement("div");
-        p.className = "n";
-        p.textContent = (c.dir === "down" ? "-" : "+") + (c.pct || 10) + "%";
-        b.appendChild(p);
-      }
-    }
-    bindCell(b, kind === "mode" ? null : c.id, function(){ cellTap(c); });
-    gridOf(kind, c).appendChild(b);
-  });
+  gridTime.innerHTML = ""; gridMode.innerHTML = ""; gridActs.innerHTML = "";
+  gridDyn.innerHTML = ""; gridTdir.innerHTML = ""; gridTempo.innerHTML = "";
+  focusEditInput = false;
+  S.cells.forEach(renderCell);
+  FIXED_CELLS.forEach(renderCell);
   if(S.editMode){
     gridTime.appendChild(addButton("time"));
     gridActs.appendChild(addButton("act"));
+  }
+  if(focusEditInput){
+    var inp = document.querySelector(".cellform input");
+    if(inp){ try{ inp.focus(); inp.select(); }catch(err){} }
   }
   renderCompose();
 }
 function isPicked(c){
   if(c.kind === "time") return S.cmp.timeId === c.id;
   if(c.kind === "mode") return S.cmp.modeId === c.id;
+  if(c.kind === "tdir") return S.cmp.tdirId === c.id;
   return S.cmp.actId === c.id || S.cmp.act2Id === c.id;
 }
 function addButton(kind){
@@ -1989,15 +2045,50 @@ function addButton(kind){
 function addCell(kind){
   var c = (kind === "time")
     ? {id:"t"+Date.now(), kind:"time", n:4}
-    : {id:"a"+Date.now(), kind:"act", label:t("new_act_label"), fx:"none", dir:"up", pct:10};
-  S.cells.push(c); saveCells(); renderGrid(); openEditor(c.id);
+    : {id:"a"+Date.now(), kind:"act", label:t("new_act_label"), fx:"none"};
+  S.cells.push(c); saveCells();
+  S.editId = c.id;
+  renderGrid();
+}
+/* ---------- inline cell edit ---------- */
+function startCellEdit(id){
+  if(!isHost()) return;                        // cell editing is host-only
+  var c = cellById(id);
+  if(!isUserCell(c)) return;
+  if(!S.editMode) setEditMode(true);
+  S.editId = id;
+  clearCompose();
+  renderGrid();
+}
+function commitCellEdit(id, val){
+  var c = cellById(id);
+  if(isUserCell(c)){
+    if(c.kind === "time"){
+      c.n = clamp(parseInt(val,10)||4, 1, 64);
+      delete c.label;                          // bars cells follow the language
+    }else{
+      c.label = String(val).trim().slice(0,12) || c.label || t("new_act_label");
+      c.fx = "none";
+    }
+    saveCells();
+  }
+  S.editId = null;
+  clearCompose();                              // an edited cell may be in the sentence
+  renderGrid();
+}
+function deleteCell(id){
+  S.cells = S.cells.filter(function(x){ return x.id !== id; });
+  saveCells();
+  S.editId = null;
+  clearCompose();
+  renderGrid();
 }
 
 /* =========================================================
    SENTENCE COMPOSITION  (nothing is broadcast before START)
    ========================================================= */
 function clearCompose(){
-  S.cmp = {timeId:null, modeId:null, actId:null, act2Id:null};
+  S.cmp = {timeId:null, modeId:null, actId:null, act2Id:null, tdirId:null};
   S.warnKey = null; S.warnUntil = 0;
 }
 function warn(key){
@@ -2005,13 +2096,15 @@ function warn(key){
   renderCompose();
 }
 function cellTap(c){
-  if(S.editMode && isHost()){ if(c.kind !== "mode") openEditor(c.id); return; }
+  if(S.editMode && isHost()){ if(isUserCell(c)) startCellEdit(c.id); return; }
   if(!canCue()) return;
   S.warnKey = null;
   if(c.kind === "time"){
     S.cmp.timeId = (S.cmp.timeId === c.id) ? null : c.id;      // tap again = cancel
   }else if(c.kind === "mode"){
     S.cmp.modeId = (S.cmp.modeId === c.id) ? null : c.id;
+  }else if(c.kind === "tdir"){
+    S.cmp.tdirId = (S.cmp.tdirId === c.id) ? null : c.id;
   }else{
     if(S.cmp.actId === c.id){
       /* cancelling slot 3 promotes slot 4, so slot 4 is never left orphaned */
@@ -2038,17 +2131,27 @@ function sentenceText(){
   var act = cmpAct();
   if(!act) return "";
   var tc = cmpTime(), s;
-  if(!tc)              s = tf("sent_now",   {a:cellText(act)});
-  else if(isGradual()) s = tf("sent_grad",  {n:barsOf(tc), a:cellText(act)});
-  else                 s = tf("sent_after", {n:barsOf(tc), a:cellText(act)});
+  if(!tc)              s = tf("sent_now",   {a:actLabel(act)});
+  else if(isGradual()) s = tf("sent_grad",  {n:barsOf(tc), a:actLabel(act)});
+  else                 s = tf("sent_after", {n:barsOf(tc), a:actLabel(act)});
   var a2 = cmpAct2();
-  if(a2) s = tf("sent_then", {a:s, b:cellText(a2)});
+  if(a2) s = tf("sent_then", {a:s, b:actLabel(a2)});
   return s;
 }
+/* a tempo cell carries a ratio applied to the tempo in force when it lands;
+   everything else is display only and rides as fx "none" with ratio 1 */
 function actPayload(c){
-  return {label:cellText(c), fx:c.fx || "none",
-          dir:c.dir === "down" ? "down" : "up",
-          pct:clamp(parseInt(c.pct,10) || 0, 0, 90)};
+  if(c.fixed === "tempo"){
+    var down = tdirDown();
+    return {label:actLabel(c), fx:"tempo",
+            dir:down ? "down" : "up", ratio:(down ? c.down : c.up)};
+  }
+  return {label:actLabel(c), fx:"none", dir:"up", ratio:1};
+}
+/* a tempo amount means nothing without a direction */
+function needsTdir(){
+  var a = cmpAct(), b = cmpAct2();
+  return (!!a && a.fixed === "tempo") || (!!b && b.fixed === "tempo");
 }
 function renderCompose(){
   var bar = document.getElementById("composebar");
@@ -2070,6 +2173,7 @@ function sendSentence(){
   if(!act){ warn("hint_pick_act"); return; }
   var tc = cmpTime();
   if(isGradual() && !tc){ warn("warn_need_bars"); return; }   // gradual needs a duration
+  if(needsTdir() && !S.cmp.tdirId){ warn("warn_need_tempo_dir"); return; }
   var a2 = cmpAct2();
   var cmd = actPayload(act);
   cmd.mode = !tc ? "now" : (isGradual() ? "gradual" : "after");
@@ -2086,119 +2190,19 @@ document.getElementById("startbtn").addEventListener("click", sendSentence);
 document.getElementById("clearbtn").addEventListener("click", function(){
   clearCompose(); renderGrid();
 });
+function setEditMode(v){
+  S.editMode = !!v;
+  var b = document.getElementById("editbtn");
+  b.classList.toggle("on", S.editMode);
+  b.textContent = t(S.editMode ? "edit_off" : "edit_on");
+  if(!S.editMode) S.editId = null;
+  clearCompose();
+}
 document.getElementById("editbtn").addEventListener("click", function(){
   if(!isHost()) return;                        // cell editing is host-only
-  S.editMode = !S.editMode;
-  document.getElementById("editbtn").classList.toggle("on", S.editMode);
-  document.getElementById("editbtn").textContent = t(S.editMode ? "edit_off" : "edit_on");
-  if(S.editMode) clearCompose();
+  setEditMode(!S.editMode);
   renderGrid();
 });
-
-/* ---------- cell editor ---------- */
-var editorEl = document.getElementById("editor");
-var curEdKind = "act", curEdFx = "none", curEdDir = "up";
-function openEditor(id){
-  if(!isHost()) return;                        // cell editing is host-only
-  var c = cellById(id);
-  if(!c || c.kind === "mode") return;          // the two mode cells are fixed
-  S.editId = id;
-  document.getElementById("edlabel").value = c.label || "";
-  document.getElementById("ednval").textContent = clamp(parseInt(c.n,10)||4,1,64);
-  document.getElementById("edpctval").textContent = clamp(parseInt(c.pct,10)||10,0,90) + "%";
-  setEdDir(c.dir === "down" ? "down" : "up");
-  setEdFx(c.fx || "none");
-  setEdKind(c.kind === "time" ? "time" : "act");
-  editorEl.classList.add("show");
-  scrim.classList.add("show");
-}
-function closeEditor(){
-  if(!editorEl.classList.contains("show")) return;
-  var c = cellById(S.editId);
-  if(c){
-    var v = document.getElementById("edlabel").value.trim();
-    var n = clamp(parseInt(document.getElementById("ednval").textContent,10)||4,1,64);
-    c.kind = curEdKind;
-    if(curEdKind === "time"){
-      c.n = n;
-      /* an empty name means "follow the language", so the face stays correct */
-      if(v) c.label = v; else delete c.label;
-      c.fx = "none";
-    }else{
-      c.label = v || c.label || t("new_act_label");
-      c.fx = curEdFx;
-      c.dir = curEdDir;
-      c.pct = clamp(parseInt(document.getElementById("edpctval").textContent,10)||10,0,90);
-    }
-    saveCells();
-  }
-  editorEl.classList.remove("show");
-  scrim.classList.remove("show");
-  S.editId = null;
-  clearCompose();               // an edited cell may no longer fit its slot
-  renderGrid();
-}
-function segOn(sel, attr, v){
-  Array.prototype.forEach.call(document.querySelectorAll(sel), function(b){
-    b.classList.toggle("on", b.getAttribute(attr) === v);
-  });
-}
-function setEdKind(v){
-  curEdKind = v;
-  segOn("#edkind button","data-kind",v);
-  document.getElementById("edfx").classList.toggle("hidden", v === "time");
-  updEdRows();
-}
-function setEdFx(v){   curEdFx   = v; segOn("#edfx button","data-fx",v);     updEdRows(); }
-function setEdDir(v){  curEdDir  = v; segOn("#eddir button","data-dir",v); }
-function updEdRows(){
-  var isTime = curEdKind === "time";
-  document.getElementById("ednrow").classList.toggle("hidden", !isTime);
-  document.getElementById("eddir").classList.toggle("hidden", isTime || curEdFx === "none");
-  document.getElementById("edpctrow").classList.toggle("hidden", isTime || curEdFx !== "tempo");
-  var labs = document.querySelectorAll("#eddir .dl");
-  if(labs.length === 2){
-    /* direction names the target state, not a change: 吵 / 安靜, 快 / 慢 */
-    labs[0].textContent = t(curEdFx === "tempo" ? "act_faster" : "act_louder");
-    labs[1].textContent = t(curEdFx === "tempo" ? "act_slower" : "act_quieter");
-  }
-}
-Array.prototype.forEach.call(document.querySelectorAll("#edkind button"), function(b){
-  b.addEventListener("click", function(){ setEdKind(b.getAttribute("data-kind")); });
-});
-Array.prototype.forEach.call(document.querySelectorAll("#edfx button"), function(b){
-  b.addEventListener("click", function(){ setEdFx(b.getAttribute("data-fx")); });
-});
-Array.prototype.forEach.call(document.querySelectorAll("#eddir button"), function(b){
-  b.addEventListener("click", function(){ setEdDir(b.getAttribute("data-dir")); });
-});
-document.getElementById("ednminus").addEventListener("click", function(){
-  var v = parseInt(document.getElementById("ednval").textContent,10)||4;
-  document.getElementById("ednval").textContent = clamp(v-1,1,64);
-});
-document.getElementById("ednplus").addEventListener("click", function(){
-  var v = parseInt(document.getElementById("ednval").textContent,10)||4;
-  document.getElementById("ednval").textContent = clamp(v+1,1,64);
-});
-document.getElementById("edpctminus").addEventListener("click", function(){
-  var v = parseInt(document.getElementById("edpctval").textContent,10)||10;
-  document.getElementById("edpctval").textContent = clamp(v-1,0,90) + "%";
-});
-document.getElementById("edpctplus").addEventListener("click", function(){
-  var v = parseInt(document.getElementById("edpctval").textContent,10)||10;
-  document.getElementById("edpctval").textContent = clamp(v+1,0,90) + "%";
-});
-document.getElementById("eddone").addEventListener("click", closeEditor);
-document.getElementById("eddel").addEventListener("click", function(){
-  S.cells = S.cells.filter(function(x){return x.id!==S.editId;});
-  saveCells();
-  editorEl.classList.remove("show");
-  scrim.classList.remove("show");
-  S.editId = null;
-  clearCompose();
-  renderGrid();
-});
-editorEl.addEventListener("pointerdown", function(e){ e.stopPropagation(); });
 
 /* =========================================================
    CUES / COUNTDOWN
@@ -2218,13 +2222,18 @@ function onCueRequest(m, from){
   else if(m.k==="cancelcount") cancelCountdown();
   else if(m.k==="cancelramp")  cancelRamp();
 }
+/* ratio, not a percentage: a tempo cue can be x2 / x3 / x4 as well as +-10..30% */
+function sanitizeRatio(v){
+  var r = parseFloat(v);
+  return (isFinite(r) && r > 0) ? clamp(r, 0.1, 10) : 1;
+}
 function sanitizeAct(c){
   if(!c) return null;
   return {
     label:String(c.label || "").slice(0,24),
-    fx:   (c.fx==="tempo" || c.fx==="dyn") ? c.fx : "none",
+    fx:   (c.fx==="tempo") ? "tempo" : "none",
     dir:  c.dir==="down" ? "down" : "up",
-    pct:  clamp(parseInt(c.pct,10) || 0, 0, 90)
+    ratio:sanitizeRatio(c.ratio)
   };
 }
 function sanitizeCmd(c){
@@ -2250,12 +2259,12 @@ function runCmd(cmd, from, remote){
   if(cmd.next) fireNow(cmd.next, src);           // no time in front of it: right away
   return true;
 }
-function tempoTarget(dir, pct, base){
-  return clamp(Math.round(base * (1 + (dir === "down" ? -1 : 1) * pct/100)), 30, 300);
+function tempoTarget(ratio, base){
+  return clamp(Math.round(base * sanitizeRatio(ratio)), 30, 300);
 }
 function fireNow(cmd, src){
   if(cmd.fx === "tempo"){
-    applyTempoJump(tempoTarget(cmd.dir, cmd.pct, Math.round(bpmAt(now()))));
+    applyTempoJump(tempoTarget(cmd.ratio, Math.round(bpmAt(now()))));
   }
   fireCue(cmd.label, src);
 }
@@ -2445,7 +2454,7 @@ function startCountdown(cmd, from){
   }else{
     startBeat = beatAt(t0);
   }
-  var fx = (cmd.fx === "tempo") ? {type:"tempo", dir:cmd.dir, pct:cmd.pct} : null;
+  var fx = (cmd.fx === "tempo") ? {type:"tempo", dir:cmd.dir, ratio:cmd.ratio} : null;
   var src = from || myName();
   S.ramp = null; hideRamp(); endFlash();           // countdown and gradual are exclusive
   /* next is the executable slot-4 action and stays on the host; nextLabel is
@@ -2493,7 +2502,7 @@ function startGradual(cmd, from){
   S.count = null; hideCount(); endFlash();
   if(cmd.fx === "tempo"){
     var base = Math.round(bpmAt(startAt));
-    bpmTo = tempoTarget(cmd.dir, cmd.pct, base);
+    bpmTo = tempoTarget(cmd.ratio, base);
     var r = startTempoRamp(startAt, cmd.n, bpmTo);
     startBeat = r.startBeat; bpmFrom = r.from;
     S.bpm = bpmTo;                           // the nominal tempo after the ramp
@@ -2615,7 +2624,7 @@ function update(){
       var cnext = S.count.next || null;
       S.count = null; hideCount();
       if(cfx && cfx.type === "tempo" && isHost()){
-        applyTempoJump(tempoTarget(cfx.dir, cfx.pct, Math.round(bpmAt(nt))));
+        applyTempoJump(tempoTarget(cfx.ratio, Math.round(bpmAt(nt))));
       }
       startFlash(lbl || t("flash_default"), clamp(Math.round(barDur()*2),1500,6000), lfrom);
       /* slot 4 runs the instant the first segment lands; the host owns it */
@@ -2674,15 +2683,12 @@ function update(){
       var hasDir = !!S.ramp.dir;
       var rFit = false;
       if(ramptxt.textContent !== S.ramp.label){ ramptxt.textContent = S.ramp.label; rFit = true; }
-      var dirTxt = "";
-      if(S.ramp.fx === "tempo"){
-        dirTxt = t(isDown ? "act_slower" : "act_faster") + "  "
-               + Math.round(S.ramp.bpmFrom) + " - " + Math.round(S.ramp.bpmTo) + " BPM";
-      }else if(hasDir){
-        dirTxt = t(isDown ? "ramp_down" : "ramp_up");
-      }else{
-        dirTxt = t("bars_over", S.ramp.bars);
-      }
+      /* only a tempo cue carries a direction now, so the hairpin bar and the
+         fast / slow wording are one and the same case */
+      var dirTxt = (S.ramp.fx === "tempo")
+        ? (t(isDown ? "act_slower" : "act_faster") + "  "
+           + Math.round(S.ramp.bpmFrom) + " - " + Math.round(S.ramp.bpmTo) + " BPM")
+        : t("bars_over", S.ramp.bars);
       if(rampdirEl.textContent !== dirTxt) rampdirEl.textContent = dirTxt;
       if(setNextLine(rampnextEl, S.ramp.nextLabel)) rFit = true;
       rampbar.classList.toggle("up", hasDir && !isDown);
