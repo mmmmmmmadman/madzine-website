@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- version: v260816 — 每次部署到 madzine.work 前更新此版本號與 #wordmark -->
+<!-- version: v260817 — 每次部署到 madzine.work 前更新此版本號與 #wordmark -->
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
@@ -245,7 +245,7 @@ button{background:none;border:none;cursor:pointer}
 /* tempo direction is a modifier, not an action: same dashed pill as the mode cells */
 .cell.tdir{background:var(--panel);border-color:#3d3d3d;font-size:19px;min-height:46px;border-radius:10px;border-style:dashed}
 .cell.sel{border-color:var(--acc);background:var(--acc-dim);color:var(--fg);border-style:solid}
-/* slot number badge on a picked action: 3 = what, 4 = then what */
+/* badge on a picked action: 1 = the first action, 2 = the one after it */
 .cell .slot{
   position:absolute;top:4px;right:8px;font-size:14px;line-height:1.2;
   color:var(--acc-glow);letter-spacing:.08em;
@@ -289,6 +289,14 @@ button{background:none;border:none;cursor:pointer}
 }
 #sentence.dim{color:var(--fg2)}
 #sentence.warn{color:var(--acc-glow)}
+/* second action: a separate row of its own, so START keeps the widest, filled,
+   largest block in the bar and never gets squeezed by a third button */
+#nextbtn{
+  width:100%;min-height:44px;border-radius:10px;
+  background:var(--panel);border:1px solid var(--acc-dim);
+  font-size:17px;letter-spacing:.04em;color:var(--acc);line-height:1.2;
+}
+#nextbtn:active{background:var(--acc-dim);color:var(--fg)}
 #composebtns{display:flex;gap:var(--gap)}
 #clearbtn{
   flex:0 0 34%;min-height:48px;border:1px solid var(--line);border-radius:10px;
@@ -304,6 +312,10 @@ button{background:none;border:none;cursor:pointer}
 #startbtn.off{
   background:transparent;border:2px dashed var(--fg3);color:var(--fg3);
   cursor:default;letter-spacing:.08em;
+}
+#nextbtn.off{
+  background:transparent;border:2px dashed var(--fg3);color:var(--fg3);
+  cursor:default;
 }
 
 /* short viewports (iPhone Safari with toolbars, ~664 px and below):
@@ -323,6 +335,8 @@ button{background:none;border:none;cursor:pointer}
   #join{gap:12px}
   #composebar{padding:6px 8px;gap:4px}
   #sentence{font-size:17px;min-height:22px}
+  /* the second-action row keeps the 44 px touch floor; only its type steps down */
+  #nextbtn{font-size:16px}
   /* the action step keeps its display type on short screens: only the box
      heights and padding come down, never the font size */
   #secact{gap:10px}
@@ -494,7 +508,7 @@ button{background:none;border:none;cursor:pointer}
 
 <div id="app">
   <div id="topbar">
-    <div id="wordmark">SESSION GUIDE — MADZINE · v260816</div>
+    <div id="wordmark">SESSION GUIDE — MADZINE · v260817</div>
     <div id="topright">
       <div id="connstate"></div>
       <button class="hue-btn" id="huebtn">HUE</button>
@@ -608,6 +622,7 @@ button{background:none;border:none;cursor:pointer}
 
     <div id="composebar">
       <div id="sentence"></div>
+      <button id="nextbtn" class="off" data-i18n="add_next"></button>
       <div id="composebtns">
         <button id="clearbtn" data-i18n="clear_all"></button>
         <button id="startbtn" class="off"></button>
@@ -702,6 +717,8 @@ var I18N = {
   edit_on:"編輯格子",          edit_off:"完成編輯",
   bars_unit:"{n} 小節",
   clear_all:"清空",            start:"開始",
+  add_next:"加下一個動作",
+  sent_pending:"還沒選動作",
   count_sub:"小節倒數",        count_cancel:"取消倒數",
   flash_default:"開始",
   fol_wait:"等待 leader 指令",
@@ -711,7 +728,7 @@ var I18N = {
   cell_done:"完成",            cell_delete:"刪除",
   sec_time:"1 — 經過多久（可省略）",
   sec_mode:"2 — 馬上或逐漸（可省略）",
-  sec_act:"3 — 做什麼（必選）· 再點一格 = 然後做什麼",
+  sec_act:"3 — 做什麼（必選）",
   sec_dyn:"力度",
   sec_dyn_note:"5 是中間力度 · 100 是超越全力",
   sec_tempo:"速度 — 先選快或慢，再選幅度",
@@ -767,6 +784,8 @@ var I18N = {
   edit_on:"Edit Cells",        edit_off:"Done Editing",
   bars_unit:"{n} BARS",
   clear_all:"Clear",           start:"Start",
+  add_next:"Add Next Action",
+  sent_pending:"pick the next action",
   count_sub:"BARS TO GO",      count_cancel:"Cancel Countdown",
   flash_default:"START",
   fol_wait:"Waiting for leader cue",
@@ -776,7 +795,7 @@ var I18N = {
   cell_done:"Done",            cell_delete:"Delete",
   sec_time:"1 — HOW LONG (OPTIONAL)",
   sec_mode:"2 — AT ONCE OR GRADUALLY (OPTIONAL)",
-  sec_act:"3 — WHAT (REQUIRED) · SECOND TAP = NEXT",
+  sec_act:"3 — WHAT (REQUIRED)",
   sec_dyn:"INTENSITY",
   sec_dyn_note:"5 is the middle · 100 is beyond everything",
   sec_tempo:"TEMPO — PICK FAST OR SLOW, THEN THE AMOUNT",
@@ -832,6 +851,8 @@ var I18N = {
   edit_on:"セル編集",           edit_off:"編集完了",
   bars_unit:"{n} 小節",
   clear_all:"クリア",           start:"スタート",
+  add_next:"次のアクションを追加",
+  sent_pending:"アクション未選択",
   count_sub:"小節カウント",     count_cancel:"カウント中止",
   flash_default:"スタート",
   fol_wait:"リーダーのキュー待ち",
@@ -841,7 +862,7 @@ var I18N = {
   cell_done:"完了",             cell_delete:"削除",
   sec_time:"1 — どれくらい後（省略可）",
   sec_mode:"2 — すぐに か 徐々に（省略可）",
-  sec_act:"3 — 何をする（必須）· もう一つ選ぶと その後",
+  sec_act:"3 — 何をする（必須）",
   sec_dyn:"強さ",
   sec_dyn_note:"5 が中間 · 100 は全力を超える",
   sec_tempo:"テンポ — 速く か 遅く を選んでから量を選ぶ",
@@ -1083,7 +1104,7 @@ var METERS = [
      1 time   {kind:"time", n}                      optional -> now
      2 mode   {kind:"mode", mode:"now"|"gradual"}   optional -> at once
      3 action {kind:"act", ...}                     REQUIRED
-     4 action (a second tap on the action grid)     optional
+     4 action (only through "add next action")      optional
 
    Slot 1 is read through slot 2:
      time + at once   = delay      -> fires in one go after N bars
@@ -1148,15 +1169,19 @@ function cellText(c){
 }
 /* a user cell is the only kind that can be renamed or deleted */
 function isUserCell(c){ return !!c && !c.fixed && c.kind !== "mode" && c.kind !== "tdir"; }
-/* the direction picked in the tempo group; null until one is tapped */
-function tdirCell(){ return S.cmp.tdirId ? cellById(S.cmp.tdirId) : null; }
-function tdirDown(){ var d = tdirCell(); return !!d && d.dir === "down"; }
+/* Direction belongs to ONE action, not to the sentence: each of the two
+   segments carries its own tdir id, so "fast x2 then slow 30%" is expressible. */
+function dirDownOf(tdirId){
+  var d = tdirId ? cellById(tdirId) : null;
+  return !!d && d.dir === "down";
+}
 /* the text a cell contributes to the sentence and to the cue overlay. A tempo
    amount only means something together with its direction, so the direction
-   word is prefixed there and nowhere else. */
-function actLabel(c){
-  if(c.fixed === "tempo" && S.cmp.tdirId){
-    return t(tdirDown() ? "act_slower" : "act_faster") + " " + c.label;
+   word is prefixed there and nowhere else — always with the direction that
+   belongs to the same segment. */
+function actLabel(c, tdirId){
+  if(c.fixed === "tempo" && tdirId){
+    return t(dirDownOf(tdirId) ? "act_slower" : "act_faster") + " " + c.label;
   }
   return cellText(c);
 }
@@ -1215,7 +1240,11 @@ var S = {
   metroBeat0:0,           // absolute beat position of the metronome downbeat
   cells: loadCells(),
   /* the sentence under construction; nothing leaves the device until START */
-  cmp:{timeId:null, modeId:null, actId:null, act2Id:null, tdirId:null},
+  /* one round picks exactly one action (actId) with its own direction (tdirId).
+     "Add next action" freezes that pair into lockedActId / lockedTdirId and
+     starts a fresh round, which becomes the second and last segment. */
+  cmp:{timeId:null, modeId:null, actId:null, tdirId:null,
+       lockedActId:null, lockedTdirId:null},
   warnKey:null, warnUntil:0,
   count:null,             // {startAt, startBeat, bars, label, from, fx}
   ramp:null,              // {startAt, startBeat, bars, label, dir, from, fx}
@@ -2004,10 +2033,15 @@ function renderCell(c){
   var lab = document.createElement("div");
   lab.className = "lab"; lab.textContent = cellText(c);
   b.appendChild(lab);
-  if(kind === "act" && (S.cmp.actId === c.id || S.cmp.act2Id === c.id)){
+  /* the badge counts actions, not sentence slots: the locked one is 1, the
+     round in progress is 2 once something is locked and 1 before that */
+  if(kind === "act" && (S.cmp.actId === c.id || S.cmp.lockedActId === c.id)){
+    var nums = [];
+    if(S.cmp.lockedActId === c.id) nums.push("1");
+    if(S.cmp.actId === c.id) nums.push(S.cmp.lockedActId ? "2" : "1");
     var sl = document.createElement("div");
     sl.className = "slot";
-    sl.textContent = (S.cmp.actId === c.id) ? "3" : "4";
+    sl.textContent = nums.join(" ");
     b.appendChild(sl);
   }
   bindCell(b, isUserCell(c) ? c.id : null, function(){ cellTap(c); });
@@ -2032,8 +2066,10 @@ function renderGrid(){
 function isPicked(c){
   if(c.kind === "time") return S.cmp.timeId === c.id;
   if(c.kind === "mode") return S.cmp.modeId === c.id;
+  /* the direction row shows the round in progress; the locked segment keeps
+     its own direction internally and is shown through the sentence line */
   if(c.kind === "tdir") return S.cmp.tdirId === c.id;
-  return S.cmp.actId === c.id || S.cmp.act2Id === c.id;
+  return S.cmp.actId === c.id || S.cmp.lockedActId === c.id;
 }
 function addButton(kind){
   var b = document.createElement("button");
@@ -2088,7 +2124,8 @@ function deleteCell(id){
    SENTENCE COMPOSITION  (nothing is broadcast before START)
    ========================================================= */
 function clearCompose(){
-  S.cmp = {timeId:null, modeId:null, actId:null, act2Id:null, tdirId:null};
+  S.cmp = {timeId:null, modeId:null, actId:null, tdirId:null,
+           lockedActId:null, lockedTdirId:null};
   S.warnKey = null; S.warnUntil = 0;
 }
 function warn(key){
@@ -2106,79 +2143,104 @@ function cellTap(c){
   }else if(c.kind === "tdir"){
     S.cmp.tdirId = (S.cmp.tdirId === c.id) ? null : c.id;
   }else{
-    if(S.cmp.actId === c.id){
-      /* cancelling slot 3 promotes slot 4, so slot 4 is never left orphaned */
-      S.cmp.actId = S.cmp.act2Id; S.cmp.act2Id = null;
-    }else if(S.cmp.act2Id === c.id){
-      S.cmp.act2Id = null;
-    }else if(!S.cmp.actId){
-      S.cmp.actId = c.id;
-    }else{
-      S.cmp.act2Id = c.id;                                     // third tap replaces slot 4
-    }
+    /* one round holds one action: any action cell REPLACES the round's pick.
+       A second action is only ever added through the explicit button, so an
+       intensity tap can never be silently pushed into the "then" clause. */
+    S.cmp.actId = (S.cmp.actId === c.id) ? null : c.id;        // tap again = cancel
   }
+  renderGrid();
+}
+/* ---------- the second action ----------
+   The engine takes exactly two segments (cmd + cmd.next), so the button locks
+   the round in progress and is refused once a segment is already locked. */
+function canAddNext(){ return !!S.cmp.actId && !S.cmp.lockedActId; }
+function addNextAct(){
+  if(!canAddNext()) return;
+  var a = cmpAct();
+  if(a && a.fixed === "tempo" && !S.cmp.tdirId){ warn("warn_need_tempo_dir"); return; }
+  S.cmp.lockedActId  = S.cmp.actId;
+  S.cmp.lockedTdirId = S.cmp.tdirId;
+  S.cmp.actId = null; S.cmp.tdirId = null;      // a fresh round picks segment 2
+  S.warnKey = null;
   renderGrid();
 }
 function cmpTime(){  return S.cmp.timeId ? cellById(S.cmp.timeId) : null; }
 function cmpMode(){  return S.cmp.modeId ? cellById(S.cmp.modeId) : null; }
 function cmpAct(){   return S.cmp.actId  ? cellById(S.cmp.actId)  : null; }
-function cmpAct2(){  return S.cmp.act2Id ? cellById(S.cmp.act2Id) : null; }
+/* the two segments in sending order: the locked pair first, the round in
+   progress second. Before anything is locked the round IS the first segment. */
+function seg1Act(){  return S.cmp.lockedActId ? cellById(S.cmp.lockedActId) : cmpAct(); }
+function seg1Tdir(){ return S.cmp.lockedActId ? S.cmp.lockedTdirId : S.cmp.tdirId; }
+function seg2Act(){  return S.cmp.lockedActId ? cmpAct() : null; }
+function seg2Tdir(){ return S.cmp.tdirId; }
 function isGradual(){ var m = cmpMode(); return !!m && m.mode === "gradual"; }
 function barsOf(c){ return clamp(parseInt(c && c.n,10) || 4, 1, 64); }
 
 /* the sentence as one readable line, assembled from per-language templates */
 function sentenceText(){
-  var act = cmpAct();
-  if(!act) return "";
+  var a1 = seg1Act();
+  if(!a1) return "";
+  var lab1 = actLabel(a1, seg1Tdir());
   var tc = cmpTime(), s;
-  if(!tc)              s = tf("sent_now",   {a:actLabel(act)});
-  else if(isGradual()) s = tf("sent_grad",  {n:barsOf(tc), a:actLabel(act)});
-  else                 s = tf("sent_after", {n:barsOf(tc), a:actLabel(act)});
-  var a2 = cmpAct2();
-  if(a2) s = tf("sent_then", {a:s, b:actLabel(a2)});
+  if(!tc)              s = tf("sent_now",   {a:lab1});
+  else if(isGradual()) s = tf("sent_grad",  {n:barsOf(tc), a:lab1});
+  else                 s = tf("sent_after", {n:barsOf(tc), a:lab1});
+  /* once a segment is locked the line reads in its unfinished form, so the
+     placeholder shows exactly where the second action will land */
+  if(S.cmp.lockedActId){
+    var a2 = seg2Act();
+    s = tf("sent_then", {a:s, b: a2 ? actLabel(a2, seg2Tdir()) : t("sent_pending")});
+  }
   return s;
 }
 /* a tempo cell carries a ratio applied to the tempo in force when it lands;
    everything else is display only and rides as fx "none" with ratio 1 */
-function actPayload(c){
+function actPayload(c, tdirId){
   if(c.fixed === "tempo"){
-    var down = tdirDown();
-    return {label:actLabel(c), fx:"tempo",
+    var down = dirDownOf(tdirId);
+    return {label:actLabel(c, tdirId), fx:"tempo",
             dir:down ? "down" : "up", ratio:(down ? c.down : c.up)};
   }
-  return {label:actLabel(c), fx:"none", dir:"up", ratio:1};
-}
-/* a tempo amount means nothing without a direction */
-function needsTdir(){
-  var a = cmpAct(), b = cmpAct2();
-  return (!!a && a.fixed === "tempo") || (!!b && b.fixed === "tempo");
+  return {label:actLabel(c, tdirId), fx:"none", dir:"up", ratio:1};
 }
 function renderCompose(){
-  var bar = document.getElementById("composebar");
+  var bar  = document.getElementById("composebar");
   var line = document.getElementById("sentence");
   var btn  = document.getElementById("startbtn");
+  var nb   = document.getElementById("nextbtn");
   bar.classList.toggle("hidden", !canCue());
   btn.textContent = t("start");
-  var ready = !!cmpAct();
+  /* a locked segment with nothing picked yet is an unfinished sentence: the
+     line already shows it, but it cannot be sent */
+  var hasFirst = !!seg1Act();
+  var pending  = !!S.cmp.lockedActId && !S.cmp.actId;
+  var ready    = hasFirst && !pending;
   btn.classList.toggle("off", !ready);
   btn.disabled = !ready;
-  var msg = S.warnKey ? t(S.warnKey) : (ready ? sentenceText() : t("hint_pick_act"));
+  /* a tempo amount without a direction stays clickable so warn() can explain */
+  var canNext = canAddNext();
+  nb.classList.toggle("off", !canNext);
+  nb.disabled = !canNext;
+  var msg = S.warnKey ? t(S.warnKey) : (hasFirst ? sentenceText() : t("hint_pick_act"));
   line.classList.toggle("warn", !!S.warnKey);
   line.classList.toggle("dim", !S.warnKey && !ready);
   if(line.textContent !== msg) line.textContent = msg;
 }
 /* START is the only path out of this device */
 function sendSentence(){
-  var act = cmpAct();
-  if(!act){ warn("hint_pick_act"); return; }
+  var a1 = seg1Act(), d1 = seg1Tdir();
+  var a2 = seg2Act(), d2 = seg2Tdir();
+  if(!a1){ warn("hint_pick_act"); return; }
+  if(S.cmp.lockedActId && !a2){ warn("sent_pending"); return; }
   var tc = cmpTime();
   if(isGradual() && !tc){ warn("warn_need_bars"); return; }   // gradual needs a duration
-  if(needsTdir() && !S.cmp.tdirId){ warn("warn_need_tempo_dir"); return; }
-  var a2 = cmpAct2();
-  var cmd = actPayload(act);
+  /* each segment answers for its own direction */
+  if(a1.fixed === "tempo" && !d1){ warn("warn_need_tempo_dir"); return; }
+  if(a2 && a2.fixed === "tempo" && !d2){ warn("warn_need_tempo_dir"); return; }
+  var cmd = actPayload(a1, d1);
   cmd.mode = !tc ? "now" : (isGradual() ? "gradual" : "after");
   cmd.n    = tc ? barsOf(tc) : 0;
-  cmd.next = a2 ? actPayload(a2) : null;
+  cmd.next = a2 ? actPayload(a2, d2) : null;
   if(!isHost() && (cmd.fx === "tempo" || (cmd.next && cmd.next.fx === "tempo"))){
     warn("tempo_host_only"); return;
   }
@@ -2187,6 +2249,7 @@ function sendSentence(){
   renderGrid();
 }
 document.getElementById("startbtn").addEventListener("click", sendSentence);
+document.getElementById("nextbtn").addEventListener("click", addNextAct);
 document.getElementById("clearbtn").addEventListener("click", function(){
   clearCompose(); renderGrid();
 });
