@@ -201,9 +201,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   <div class="model-field">
     <label data-i18n="modelLabel">Model</label>
     <select id="modelSelect">
-      <option value="claude-haiku-4-5-20251001" data-i18n="modelHaiku">Claude Haiku 4.5 (fastest, cheapest)</option>
-      <option value="claude-sonnet-4-6" data-i18n="modelSonnet">Claude Sonnet 4.6 (balanced)</option>
-      <option value="claude-opus-4-7" data-i18n="modelOpus">Claude Opus 4.7 (highest quality)</option>
+      <option value="claude-haiku-4-5" data-i18n="modelHaiku">Claude Haiku 4.5 (fastest, cheapest)</option>
+      <option value="claude-sonnet-5" data-i18n="modelSonnet">Claude Sonnet 5 (balanced)</option>
+      <option value="claude-opus-5" data-i18n="modelOpus">Claude Opus 5 (highest quality)</option>
     </select>
   </div>
 
@@ -328,8 +328,8 @@ const I18N = {
     apiKeyHint: 'Get your key at <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:#60a5fa;">console.anthropic.com</a>. Stored locally only.',
     modelLabel: 'Model',
     modelHaiku: 'Claude Haiku 4.5 (fastest, cheapest)',
-    modelSonnet: 'Claude Sonnet 4.6 (balanced)',
-    modelOpus: 'Claude Opus 4.7 (highest quality)',
+    modelSonnet: 'Claude Sonnet 5 (balanced)',
+    modelOpus: 'Claude Opus 5 (highest quality)',
     langALabel: 'Language A (primary speaker)',
     langBLabel: 'Language B',
     langCLabel: 'Language C',
@@ -455,8 +455,8 @@ const I18N = {
     apiKeyHint: '\u5728 <a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:#60a5fa;">console.anthropic.com</a> \u53d6\u5f97\u91d1\u9470\u3002\u50c5\u5132\u5b58\u65bc\u672c\u6a5f\u700f\u89bd\u5668\u3002',
     modelLabel: '\u6a21\u578b',
     modelHaiku: 'Claude Haiku 4.5\uff08\u6700\u5feb\u3001\u6700\u4fbf\u5b9c\uff09',
-    modelSonnet: 'Claude Sonnet 4.6\uff08\u5747\u8861\uff09',
-    modelOpus: 'Claude Opus 4.7\uff08\u6700\u9ad8\u54c1\u8cea\uff09',
+    modelSonnet: 'Claude Sonnet 5\uff08\u5747\u8861\uff09',
+    modelOpus: 'Claude Opus 5\uff08\u6700\u9ad8\u54c1\u8cea\uff09',
     langALabel: '\u8a9e\u8a00 A\uff08\u4e3b\u8981\u8b1b\u8005\uff09',
     langBLabel: '\u8a9e\u8a00 B',
     langCLabel: '語言 C',
@@ -582,8 +582,8 @@ const I18N = {
     apiKeyHint: '<a href="https://console.anthropic.com/settings/keys" target="_blank" style="color:#60a5fa;">console.anthropic.com</a> \u3067\u30ad\u30fc\u3092\u53d6\u5f97\u3002\u30d6\u30e9\u30a6\u30b6\u306b\u306e\u307f\u4fdd\u5b58\u3055\u308c\u307e\u3059\u3002',
     modelLabel: '\u30e2\u30c7\u30eb',
     modelHaiku: 'Claude Haiku 4.5\uff08\u6700\u901f\u30fb\u6700\u5b89\uff09',
-    modelSonnet: 'Claude Sonnet 4.6\uff08\u30d0\u30e9\u30f3\u30b9\u578b\uff09',
-    modelOpus: 'Claude Opus 4.7\uff08\u6700\u9ad8\u54c1\u8cea\uff09',
+    modelSonnet: 'Claude Sonnet 5\uff08\u30d0\u30e9\u30f3\u30b9\u578b\uff09',
+    modelOpus: 'Claude Opus 5\uff08\u6700\u9ad8\u54c1\u8cea\uff09',
     langALabel: '\u8a00\u8a9e A\uff08\u30e1\u30a4\u30f3\u30b9\u30d4\u30fc\u30ab\u30fc\uff09',
     langBLabel: '\u8a00\u8a9e B',
     langCLabel: '言語 C',
@@ -1576,12 +1576,7 @@ Use the above context to correctly translate proper nouns, artwork names, and ar
       'anthropic-version': '2023-06-01',
       'anthropic-dangerous-direct-browser-access': 'true',
     },
-    body: JSON.stringify({
-      model: model,
-      max_tokens: 1024,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: text }],
-    }),
+    body: JSON.stringify(buildRequestBody(model, systemPrompt, text)),
   });
 
   if (!response.ok) {
@@ -1591,10 +1586,36 @@ Use the above context to correctly translate proper nouns, artwork names, and ar
   }
 
   const data = await response.json();
-  const raw = data.content[0].text.trim();
+
+  // Safety classifiers can decline with HTTP 200 + stop_reason "refusal".
+  if (data.stop_reason === 'refusal') {
+    const cat = data.stop_details?.category;
+    throw new Error('refused by safety classifier' + (cat ? ` (${cat})` : ''));
+  }
+
+  const firstText = (data.content || []).find(b => b.type === 'text');
+  if (!firstText) throw new Error('empty response');
+  const raw = firstText.text.trim();
   // Always returns an array of blocks. Two-language mode yields a single
   // unlabeled block, which renders identically to the original version.
   return multi ? parseTaggedTranslation(raw) : [{ label: null, text: raw }];
+}
+
+// Opus 5 / Sonnet 5 think by default, which adds latency to live translation.
+// Effort is not supported on Haiku 4.5, so it is only sent for the 5-series.
+const EFFORT_MODELS = ['claude-opus-5', 'claude-sonnet-5'];
+
+function buildRequestBody(model, systemPrompt, text) {
+  const body = {
+    model: model,
+    max_tokens: 1024,
+    system: systemPrompt,
+    messages: [{ role: 'user', content: text }],
+  };
+  if (EFFORT_MODELS.includes(model)) {
+    body.output_config = { effort: 'low' };
+  }
+  return body;
 }
 
 // Parse "[JA] text" / "[ZH-TW] text" lines into [{ label, text }].
@@ -1953,8 +1974,18 @@ const savedKey = localStorage.getItem('att_apiKey');
 if (savedKey) document.getElementById('apiKey').value = savedKey;
 const savedElevenKey = localStorage.getItem('att_elevenLabsKey');
 if (savedElevenKey) document.getElementById('elevenLabsKey').value = savedElevenKey;
+// Map retired model IDs stored by earlier versions onto the current ones.
+const MODEL_MIGRATION = {
+  'claude-haiku-4-5-20251001': 'claude-haiku-4-5',
+  'claude-sonnet-4-6': 'claude-sonnet-5',
+  'claude-opus-4-7': 'claude-opus-5',
+};
 const savedModel = localStorage.getItem('att_model');
-if (savedModel) document.getElementById('modelSelect').value = savedModel;
+if (savedModel) {
+  const migrated = MODEL_MIGRATION[savedModel] || savedModel;
+  const sel = document.getElementById('modelSelect');
+  if ([...sel.options].some(o => o.value === migrated)) sel.value = migrated;
+}
 // Apply saved UI language
 setLang(currentUILang);
 </script>
