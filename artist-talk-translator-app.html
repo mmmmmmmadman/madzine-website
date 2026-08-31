@@ -28,6 +28,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .row .field { flex: 1; }
 .swap-btn { padding: 10px 16px; font-size: 20px; background: #333; border: 1px solid #555; border-radius: 6px; color: #e0e0e0; cursor: pointer; align-self: end; margin-bottom: 20px; }
 .swap-btn:hover { background: #444; }
+.toggle-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.toggle-row input[type="checkbox"] { width: 18px; height: 18px; accent-color: #2563eb; cursor: pointer; flex: 0 0 auto; }
+.toggle-row label { display: inline-block; font-size: 18px; font-weight: 500; margin: 0; cursor: pointer; }
 #startBtn {
   width: 100%; padding: 16px; font-size: 22px; font-weight: 600;
   background: #2563eb; color: white; border: none; border-radius: 8px; cursor: pointer;
@@ -48,6 +51,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .lang-indicator { font-size: 18px; font-weight: 600; padding: 6px 16px; border-radius: 20px; user-select: none; }
 .lang-a { background: #1e40af; color: white; }
 .lang-b { background: #b91c1c; color: white; }
+.lang-c { background: #15803d; color: white; }
 .lang-indicator.inactive { opacity: 0.3; }
 .audio-level { flex: 0 0 120px; height: 8px; background: #333; border-radius: 4px; overflow: hidden; }
 .audio-level-fill { height: 100%; background: #22c55e; transition: width 0.1s linear; }
@@ -72,6 +76,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .segment .original { font-size: 18px; color: #888; margin-bottom: 4px; }
 .segment .translated { font-size: 22px; color: #e0e0e0; font-weight: 500; }
 .segment .translated.pending { color: #666; font-style: italic; }
+.segment .translated .tr-line { display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; }
+.segment .translated .tr-line:last-child { margin-bottom: 0; }
+.segment .tr-lang { flex: 0 0 auto; font-size: 14px; font-weight: 600; letter-spacing: 0.5px; color: #9ca3af; background: #2a2a2a; border: 1px solid #3a3a3a; border-radius: 4px; padding: 2px 8px; }
+.segment .tr-text { flex: 1 1 auto; }
 #volatileText { font-size: 18px; color: #555; font-style: italic; padding: 0 24px 16px; }
 
 /* Ended */
@@ -150,6 +158,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   #transcript { padding: 16px; }
   .segment .original { font-size: 16px; }
   .segment .translated { font-size: 19px; }
+  .segment .tr-lang { font-size: 14px; padding: 2px 6px; }
+  .toggle-row label { font-size: 16px; }
   #volatileText { font-size: 16px; padding: 0 16px 12px; }
   #helpContent { margin: 0; border-radius: 0; min-height: 100vh; padding: 20px; }
   .supported-info { font-size: 14px; padding: 12px; }
@@ -210,6 +220,15 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
   </div>
 
   <div class="field">
+    <div class="toggle-row">
+      <input type="checkbox" id="langCEnable" onchange="onLangCToggle()">
+      <label for="langCEnable" data-i18n="enableLangC">Add a third language (translate into two languages at once)</label>
+    </div>
+    <label id="langCLabelEl" data-i18n="langCLabel" style="display:none">Language C</label>
+    <select id="langC" style="display:none"></select>
+  </div>
+
+  <div class="field">
     <label data-i18n="preloadLabel">Preloaded Text (artist's statement / notes)</label>
     <div class="file-row">
       <button onclick="document.getElementById('fileInput').click()" data-i18n="loadFileBtn">Load File</button>
@@ -262,6 +281,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
     <div class="lang-indicator lang-b inactive" id="langBBtn">
       <span id="langBLabel">JA</span>
     </div>
+    <div class="lang-indicator lang-c inactive" id="langCBtn" style="display:none">
+      <span id="langCLabel">ZH-TW</span>
+    </div>
     <div class="audio-level"><div class="audio-level-fill" id="levelFill"></div></div>
     <div id="wsStatus" class="ws-status ws-idle" data-i18n-title="wsStatusTitle" title="Connection status"></div>
     <button id="reconnectBtn" onclick="triggerManualReconnect()" data-i18n="reconnectBtn" data-i18n-title="reconnectTitle" title="Force reconnect">Reconnect</button>
@@ -310,6 +332,8 @@ const I18N = {
     modelOpus: 'Claude Opus 4.7 (highest quality)',
     langALabel: 'Language A (primary speaker)',
     langBLabel: 'Language B',
+    langCLabel: 'Language C',
+    enableLangC: 'Add a third language (translate into two languages at once)',
     swapTitle: 'Swap languages',
     preloadLabel: 'Preloaded Text (artist\'s statement / notes)',
     loadFileBtn: 'Load File',
@@ -327,6 +351,7 @@ const I18N = {
     translating: 'translating...',
     errApiKeyRequired: 'Both API keys are required.',
     errSameLang: 'Please select two different languages.',
+    errDupLang: 'Please select three different languages.',
     errTokenFetch: 'Failed to get ElevenLabs token. Check your API key and Worker URL.',
     errWebSocket: 'ElevenLabs WebSocket error',
     errHardFail: 'ElevenLabs account problem — likely out of credit or unpaid. Log in to elevenlabs.io → Usage / Subscription. Reconnect button will retry after you fix it.',
@@ -369,6 +394,7 @@ const I18N = {
         <li>Paste both API keys in their fields</li>
         <li>Select a model (Haiku = fastest/cheapest, Sonnet = balanced, Opus = highest quality)</li>
         <li>Select two languages (Language A = primary speaker, Language B = other)</li>
+        <li>Optionally tick "Add a third language" to enable Language C. Every utterance is then translated into two languages at once, and each translation line is prefixed with a language tag such as JA or ZH-TW.</li>
         <li>Optionally load one or more files with the artist's prepared statement for context-aware translation</li>
       </ul>
       <h3>Step 5: Start Session</h3>
@@ -376,6 +402,7 @@ const I18N = {
         <li>Click "Start Session"</li>
         <li>Allow microphone access when prompted</li>
         <li>The app will automatically detect which language is being spoken and translate to the other</li>
+        <li>With Language C enabled, the app detects which of the three languages is being spoken and outputs the remaining two</li>
         <li>The language indicators at the top show which language was detected</li>
         <li>Click "Stop" to end the session</li>
       </ul>
@@ -432,6 +459,8 @@ const I18N = {
     modelOpus: 'Claude Opus 4.7\uff08\u6700\u9ad8\u54c1\u8cea\uff09',
     langALabel: '\u8a9e\u8a00 A\uff08\u4e3b\u8981\u8b1b\u8005\uff09',
     langBLabel: '\u8a9e\u8a00 B',
+    langCLabel: '語言 C',
+    enableLangC: '加入第三種語言（一次翻譯成兩種語言）',
     swapTitle: '\u4ea4\u63db\u8a9e\u8a00',
     preloadLabel: '預載文字（藝術家自述／筆記）',
     loadFileBtn: '載入檔案',
@@ -449,6 +478,7 @@ const I18N = {
     translating: '翻譯中...',
     errApiKeyRequired: '請輸入兩組 API Key。',
     errSameLang: '請選擇兩種不同的語言。',
+    errDupLang: '請選擇三種不同的語言。',
     errTokenFetch: '無法取得 ElevenLabs token。請檢查 API Key 和 Worker URL。',
     errWebSocket: 'ElevenLabs WebSocket 錯誤',
     errHardFail: 'ElevenLabs 帳號問題 — 可能餘額用完或未付款。請登入 elevenlabs.io → Usage / Subscription 確認。處理後可按「重連」重試。',
@@ -491,6 +521,7 @@ const I18N = {
         <li>在欄位中貼上兩組 API Key</li>
         <li>選擇模型（Haiku = 最快最便宜、Sonnet = 均衡、Opus = 最高品質）</li>
         <li>選擇兩種語言（語言 A = 主要講者，語言 B = 另一方）</li>
+        <li>可勾選「加入第三種語言」啟用語言 C，每一句話同時翻譯成兩種語言，每行譯文前方會標示語言標籤（例如 JA、ZH-TW）</li>
         <li>可選擇載入一個或多個檔案作為藝術家自述，提供上下文以提升翻譯準確度</li>
       </ul>
       <h3>步驟五：開始翻譯</h3>
@@ -498,6 +529,7 @@ const I18N = {
         <li>點擊「開始翻譯」</li>
         <li>允許麥克風存取</li>
         <li>系統會自動偵測正在說的語言，並翻譯為另一種語言</li>
+        <li>啟用語言 C 時，系統會偵測三種語言中正在說的是哪一種，並輸出其餘兩種譯文</li>
         <li>頂部的語言指示器顯示偵測到的語言</li>
         <li>點擊「停止」結束翻譯</li>
       </ul>
@@ -554,6 +586,8 @@ const I18N = {
     modelOpus: 'Claude Opus 4.7\uff08\u6700\u9ad8\u54c1\u8cea\uff09',
     langALabel: '\u8a00\u8a9e A\uff08\u30e1\u30a4\u30f3\u30b9\u30d4\u30fc\u30ab\u30fc\uff09',
     langBLabel: '\u8a00\u8a9e B',
+    langCLabel: '言語 C',
+    enableLangC: '3つ目の言語を追加（同時に2言語へ翻訳）',
     swapTitle: '\u8a00\u8a9e\u3092\u5165\u308c\u66ff\u3048',
     preloadLabel: 'プリロードテキスト（アーティストステートメント／メモ）',
     loadFileBtn: 'ファイルを読込',
@@ -571,6 +605,7 @@ const I18N = {
     translating: '翻訳中...',
     errApiKeyRequired: '両方のAPI Keyを入力してください。',
     errSameLang: '異なる2つの言語を選択してください。',
+    errDupLang: '異なる3つの言語を選択してください。',
     errTokenFetch: 'ElevenLabsトークンの取得に失敗しました。API KeyとWorker URLを確認してください。',
     errWebSocket: 'ElevenLabs WebSocketエラー',
     errHardFail: 'ElevenLabsアカウントの問題 — 残高不足または未払いの可能性があります。elevenlabs.io にログインして Usage / Subscription を確認してください。対応後「再接続」ボタンで再試行できます。',
@@ -613,6 +648,7 @@ const I18N = {
         <li>両方のAPI Keyをフィールドに貼り付け</li>
         <li>モデルを選択（Haiku＝最速・最安、Sonnet＝バランス型、Opus＝最高品質）</li>
         <li>2つの言語を選択（言語A＝メインスピーカー、言語B＝相手側）</li>
+        <li>「3つ目の言語を追加」をオンにすると言語Cが有効になり、1つの発話を同時に2言語へ翻訳します。有効時は各訳文の先頭にJAやZH-TWなどの言語タグが付きます</li>
         <li>アーティストステートメントのファイルを1つまたは複数読み込み、文脈に基づく翻訳精度の向上が可能</li>
       </ul>
       <h3>ステップ5：セッション開始</h3>
@@ -620,6 +656,7 @@ const I18N = {
         <li>「セッション開始」をクリック</li>
         <li>マイクへのアクセスを許可</li>
         <li>アプリが話されている言語を自動検出し、もう一方の言語に翻訳します</li>
+        <li>言語Cが有効な場合、3言語のうちどれが話されたかを検出し、残りの2言語を出力します</li>
         <li>上部の言語インジケーターは検出された言語を表示します</li>
         <li>「停止」をクリックしてセッションを終了</li>
       </ul>
@@ -746,12 +783,37 @@ const LANGUAGES = [
 function populateSelects() {
   const a = document.getElementById('langA');
   const b = document.getElementById('langB');
+  const c = document.getElementById('langC');
   LANGUAGES.forEach((l) => {
     a.add(new Option(l.name, l.code));
     b.add(new Option(l.name, l.code));
+    c.add(new Option(l.name, l.code));
   });
   a.value = 'en-US';
   b.value = 'ja-JP';
+  c.value = 'zh-TW';
+}
+
+// Language C is opt-in. When off, every code path below behaves exactly as the
+// original two-language version.
+function isLangCEnabled() {
+  const cb = document.getElementById('langCEnable');
+  return !!(cb && cb.checked);
+}
+
+// Sides that participate in detection / translation: ['a','b'] or ['a','b','c'].
+function activeSides() {
+  return isLangCEnabled() ? ['a', 'b', 'c'] : ['a', 'b'];
+}
+
+function onLangCToggle() {
+  const on = isLangCEnabled();
+  const lbl = document.getElementById('langCLabelEl');
+  const sel = document.getElementById('langC');
+  if (lbl) lbl.style.display = on ? 'block' : 'none';
+  if (sel) sel.style.display = on ? 'block' : 'none';
+  const btn = document.getElementById('langCBtn');
+  if (btn) btn.style.display = on ? '' : 'none';
 }
 
 function swapLanguages() {
@@ -959,7 +1021,7 @@ let ws = null;
 let isRunning = false;
 let segments = new Map(); // id -> { original, translated, isError, rootEl, translatedEl }
 let segmentSeq = 0;
-let detectedLang = 'a'; // which lang was last detected: 'a' or 'b'
+let detectedLang = 'a'; // which lang was last detected: 'a', 'b' or 'c'
 let tokenRefreshTimer = null;
 // ws health
 let wsState = 'idle'; // idle | connecting | open | reconnecting | failed
@@ -1033,18 +1095,21 @@ function setWsState(s) {
 }
 
 function getLang(which) {
-  const code = document.getElementById(which === 'a' ? 'langA' : 'langB').value;
-  return LANGUAGES.find(l => l.code === code);
+  const id = which === 'a' ? 'langA' : which === 'b' ? 'langB' : 'langC';
+  const el = document.getElementById(id);
+  if (!el) return null;
+  return LANGUAGES.find(l => l.code === el.value);
 }
 
-// Map ElevenLabs language_code (e.g. "en", "ja") to 'a' or 'b'
+// Map ElevenLabs language_code (e.g. "en", "ja") to 'a', 'b' or 'c'
 function mapElevenLangToSide(langCode) {
   if (!langCode) return null;
   const lc = langCode.toLowerCase().split('-')[0]; // normalize "en-US" -> "en"
-  const langA = getLang('a');
-  const langB = getLang('b');
-  if (langA.elevenCode === lc) return 'a';
-  if (langB.elevenCode === lc) return 'b';
+  const sides = activeSides();
+  for (let i = 0; i < sides.length; i++) {
+    const l = getLang(sides[i]);
+    if (l && l.elevenCode === lc) return sides[i];
+  }
   return null;
 }
 
@@ -1466,13 +1531,31 @@ async function translateWithClaude(text) {
   const model = document.getElementById('modelSelect').value;
   const langA = getLang('a');
   const langB = getLang('b');
+  const multi = isLangCEnabled();
+  const langC = multi ? getLang('c') : null;
 
-  let systemPrompt = `You are a real-time translator for an artist talk event.
+  let systemPrompt;
+  if (multi) {
+    const all = [langA, langB, langC];
+    const names = all.map(l => l.forLLM).join(', ');
+    const tags = all.map(l => `[${l.short}] = ${l.forLLM}`).join('\n');
+    systemPrompt = `You are a real-time translator for an artist talk event.
+The event uses these three languages: ${names}.
+You will receive spoken text in ONE of them.
+Detect which of the three the input is in, then translate it into the OTHER TWO languages.
+Use exactly these language tags:
+${tags}
+Output one line per target language, formatted strictly as:
+[TAG] translation
+Output ONLY those two lines. Do not repeat the source language. No explanations, no notes, no extra text.`;
+  } else {
+    systemPrompt = `You are a real-time translator for an artist talk event.
 You will receive spoken text in either ${langA.forLLM} or ${langB.forLLM}.
 Detect which language the input is in, then translate it to the OTHER language.
 - If input is ${langA.forLLM}, translate to ${langB.forLLM}.
 - If input is ${langB.forLLM}, translate to ${langA.forLLM}.
 Output ONLY the translation. No explanations, no language labels, no notes.`;
+  }
 
   if (preloadedText) {
     const context = preloadedText.substring(0, 4000);
@@ -1508,7 +1591,32 @@ Use the above context to correctly translate proper nouns, artwork names, and ar
   }
 
   const data = await response.json();
-  return data.content[0].text.trim();
+  const raw = data.content[0].text.trim();
+  // Always returns an array of blocks. Two-language mode yields a single
+  // unlabeled block, which renders identically to the original version.
+  return multi ? parseTaggedTranslation(raw) : [{ label: null, text: raw }];
+}
+
+// Parse "[JA] text" / "[ZH-TW] text" lines into [{ label, text }].
+// Falls back to one unlabeled block when no known tag is present, so a stray
+// model response never leaves raw markers on screen unmatched.
+function parseTaggedTranslation(raw) {
+  const known = {};
+  LANGUAGES.forEach(l => { known[l.short.toUpperCase()] = l.short; });
+  const blocks = [];
+  let cur = null;
+  raw.split('\n').forEach(line => {
+    const m = line.match(/^\s*[\[\u3010]\s*([A-Za-z0-9\-]+)\s*[\]\u3011]\s*(.*)$/);
+    if (m && known[m[1].toUpperCase()]) {
+      cur = { label: known[m[1].toUpperCase()], text: m[2].trim() };
+      blocks.push(cur);
+    } else if (cur) {
+      const extra = line.trim();
+      if (extra) cur.text += (cur.text ? '\n' : '') + extra;
+    }
+  });
+  const kept = blocks.filter(b => b.text);
+  return kept.length ? kept : [{ label: null, text: raw }];
 }
 
 function onFinalResult(text, langCode) {
@@ -1593,16 +1701,39 @@ function appendSegment(seg) {
   if (shouldFollow) scrollToBottomNow(container);
 }
 
-function updateSegmentTranslation(id, text, isError) {
+// payload: array of { label, text } blocks, or a plain string (error path).
+function updateSegmentTranslation(id, payload, isError) {
   const seg = segments.get(id);
   if (!seg || !seg.translatedEl) return;
   const container = document.getElementById('transcript');
   const shouldFollow = isNearBottom(container);
 
-  seg.translated = text;
+  const blocks = Array.isArray(payload) ? payload : [{ label: null, text: payload }];
+  seg.translated = blocks.map(b => (b.label ? '[' + b.label + '] ' : '') + b.text).join('\n');
   seg.translatedEl.classList.remove('pending');
   if (isError) seg.translatedEl.style.color = '#ef4444';
-  seg.translatedEl.textContent = text;
+
+  if (blocks.length === 1 && !blocks[0].label) {
+    // Identical to the original single-translation rendering.
+    seg.translatedEl.textContent = blocks[0].text;
+  } else {
+    seg.translatedEl.textContent = '';
+    blocks.forEach(b => {
+      const line = document.createElement('div');
+      line.className = 'tr-line';
+      if (b.label) {
+        const tag = document.createElement('span');
+        tag.className = 'tr-lang';
+        tag.textContent = b.label;
+        line.appendChild(tag);
+      }
+      const txt = document.createElement('span');
+      txt.className = 'tr-text';
+      txt.textContent = b.text;
+      line.appendChild(txt);
+      seg.translatedEl.appendChild(line);
+    });
+  }
 
   if (shouldFollow) scrollToBottomNow(container);
 }
@@ -1631,8 +1762,14 @@ function clearSegments() {
 function updateLangButtons() {
   const aBtn = document.getElementById('langABtn');
   const bBtn = document.getElementById('langBBtn');
+  const cBtn = document.getElementById('langCBtn');
   aBtn.classList.toggle('inactive', detectedLang !== 'a');
   bBtn.classList.toggle('inactive', detectedLang !== 'b');
+  if (cBtn) {
+    const on = isLangCEnabled();
+    cBtn.style.display = on ? '' : 'none';
+    cBtn.classList.toggle('inactive', detectedLang !== 'c');
+  }
 }
 
 // ---- SESSION CONTROL ----
@@ -1665,7 +1802,12 @@ async function startSession() {
 
   const langACode = document.getElementById('langA').value;
   const langBCode = document.getElementById('langB').value;
-  if (langACode === langBCode) { showError(t('errSameLang')); return; }
+  if (isLangCEnabled()) {
+    const codes = [langACode, langBCode, document.getElementById('langC').value];
+    if (new Set(codes).size !== codes.length) { showError(t('errDupLang')); return; }
+  } else {
+    if (langACode === langBCode) { showError(t('errSameLang')); return; }
+  }
 
   showError('');
 
@@ -1690,6 +1832,10 @@ async function startSession() {
     const langB = getLang('b');
     document.getElementById('langALabel').textContent = langA.short;
     document.getElementById('langBLabel').textContent = langB.short;
+    if (isLangCEnabled()) {
+      const langC = getLang('c');
+      document.getElementById('langCLabel').textContent = langC.short;
+    }
 
     document.getElementById('setup').style.display = 'none';
     document.getElementById('live').style.display = 'flex';
@@ -1801,6 +1947,7 @@ function returnToSetup() {
 
 // ---- INIT ----
 populateSelects();
+onLangCToggle();
 // Restore saved settings
 const savedKey = localStorage.getItem('att_apiKey');
 if (savedKey) document.getElementById('apiKey').value = savedKey;
