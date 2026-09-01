@@ -13,6 +13,7 @@
 
 | 版本 | 日期 | 主要變動 |
 |------|------|---------|
+| v3.0 | 2026-08-31 | Language C（一次翻譯成兩種語言）；模型升級到 Claude Opus 5 / Sonnet 5 |
 | v2.9 | 2026-05-16 | 識別 server 端帳號層級 hard-fail（額度/帳單/認證），不再無限重連並出明確錯誤；reconnectAttempt reset 點從 onopen 改到首次 transcript |
 | v2.8 | 2026-05-16 | 應用內 debug log 下載按鈕（非技術使用者一鍵取得診斷 log） |
 | v2.7 | 2026-04-19 | 外接麥克風熱插拔修正（devicechange 監聽 + 重建 MediaStreamSource） |
@@ -23,6 +24,68 @@
 | v2.2 | 2026-04-18 | Start Session 按鈕修復、Opus 4.7 model ID 更新 |
 | v2.1 | 2026-04-17 | 擴充支援檔案格式與裝置 |
 | v2.0 | 2026-04-13 | Web 版首次發布（macOS native app 改 Web） |
+
+---
+
+## 2026-08-31 — v3.0
+
+### Language C：一次翻譯成兩種語言
+
+原本是 Language A ↔ B 雙向：自動偵測講的是 A 或 B，翻成另一種。新增可選的 Language C，勾選後偵測輸入屬於三種語言中的哪一種，翻成其餘兩種。
+
+| 面向 | 做法 |
+|------|------|
+| UI | Language B 下方一列 checkbox `langCEnable`，預設關閉；勾選才顯示 `langC` select（預設 zh-TW）。topbar 新增 `langCBtn` 指示器（綠 `#15803d`） |
+| 資料層 | `getLang()` 支援 `'a'/'b'/'c'`；新增 `isLangCEnabled()` / `activeSides()` / `onLangCToggle()`；`mapElevenLangToSide()` 改為迴圈掃 `activeSides()` |
+| 翻譯 | `translateWithClaude()` 分兩條 prompt 路徑。多語版列出三語與 `[EN]/[JA]/[ZH-TW]` tag 對照，要求「一行一語言」；單語版 prompt 與 v2.9 逐字相同 |
+| 解析 | 新增 `parseTaggedTranslation()`，把 `[JA] …` 解析成 `[{label, text}]`。無任何已知 tag 時整段當單一無標籤區塊回傳 |
+| 顯示 | `updateSegmentTranslation()` 接受陣列或字串。單一無標籤區塊走原本 `textContent` 路徑，其餘才建 `.tr-line` DOM（`.tr-lang` chip 沿用 `.badge` 視覺） |
+| 驗證 | C 開啟時檢查三者 `code` 不重複（`errDupLang`），關閉時維持原本 A≠B（`errSameLang`） |
+| i18n | 新增 `langCLabel` / `enableLangC` / `errDupLang`，en / zh-TW / ja 三區塊皆補；三語 help 內文同步更新 |
+
+**C 關閉時保證零行為變化**：`activeSides()` 回 `['a','b']`、prompt 字串與原版逐字相同、回傳包成 `[{label:null, text:raw}]` 走單行 `textContent` 路徑不建任何 `.tr-line` 節點、驗證分支不變。
+
+**未持久化**：`langA` / `langB` 從來就沒存進 localStorage，`langC` 與開關依同一原則也不存。每次載入固定回到 EN / JA / ZH-TW。
+
+### 模型升級
+
+| 舊 | 新 |
+|----|----|
+| `claude-opus-4-7` | `claude-opus-5` |
+| `claude-sonnet-4-6` | `claude-sonnet-5` |
+| `claude-haiku-4-5-20251001` | `claude-haiku-4-5`（移除多餘日期後綴） |
+
+- 請求 body 抽成 `buildRequestBody()`。`EFFORT_MODELS = ['claude-opus-5', 'claude-sonnet-5']` 加送 `output_config: { effort: 'low' }` 降低即時翻譯延遲；Haiku 4.5 不在官方 effort 支援清單內，故不送。
+- 回應改先檢查 `stop_reason === 'refusal'`（帶出 `stop_details.category`），再用 `content.find(b => b.type === 'text')` 取值，不再假設 `content[0]`——thinking block 會排在 text 前面。
+- `MODEL_MIGRATION` 把舊 localStorage model ID 對應到新 ID，且只在該 option 存在時才套用，避免下拉變空值。
+- 下拉預設仍是 Haiku（延遲最低）。
+
+Commit：`fa56519`（Language C）、`048500b`（模型升級）。
+
+### 待處理：三方審查發現的缺陷（尚未修）
+
+三個範圍互斥的 agent 平行審查。以下即完整結論（原彙整檔在 session 暫存目錄，關機後不存在）。
+
+主審原本提的五項，裁定結果：`max_tokens` 一項**部分成立**（機制成立、嚴重度誇大）、`stop_reason` 一項**成立**、標籤表一項**方向錯**、`swapLanguages` 一項**推翻**、`seg.translated` 一項**確認不是 bug**。
+
+尚未修的實際缺陷：
+
+| # | 嚴重度 | 問題 |
+|---|--------|------|
+| 1 | 高 | `parseTaggedTranslation` 的 `known` 表只收 `LANGUAGES[].short`。模型輸出別名 `[ZH]`/`[TW]`/`[CN]` 時 regex 有 match 但查表落空 → 落入 continuation 分支被黏進上一語言。實測 `[JA] こんにちは\n[ZH] 你好` → 兩語言擠同一行（`.translated` 無 `white-space: pre-wrap`） |
+| 2 | 中 | 模型漏第二個 tag → 譯文掛在錯誤的語言標籤下，顯示**錯誤歸屬**而非缺漏 |
+| 3 | 中 | 第一個 tag 同行前有說明文字（`Translations: [JA] …`）→ regex 錨在行首不 match 且 `cur` 為 null → 該語言譯文靜默消失 |
+| 4 | 中 | `startSession()` 在切到 live 畫面**之後**才失敗（`audio-processor.js` 404、iOS autoplay 擋 `audioContext.resume()`）→ `showError` 寫進已隱藏的 `#setup`、`isRunning` 仍 true、ws 與 heartbeat 洩漏、`endedPanel` 已隱藏所以 Back to Setup 點不到 |
+| 5 | 中低 | 模型加 markdown 粗體 `**[JA]**` → 走 fallback 單行路徑，兩語言同一行且標記全露出。程式註解宣稱「never leaves raw markers on screen」與實測相反 |
+| 6 | 低〜中 | `zh-TW` 與 `zh-CN` 的 `elevenCode` 都是 `'zh'`，`mapElevenLangToSide` 取第一個命中 → 「英文＋繁中＋簡中」配置下 C 槽指示器永遠不亮。啟動驗證只比對 `code` 不比對 `elevenCode`。兩位審查者嚴重度判定不一致（低 vs 中），但都同意不影響譯文 |
+| 7 | 低 | `.tr-text` 無 `overflow-wrap`，長網址撐爆 `.tr-line` 並把 `.tr-lang` chip 推出可視區 |
+| 8 | 待實測 | `max_tokens: 1024` 未隨模型調整。官方文件確認 Opus 5 / Sonnet 5 預設開啟 thinking 且 thinking token 計入 `max_tokens`（hard cap），吃光時 `content` 可能完全沒有 text block（現行程式會丟 `empty response`，錯誤訊息誤導）。但官方未公佈任何 effort 等級的 thinking token 數字，實際會不會吃光需實測 `usage.output_tokens_details.thinking_tokens`。Language C 讓輸出加倍，headroom 再砍半。另 `stop_reason === 'max_tokens'` 完全未處理 |
+
+第 1 項是唯一「模型只要偏離一點就必然發生、且畫面完全錯誤」的路徑。
+
+確認乾淨（已查證，不必重驗）：XSS（翻譯路徑全走 `textContent`，`innerHTML` 只用於靜態 i18n 說明面板）、`known` 表 prototype 污染（regex 字元類不含底線）、`blocks.filter` 誤刪、`.pending`／紅字殘留、`.tr-lang` 字級被繼承覆蓋、`setLang()` 覆寫 topbar 短碼、`returnToSetup()` 的 `detectedLang` 殘留、`getLang()` 回 undefined、`MODEL_MIGRATION` 落回預設、`onLangCToggle()` 全域可及性、`output_config.effort` 語法位置。
+
+**下一輪未執行**：三位審查者範圍互斥、彼此沒看過對方報告（除第 6 項外每項只有一人審過），且沒有任何一項打過真實 API 驗證。原訂由兩位資深程式設計師 + 一位「AI 寫程式常見錯誤」判斷專家讀 `ROUND1_FINDINGS.md` 互相交叉質詢，尚未執行。
 
 ---
 

@@ -1,5 +1,14 @@
 # MADZINE Website 開發紀錄
 
+## 2026-08-31
+
+### Artist Talk Translator v3.0
+
+- Language C：可選的第三種語言，勾選後一次翻譯成兩種語言。模型輸出 `[JA] …` / `[ZH-TW] …` 標記，前端 `parseTaggedTranslation()` 解析為多行顯示。關閉時 prompt 與 DOM 結構與 v2.9 完全相同
+- 模型升級：`claude-opus-5` / `claude-sonnet-5` / `claude-haiku-4-5`。5 系列加送 `output_config.effort = 'low'`；處理 `stop_reason === 'refusal'`；舊 localStorage model ID 自動遷移
+- 三方審查列出 8 項待修缺陷（第 1 項 tag 別名解析為高嚴重度），尚未修
+- 詳見 [artist-talk-translator-devlog.md](artist-talk-translator-devlog.md)
+
 ## 2026-08-02
 
 ### Session Guide：首頁加下載原始碼
