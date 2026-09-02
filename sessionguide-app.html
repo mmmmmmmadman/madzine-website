@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- version: v260822 — 每次部署到 madzine.work 前更新此版本號與 #wordmark -->
+<!-- version: v260902 — 每次部署到 madzine.work 前更新此版本號與 #wordmark -->
 <html lang="zh-Hant">
 <head>
 <meta charset="utf-8">
@@ -551,7 +551,13 @@ body.tl-on #timeline{display:flex}
   border:1px solid var(--line);border-radius:8px;background:var(--panel);
   padding:0 8px;font-size:clamp(20px,14px + 1.6vw,34px);line-height:42px;letter-spacing:.02em;
   color:var(--fg);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  display:flex;align-items:center;gap:6px;cursor:pointer;
 }
+#tlcue:active{background:var(--acc-dim)}
+/* the label clips, the icon never does: it is the only affordance saying this
+   box opens the fullscreen wall clock */
+#tlcue .txt{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#tlcue .ico{flex:0 0 auto;width:15px;height:15px;display:block;fill:var(--fg3)}
 /* icon, not the word: the label to its left needs every pixel the row has */
 #tleditbtn{
   flex:0 0 auto;width:44px;height:44px;padding:0;
@@ -625,6 +631,63 @@ body.tl-edit #tledit{display:flex}
   background:var(--panel);color:var(--acc);font-size:17px;line-height:1.2;
 }
 
+
+/* ---------- fullscreen timeline ----------
+   The same strip, blown up to the whole viewport. Nothing is duplicated: these
+   are the elements the strip already owns, only the type scale and the stacking
+   order change, so the section name and the set clock read from the back of the
+   room instead of off a 96 px band.
+   A cue takes the screen back the moment one fires (body.cue-on): the command is
+   the only thing that matters while it is up, and a wall clock the same size
+   would compete for the same glance. z-index drops under the overlays for the
+   same reason — the strip can never sit on top of a cue. */
+body.tl-full #timeline{
+  top:0;height:100vh;height:100svh;height:100dvh;
+  z-index:38;gap:12px;border-top:none;background:var(--bg);
+  padding:calc(env(safe-area-inset-top,0px) + 14px) calc(env(safe-area-inset-right,0px) + 16px)
+          calc(env(safe-area-inset-bottom,0px) + 14px) calc(env(safe-area-inset-left,0px) + 16px);
+}
+body.tl-full.cue-on #timeline{display:none}
+/* with the strip gone the cue owns the whole viewport, so it stops subtracting
+   a strip height it no longer has to clear */
+body.tl-full .overlay{height:100vh;height:100svh;height:100dvh}
+body.tl-full #tlbar{flex:1 1 auto;min-height:0;height:auto;flex-direction:column;gap:12px}
+/* the section name is the point of the mode: it takes every pixel the clock and
+   the transport do not need, centred, wrapping instead of clipping */
+body.tl-full #tlcue{
+  order:1;flex:1 1 auto;width:100%;height:auto;min-height:0;
+  border:none;background:none;padding:0;
+  align-items:center;justify-content:center;text-align:center;
+  font-size:min(20vh,17vw);line-height:1.05;letter-spacing:.02em;
+}
+body.tl-full #tlcue .txt{white-space:normal;overflow:visible;overflow-wrap:anywhere;text-overflow:clip}
+body.tl-full #tlcue .ico{display:none}
+body.tl-full #tlclock{
+  order:2;flex:0 0 auto;width:100%;
+  flex-direction:row;align-items:baseline;justify-content:center;gap:14px;
+}
+body.tl-full #tlnow{font-size:min(15vh,22vw);line-height:1}
+body.tl-full #tltotal{font-size:clamp(20px,5vw,34px)}
+body.tl-full #tltransport{order:3;flex:0 0 auto;width:100%;justify-content:center;gap:12px}
+body.tl-full .tl-btn{width:78px;height:64px}
+body.tl-full .tl-btn svg{width:26px;height:26px}
+/* the section rows are the strip's own panel; the wall clock has no room for
+   them and no reason to hold them */
+body.tl-full #tleditbtn{display:none}
+body.tl-full #tltrack{flex:0 0 auto;height:56px}
+/* the way out sits in the corner every full-screen view is closed from, clear
+   of the label that also toggles the mode */
+#tlfullexit{
+  display:none;position:absolute;z-index:2;
+  top:calc(env(safe-area-inset-top,0px) + 10px);
+  right:calc(env(safe-area-inset-right,0px) + 12px);
+  width:48px;height:48px;align-items:center;justify-content:center;
+  border:1px solid var(--line);border-radius:8px;background:var(--panel);
+}
+#tlfullexit svg{width:20px;height:20px;display:block;fill:var(--fg2)}
+#tlfullexit:active{background:var(--acc-dim)}
+body.tl-full #tlfullexit{display:flex}
+
 /* ---------- modal / hue ---------- */
 #scrim{position:fixed;inset:0;z-index:50;display:none;background:rgba(0,0,0,.6)}
 #scrim.show{display:block}
@@ -636,6 +699,67 @@ body.tl-edit #tledit{display:flex}
 #huepop.show{display:flex}
 #huecanvas{touch-action:none;display:block}
 #hueinfo{font-size:17px;color:var(--fg2);letter-spacing:.04em;line-height:1.3;max-width:220px;text-align:center}
+
+
+/* ---------- saves ----------
+   One entry is a whole room's worth of content, so the panel is a list of
+   entries and three verbs, nothing else. It reuses #scrim, exactly as the hue
+   wheel does. */
+#roomstrip .rs-btns{display:flex;gap:6px;flex:0 0 auto}
+#savebtn{font-size:16px;color:var(--fg2);border:1px solid var(--line);border-radius:6px;
+  padding:0 14px;min-height:44px;line-height:1.2}
+#savebtn:active{background:var(--panel)}
+#savepop{
+  position:fixed;z-index:60;display:none;
+  left:50%;top:50%;transform:translate(-50%,-50%);
+  width:min(92vw,420px);max-height:82vh;
+  background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;
+  flex-direction:column;gap:10px;
+}
+#savepop.show{display:flex}
+#savetitle{font-size:20px;letter-spacing:.12em;color:var(--fg2);line-height:1.2}
+#saverow{display:flex;gap:6px;flex:0 0 auto}
+#savename{
+  flex:1 1 auto;min-width:0;min-height:48px;padding:0 10px;
+  font-size:18px;line-height:1.2;color:var(--fg);
+  background:var(--bg-elev);border:1px solid var(--line);border-radius:8px;
+}
+#savename:focus{outline:none;border-color:var(--acc)}
+#savedo{
+  flex:0 0 auto;min-height:48px;padding:0 16px;font-size:18px;line-height:1.2;
+  color:var(--acc);background:var(--bg-elev);border:1px solid var(--acc-dim);border-radius:8px;
+}
+#savemsg{font-size:16px;color:var(--acc);line-height:1.2;min-height:19px}
+#saveempty{font-size:17px;color:var(--fg3);line-height:1.35;padding:2px}
+#savelist{
+  flex:1 1 auto;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;display:flex;flex-direction:column;gap:8px;
+}
+.saverow{display:flex;flex-direction:column;gap:6px;flex:0 0 auto;
+  padding-bottom:8px;border-bottom:1px solid var(--line)}
+.saverow:last-child{border-bottom:none;padding-bottom:0}
+.saverow .nm{font-size:19px;color:var(--fg);line-height:1.2;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.saverow .at{font-size:14px;color:var(--fg3);line-height:1.2}
+.saverow .btns{display:flex;gap:6px}
+.saverow .btns button{
+  flex:1 1 0;min-height:44px;font-size:16px;line-height:1.2;color:var(--fg2);
+  background:var(--bg-elev);border:1px solid var(--line);border-radius:8px;
+}
+.saverow .btns .ld{color:var(--acc);border-color:var(--acc-dim)}
+.saverow .btns .dl{color:var(--warn);border-color:#4a2320}
+/* armed = one tap in, waiting for the second. Nothing here is undoable, and a
+   native confirm() would blank the screen mid-set. */
+.saverow .btns button.armed{border-color:var(--acc);color:var(--acc);background:var(--acc-dim)}
+#savefile{display:flex;gap:6px;flex:0 0 auto}
+#savefile button{
+  flex:1 1 0;min-height:44px;font-size:16px;line-height:1.2;color:var(--fg2);
+  background:var(--bg-elev);border:1px solid var(--line);border-radius:8px;
+}
+#saveclose{
+  flex:0 0 auto;min-height:48px;font-size:18px;line-height:1.2;color:var(--fg2);
+  background:var(--bg-elev);border:1px solid var(--line);border-radius:8px;
+}
 
 .seg{display:flex;gap:6px}
 .seg button{
@@ -668,7 +792,7 @@ body.tl-edit #tledit{display:flex}
 
 <div id="app">
   <div id="topbar">
-    <div id="wordmark">SESSION GUIDE — MADZINE · v260822</div>
+    <div id="wordmark">SESSION GUIDE — MADZINE · v260902</div>
     <div id="topright">
       <div id="connstate"></div>
       <button class="hue-btn" id="huebtn">HUE</button>
@@ -715,7 +839,10 @@ body.tl-edit #tledit{display:flex}
         <div id="roomlabel">ROOM</div>
         <div id="roomcode">————</div>
       </div>
-      <button id="leavebtn" data-i18n="leave"></button>
+      <div class="rs-btns">
+        <button id="savebtn" data-i18n="save_btn"></button>
+        <button id="leavebtn" data-i18n="leave"></button>
+      </div>
     </div>
 
     <div class="card" id="tempocard">
@@ -816,7 +943,10 @@ body.tl-edit #tledit{display:flex}
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h3v16H5z"/><path d="M21 4L9 12l12 8z"/></svg>
       </button>
     </div>
-    <div id="tlcue"></div>
+    <div id="tlcue" role="button" tabindex="0">
+      <span class="txt" id="tlcuetxt"></span>
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v2H6v5H4V4zm16 0v7h-2V6h-5V4h7zM4 13h2v5h5v2H4v-7zm14 0h2v7h-7v-2h5v-5z"/></svg>
+    </div>
     <button id="tleditbtn">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 000-1.41l-2.34-2.34a1 1 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
     </button>
@@ -830,6 +960,9 @@ body.tl-edit #tledit{display:flex}
     <div id="tllist"></div>
     <button id="tladd" data-i18n="tl_add"></button>
   </div>
+  <button id="tlfullexit" data-i18n-aria="tl_full_exit">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4h2v7H4V9h5V4zm4 0h2v5h5v2h-7V4zM4 13h7v7H9v-5H4v-2zm9 0h7v2h-5v5h-2v-7z"/></svg>
+  </button>
 </div>
 
 <!-- COUNTDOWN OVERLAY -->
@@ -865,6 +998,24 @@ body.tl-edit #tledit{display:flex}
 <div id="huepop">
   <canvas id="huecanvas" width="440" height="440" style="width:220px;height:220px"></canvas>
   <div id="hueinfo" data-i18n="hue_hint"></div>
+</div>
+
+<!-- SAVES -->
+<div id="savepop">
+  <div id="savetitle" data-i18n="save_title"></div>
+  <div id="saverow">
+    <input id="savename" type="text" autocomplete="off" autocorrect="off" spellcheck="false" maxlength="24" data-i18n-ph="save_new_ph">
+    <button id="savedo" data-i18n="save_do"></button>
+  </div>
+  <div id="savemsg"></div>
+  <div id="saveempty" data-i18n="save_empty"></div>
+  <div id="savelist"></div>
+  <div id="savefile">
+    <button id="saveexport" data-i18n="save_export"></button>
+    <button id="saveimport" data-i18n="save_import"></button>
+  </div>
+  <button id="saveclose" data-i18n="save_close"></button>
+  <input id="savefileinput" class="hidden" type="file" accept="application/json,.json">
 </div>
 
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
@@ -952,7 +1103,17 @@ var I18N = {
   tl_add:"新增區段",           tl_empty:"還沒有區段",
   tl_color:"顏色",
   tl_longer:"加長",            tl_shorter:"縮短",
-  tl_name_ph:"區段名稱（選填）"
+  tl_name_ph:"區段名稱（選填）",
+  tl_full:"全螢幕",            tl_full_exit:"離開全螢幕",
+  save_btn:"存檔",             save_title:"存檔",
+  save_new_ph:"存檔名稱",       save_do:"儲存",
+  save_load:"載入",            save_over:"覆寫",
+  save_del:"刪除",             save_confirm:"再按一次",
+  save_export:"匯出檔案",       save_import:"匯入檔案",
+  save_close:"關閉",           save_unnamed:"未命名",
+  save_empty:"還沒有存檔。按「儲存」把目前的區段、格子、速度、拍號、音效與顏色存成一筆。",
+  save_import_ok:"已匯入 {n} 筆",
+  save_import_bad:"檔案格式不符"
 },
 "en":{
   brand_sub:"LIVE CUE SYSTEM",
@@ -1029,7 +1190,17 @@ var I18N = {
   tl_add:"Add Section",        tl_empty:"No sections yet",
   tl_color:"Color",
   tl_longer:"Longer",          tl_shorter:"Shorter",
-  tl_name_ph:"Section name (optional)"
+  tl_name_ph:"Section name (optional)",
+  tl_full:"Full screen",       tl_full_exit:"Exit full screen",
+  save_btn:"Saves",            save_title:"SAVES",
+  save_new_ph:"Save name",     save_do:"Save",
+  save_load:"Load",            save_over:"Overwrite",
+  save_del:"Delete",           save_confirm:"Tap again",
+  save_export:"Export file",   save_import:"Import file",
+  save_close:"Close",          save_unnamed:"Untitled",
+  save_empty:"No saves yet. Save stores the current sections, cells, tempo, meter, sound and colours as one entry.",
+  save_import_ok:"{n} imported",
+  save_import_bad:"File not recognised"
 },
 "ja":{
   brand_sub:"ライブキューシステム",
@@ -1106,7 +1277,17 @@ var I18N = {
   tl_add:"セクションを追加",     tl_empty:"セクションがありません",
   tl_color:"色",
   tl_longer:"長く",             tl_shorter:"短く",
-  tl_name_ph:"セクション名（任意）"
+  tl_name_ph:"セクション名（任意）",
+  tl_full:"全画面",            tl_full_exit:"全画面を終了",
+  save_btn:"保存",             save_title:"保存データ",
+  save_new_ph:"保存名",         save_do:"保存",
+  save_load:"読み込む",         save_over:"上書き",
+  save_del:"削除",             save_confirm:"もう一度",
+  save_export:"ファイルに書き出す", save_import:"ファイルから読み込む",
+  save_close:"閉じる",          save_unnamed:"名称未設定",
+  save_empty:"保存データはまだありません。「保存」で現在のセクション・セル・テンポ・拍子・音・色を1件として保存します。",
+  save_import_ok:"{n} 件を読み込みました",
+  save_import_bad:"ファイル形式が違います"
 }
 };
 
@@ -1409,6 +1590,7 @@ var tlstopBtn = document.getElementById("tlstop");
 var tlrewBtn  = document.getElementById("tlrew");
 var tleditBtn = document.getElementById("tleditbtn");
 var tlcueEl   = document.getElementById("tlcue");
+var tlcueTxt  = document.getElementById("tlcuetxt");
 
 /* a section owns an ABSOLUTE colour — hue AND saturation — picked on the same
    HUE wheel the theme uses. It used to store a palette index so the strip turned
@@ -1588,7 +1770,7 @@ function renderTlCue(force){
   var seg = (i >= 0) ? S.tl.segs[i] : null;
   /* an unnamed section shows nothing at all. A placeholder or an auto number
      would be the app talking, and this strip only ever repeats the room. */
-  tlcueEl.textContent  = seg ? (seg.n || "") : "";
+  tlcueTxt.textContent = seg ? (seg.n || "") : "";
   tlcueEl.style.color  = seg ? tlSegColor(seg) : "";
 }
 /* called every frame: only the two things that actually move are touched */
@@ -1649,6 +1831,7 @@ tltrackEl.addEventListener("pointercancel", function(){ tlDragging = false; });
    it, in the same place the track already is. */
 function setTlEdit(v){
   var on = !!v && isHost();
+  if(on) setTlFull(false);        // the section rows belong to the strip, not the wall clock
   document.body.classList.toggle("tl-edit", on);
   if(on) renderTlEdit();
   renderTlTransport();
@@ -1745,6 +1928,32 @@ document.getElementById("tladd").addEventListener("click", function(){
                   s:prev ? prev.s : clamp(satMul, 0, TL_SAT_MAX),
                   n:""});
   saveTimeline(); renderTlSegs(); renderTlEdit(); tlTick();
+});
+/* ---------- fullscreen strip ----------
+   The bottom bar, taken to the whole screen: same elements, same state, a type
+   scale a player can read from across the stage. It is a view, not a mode —
+   nothing about the set or the transport changes, and a cue still owns the
+   screen the instant one fires. */
+function setTlFull(v){
+  var on = !!v && document.body.classList.contains("tl-on");
+  if(on === document.body.classList.contains("tl-full")) return;
+  document.body.classList.toggle("tl-full", on);
+  if(on) setTlEdit(false);
+  var s = t(on ? "tl_full_exit" : "tl_full");
+  tlcueEl.setAttribute("aria-label", s);
+  tlcueEl.setAttribute("title", s);
+  /* every box on the strip just changed size, so the three cached values that
+     skip redundant writes have to be invalidated before the next tick */
+  tlLastNow = ""; tlLastPos = -1;
+  renderTlCue(true);
+  tlTick();
+}
+tlcueEl.addEventListener("click", function(){
+  setTlFull(!document.body.classList.contains("tl-full"));
+});
+document.getElementById("tlfullexit").addEventListener("click", function(e){
+  e.stopPropagation();
+  setTlFull(false);
 });
 function renderTimeline(){
   renderTlSegs();
@@ -2481,7 +2690,7 @@ document.getElementById("leavebtn").addEventListener("click", function(){
   S.role="none"; S.canCue=false; S.count=null; S.ramp=null;
   S.metroRunning=false; clearCompose();
   S.tl.running=false; S.tl.base=0;
-  document.body.classList.remove("tl-on","tl-edit","tl-ro");
+  document.body.classList.remove("tl-on","tl-edit","tl-ro","tl-full");
   hideCount(); hideRamp(); setConnState(null); show(scrHome);
 });
 
@@ -3103,6 +3312,10 @@ function startFlash(text, dur, from){
   document.getElementById("flashfrom").textContent = S.flashFrom;
   ov.classList.remove("fade");
   ov.classList.add("show");
+  /* the flash is fitted here rather than in update(), so the class that decides
+     how tall the overlay is has to be on before the measurement, not after */
+  cueOnNow = true;
+  document.body.classList.add("cue-on");
   fitFlashText();                            // measure only once the overlay is laid out
   introFlash(ov);                            // pulses for the whole display time
 }
@@ -3337,9 +3550,20 @@ var rampcancelBtn = document.getElementById("rampcancel");
 /* update() is idempotent: every value is derived from timestamps, so it is safe
    to drive it from both rAF (smooth) and a setInterval net (survives rAF throttling). */
 var lastBpmShown = -1;
+var cueOnNow = false;
 function update(){
   /* nt, not t: t() is the translation function and must stay reachable here */
   var nt = now();
+
+  /* is a cue on screen right now? Read off the state, not off the DOM, and read
+     it FIRST: the fullscreen strip steps aside for a cue and the overlay stops
+     subtracting a strip height that is no longer there, so both classes have to
+     be in place before this same frame measures and fits the cue text. */
+  var cueOn = !!(S.count || S.ramp || (S.flashUntil && nt < S.flashUntil));
+  if(cueOn !== cueOnNow){
+    cueOnNow = cueOn;
+    document.body.classList.toggle("cue-on", cueOn);
+  }
   var n = meter().n;
   var beatNow = beatAt(nt);          // single source of musical position
 
@@ -3510,6 +3734,248 @@ function renderAll(){
   }
   renderTapInfo();
 }
+
+/* =========================================================
+   SAVES
+   ---------------------------------------------------------
+   One entry is a whole room's worth of content: the set list, the cells, the
+   tempo / meter / click and the colours — everything the app already keeps per
+   device, snapshotted under a name. Identity is deliberately not in it: a save
+   is the material, not who is holding it, so loading one never changes the room
+   code, the nickname or whether this device is the host.
+   Entries live in localStorage like every other per-device thing, and the whole
+   list exports to one JSON file so a band can carry a set between two phones.
+   ========================================================= */
+var SAVE_VER = 1, SAVE_MAX = 40, SAVE_NAME_MAX = 24;
+function saveNameOf(v){ return (typeof v === "string") ? v.slice(0, SAVE_NAME_MAX) : ""; }
+function readSaves(){
+  var a = null;
+  try{
+    var raw = localStorage.getItem("sg_saves");
+    if(raw) a = JSON.parse(raw);
+  }catch(err){ a = null; }
+  var arr = (a && Array.isArray(a.list)) ? a.list : (Array.isArray(a) ? a : []);
+  var out = [];
+  arr.forEach(function(x, i){
+    if(!x || !x.data) return;
+    out.push({id:x.id || ("s"+i+"_"+Math.random().toString(36).slice(2,7)),
+              name:saveNameOf(x.name), at:(+x.at || 0), data:x.data});
+  });
+  return out;
+}
+var saves = readSaves();
+function writeSaves(){
+  try{ localStorage.setItem("sg_saves", JSON.stringify({v:SAVE_VER, list:saves})); }catch(err){}
+}
+/* the snapshot is taken off the live model, never off localStorage: what the
+   user sees on screen is what the entry holds */
+function snapshot(){
+  return {
+    v:SAVE_VER,
+    tl:S.tl.segs.map(function(x){ return {sec:x.sec, h:x.h, s:x.s, n:x.n||""}; }),
+    cellsVer:CELLS_VER,
+    cells:S.cells.map(function(c){
+      var o = {}; for(var k in c){ if(Object.prototype.hasOwnProperty.call(c,k)) o[k] = c[k]; }
+      return o;
+    }),
+    bpm:S.bpm, meter:S.meter, sound:!!S.sound,
+    hue:hue, sat:satMul
+  };
+}
+/* the inverse. Every field lands in the model, in its own localStorage key and
+   on screen, so a loaded set is indistinguishable from a hand-built one.
+   Tempo and meter are host-only, exactly as they are everywhere else: a
+   follower loading a save keeps its own colours and cells and leaves the room's
+   tempo alone. */
+function applySnapshot(d){
+  if(!d) return;
+  if(Array.isArray(d.tl)){
+    S.tl.segs = d.tl.map(function(x, i){
+      var sv = tlSat(x.s);
+      if(sv === null) sv = clamp(satMul, 0, TL_SAT_MAX);
+      var h = parseFloat(x.h);
+      return {id:"tl"+i+"_"+Math.random().toString(36).slice(2,7),
+              sec:clamp(parseInt(x.sec,10) || 60, TL_MIN, TL_MAX),
+              h:frac(isFinite(h) ? h : hue),
+              s:sv,
+              n:tlName(x.n)};
+    });
+    saveTimeline();
+    /* a playhead cannot survive a different set list: the host rewinds and tells
+       the room, a follower just stops until the next host anchor arrives */
+    if(isHost()) tlSet(false, 0);
+    else { S.tl.running = false; S.tl.base = 0; }
+  }
+  if(Array.isArray(d.cells) && d.cells.length){
+    S.cells = ensureModeCells(d.cells);
+    saveCells();
+    clearCompose();      // a sentence made of cells that just changed is void
+  }
+  if(isHost() && isFinite(d.bpm)){
+    S.bpm = clamp(Math.round(d.bpm), 30, 300);
+    try{ localStorage.setItem("sg_bpm", String(S.bpm)); }catch(err){}
+    setConstBpm(now(), S.bpm);
+    nextClickBeat = -1;
+  }
+  if(isHost() && isFinite(d.meter)){
+    S.meter = clamp(d.meter|0, 0, METERS.length-1);
+    try{ localStorage.setItem("sg_meter", String(S.meter)); }catch(err){}
+  }
+  if(typeof d.sound === "boolean"){
+    S.sound = d.sound;
+    try{ localStorage.setItem("sg_sound", S.sound ? "1" : "0"); }catch(err){}
+    if(S.sound) initAudio();
+  }
+  if(isFinite(d.hue)){
+    hue = frac(d.hue);
+    try{ localStorage.setItem("sg_hue", String(hue)); }catch(err){}
+  }
+  if(isFinite(d.sat)){
+    satMul = clamp(d.sat, 0, 2);
+    try{ localStorage.setItem("sg_sat", String(satMul)); }catch(err){}
+  }
+  applyTheme();
+  renderAll();
+  if(isHost()) send(stateMsg());
+}
+
+var savepop     = document.getElementById("savepop");
+var savelistEl  = document.getElementById("savelist");
+var saveemptyEl = document.getElementById("saveempty");
+var savenameEl  = document.getElementById("savename");
+var savemsgEl   = document.getElementById("savemsg");
+var saveMsgTimer = null;
+function saveMsg(key, arg){
+  savemsgEl.textContent = key ? t(key, arg === undefined ? undefined : arg) : "";
+  clearTimeout(saveMsgTimer);
+  if(key) saveMsgTimer = setTimeout(function(){ savemsgEl.textContent = ""; }, 4000);
+}
+function fmtWhen(ms){
+  function p(n){ return n < 10 ? "0"+n : ""+n; }
+  var d = new Date(ms || Date.now());
+  return d.getFullYear()+"-"+p(d.getMonth()+1)+"-"+p(d.getDate())+"  "+p(d.getHours())+":"+p(d.getMinutes());
+}
+/* load, overwrite and delete all destroy something, and none of them can be
+   undone: the button arms on the first tap and fires on the second, then
+   disarms itself so a stale armed button cannot be hit by accident later */
+function armBtn(btn, key, fn){
+  var timer = null;
+  function disarm(){
+    clearTimeout(timer);
+    btn.classList.remove("armed");
+    btn.textContent = t(key);
+  }
+  btn.addEventListener("click", function(){
+    if(btn.classList.contains("armed")){ disarm(); fn(); return; }
+    btn.classList.add("armed");
+    btn.textContent = t("save_confirm");
+    timer = setTimeout(disarm, 3000);
+  });
+}
+function renderSaves(){
+  savelistEl.innerHTML = "";
+  saveemptyEl.classList.toggle("hidden", saves.length > 0);
+  saves.forEach(function(entry){
+    var row = document.createElement("div");
+    row.className = "saverow";
+    var nm = document.createElement("div");
+    nm.className = "nm";
+    nm.textContent = entry.name || t("save_unnamed");
+    var at = document.createElement("div");
+    at.className = "at";
+    at.textContent = fmtWhen(entry.at);
+    var btns = document.createElement("div");
+    btns.className = "btns";
+    var ld = document.createElement("button");
+    ld.className = "ld"; ld.textContent = t("save_load");
+    armBtn(ld, "save_load", function(){ applySnapshot(entry.data); closeSave(); });
+    var ov = document.createElement("button");
+    ov.textContent = t("save_over");
+    armBtn(ov, "save_over", function(){
+      entry.data = snapshot(); entry.at = Date.now();
+      writeSaves(); renderSaves();
+    });
+    var dl = document.createElement("button");
+    dl.className = "dl"; dl.textContent = t("save_del");
+    armBtn(dl, "save_del", function(){
+      saves = saves.filter(function(x){ return x !== entry; });
+      writeSaves(); renderSaves();
+    });
+    btns.appendChild(ld); btns.appendChild(ov); btns.appendChild(dl);
+    row.appendChild(nm); row.appendChild(at); row.appendChild(btns);
+    savelistEl.appendChild(row);
+  });
+}
+function openSave(){
+  saveMsg(null);
+  savenameEl.value = "";
+  renderSaves();
+  savepop.classList.add("show");
+  scrim.classList.add("show");
+}
+function closeSave(){
+  savepop.classList.remove("show");
+  scrim.classList.remove("show");
+}
+document.getElementById("savebtn").addEventListener("click", function(e){
+  e.stopPropagation();
+  openSave();
+});
+document.getElementById("saveclose").addEventListener("click", closeSave);
+savepop.addEventListener("pointerdown", function(e){ e.stopPropagation(); });
+scrim.addEventListener("pointerdown", closeSave);
+document.getElementById("savedo").addEventListener("click", function(){
+  saves.unshift({id:"s"+Date.now(), name:saveNameOf((savenameEl.value||"").trim()),
+                 at:Date.now(), data:snapshot()});
+  if(saves.length > SAVE_MAX) saves.length = SAVE_MAX;
+  writeSaves();
+  savenameEl.value = "";
+  renderSaves();
+});
+/* the file is the same object the list holds, so an export round-trips through
+   import with nothing lost */
+document.getElementById("saveexport").addEventListener("click", function(){
+  var blob = new Blob([JSON.stringify({app:"sessionguide", v:SAVE_VER, list:saves}, null, 2)],
+                      {type:"application/json"});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  a.href = url;
+  a.download = "sessionguide-saves.json";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+});
+var savefileInput = document.getElementById("savefileinput");
+document.getElementById("saveimport").addEventListener("click", function(){ savefileInput.click(); });
+savefileInput.addEventListener("change", function(){
+  var f = savefileInput.files && savefileInput.files[0];
+  savefileInput.value = "";                     // same file twice must still fire
+  if(!f) return;
+  var r = new FileReader();
+  r.onload = function(){
+    var a = null;
+    try{ a = JSON.parse(String(r.result)); }catch(err){ a = null; }
+    var arr = (a && Array.isArray(a.list)) ? a.list : (Array.isArray(a) ? a : null);
+    if(!arr){ saveMsg("save_import_bad"); return; }
+    /* imported entries are ADDED, never merged over: a file is somebody else's
+       set list, and overwriting the device's own would be the one move here
+       that cannot be taken back */
+    var n = 0;
+    arr.forEach(function(x){
+      if(!x || !x.data) return;
+      saves.unshift({id:"s"+Date.now()+"_"+n, name:saveNameOf(x.name),
+                     at:(+x.at || Date.now()), data:x.data});
+      n++;
+    });
+    if(saves.length > SAVE_MAX) saves.length = SAVE_MAX;
+    writeSaves();
+    renderSaves();
+    saveMsg(n ? "save_import_ok" : "save_import_bad", n);
+  };
+  r.onerror = function(){ saveMsg("save_import_bad"); };
+  r.readAsText(f);
+});
 
 /* wake lock */
 var wakeLock = null;
