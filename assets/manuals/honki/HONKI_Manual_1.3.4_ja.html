@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HONKI 取扱説明書</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500&family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root { --accent: #F27455; }
+* { box-sizing: border-box; }
+body { margin:0; padding:0; background:#0B0B0B; color:#ECECEC; font-family:"Barlow Condensed Light","Noto Sans JP",-apple-system,sans-serif; font-weight:300; line-height:1.6; }
+.wrap { max-width:760px; margin:0 auto; padding:64px 40px 120px; }
+header { border-bottom:1px solid #2A2A2A; padding-bottom:28px; margin-bottom:40px; }
+header .brand { font-size:14px; letter-spacing:0.32em; color:#F27455; text-transform:uppercase; }
+header h1 { font-size:48px; font-weight:300; margin:8px 0 4px; letter-spacing:0.02em; }
+header .sub { font-size:15px; color:#9A9A9A; }
+h2 { font-size:22px; font-weight:400; color:#F27455; margin-top:56px; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #2A2A2A; letter-spacing:0.04em; }
+h3 { font-size:16px; font-weight:500; color:#ECECEC; margin-top:26px; margin-bottom:8px; }
+p { font-size:15px; color:#C9C9C9; margin:8px 0; }
+ul { margin:8px 0; padding-left:22px; }
+li { font-size:15px; color:#C9C9C9; margin:6px 0; }
+.term { color:#ECECEC; font-weight:500; }
+table { width:100%; border-collapse:collapse; margin:16px 0; }
+td { font-size:14px; padding:8px 10px; border-bottom:1px solid #222; color:#C9C9C9; vertical-align:top; }
+td.k { color:#ECECEC; font-weight:500; width:30%; white-space:nowrap; }
+.fig { margin:20px 0 0; }
+.fig img { width:100%; border:1px solid #2A2A2A; display:block; }
+.cap { font-size:13px; color:#9A9A9A; margin:6px 0 16px; }
+nav.toc ul { list-style:none; padding-left:0; columns:2; }
+nav.toc li { margin:4px 0; }
+nav.toc a { color:#C9C9C9; text-decoration:none; font-size:15px; }
+nav.toc a:hover { color:#F27455; }
+footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-size:14px; color:#666; letter-spacing:0.08em; }
+@media (max-width:600px) { .wrap { padding:40px 16px 80px; } nav.toc ul { columns:1; } td.k { white-space:normal; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="brand">MADZINE</div>
+  <h1>HONKI</h1>
+  <div class="sub">取扱説明書 — v1.3.4 — 日本語</div>
+</header>
+
+<nav class="toc">
+<ul>
+<li><a href="#overview">1. 概要</a></li>
+<li><a href="#topbar">2. トップバー</a></li>
+<li><a href="#transport">3. トランスポート</a></li>
+<li><a href="#main">4. MAIN</a></li>
+<li><a href="#voice">5. VOICE</a></li>
+<li><a href="#mixer">6. MIXER</a></li>
+<li><a href="#utility">7. UTILITY</a></li>
+<li><a href="#perform">8. PERFORM</a></li>
+<li><a href="#modroute">9. MOD ROUTE</a></li>
+<li><a href="#visual">10. VISUAL</a></li>
+<li><a href="#setup">11. SETUP</a></li>
+<li><a href="#midilearn">12. MIDI Learn</a></li>
+<li><a href="#motion">13. Motion</a></li>
+<li><a href="#recording">14. 録音</a></li>
+<li><a href="#shortcuts">15. ショートカット</a></li>
+</ul>
+</nav>
+
+<!-- ============================================================ -->
+<h2 id="overview">1. 概要</h2>
+
+<p>HONKI は iPad 上で動作する 8 トラックのフレーズジェネレーターと音源システムです。1 つのパターンは 8 トラックで構成され、各トラックに 8 個のセグメントメモリスロットがあります。</p>
+
+<div class="fig"><img src="img/tabs.png" alt="6 つのページボタン"></div>
+<div class="cap">トップバーの 6 つのページボタン：MAIN、VOICE、MIXER、UTILITY、PERFORM、VISUAL。図では MAIN が現在のページです。</div>
+
+<h3>トラック構成</h3>
+<table>
+<tr><td class="k">TRACK 1 から 4</td><td>メロディトラック。MAIN の TRACK 1 から 4 エディタでノートを編集します。</td></tr>
+<tr><td class="k">TRACK 5 から 8</td><td>ドラムトラック。MIXER と PERFORM では FOUNDATION、GROOVE、TIMELINE、LEAD と表示されます。MAIN の DRUMS エディタで編集します。</td></tr>
+<tr><td class="k">役割のペア</td><td>TRACK 1 と 5 が foundation、2 と 6 が groove、3 と 7 が timeline、4 と 8 が lead です。</td></tr>
+<tr><td class="k">セグメント</td><td>各トラックに 8 個のセグメントスロットがあります。再生方式は SINGLE、SEQUENCER、RANDOM の 3 種類で、ドラムトラックには FOLLOW もあります。</td></tr>
+<tr><td class="k">音域の初期値</td><td>MIDI ノート 36 から 72。</td></tr>
+<tr><td class="k">音源</td><td>各トラックで SYNTH、SAMPLE、PHYSICAL、AU から 1 つを選択します。</td></tr>
+</table>
+
+<h3>6 つのページ</h3>
+<table>
+<tr><td class="k">MAIN</td><td>フレーズ編集とセグメント管理。起動時の初期ページです。</td></tr>
+<tr><td class="k">VOICE</td><td>音源の選択とパラメータ。</td></tr>
+<tr><td class="k">MIXER</td><td>8 トラックのミキシング、EQ、コンプレッサー、エフェクトセンド、マスターエフェクト。</td></tr>
+<tr><td class="k">UTILITY</td><td>8 ステージエンベロープ、LFO、CV 出力マトリクス。</td></tr>
+<tr><td class="k">PERFORM</td><td>カスタムコントロールパネルとマッピング。</td></tr>
+<tr><td class="k">VISUAL</td><td>映像ソースと 4 つの映像処理ステーション。</td></tr>
+</table>
+<p>ページの切り替え：トップバーのページボタンをタップするか、外部キーボードの数字キー 1 から 6 を押します。編集オーバーレイが開いているときは、数字キーは TRACK 1 から 4 と DRUMS の切り替えになります。ページ切り替えは MIDI Learn に割り当てできます。2 本指スワイプによるページ切り替えは廃止されました。</p>
+
+<h3>ヘッダーの位置</h3>
+<p>トップバー右端の四角いボタンで、ヘッダーを置く角を切り替えます。順序は左上、右上、左下、右下です。ヘッダーが下側にあるとき、トランスポートバーは画面上部に移動します。</p>
+
+<h3>プロジェクトスロット</h3>
+<table>
+<tr><td class="k">スロット数</td><td>26 バンク（A から Z）、各バンクに 10 パターン（00 から 09）。スロット ID の形式は A-00 です。</td></tr>
+<tr><td class="k">スロットごとの保存内容</td><td>バンク、programs、modulation、PERFORM レイアウト、MASTER FX、各トラックの AU。</td></tr>
+<tr><td class="k">アプリ全体で共通（スロットに依存しない）</td><td>INPUT COMP、HUE、CV デバイスの割り当て。</td></tr>
+<tr><td class="k">起動時</td><td>最後に使用したスロットを復元します。</td></tr>
+</table>
+
+<h3>Undo</h3>
+<p>Undo はバンク全体のスナップショットを単位とし、最大 100 ステップです。同一 tick 内の複数の変更は 1 ステップにまとめられ、ドラッグ操作も 1 ステップにまとめられます。MIDI Learn の書き込み、TAP テンポ、バンクの読み込みは undo に入りません。</p>
+
+<!-- ============================================================ -->
+<h2 id="topbar">2. トップバー</h2>
+
+<div class="fig"><img src="img/topbar.png" alt="トップバー"></div>
+<div class="cap">トップバー：左側にタイマー（図では 00:06）と「Click Twice to Reset」の案内、続いて MADZINE の文字、A-00 スロットメニュー、FILE メニュー、6 つのページボタン（MAIN が現在のページ）、右端にヘッダー位置ボタン。</div>
+
+<table>
+<tr><td class="k">タイマー</td><td>起動時は「H O N K I」と表示されます。最初に PLAY を押して録音確認（Y または N）に答えると計測を開始します。形式は MM:SS です。ダブルタップでゼロに戻ります。横に「Click Twice to Reset」の案内が表示されます。</td></tr>
+<tr><td class="k">MADZINE</td><td>ブランド表示です。</td></tr>
+<tr><td class="k">A-00 メニュー</td><td>2 階層のメニューです。第 1 階層の最上段が CLEAR、その下にバンク A から Z。第 2 階層がパターン 00 から 09 です。MIDI Learn で「次のバンク」を割り当てできます。</td></tr>
+<tr><td class="k">CLEAR</td><td>バンクに内容がある場合、先に「Clear everything?」と確認します。バンク、programs、SWING と TRANSPOSE のゼロ化、modulation、PERFORM レイアウト、MIDI 割り当て、各トラックの AU、MASTER FX、CV ルーティングを消去します。INPUT COMP、HUE、CV デバイスと STEREO OUT は保持されます。</td></tr>
+<tr><td class="k">FILE メニュー</td><td>COPY、PASTE、SAVE、LOAD、および操作できない VERSION 項目（バージョン番号を表示）。PASTE はクリップボードが空でないときだけ使えます。</td></tr>
+<tr><td class="k">SAVE</td><td>.honki ファイルを書き出します。iOS の初期ファイル名は「HONKI スロット ID」です。</td></tr>
+<tr><td class="k">LOAD</td><td>.honki ファイルを読み込みます。「Replace current bank?」「Current changes will be lost.」と確認します。失敗時は「Bank File Error」と表示されます。</td></tr>
+<tr><td class="k">ページボタン</td><td>6 つ。第 1 章を参照してください。</td></tr>
+<tr><td class="k">ヘッダー位置ボタン</td><td>右端の四角いボタン。ヘッダーが現在ある角を表示します。タップするたびに順番に切り替わります。</td></tr>
+</table>
+
+<h3>.honki ファイル</h3>
+<p>現行のファイル形式には、バンク、programs、各トラックの AU、MASTER FX、modulation、PERFORM レイアウトが含まれます。旧バージョンの .honki ファイルとバンクのみのファイルも読み込めます。</p>
+
+<!-- ============================================================ -->
+<h2 id="transport">3. トランスポート</h2>
+
+<div class="fig"><img src="img/transport.png" alt="トランスポートバー"></div>
+<div class="cap">トランスポートバー、左から順に：STOP（図は再生中で四角いアイコンを表示）、MOTION、RESET、BPM 132、TAP、スケールボタン C Minor、SWING 0（グレー表示）、STYLE メニュー TECHNO、SETUP、LEARN、上下に並んだ UNDO と REDO、右端に HUE の色相リング。</div>
+
+<table>
+<tr><td class="k">PLAY / STOP</td><td>録音状態でないときに PLAY を押すと、ボタン内に Y、REC?、N の 3 区画が表示され、5 秒後に自動的に閉じます。Y は録音して再生、N は再生のみです。再生中はボタンに STOP と表示されます。MIDI Learn に割り当てできます。</td></tr>
+<tr><td class="k">録音停止ボタン</td><td>録音状態のときだけ表示される赤い丸のカプセル型ボタンで、PLAY の左側にあります。押すと「STOP RECORDING?」Y / N が表示され、5 秒後に自動的に閉じます。停止後は 9 個の WAV ファイルが生成されます。第 14 章を参照してください。</td></tr>
+<tr><td class="k">MOTION</td><td>MOTION 記録状態を切り替えます。0.6 秒長押しで MOTION の記録をすべて削除します。MIDI Learn には割り当てできません。第 13 章を参照してください。</td></tr>
+<tr><td class="k">RESET</td><td>再生中のみ使用でき、再生位置をゼロに戻します。MIDI Learn に割り当てできます。</td></tr>
+<tr><td class="k">BPM</td><td>20 から 300。縦ドラッグで調整、タップで数値入力です。外部クロック使用時は 40% のグレー表示になります。MIDI Learn に割り当てできます。</td></tr>
+<tr><td class="k">TAP</td><td>2 秒の窓内で最大 4 回のタップを平均します。最後のタップから 5 秒後にバッファを消去します。undo に入りません。外部クロック使用時は使えません。</td></tr>
+<tr><td class="k">SCALE</td><td>2 階層のメニュー：第 1 階層がスケール、第 2 階層が 12 のルート音です。ボタンにはルート音とスケール名が表示されます。内蔵 16 種：Chromatic、Major、Minor、Penta Major、Penta Minor、Dorian、Phrygian、Lydian、Mixolydian、Locrian、Major Triad、Minor Triad、Blues、Arabic、Japanese、Whole Tone。その後にユーザースケールと USER SCALE EDITOR が並びます。メニューでは現在の STYLE に対する推奨度を星の数で示します。</td></tr>
+<tr><td class="k">SWING</td><td>塗りつぶし型の横フェーダー、0 から 100。ダブルタップで 0.5 に戻ります。奇数ステップを stepDuration x 0.25 x swing だけ遅らせます。MIDI Learn に割り当てできます。</td></tr>
+<tr><td class="k">STYLE</td><td>ポップオーバー内に AMOUNT ノブ（0 から 1）と 9 種のスタイルが 2 列で並びます：West African、Afro-Cuban、Brazilian、Balkan、Indian、Gamelan、Electronic、Breakbeat、Techno。AMOUNT とスタイル番号はどちらも MIDI Learn に割り当てできます。</td></tr>
+<tr><td class="k">SETUP</td><td>SETUP オーバーレイの開閉。第 11 章を参照してください。</td></tr>
+<tr><td class="k">LEARN</td><td>MIDI Learn モードの切り替えです。表示は LEARN / LEARNING の間で切り替わります。ショートカットは Cmd+L です。割り当て可能なコントロールに 4pt の枠が表示されます。</td></tr>
+<tr><td class="k">UNDO / REDO</td><td>戻せる内容がないときは 40% のグレー表示になります。ショートカットは Cmd+Z、Cmd+Shift+Z です。PERFORM レイアウトの編集は PERFORM 専用の undo スタックを使います。</td></tr>
+<tr><td class="k">HUE</td><td>「HUE」の文字と色相リングです。ポップオーバーのタイトルは「ACCENT HUE」：外側のリングをドラッグで色相、中央の円盤を縦ドラッグで彩度（0 から 2）を変更します。</td></tr>
+</table>
+
+<h3>USER SCALE EDITOR</h3>
+<table>
+<tr><td class="k">CLOSE</td><td>エディタを閉じます。</td></tr>
+<tr><td class="k">SCALE NAME</td><td>スケール名の入力欄です。</td></tr>
+<tr><td class="k">ピッチクラスボタン</td><td>12 個、2 行 6 列。グローバルの ROOT に対する相対音です。初期状態でルート音を含みます。</td></tr>
+<tr><td class="k">音程の要約</td><td>選択した音程を表示します。ピッチクラスを 1 つも選んでいないときは「SELECT AT LEAST ONE PITCH CLASS」と表示されます。</td></tr>
+<tr><td class="k">SAVE NEW SCALE / SAVE CHANGES</td><td>新規追加、または変更の保存です。</td></tr>
+<tr><td class="k">CANCEL EDIT</td><td>現在の編集を取り消します。</td></tr>
+<tr><td class="k">SAVED USER SCALES</td><td>保存済みスケールの一覧です。空のときは「No user scales saved yet.」と表示されます。各項目に SELECT、EDIT、DELETE があります。使用中のスケールを削除すると、グローバルスケールは Chromatic に戻ります。</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="main">4. MAIN</h2>
+
+<div class="fig"><img src="img/main_full.png" alt="MAIN ページ全体"></div>
+<div class="cap">MAIN ページ全体。上部にトラックタブ列とパラメータ列。左カラムに MASTER TRANSPOSE、MASTER LOCK / DECAY / DENSITY ノブ、RANGE / PITCH / KEYS の切り替えと 8 本のトラックバー。右側に埋め込みのフレーズエディタ：小節列、START / END 列、HIGH C5 / LOW C3、SEMI と OCTAVE ボタン、IMPORT MIDI、LOCK / CLEAR、COPY / PASTE、PHRASE FLIP と RATIO 1x、GLOBAL Minor スケールメニュー、VEL / PROB / PITCH の切り替えとノートグリッド。</div>
+
+<h3>トラックタブ列</h3>
+<div class="fig"><img src="img/main_trackrow.png" alt="トラックタブ列"></div>
+<div class="cap">トラックタブ列：両端に斜め矢印の全画面ボタン、MULTI、S、案内文（長押しでミュート、ダブルタップでソロ）、1-1 から 8-1 の 8 個のトラックタブ（図では 1-1 が現在のトラック）。各タブの上に色付きの点があります。</div>
+<table>
+<tr><td class="k">全画面ボタン</td><td>列の両端にある斜め矢印のボタンで、エディタの全画面表示を開閉します。</td></tr>
+<tr><td class="k">MULTI</td><td>複数トラックの同期編集です。有効時、同期中のノブには破線のリングが表示されます。</td></tr>
+<tr><td class="k">S</td><td>全トラックのソロを解除します。</td></tr>
+<tr><td class="k">トラックタブ</td><td>タップでトラックを選択。0.35 秒以内のダブルタップで SOLO 切り替え、0.45 秒の長押しで MUTE 切り替えです。タブの表示はトラック番号と現在のセグメント（例：1-1）です。</td></tr>
+</table>
+
+<h3>パラメータ列</h3>
+<div class="fig"><img src="img/main_paramrow.png" alt="パラメータ列"></div>
+<div class="cap">パラメータ列：MUTE、SOLO、P（program メニュー）、LOCK / DECAY / DENSITY の 3 つのノブ、セグメント 1 から 8（図では 1 が現在のセグメント）、SINGLE / SEQUENCER / RANDOM の再生モード。</div>
+<table>
+<tr><td class="k">MUTE / SOLO</td><td>現在のトラックのミュートとソロです。</td></tr>
+<tr><td class="k">P</td><td>Program メニュー：SAVE、LOAD、CLEAR。対象は Program 1 から 8 です。</td></tr>
+<tr><td class="k">LOCK</td><td>0 から 100%。縦ドラッグです。ダブルタップによるリセットはありません。</td></tr>
+<tr><td class="k">DECAY</td><td>メロディトラックでは 0 から 100% で表示され、内部範囲は -0.99 から 0.99 です。ドラムトラックの範囲は 0.2 から 2.0（1.0 が 44% と表示）です。ダブルタップでリセット（ドラムトラック 1.0、メロディトラック -0.78）します。</td></tr>
+<tr><td class="k">DENSITY</td><td>0 から 100%。ダブルタップでセグメントの上書き値を消去します。</td></tr>
+<tr><td class="k">セグメント 1 から 8</td><td>3 つの状態：なし、空、内容あり。RATIO があるときはラベルを表示します。チェーン状態は下端の 3pt バー、再生中は上端の 3pt ラインで示します。タップの優先順位：チェーン設定中、RANDOM プール、MULTI、選択の順です。</td></tr>
+<tr><td class="k">SINGLE</td><td>現在のセグメントだけを再生します。表示は SEG n です。</td></tr>
+<tr><td class="k">SEQUENCER</td><td>START、開始スロット、END、終了スロットの順にタップすると、SEQ a-b と表示されます。</td></tr>
+<tr><td class="k">RANDOM</td><td>CHOOSE と表示され、スロットをタップしてランダムプールに追加または除外します。</td></tr>
+<tr><td class="k">FOLLOW</td><td>ドラムトラック専用。ペアになったメロディトラックのセグメントに追従します。</td></tr>
+</table>
+
+<h3>左カラム</h3>
+<div class="fig"><img src="img/main_bars.png" alt="左カラム"></div>
+<div class="cap">左カラム：MASTER TRANSPOSE の -、0、+ ボタン、MASTER LOCK / DECAY / DENSITY ノブ、RANGE / PITCH / KEYS の切り替え、その下に 8 本のトラックバー（1 から 8 と SEG 1 の表示）。各バーの上にステップ目盛り 1 / 5 / 9 / 13 と音名があります。図ではトラック 1 に枠があり現在のトラックを示し、縦の枠が再生位置です。</div>
+<table>
+<tr><td class="k">MASTER TRANSPOSE</td><td>-、0、+ の 3 つのボタン。範囲は ±24 半音です。</td></tr>
+<tr><td class="k">MASTER LOCK / DECAY / DENSITY</td><td>8 トラックすべての対応パラメータに同時に書き込みます。</td></tr>
+<tr><td class="k">RANGE</td><td>各トラックバーの両端のハンドルをドラッグして、再生ウィンドウの開始点と終了点を設定します。</td></tr>
+<tr><td class="k">PITCH</td><td>セルをタップしてノートを切り替え（ピッチは音域の中央、ベロシティ 100、gate 0.5）。縦ドラッグでピッチまたはベロシティを変更、横スワイプで塗りつぶします。</td></tr>
+<tr><td class="k">KEYS</td><td>キーボードを表示します。下記の KEYS モードを参照してください。</td></tr>
+</table>
+<p>トラックバーは長押しに対応していません。</p>
+
+<h3>フレーズエディタ（TRACK 1 から 4）</h3>
+<div class="fig"><img src="img/main_editor.png" alt="フレーズエディタ"></div>
+<div class="cap">フレーズエディタ：最上段に小節列（「1」と「+」）、その下に START 1 END 16 STEPS 16、HIGH C5 / LOW C3、SEMI DOWN / UP、OCTAVE DOWN / UP、IMPORT MIDI、LOCK / CLEAR、COPY / PASTE（図では PASTE がグレー表示）、PHRASE FLIP、RATIO 1x、GLOBAL Minor スケールメニュー、VEL（選択中）/ PROB / PITCH。ノートグリッドの行は C3 から C5 のスケール音で、図には 3 つのノートと再生位置ラインがあり、最下段がベロシティバーです。</div>
+<table>
+<tr><td class="k">小節列</td><td>1 ページ 16 ステップ、1 ページ 1 小節、最大 64 小節です。ページ番号をタップで切り替え、0.6 秒長押しで「DELETE BAR n?」Y / N が表示されます。「+」で小節を追加します。ノートを端までドラッグして 300 ミリ秒止めると自動でページが切り替わります。FOLLOW ボタンでページが再生に追従します。</td></tr>
+<tr><td class="k">START / END</td><td>再生の開始小節と終了小節を設定します。「START n END m STEPS k」と LENGTH が表示されます。</td></tr>
+<tr><td class="k">HIGH / LOW</td><td>音域の上限と下限です。タップで音名を入力、縦ドラッグで 24px ごとに半音変わります。</td></tr>
+<tr><td class="k">SEMI DOWN / UP</td><td>セグメント全体を ±1 半音移調します。限界に達すると使えません。</td></tr>
+<tr><td class="k">OCTAVE DOWN / UP</td><td>セグメント全体を ±12 半音移調します。限界に達すると使えません。</td></tr>
+<tr><td class="k">IMPORT MIDI</td><td>.mid ファイルを読み込みます。完了時に「IMPORTED n NOTE(S)」、スキップがあれば「SKIPPED m」が加わります。エラーは赤字で表示されます。メッセージは 4 秒後に消えます。</td></tr>
+<tr><td class="k">LOCK</td><td>ロックモードの切り替えです。</td></tr>
+<tr><td class="k">CLEAR</td><td>2 段階です。「CLEAR LOCK?」が表示され、Y でロック済みを含む全ノートを消去、N でロックされていないノートだけを消去します。5 秒後に自動で取り消されます。</td></tr>
+<tr><td class="k">COPY</td><td>「COPY BAR n OR ALL?」が表示され、1 BAR または ALL を選びます。</td></tr>
+<tr><td class="k">PASTE</td><td>トラックをまたいで貼り付けできます。貼り付け後もクリップボードは保持されます。</td></tr>
+<tr><td class="k">PHRASE FLIP</td><td>再生ウィンドウ内のフレーズを反転します。2 ステップ以上が必要です。</td></tr>
+<tr><td class="k">RATIO</td><td>15 の選択肢：x8、x6、x4、x3、x2.5、x2、x1.5、1x、/1.5、/2、/2.5、/3、/4、/6、/8。</td></tr>
+<tr><td class="k">SCALE</td><td>セグメントのスケールメニュー：GLOBAL、内蔵スケール、ユーザースケール。それぞれに 12 のルート音があります。</td></tr>
+<tr><td class="k">VEL / PROB / PITCH</td><td>下段のレーンを切り替えます。VEL は「VELOCITY n」（1 から 127）、PROB は「PROB nn%」（0 から 100）、PITCH は「PITCH nn%」を表示し、ランダムピッチの確率です。</td></tr>
+</table>
+
+<h3>ノートグリッドのジェスチャー</h3>
+<ul>
+<li>行は音域内のスケール音です。ノートの幅が gate、透明度がベロシティです。</li>
+<li>スケール外のノートには 2pt の警告枠、ロックされたノートには 4pt の枠が表示されます。</li>
+<li>空のセルをタップするとノートを作成します（ベロシティ 100、gate 0.5）。作成したノートはロック状態になります。ノートをタップすると削除され、ロック状態は保持されます。</li>
+<li>8pt を超える縦ドラッグでピッチを変更、横ドラッグで gate（0.01 から 16）を変更します。最大 4 本指で同時に操作できます。</li>
+</ul>
+<p>手動で入力したノートは初期状態でロックされ、LOCK ノブと自動生成の影響を受けません。ロックされたノートは CLEAR の後に Y を選んだときだけ消去されます。</p>
+
+<h3>DRUMS エディタ（TRACK 5 から 8）</h3>
+<table>
+<tr><td class="k">グループの並び</td><td>上から順に TRACK 8 LEAD、7 TIMELINE、6 GROOVE、5 FOUNDATION です。</td></tr>
+<tr><td class="k">パート行</td><td>TRACK 5：Kick、Low Tom。TRACK 6：Snare、Mid Tom、Clap。TRACK 7：HH Closed、HH Open。TRACK 8：High Tom、Crash。名称は STYLE によって変わります。</td></tr>
+<tr><td class="k">ページ</td><td>4 トラックで小節ページを共有します。</td></tr>
+<tr><td class="k">左側のスライダー</td><td>VARIATION、REST、GHOST、ACCENT、FILL。各 0 から 1 で、対象トラックに作用します。</td></tr>
+<tr><td class="k">対象トラック</td><td>2x2 のグリッドで TRACK 5 から 8 を選びます。ポップオーバーのタイトルは TARGET TRACK で、最低 1 トラックは残ります。</td></tr>
+<tr><td class="k">LOCK</td><td>ロックモードの切り替えです。</td></tr>
+<tr><td class="k">CLEAR</td><td>先に WHICH TRACK?（ALL / 8 / 7 / 6 / 5）、次に CLEAR LOCK? Y / N を確認します。</td></tr>
+<tr><td class="k">COPY / PASTE</td><td>4 トラックを 1 組としてコピー、貼り付けします。</td></tr>
+<tr><td class="k">RATIO</td><td>トラックごとに独立し、5 | 6 と 7 | 8 の 2 組で表示されます。</td></tr>
+<tr><td class="k">VEL / PROB</td><td>ドラムトラックにはこの 2 つのレーンだけがあります。</td></tr>
+<tr><td class="k">スタイル帯</td><td>グループごとに 1 本。GLOBAL または個別のスタイルを選びます。MIDI Learn に割り当てできます。</td></tr>
+</table>
+<p>ドラムグリッドのジェスチャーはメロディグリッドと同じです。</p>
+
+<h3>KEYS モード</h3>
+<div class="fig"><img src="img/main_keys.png" alt="KEYS モード"></div>
+<div class="cap">KEYS モード：上部に OCTAVE の - と + ボタンと範囲 C3 から C7、状態表示 PLAYING、REST（グレー表示）と RECORD。下部に 2 段のキーボード、下段が C3 から C4、上段が C5 から C6 で、C の鍵にはラベルがあります。</div>
+<table>
+<tr><td class="k">OCTAVE - / +</td><td>キーボードに表示するオクターブを移動します。</td></tr>
+<tr><td class="k">状態</td><td>STEP n/m、PLAYING、RECORDING、AUDITION。</td></tr>
+<tr><td class="k">REST</td><td>ステップ録音時に休符を入力します。</td></tr>
+<tr><td class="k">RECORD</td><td>録音の切り替えです。</td></tr>
+<tr><td class="k">キーボード</td><td>単音です。ドラムトラックでは使えず、案内文が表示されます。</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="voice">5. VOICE</h2>
+
+<div class="fig"><img src="img/voice_full.png" alt="VOICE ページ全体"></div>
+<div class="cap">VOICE ページ全体。図では TRACK 3 が SAMPLE 音源を選択し、MULTI モードが有効です。上部にヘッダー列と 8 個の TRACK セル、SEGMENT 列（1 が現在のセグメント）、DECAY ノブ（グレー表示）、CLEAR（グレー表示）と SAVE。中段にファイル列：LOAD FOLDER、SLOT 01 C1、ONE SHOT、REVERSE、SLICE、MULTI（選択中）、「- 16 +」。下部に 16 個のパッド（左下が C1）、PAGE 1 / 2 / 3、スロットパラメータのノブ LEVEL / PITCH / FILTER / レゾナンス / PAN、LOAD と CLEAR、波形エリア（NO SAMPLE）、LAUNCH の TRIGGER / GATE / LOOP / REVERSE、CHOKE OFF / A / B / C / D。</div>
+
+<h3>ヘッダーとトラックセル</h3>
+<div class="fig"><img src="img/voice_header.png" alt="VOICE ヘッダー"></div>
+<div class="cap">ヘッダー：SOUND SOURCE、EDITING TRACK 3、4 つの音源ボタン SYNTH / SAMPLE（選択中）/ PHYSICAL / AU。2 段目は TRACK 1 から 8 のセルで、それぞれ音源名と M / S を表示します。3 段目は SEGMENT 1 から 8、DECAY、CLEAR、SAVE です。</div>
+<table>
+<tr><td class="k">音源ボタン</td><td>SYNTH、SAMPLE、PHYSICAL、AU から 1 つを選びます。</td></tr>
+<tr><td class="k">TRACK セル</td><td>トラック名と音源を表示します。M はミュート、S はソロで、0.4 秒長押しで排他ソロになります。状態は MIXER と共有です。トラックを切り替えたとき、別のトラックが RECORD 中なら停止します。</td></tr>
+<tr><td class="k">SEGMENT 1 から 8</td><td>編集するセグメントを選びます。音色メモリのあるセグメントには点が表示されます。</td></tr>
+<tr><td class="k">DECAY</td><td>現在のトラックの DECAY で、MAIN と同じです。</td></tr>
+<tr><td class="k">CLEAR</td><td>現在のセグメントの音色メモリを消去します。</td></tr>
+<tr><td class="k">SAVE</td><td>現在のパネルのパラメータ（ハーモニー設定を含む）をセグメントメモリに保存します。</td></tr>
+</table>
+<p>パネル編集の規則：現在のセグメントにメモリがあるときは、パネルの変更はメモリの内容に対して行われます。メモリがないときはトラックのベースに対して行われます。サンプルの読み込みと録音、PHYSICAL の MODEL と POLYPHONY、AU の読み込みはトラックのベースに作用します。SLICE と MULTI はトラック単位の設定で、互いに排他です。セグメントメモリを編集中は、パネルに「EDITING SEGMENT n MEMORY」の透かしが表示されます。</p>
+
+<h3>NOTE HARMONIC（SAMPLE 以外の音源）</h3>
+<table>
+<tr><td class="k">HARM</td><td>ハーモニーのオン / オフです。</td></tr>
+<tr><td class="k">AUTO</td><td>コードタイプを自動選択します。有効時は TYPE がグレー表示になります。</td></tr>
+<tr><td class="k">TYPE</td><td>タップでコードタイプを順に切り替えます。</td></tr>
+<tr><td class="k">VOICE</td><td>CLSE、DRP2、DRP3、OPEN。</td></tr>
+<tr><td class="k">INV</td><td>ROOT、1ST、2ND、3RD。</td></tr>
+<tr><td class="k">3RD / 5TH / 7TH</td><td>各 0 から 1 のノブ。MOTION の記録と MOD ROUTE に対応します。</td></tr>
+</table>
+
+<h3>SYNTH</h3>
+<p>TRACK 1 から 5 はウェーブテーブルシンセサイザーで、タイトルは「OSCILLATOR WAVETABLE」、TRACK 5 のタイトルは「KICK VOICE WAVETABLE」です。TRACK 6 から 8 は固定のドラムシンセサイザーで、パネルには「BUILT-IN DRUM SYNTHESIZER WITH FIXED SOUNDS FOR THIS TRACK.」と表示されます。</p>
+<table>
+<tr><td class="k">オシレーター</td><td>キャリア（主オシレーター）がウェーブテーブルを読みます。ウェーブテーブルを読み込んでいないときは純粋なサイン波で動作し、状態テキストに「NO WAVETABLE — OSCILLATOR RUNS AS PURE SINE」と表示されます。読み込むとキャリアと PM モジュレーターの両方が同じテーブルの同じフレームを読みます。</td></tr>
+<tr><td class="k">波形表示</td><td>現在の POSITION におけるフレームの波形を表示します。POSITION が MOTION、MIDI、PERFORM でモジュレーションされているときは、表示もリアルタイムで追従します。</td></tr>
+<tr><td class="k">POSITION ノブ</td><td>波形表示の右側にあります。0 から 1、初期値 0。フレーム間のモーフ位置で、左端（フレーム 0）は純粋なサイン波、右へ回すとファイルのフレームへモーフします。TRACK 5 の BYPASS がオンのとき、またはウェーブテーブルがないときは無効になります。</td></tr>
+<tr><td class="k">BYPASS</td><td>TRACK 5 のみ。有効時は FOLD、FEEDBACK、TONE、MODULATION の 4 つのノブが無効になり、フレーム点数の選択もロックされます。</td></tr>
+<tr><td class="k">PREVIOUS / NEXT</td><td>前または次のウェーブテーブルに切り替えます。</td></tr>
+<tr><td class="k">名前ボタン</td><td>「SELECT WAVETABLE」ポップオーバーを開きます。フィルター欄と「NO WAVETABLE」項目があります。</td></tr>
+<tr><td class="k">CLEAR</td><td>ウェーブテーブルを外します。オシレーターは純粋なサイン波に戻ります。</td></tr>
+<tr><td class="k">フレーム点数</td><td>「N PTS」の選択メニュー。256 / 512 / 1024 / 2048 / 4096 から選び、初期値は 2048 です。1 周期が 2048 点より短いウェーブテーブルは、点数を小さくしてピッチの上ずりを補正します。変更すると、そのトラックのウェーブテーブルが再読み込みされます。</td></tr>
+<tr><td class="k">OCT</td><td>-4 から +4。</td></tr>
+<tr><td class="k">TUNE</td><td>±100 セント。</td></tr>
+<tr><td class="k">SWEEP</td><td>0 から 1000 Hz。TRACK 5 は -500 から +500 のオフセットです。</td></tr>
+<tr><td class="k">FOLD</td><td>0 から 10。</td></tr>
+<tr><td class="k">FEEDBACK</td><td>0 から 1。</td></tr>
+<tr><td class="k">TONE</td><td>0 から 10。</td></tr>
+<tr><td class="k">MODULATION</td><td>0 から 10。0 のときウェーブテーブルは作用しません。</td></tr>
+<tr><td class="k">MOD ENV</td><td>0 から 10。TRACK 5 は -5 から +5 です。</td></tr>
+</table>
+<p>フレーム 0 は常にサイン波で、ファイルのフレームは 1 から始まります。ウェーブテーブルはサイン波を含めて最大 32 フレームです。TRACK 5 の FOLD、TONE、FEEDBACK、MODULATION は、ユーザーがパラメータに触れるまで STYLE の初期値に追従します。</p>
+
+<h3>SAMPLE</h3>
+<div class="fig"><img src="img/voice_sample.png" alt="SAMPLE パネル MULTI モード"></div>
+<div class="cap">SAMPLE パネルの MULTI モード：ファイル列は LOAD FOLDER、SLOT 01 C1、ONE SHOT、REVERSE、SLICE、MULTI（選択中）、「- 16 +」。左側に音名付きの 16 個のパッド、左下が C1（選択中）。中央に PAGE 1（01-16）/ 2 / 3。右側にスロットパラメータ LEVEL 1.00x、PITCH 0 st、FILTER BYPASS、レゾナンス 0%、PAN MONO、LOAD と CLEAR、波形エリアに NO SAMPLE と S / E マーカー、LAUNCH の TRIGGER（選択中）/ GATE / LOOP / REVERSE、CHOKE OFF（選択中）/ A / B / C / D。</div>
+
+<h3>ファイル列</h3>
+<table>
+<tr><td class="k">LOAD SAMPLE</td><td>単一のサンプルを読み込みます（通常モードと SLICE モード）。</td></tr>
+<tr><td class="k">RECORD / STOP</td><td>マスター出力をサンプルとして録音します。上限は 120 秒で、録音中は「RECORDING x.x s」と表示されます。停止後に自動で読み込まれます。</td></tr>
+<tr><td class="k">ファイル名</td><td>現在のサンプルのファイル名を表示します。サンプルがないときは「NO SAMPLE」と表示されます。</td></tr>
+<tr><td class="k">LOAD FOLDER</td><td>MULTI モードでフォルダ全体を読み込みます。wav、aif、aiff、mp3、m4a、caf、flac に対応し、最大 36 個です。</td></tr>
+<tr><td class="k">ONE SHOT / LOOP</td><td>再生方式の切り替えです。</td></tr>
+<tr><td class="k">REVERSE</td><td>逆再生です。</td></tr>
+<tr><td class="k">SLICE</td><td>サンプルを N 等分し、C1（24）からのノートを各スライスに対応させます。ドラムトラックでは「DRUM TRACK: SLICE FOLLOWS SETUP MIDI NOTE」と表示されます。</td></tr>
+<tr><td class="k">MULTI</td><td>マルチサンプルのパッドモードです。8 トラックすべてで使えます。</td></tr>
+<tr><td class="k">- n +</td><td>MULTI ではスロット数（1 から 36）、SLICE ではスライス数（2 から 36）です。ドラムトラックでは固定で、「PADS n」と表示されます。</td></tr>
+</table>
+
+<h3>通常モードと SLICE モード</h3>
+<table>
+<tr><td class="k">波形</td><td>S / E マーカーで開始点と終了点を設定します。2 本指で同時にドラッグできます。SLICE ではスライスの境界を表示します。長押しで開始点と終了点の MOTION を消去します。</td></tr>
+<tr><td class="k">GRAIN SIZE x DENSITY</td><td>グラニュラー合成のメイン XY パッドです。GRAIN SIZE は 0.005 から 2 秒、DENSITY は毎秒 1 から 200 で、1 が通常再生です。各軸に - / + とロックがあります。</td></tr>
+<tr><td class="k">SPRAY x JITTER</td><td>グラニュラー合成の詳細 XY パッドで、各 0 から 100% です。</td></tr>
+<tr><td class="k">GRAIN SHAPE</td><td>0 から 100%。</td></tr>
+<tr><td class="k">PITCH</td><td>±48 半音。</td></tr>
+<tr><td class="k">GAIN</td><td>0 から 8。</td></tr>
+</table>
+
+<h3>MULTI モード</h3>
+<table>
+<tr><td class="k">パッド</td><td>1 ページ 16 個、最大 3 ページで合計 36 個です。左下が最初のスロットです。ラベルは音名（C1 から）またはドラムパート名です。押すと選択と試聴を行います。</td></tr>
+<tr><td class="k">ドラムトラックのパッド数</td><td>固定：TRACK 5 は 2、6 は 3、7 は 2、8 は 2 です。パネルには「PAD PER LANE. SETUP MIDI NOTE NOT USED」と表示されます。</td></tr>
+<tr><td class="k">PAGE 1 / 2 / 3</td><td>パッドのページを切り替えます。</td></tr>
+<tr><td class="k">LOAD / CLEAR</td><td>現在のスロットのサンプルを読み込み、または消去します。</td></tr>
+<tr><td class="k">LEVEL</td><td>0 から 2。</td></tr>
+<tr><td class="k">PITCH</td><td>±24 半音。</td></tr>
+<tr><td class="k">FILTER</td><td>BYPASS、LP n%、HP n%。</td></tr>
+<tr><td class="k">RESO ノブ</td><td>FILTER の右側、0 から 100% です。</td></tr>
+<tr><td class="k">PAN</td><td>TRACK 1 から 4 では MONO と表示されます。</td></tr>
+<tr><td class="k">波形</td><td>スロットごとに表示されます。</td></tr>
+<tr><td class="k">LAUNCH</td><td>TRIGGER、GATE、LOOP、REVERSE。ドラムトラックは TRIGGER と REVERSE のみです。</td></tr>
+<tr><td class="k">CHOKE</td><td>OFF、A、B、C、D。</td></tr>
+</table>
+<p>パッドのパラメータは MOTION と MIDI Learn に対応していません。</p>
+
+<h3>PHYSICAL</h3>
+<table>
+<tr><td class="k">XY 1</td><td>BRIGHTNESS x DAMPING。各 0 から 100% で、- / + と軸ロックがあります。</td></tr>
+<tr><td class="k">XY 2</td><td>POSITION x STRUCTURE。各 0 から 100% で、- / + と軸ロックがあります。</td></tr>
+<tr><td class="k">MODEL</td><td>MODAL、SYM STR、STRING、FM、QUANT、STR&amp;REV。</td></tr>
+<tr><td class="k">POLYPHONY</td><td>1 / 2 / 4 VOICE。</td></tr>
+<tr><td class="k">OCT</td><td>オクターブです。</td></tr>
+<tr><td class="k">TUNE</td><td>微調整です。ダブルタップで 0 に戻ります。</td></tr>
+<tr><td class="k">EXT to AUDIO IN</td><td>ON / OFF、初期値は ON：外部入力で共鳴体を励起し、ドライ音は直接ミックスしません。</td></tr>
+</table>
+
+<h3>AU</h3>
+<table>
+<tr><td class="k">未読み込み</td><td>「NO INSTRUMENT LOADED」と LOAD が表示されます。</td></tr>
+<tr><td class="k">読み込み中</td><td>「LOADING」と CANCEL が表示されます。</td></tr>
+<tr><td class="k">読み込み済み</td><td>名前と CHANGE、OPEN EDITOR、UNLOAD が表示されます。</td></tr>
+<tr><td class="k">OPEN EDITOR</td><td>AU 自身のインターフェースを全画面で開きます。上部に CLOSE があります。</td></tr>
+<tr><td class="k">一覧ポップオーバー</td><td>タイトルは「INSTALLED AUDIO UNIT INSTRUMENTS」。メーカー別に分類され、上部に FILTER BY NAME があります。</td></tr>
+</table>
+<p>AU は独立したプロセスで実行され、読み込みが完了するまで音は出ません。</p>
+<table>
+<tr><td class="k">MACRO KNOBS 1 から 8</td><td>4x2 の配置です。0.6 秒長押し、または未割り当てのノブをタップで割り当てに入ります。名前をタップすると「MACRO n PARAMETER」ポップオーバーが開き、CLEAR BINDING があります。未割り当ては ASSIGN PARAMETER、割り当てできないときは UNAVAILABLE と表示されます。割り当てはバンクに保存され、PERFORM のターゲットにできます。</td></tr>
+<tr><td class="k">GLIDE</td><td>CC5 と CC65 を送信します。</td></tr>
+<tr><td class="k">MOD</td><td>CC1 を送信します。</td></tr>
+<tr><td class="k">SUSTAIN</td><td>CC64 を送信します。</td></tr>
+</table>
+<p>GLIDE、MOD、SUSTAIN の値は実行中のみ保持されます。MIDI Learn に割り当てできます。</p>
+
+<!-- ============================================================ -->
+<h2 id="mixer">6. MIXER</h2>
+
+<div class="fig"><img src="img/mixer_full.png" alt="MIXER ページ全体"></div>
+<div class="cap">MIXER ページ全体。8 本のストリップは左から TRACK 1 から 4、FOUNDATION、GROOVE、TIMELINE、LEAD。図では TRACK 2 の EQ ポップオーバーが開いており、TRACK 1 から 3 の一部を隠しています。下部が EFFECT 列：DELAY PRE、REVERB PRE、SIZE / DAMP / DECAY / LEVEL、FILTER、L / R レベルメーター、MASTER VOLUME、点のアイコンと 3 本線のアイコン。</div>
+
+<h3>ストリップ</h3>
+<div class="fig"><img src="img/mixer_strip.png" alt="単一のストリップ"></div>
+<div class="cap">TRACK 4 のストリップ、上から順に：名前、EQ サムネイル、FILTER バー（OFF）、LOCK / DELAY、DECAY / REVERB、DENSITY / TEXTURE の 6 つのノブ、PAN バー、MIX（EXT / INT）縦フェーダーと LEVEL 縦フェーダー、M / S。</div>
+<table>
+<tr><td class="k">名前</td><td>TRACK 1 から 4。ドラムトラックは FOUNDATION、GROOVE、TIMELINE、LEAD です。</td></tr>
+<tr><td class="k">EQ サムネイル</td><td>EQ カーブを表示します。タップで EQ ポップオーバーを開きます。</td></tr>
+<tr><td class="k">FILTER</td><td>中央が OFF、左へ動かすとローパス（20 kHz から 80 Hz へ）、右へ動かすとハイパス（20 Hz から 8 kHz へ）です。中央から 0.04 以内で吸着し、ダブルタップで 0 に戻ります。</td></tr>
+<tr><td class="k">LOCK / DECAY / DENSITY</td><td>MAIN の同名パラメータと同じです。</td></tr>
+<tr><td class="k">DELAY / REVERB / TEXTURE</td><td>3 つのエフェクトセンド量。各 0 から 1 で、ダブルタップで 0.5 に戻ります。</td></tr>
+<tr><td class="k">PAN</td><td>TRACK 1 から 4 は等パワーのパン、5 から 8 は左右のバランスです。中央で吸着し、ダブルタップで 0 に戻ります。</td></tr>
+<tr><td class="k">MIX</td><td>EXT / INT 間のクロスフェードで、0 が INT です。</td></tr>
+<tr><td class="k">LEVEL</td><td>0 から 2、初期値 1。横の 2 本のメーターはフェーダー前とフェーダー後で、ソースはオーディオではなくトリガーエンベロープです。</td></tr>
+<tr><td class="k">BUS 選択</td><td>MASTER / A1 / A2 / A3 の 4 つのボタンで、LEVEL フェーダーが編集するバスを選びます。A1 から A3 を選ぶと、LEVEL フェーダーはその AUX バスへの送り量（0 から 2、初期値 0）になり、PAN と MIX は無効表示になります。M / S は影響を受けません。選択は保存されず、アプリを再起動すると MASTER に戻ります。</td></tr>
+<tr><td class="k">AUX バスの信号</td><td>A1 から A3 はモノラルで、取り出し点はミュート、EQ、FILTER、COMPRESSOR、サイドチェインコンプレッサーの後、フェーダーと PAN の前です。DELAY / REVERB / TEXTURE のリターンやマスター FILTER、MASTER VOLUME、ソフトクリップは通りません。A1 から A3 の出力チャンネルは SETUP ページの AUX OUT 行で指定します。</td></tr>
+<tr><td class="k">M / S</td><td>M は赤でミュート、S は黄でソロ。0.4 秒長押しで排他ソロになります。</td></tr>
+</table>
+<p>信号の順序：ミュート、EQ、FILTER、COMPRESSOR、サイドチェインコンプレッサー、エフェクトセンドポイント（フェーダー前）、フェーダー、PAN、マスター出力。マスター出力：エフェクトリターン、マスター FILTER、MASTER VOLUME、ソフトクリップ。</p>
+
+<h3>EQ ポップオーバー</h3>
+<div class="fig"><img src="img/mixer_popover.png" alt="EQ ポップオーバー"></div>
+<div class="cap">TRACK 2 の EQ ポップオーバー：タイトル TRACK 2 と RESET、3 点の EQ カーブ、COMPRESSOR の SPEED / AMOUNT ノブと圧縮表示、SIDECHAIN ドロップダウンと AMOUNT バー、EXT IN GAIN ノブ（0.0 dB）。</div>
+<table>
+<tr><td class="k">RESET</td><td>ゲインを 1.0、周波数を 200 / 1000 / 4000 Hz に戻します。</td></tr>
+<tr><td class="k">EQ カーブ</td><td>3 つの点：LOW 40 から 500 Hz、MID 200 から 5000 Hz、HIGH 1000 から 16000 Hz。ゲインは 0 から 2 です。最大 3 本指で同時にドラッグできます。</td></tr>
+<tr><td class="k">COMPRESSOR SPEED</td><td>0 から 1、初期値 0.5。</td></tr>
+<tr><td class="k">COMPRESSOR AMOUNT</td><td>0 から 1、初期値 0。</td></tr>
+<tr><td class="k">SIDECHAIN</td><td>サイドチェインソースのドロップダウンです。他の 7 トラックから選べます。</td></tr>
+<tr><td class="k">SIDECHAIN AMOUNT</td><td>サイドチェイン圧縮量です。</td></tr>
+<tr><td class="k">EXT IN GAIN</td><td>外部入力ゲイン、-60 から +12 dB。</td></tr>
+</table>
+
+<h3>EFFECT 列</h3>
+<table>
+<tr><td class="k">DELAY PRE / POST</td><td>ディレイセンドポイントの切り替えです。</td></tr>
+<tr><td class="k">DELAY LEFT / RIGHT</td><td>左半分はフリータイム 5 ミリ秒から 5 秒、右半分は 16 のテンポ同期値（1/1 から 1/32、付点と 3 連符を含む）です。</td></tr>
+<tr><td class="k">DELAY FEEDBACK</td><td>0 から 0.95、初期値 0.35。</td></tr>
+<tr><td class="k">DELAY LEVEL</td><td>0 から 1.5、初期値 0.8。</td></tr>
+<tr><td class="k">REVERB PRE / POST</td><td>リバーブセンドポイントの切り替えです。</td></tr>
+<tr><td class="k">SIZE / DAMP / DECAY</td><td>各 0 から 1、初期値 0.5。</td></tr>
+<tr><td class="k">REVERB LEVEL</td><td>0 から 1.5、初期値 0.8。</td></tr>
+<tr><td class="k">FILTER</td><td>マスター出力のフィルターノブです。</td></tr>
+<tr><td class="k">レベルメーター</td><td>L / R の 2 色、-60 から 0 dBFS、ピークホールド 0.8 秒。</td></tr>
+<tr><td class="k">MASTER VOLUME</td><td>0 から 1。</td></tr>
+<tr><td class="k">点のアイコン</td><td>TEXTURE パネルを開きます。いずれかのトラックの TEXTURE センドが 0 より大きいとき、アクセントカラーで表示されます。</td></tr>
+<tr><td class="k">3 本線のアイコン</td><td>MASTER FX を開きます。</td></tr>
+</table>
+
+<h3>TEXTURE パネル</h3>
+<table>
+<tr><td class="k">FREEZE</td><td>ON / OFF。</td></tr>
+<tr><td class="k">SEND</td><td>PRE / POST。</td></tr>
+<tr><td class="k">RETURN</td><td>0 から 100%、初期値 0.8。</td></tr>
+<tr><td class="k">POSITION x SIZE</td><td>XY パッドです。</td></tr>
+<tr><td class="k">DENSITY x TEXTURE</td><td>XY パッドです。DENSITY の 0.47 から 0.53 は SILENT の無音ゾーンです。</td></tr>
+<tr><td class="k">SPREAD</td><td>広がりです。</td></tr>
+<tr><td class="k">PITCH</td><td>±24 半音。</td></tr>
+<tr><td class="k">FEEDBACK / REVERB</td><td>フィードバック量とリバーブ量です。</td></tr>
+</table>
+
+<h3>MASTER FX</h3>
+<table>
+<tr><td class="k">タイトル</td><td>「N EFFECTS」と表示されます。エフェクトがないときは空の案内が表示されます。</td></tr>
+<tr><td class="k">エフェクトスロット</td><td>各スロットにバイパス、名前、OPEN、上へ移動、下へ移動、削除の X があります。最大 5 個です。</td></tr>
+<tr><td class="k">ADD EFFECT</td><td>使用できる Audio Unit エフェクトをメーカー別に一覧表示します。</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="utility">7. UTILITY</h2>
+
+<div class="fig"><img src="img/utility_full.png" alt="UTILITY ページ全体"></div>
+<div class="cap">UTILITY ページ全体。左上が SEQUENCER：DRAW はパネル左上角の切り欠きに埋め込み、タイトル行に A GROUP B、LOOP（有効）、TRIGGER、STAGES ノブ（8）と CROSSFADE ノブ（0.00）、ステージ時間のラベルと 3 本の曲線を含むエンベロープ編集エリア、その下に CURVE の 8 個のノブと SYNC の 8 個のボタン。右上が LFO 列：3 つのスロット 1 LFO 4、2 LFO 5、3 LFO 6、それぞれ HZ フェーダー、SYNC / UNI、MORPH と SHAPE の数値、- / + とロックアイコン、波形表示。下部が OUTPUT 1 から 4 で、それぞれ L1 から L6 と SEQ の 7 本のフェーダーとスコープエリア。図では CV OFFLINE と表示されています。</div>
+
+<h3>SEQUENCER（8 ステージエンベロープ）</h3>
+<div class="fig"><img src="img/utility_seq.png" alt="SEQUENCER エリア"></div>
+<div class="cap">SEQUENCER エリア：パネル左上角の切り欠きに DRAW、上段に A GROUP B、LOOP、TRIGGER。左側に STAGES 8 と CROSSFADE 0.00。編集エリアの上端に各ステージの時間（0.1s、0.2s など）、実線が編集中のグループ、細線がもう一方のグループ。下段に CURVE の 8 個のノブと SYNC の 8 個のボタン。</div>
+<table>
+<tr><td class="k">DRAW</td><td>ページ全体の常駐スイッチで、SEQUENCER パネルの左上角に埋め込まれています。押すとオンになり、ボタンの表示が FINISH に変わります。一筆描き終えても自動では終了せず、FINISH を押すまで描画モードが続きます。ページを離れると状態は保持されません。オンの間は SEQUENCER のカーブ領域でフリーハンド描画（8 個のブレークポイント位置でサンプリングし、各ステージの LEVEL に書き込み、描かれなかったステージは元の値を保持）ができ、3 つの LFO パッドにも波形を描けます。</td></tr>
+<tr><td class="k">A GROUP B</td><td>編集グループ A または B を切り替えます。STAGES、START、LOOP、TRIGGER は両グループで共通、曲線、CURVE、SYNC はグループごとに独立です。</td></tr>
+<tr><td class="k">LOOP</td><td>ループ再生です。無効時は最後のステージのレベルで止まります。</td></tr>
+<tr><td class="k">TRIGGER</td><td>トリガーモードです。</td></tr>
+<tr><td class="k">STAGES</td><td>ステージ数 1 から 8。</td></tr>
+<tr><td class="k">CROSSFADE</td><td>0 から 1。A と B の混合比です。</td></tr>
+<tr><td class="k">編集エリア</td><td>横軸が時間比率、縦軸が 0 から 10 V です。ブレークポイントの縦ドラッグで LEVEL、横ドラッグで DURATION（0.001 から 10 秒、最後のステージは 600 秒まで拡大可）を変更します。開始点のハンドルは左端にあります。最大 4 本指で同時に操作できます。編集中グループの実線、もう一方のグループの細線、混合結果の太線、再生位置が表示されます。</td></tr>
+<tr><td class="k">CURVE</td><td>8 個のノブ、各 -1 から +1 で、ダブルタップで 0 に戻ります。STAGES を超えたステージは透明度 0.55 で表示され、調整は可能です。</td></tr>
+<tr><td class="k">SYNC</td><td>8 個のボタン。ステージ長をテンポ同期に変更します。比率は 1/16 から 16 まで 17 種類です。</td></tr>
+</table>
+
+<h3>LFO</h3>
+<div class="fig"><img src="img/utility_lfo.png" alt="LFO 列"></div>
+<div class="cap">LFO 列の 3 つのスロット：1 LFO 4（0.62 HZ）、2 LFO 5（0.31 HZ）、3 LFO 6（1.0 HZ）。各スロットに HZ フェーダー、SYNC / UNI ボタン、MORPH のパーセントと SH の数値（それぞれ - / + とロックアイコン付き）、波形表示と再生位置。</div>
+<table>
+<tr><td class="k">スロットボタン</td><td>3 つのスロットはそれぞれ LFO 1 / 4、2 / 5、3 / 6 を切り替えます。表示されていない LFO も動作し続けます。</td></tr>
+<tr><td class="k">HZ</td><td>0.01 から 20 Hz、対数目盛りで、ダブルタップで 1 Hz に戻ります。MOTION を記録できます。</td></tr>
+<tr><td class="k">SYNC</td><td>テンポ同期です。/16 から x16 まで 11 の分割があります。</td></tr>
+<tr><td class="k">UNI / BI</td><td>単極または双極の出力です。</td></tr>
+<tr><td class="k">MORPH</td><td>0 から 100%。- / + は 1% ずつです。</td></tr>
+<tr><td class="k">SHAPE</td><td>-1 から +1、1 ステップ 0.02。</td></tr>
+<tr><td class="k">ロックアイコン</td><td>その軸をロックします。ロック中はドラッグと - / + がその軸を無視します。MOD ROUTE と MOTION は影響を受けません。カスタム波形がある間は表示されず、RESET 後に元の状態で戻ります。</td></tr>
+<tr><td class="k">XY パッド</td><td>横が SHAPE、縦が MORPH です。ダブルタップで MORPH 0.5、SHAPE 0 にリセットします。波形表示は 72 点（カスタム波形は 128 点）と再生位置で、モジュレーション後の実際の値を表示します。</td></tr>
+<tr><td class="k">手描き波形</td><td>DRAW がオンのときパッド上に左から右へ一筆描くと、指を離した時点で 128 点のカスタム波形としてその LFO に書き込まれます。描かれなかった区間は補間または端の値で延長されます。カスタム波形がある間は MORPH / SHAPE が出力に作用せず、XY ドラッグが無効になり、十字カーソルは表示されず、波形表示はカスタム波形になります。表示されていないスロットの LFO には描けません。カスタム波形は保存されます。</td></tr>
+<tr><td class="k">S&amp;H / T&amp;H</td><td>カスタム波形がある間、上段はモードボタンとステップ数になります。ボタンをタップすると S&amp;H と T&amp;H を切り替え、初期値は S&amp;H です。S&amp;H は各ステップの開始時の値を保持し、T&amp;H は各ステップの前半は波形に追従、後半は保持します。テーブル自体は変わりません。</td></tr>
+<tr><td class="k">ステップ数</td><td>1 周期を分割するステップ数。- / + で 1 ずつ変更し、上限は 32 です。0 は OFF と表示され、サンプル＆ホールドしません。</td></tr>
+<tr><td class="k">RESET</td><td>カスタム波形がある間、下段は RESET になります。カスタム波形を消去し、MORPH / SHAPE に戻り、XY ドラッグも復帰します。ステップ数と S&amp;H / T&amp;H の設定は消えません。</td></tr>
+</table>
+
+<h3>OUTPUT 1 から 4</h3>
+<div class="fig"><img src="img/utility_outputs.png" alt="OUTPUT エリア"></div>
+<div class="cap">OUTPUT 1 から 4。それぞれ 7 本のフェーダー（L1 から L6 と SEQ）と下のスコープエリア。図では CV エンジンが起動しておらず、スコープエリアに CV OFFLINE と表示されています。</div>
+<table>
+<tr><td class="k">フェーダー</td><td>順序は L1、L2、L3、SEQ、L4、L5、L6。各 -1 から +1 で、中央で吸着し、ダブルタップで 0 に戻ります。</td></tr>
+<tr><td class="k">スコープエリア</td><td>±10 V の出力波形と読み取り値を表示します。CV エンジンが起動していないときは「CV OFFLINE」、チャンネル未指定のときは 0 V の平坦な線を表示します。</td></tr>
+<tr><td class="k">出力範囲</td><td>マトリクス ±10 V、SEQ 0 から 10 V、LFO ±5 V。</td></tr>
+</table>
+<p>iPad の CV エンジンは SETUP で有効にする必要があります。各 OUTPUT の物理チャンネルは SETUP の MOD OUTPUT で指定します。</p>
+
+<!-- ============================================================ -->
+<h2 id="perform">8. PERFORM</h2>
+
+<div class="fig"><img src="img/perform_full.png" alt="PERFORM ページ全体"></div>
+<div class="cap">PERFORM ページ全体。上部のツールバー：PERFORM（選択中）/ EDIT、SEQ と LFO 1 から 3 のレベルバー、MASTER スペクトラム、CONTROLS 30 / MAPPINGS 0。キャンバスに KNOB 1 から 22、BUTTON 1 から 5、FADER 1 と 2、XY PAD 1（X と Y の - / + とロックアイコン付き）。右側のパネルは MIXER（選択中）/ SEQUENCER / EFFECT で、MIXER には T1 から T8 の VOL、M、S、レベルメーター、センドセルが表示されています。</div>
+
+<h3>ツールバー</h3>
+<div class="fig"><img src="img/perform_toolbar.png" alt="PERFORM ツールバー"></div>
+<div class="cap">ツールバー：PERFORM / EDIT 切り替え、SEQ、LFO 1、LFO 2、LFO 3 のレベルバー、MASTER スペクトラム、右端に CONTROLS 30 と MAPPINGS 0。</div>
+<table>
+<tr><td class="k">PERFORM / EDIT</td><td>演奏モードと編集モードの切り替えです。</td></tr>
+<tr><td class="k">SEQ、LFO 1 から 3</td><td>モジュレーションソースのリアルタイムレベルです。</td></tr>
+<tr><td class="k">MASTER</td><td>マスター出力のスペクトラムです。</td></tr>
+<tr><td class="k">CONTROLS / MAPPINGS</td><td>キャンバス上のコントロール数とマッピング数です。</td></tr>
+</table>
+
+<h3>コントロール</h3>
+<table>
+<tr><td class="k">KNOB</td><td>初期状態で 22 個。</td></tr>
+<tr><td class="k">BUTTON</td><td>初期状態で 5 個。LATCH または MOMENTARY です。</td></tr>
+<tr><td class="k">FADER</td><td>初期状態で 2 個。VERTICAL または HORIZONTAL です。</td></tr>
+<tr><td class="k">XY PAD</td><td>初期状態で 1 個。スプリングリターン付きです。X と Y にそれぞれ - / + ボタンとロックアイコンがあり、ロック時はその軸が戻りません。MIDI Learn モードでは四隅を個別に割り当てできます。</td></tr>
+<tr><td class="k">インジケーター点</td><td>各コントロールの下にある小さな点の数がそのコントロールのマッピング数で、最大 8 です。</td></tr>
+</table>
+<p>キャンバスにはグリッド吸着があります。コントロールがないときは空の案内が表示されます。</p>
+
+<h3>サイドパネル</h3>
+<div class="fig"><img src="img/perform_sidebar.png" alt="PERFORM サイドパネル"></div>
+<div class="cap">サイドパネルの MIXER ページ：T1 から T8 の各行に VOL フェーダー、M、S、縦のレベルメーター、1 列のセンドセル。</div>
+<table>
+<tr><td class="k">MIXER</td><td>T1 から T8 の VOL（0 から 2）、M、S、レベルメーター、センドセル。VOL とセンドセルは長押しで MOD ROUTE に対応します。</td></tr>
+<tr><td class="k">SEQUENCER</td><td>セグメントバーと再生位置。LFO 列には RATE と SHAPE / MORPH の XY パッドがあり、XY パッドは長押しで MOD ROUTE に対応します。</td></tr>
+<tr><td class="k">EFFECT</td><td>DELAY、REVERB、TEXTURE のパラメータです。</td></tr>
+</table>
+
+<h3>EDIT モード</h3>
+<table>
+<tr><td class="k">+ KNOB / + BUTTON / + FADER / + XY PAD</td><td>コントロールを追加します。</td></tr>
+<tr><td class="k">DELETE</td><td>選択したコントロールを削除します。</td></tr>
+<tr><td class="k">UNDO / REDO</td><td>レイアウト編集専用で、32 ステップです。</td></tr>
+<tr><td class="k">TEMPLATE</td><td>内蔵レイアウト、SAVE、ユーザーレイアウト。MANAGE で名前の変更や削除ができます。</td></tr>
+<tr><td class="k">MAPPING</td><td>マッピングオーバーレイを開きます。</td></tr>
+<tr><td class="k">ドラッグ</td><td>コントロールの位置を移動します。</td></tr>
+</table>
+
+<h3>MAPPING オーバーレイ</h3>
+<table>
+<tr><td class="k">ヘッダー</td><td>コントロール名と閉じるボタン。BUTTON には LATCH / MOMENTARY、FADER には VERTICAL / HORIZONTAL があり、XY PAD は X と Y の 2 組のスロットに分かれます。</td></tr>
+<tr><td class="k">マッピングスロット</td><td>コントロールごと（または軸ごと）に 8 個。各スロットにターゲット名と範囲バー（下限が上限より大きいときは反転）、および現在の有効値バーが表示されます。</td></tr>
+<tr><td class="k">ターゲットのグループ</td><td>MIXER、VOICE、SEGMENT、FX、GLOBAL、CHROMA、PARTICLE、MESH、FEEDBACK。</td></tr>
+</table>
+<p>マッピングにはモジュレーション量の欄がなく、モジュレーション量は MOD ROUTE で設定します。PERFORM コントロールの MOD ROUTE には SEQ と LFO 1 から 6 の 7 ソースだけがあり、ENV は使えません。4 種類のコントロールはすべて MIDI Learn に割り当てでき、ラベルに CC 番号、N 番号、または PB が表示され、pickup 方式で引き継ぎます。</p>
+
+<!-- ============================================================ -->
+<h2 id="modroute">9. MOD ROUTE（長押しモジュレーション）</h2>
+
+<p>MOD ROUTE は 1 つのパラメータに複数のモジュレーションソースを同時に受けさせます。優先順位は、指のタッチが最も高く、次に MOTION の再生、最後に MOD ROUTE です。再生を停止しても MOD ROUTE は作用し続けます。</p>
+
+<h3>長押しできる場所</h3>
+<ul>
+<li>PERFORM のキャンバスコントロール、サイドパネル MIXER の VOL とセンドセル、サイドパネル SEQUENCER の LFO XY パッド。</li>
+<li>UTILITY の LFO レートと XY パッド。</li>
+<li>MIXER の DELAY / REVERB ノブ、グラニュラー合成のパッドと各バー。</li>
+<li>VOICE のサンプルパラメータと DECAY。</li>
+<li>VISUAL のパラメータバー。</li>
+</ul>
+<p>ジェスチャー：0.6 秒長押し、移動は 8pt 以内。成功時に触覚フィードバックがあります。</p>
+
+<h3>パネル</h3>
+<table>
+<tr><td class="k">タイトル</td><td>MOD ROUTE。XY パッドでは軸名が付きます。</td></tr>
+<tr><td class="k">ソースボタン</td><td>16 個、4 行：OFF、SEQ、LFO 1 から 6、ENV 1 から 8。OFF ですべて消去します。</td></tr>
+<tr><td class="k">ボタンの動作</td><td>選択済みで量が 0 でないソースをタップ：解除。選択済みで量が 0：+50% に設定。未選択で量が 0 でない：選択。未選択で量が 0：選択して +50% に設定。</td></tr>
+<tr><td class="k">AMOUNT</td><td>-100 から +100%。タイトルに「ソース名 AMOUNT」、ソース未選択時は「SELECT A SOURCE」と表示されます。</td></tr>
+<tr><td class="k">CLEAR MOTION?</td><td>そのパラメータに MOTION の記録があるとき、Y / N の行が表示されます。</td></tr>
+<tr><td class="k">閉じる</td><td>パネルの外側をタップするか、Y / N に答えたときだけ閉じます。</td></tr>
+</table>
+
+<h3>ソース</h3>
+<table>
+<tr><td class="k">SEQ</td><td>UTILITY エンベロープの出力、0 から 1。</td></tr>
+<tr><td class="k">LFO 1 から 6</td><td>UNI / BI の設定に従い単極または双極です。</td></tr>
+<tr><td class="k">ENV 1 から 8</td><td>各トラックのエンベロープ、0 から 1。そのトラックで現在選ばれている音源（SYNTH / SAMPLE / PHYSICAL / AU）のエンベロープを読みます。自分のトラックのパラメータも変調できます。UTILITY の OUTPUT マトリクスの入力にはありません。PERFORM コントロールでは ENV は使えず、ボタンはグレー表示です。</td></tr>
+</table>
+<p>設定済みのパラメータの右上にソースマークが表示されます：m は MOTION、s は SEQ、1 から 6 は LFO、e1 から e8 は ENV です。ソースが多いときは「+」で省略されます。</p>
+
+<h3>MIDI Learn との関係</h3>
+<ul>
+<li>MIDI Learn モードが有効なとき、長押しで MOD ROUTE は開きません。</li>
+<li>MIDI 割り当ては SETUP でのみ削除できます。再度 learn すると古い割り当てが置き換えられます。</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="visual">10. VISUAL</h2>
+
+<div class="fig"><img src="img/visual_full.png" alt="VISUAL ページ全体"></div>
+<div class="cap">VISUAL ページ全体。左上に 16:9 のプレビューと状態列（45 FPS、SURFACES 1）。右上に SOURCE 列（錠アイコン、ALWAYS ON、CAMERA メニュー、FRONT ULTRA WIDE CAMERA、2 つの反転ボタン、1920 x 1080）と 4 つのステーション：CHROMASCOPE、PARTICLE、MESH、FEEDBACK。それぞれにドラッグハンドル、ON ボタン、MIX バーがあります（図では MESH が 0.35 でモジュレーションマーク付き）。下部に 4 つのパラメータパネル。</div>
+
+<h3>SOURCE 列とステーション列</h3>
+<div class="fig"><img src="img/visual_layers.png" alt="SOURCE 列とステーション列"></div>
+<div class="cap">SOURCE 列：錠アイコン、SOURCE、ALWAYS ON、CAMERA ドロップダウン、レンズメニュー、水平と垂直の反転ボタン、解像度 1920 x 1080。下の 4 行は CHROMASCOPE、PARTICLE、MESH、FEEDBACK で、それぞれハンドル、ON、MIX バーがあります。</div>
+<table>
+<tr><td class="k">SOURCE / ALWAYS ON</td><td>ソースの状態表示です。</td></tr>
+<tr><td class="k">ソースメニュー</td><td>CAMERA、PHOTO、VIDEO。</td></tr>
+<tr><td class="k">レンズメニュー</td><td>カメラデバイスを選びます。カメラがないときは NO CAMERA FOUND と表示されます。カメラは 1080p 30 fps で、フロントカメラは鏡像です。</td></tr>
+<tr><td class="k">PHOTOS / FILES</td><td>PHOTO と VIDEO ソースのときに表示され、写真ライブラリまたはファイルから読み込みます。読み込み後はファイル名、失敗時は LOAD FAILED と表示されます。写真は長辺 1920 まで、動画はループ再生で無音です。</td></tr>
+<tr><td class="k">FLIP H / FLIP V</td><td>水平と垂直の反転です。</td></tr>
+<tr><td class="k">解像度</td><td>ソースの解像度を表示します。準備できていないときは SOURCE WAITING と表示されます。</td></tr>
+<tr><td class="k">ステーション列</td><td>4 つのステーション CHROMASCOPE、PARTICLE、MESH、FEEDBACK。左側のハンドルをドラッグして順序を変更します。ON / OFF の切り替えで、初期状態では CHROMASCOPE だけが有効です。すべて無効のときは元のソースを出力します。</td></tr>
+<tr><td class="k">MIX</td><td>0 から 1。初期値は CHROMASCOPE 0.75、その他は 1 です。右上にモジュレーションソースのマークが表示されます。</td></tr>
+<tr><td class="k">状態列</td><td>NN FPS、SURFACES n、EXTERNAL DISPLAY、RENDERER OFFLINE。</td></tr>
+</table>
+<p>VISUAL のパラメータ値はバンクに保存されません。MOD ROUTE のルーティングだけがバンクに保存されます。</p>
+
+<h3>パラメータパネル</h3>
+<div class="fig"><img src="img/visual_panels.png" alt="4 つのパラメータパネル"></div>
+<div class="cap">4 つのパラメータパネル。CHROMASCOPE：EFFECT / MICROPHONE、BASE HUE、HUE SPREAD、BRIGHTNESS、CURVE 1 から 4、ANGLE 1 から 4。PARTICLE：SIZE、SHAPE、DENSITY、JITTER、DEPTH MIX、DISPLACE、ZOOM、BRIGHTNESS、SCALE X / Y / Z、AUDIO DEPTH、AUDIO TRACK ALL。MESH：モデルメニュー（PENTAGONAL）、LOAD MODEL、DISPLACE、WIREFRAME、ROTATE X / Y / Z、SCALE、AUDIO DEPTH、BRIGHTNESS、AUDIO TRACK ALL。FEEDBACK：SMOOTH、BRIGHT、CHROMA、DIFFUSE、BRIGHTNESS。一部のバーの右上にモジュレーションソースのマークがあります。</div>
+
+<h3>CHROMASCOPE</h3>
+<table>
+<tr><td class="k">EFFECT</td><td>エフェクトのオン / オフです。</td></tr>
+<tr><td class="k">MICROPHONE</td><td>マスター出力のオーディオ（L / R / mid / side）で映像を駆動します。</td></tr>
+<tr><td class="k">BASE HUE</td><td>0 から 333、初期値 166.5。</td></tr>
+<tr><td class="k">HUE SPREAD</td><td>0 から 100、初期値 50。</td></tr>
+<tr><td class="k">BRIGHTNESS</td><td>0 から 4。</td></tr>
+<tr><td class="k">CURVE 1 から 4</td><td>各 0 から 100。</td></tr>
+<tr><td class="k">ANGLE 1 から 4</td><td>各 0 から 360。</td></tr>
+</table>
+
+<h3>PARTICLE</h3>
+<table>
+<tr><td class="k">SIZE</td><td>0.001 から 1。</td></tr>
+<tr><td class="k">SHAPE</td><td>0 から 1。順に円、四角、三角、六角形、菱形、星、リングで、1 はランダムです。MOD ROUTE には対応しません。</td></tr>
+<tr><td class="k">DENSITY</td><td>0.01 から 2。</td></tr>
+<tr><td class="k">JITTER</td><td>0 から 0.05。</td></tr>
+<tr><td class="k">DEPTH MIX</td><td>0 から 1。</td></tr>
+<tr><td class="k">DISPLACE</td><td>0 から 5。</td></tr>
+<tr><td class="k">ZOOM</td><td>-1 から +1。</td></tr>
+<tr><td class="k">BRIGHTNESS</td><td>0 から 4。</td></tr>
+<tr><td class="k">SCALE X / Y / Z</td><td>各 -3 から +3。</td></tr>
+<tr><td class="k">AUDIO DEPTH</td><td>0 から 4。変位量に (1 + 音量 x 深度) を掛けます。</td></tr>
+<tr><td class="k">AUDIO TRACK</td><td>ALL または TRACK 1 から 8。</td></tr>
+</table>
+
+<h3>MESH</h3>
+<table>
+<tr><td class="k">モデルメニュー</td><td>100 個の内蔵モデル。サムネイル付きで、初期値は球体です。</td></tr>
+<tr><td class="k">LOAD MODEL</td><td>.obj ファイルを読み込みます。</td></tr>
+<tr><td class="k">DISPLACE</td><td>0 から 5。</td></tr>
+<tr><td class="k">WIREFRAME</td><td>0 から 1。</td></tr>
+<tr><td class="k">ROTATE X / Y / Z</td><td>各 0 から 360。</td></tr>
+<tr><td class="k">SCALE</td><td>0.1 から 5。</td></tr>
+<tr><td class="k">AUDIO DEPTH / BRIGHTNESS / AUDIO TRACK</td><td>PARTICLE と同じです。</td></tr>
+</table>
+
+<h3>FEEDBACK</h3>
+<table>
+<tr><td class="k">SMOOTH</td><td>平滑化の量です。</td></tr>
+<tr><td class="k">BRIGHT</td><td>輝度の減衰です。</td></tr>
+<tr><td class="k">CHROMA</td><td>0 から 0.005。</td></tr>
+<tr><td class="k">DIFFUSE</td><td>拡散の量です。</td></tr>
+<tr><td class="k">BRIGHTNESS</td><td>出力の輝度です。</td></tr>
+</table>
+
+<h3>オーディオ駆動とモジュレーション</h3>
+<ul>
+<li>オーディオソースは 8 トラックのミキサー入力点での RMS に VOL を掛け、ミュートとソロを適用したものです。</li>
+<li>合計 39 のパラメータが MOD ROUTE に対応します。変調できないもの：ステーションのオン / オフと順序、AUDIO TRACK、SHAPE、MESH のモデル。</li>
+<li>MIDI が書き込むのはベース値です。</li>
+</ul>
+
+<h3>外部ディスプレイ</h3>
+<ul>
+<li>USB-C または AirPlay ミラーリングで接続すると、外部ディスプレイに映像出力が表示されます。VISUAL ページに留まる必要はありません。</li>
+<li>ファイルと写真ライブラリの選択画面は iPad 側に表示されます。</li>
+<li>初めてカメラを使うとき、システムがカメラの使用許可を求めます。</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="setup">11. SETUP</h2>
+
+<p>SETUP は全画面のオーバーレイで、縦にスクロールします。上部のインデックスボタンで各セクションに移動できます。セクションの順序は次のとおりです。</p>
+<table>
+<tr><td class="k">CURRENTLY LEARNING</td><td>待機中の MIDI Learn ターゲットを表示します。</td></tr>
+<tr><td class="k">MIDI INPUT DEVICES</td><td>MIDI 入力デバイスの一覧です。</td></tr>
+<tr><td class="k">MIDI BINDINGS</td><td>割り当て済みの一覧です。各項目に MODE（LATCH / MOMENTARY）、TAKEOVER（JUMP / PICKUP）、SCALE（LINEAR / EXP / LOG）、MIN と MAX（0 から 100%、10% ステップ）を設定でき、個別削除と全消去ができます。</td></tr>
+<tr><td class="k">RECORDING LOCATION</td><td>Documents/Recordings に固定です。ファイル app のパスは「On My iPad / HONKI / Recordings」です。</td></tr>
+<tr><td class="k">DIAGNOSTICS</td><td>診断セクションです。</td></tr>
+<tr><td class="k">AUDIO DEVICE</td><td>システムのオーディオルーティング選択です。</td></tr>
+<tr><td class="k">MIDI OUTPUT DEVICE</td><td>MIDI 出力デバイスです。</td></tr>
+<tr><td class="k">EXTERNAL INPUT</td><td>トラックごとに外部入力チャンネル（Channel n）または OFF を指定します。</td></tr>
+<tr><td class="k">EXTERNAL CLOCK</td><td>CLOCK SOURCE：INT / MIDI / CV。DIV/MULT：/4、/2、x1、x2、x4。BPM 20 から 300。MIDI クロックは 24 PPQN で、2 秒間信号がないと切断とみなします。CV INPUT でチャンネルを選びます。STATUS に状態が表示されます。CLOCK OUT と MIDI CLOCK OUT は ON / OFF です。</td></tr>
+<tr><td class="k">MOD OUTPUT</td><td>UTILITY の各 OUTPUT に物理チャンネルを割り当てます。チャンネルが競合すると自動的に OFF になります。</td></tr>
+<tr><td class="k">MAIN OUT</td><td>マスター出力チャンネルです。</td></tr>
+<tr><td class="k">SAMPLE RATE</td><td>サンプルレートです。</td></tr>
+<tr><td class="k">INPUT COMP</td><td>入力のレイテンシー補正、0 から 250 ミリ秒、0.1 ミリ秒ステップです。ドラッグで調整、タップで数値入力、± の長押しで連続調整です。</td></tr>
+<tr><td class="k">BUCHLA PULSE</td><td>パルス出力の設定です。</td></tr>
+<tr><td class="k">ENV DELAY</td><td>エンベロープディレイの設定です。</td></tr>
+<tr><td class="k">CV/MIDI ROUTING</td><td>8 個のトラックスロット。それぞれ CV チャンネルと MIDI チャンネル（チャンネルの重複不可）、VOLTS、ドラムトラックのノート番号、CC 0 から 127 を設定します。CLEAR ALL、RESET、CV デバイス選択があり、デバイスを選ぶと CV エンジンが自動で起動します。</td></tr>
+<tr><td class="k">PARALLEL OUT</td><td>トラックごとにパラレル出力チャンネルまたは OFF を指定します。</td></tr>
+<tr><td class="k">GENERATE VELOCITY</td><td>生成ベロシティの設定です。</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="midilearn">12. MIDI Learn</h2>
+
+<h3>開始と終了</h3>
+<ul>
+<li>トランスポートの LEARN または Cmd+L で開始します。割り当て可能なコントロールに枠が表示され、XY パッドは四隅が表示されます。</li>
+<li>再度 LEARN または ESC で終了します。</li>
+</ul>
+
+<h3>手順</h3>
+<ol style="padding-left:22px">
+<li style="font-size:15px;color:#C9C9C9;margin:6px 0">コントロールをタップして待機状態に入ります。SETUP の CURRENTLY LEARNING にターゲットが表示されます。</li>
+<li style="font-size:15px;color:#C9C9C9;margin:6px 0">10 秒以内に MIDI メッセージを送ります。別のコントロールをタップするとターゲットが切り替わります。</li>
+<li style="font-size:15px;color:#C9C9C9;margin:6px 0">最初に一致したメッセージで割り当てが完了します。ボタンは MOMENTARY、その他は連続値で、カーブの初期値は LINEAR です。既存の割り当ては置き換えられます。</li>
+</ol>
+
+<h3>メッセージの種類</h3>
+<table>
+<tr><td class="k">割り当て可能</td><td>CC、Note、Pitch Bend。</td></tr>
+<tr><td class="k">割り当て不可</td><td>Program Change。Aftertouch と SysEx は無視されます。</td></tr>
+</table>
+
+<h3>割り当ての動作</h3>
+<table>
+<tr><td class="k">MODE</td><td>LATCH または MOMENTARY です。</td></tr>
+<tr><td class="k">TAKEOVER</td><td>JUMP は新しい値に直接移動し、PICKUP は現在の値を通過してから引き継ぎます。</td></tr>
+<tr><td class="k">SCALE</td><td>LINEAR、EXP、LOG。</td></tr>
+<tr><td class="k">MIN / MAX</td><td>マッピング範囲です。</td></tr>
+<tr><td class="k">ページ切り替え</td><td>6 つのページにそれぞれ 1 つのメッセージを割り当てできます。</td></tr>
+</table>
+<p>割り当ては midi_mappings.json に保存され、同時に .bak バックアップが保持されます。各パラメータに持てる割り当ては 1 つだけです。</p>
+
+<!-- ============================================================ -->
+<h2 id="motion">13. Motion</h2>
+
+<table>
+<tr><td class="k">有効化</td><td>トランスポートの MOTION を押します。</td></tr>
+<tr><td class="k">記録条件</td><td>MOTION が有効、再生中、指がコントロール上にある、の 3 つが同時に成立したときだけ記録します。</td></tr>
+<tr><td class="k">再生</td><td>手動操作中は手動が優先され、離すと記録値に戻ります。</td></tr>
+<tr><td class="k">書き込みのタイミング</td><td>MOTION を無効にしたとき、または再生を停止したときに書き込みます。</td></tr>
+<tr><td class="k">サンプルレート</td><td>30 Hz、サンプルアンドホールドです。</td></tr>
+<tr><td class="k">レーンの長さ</td><td>トラックパラメータ：セグメントごとに 64 セルのレーン 1 本。エフェクトと VISUAL のパラメータ：グローバルな 4 小節のレーン。</td></tr>
+<tr><td class="k">記録可能</td><td>ミキサー、DECAY、ハーモニー、音源パラメータ（kick、サンプル、PHYSICAL。AU トラックは不可）、エフェクト、VISUAL、PERFORM コントロール。</td></tr>
+<tr><td class="k">記録不可</td><td>LOCK、DENSITY、ウェーブテーブルの選択、MODEL、POLYPHONY、LOOP、REVERSE、FREEZE、音源の切り替え、AU パラメータ。</td></tr>
+<tr><td class="k">単一パラメータの消去</td><td>0.6 秒長押しし、MOD ROUTE パネルで CLEAR MOTION? Y / N に答えます。</td></tr>
+<tr><td class="k">全消去</td><td>トランスポートの MOTION を 0.6 秒長押しします。</td></tr>
+<tr><td class="k">表示</td><td>記録のあるコントロールにインジケーターラインが表示されます。</td></tr>
+<tr><td class="k">保存</td><td>バンクと一緒に保存され、undo できます。</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="recording">14. 録音</h2>
+
+<h3>トラック別録音</h3>
+<table>
+<tr><td class="k">開始</td><td>PLAY を押した後、Y / REC? / N で Y を選びます。</td></tr>
+<tr><td class="k">停止</td><td>赤い丸の録音停止ボタンを押して Y に答えます。バックグラウンドに移ると停止します。サンプルレートを変更すると新しいセッションが始まります。フォアグラウンドに戻ると新しいフォルダを使います。</td></tr>
+<tr><td class="k">ファイル</td><td>9 個の WAV（32 ビット浮動小数点）：track1 から track4 はモノラル、track5 から track8 はステレオ、master はステレオです。外部入力ルーティングのあるトラックは別途 trackN_ext.wav を保存します。取得点はフェーダー後です。</td></tr>
+<tr><td class="k">場所</td><td>Recordings/Sessions/日付-時刻/。iPad ではファイル app の On My iPad / HONKI / Recordings から取得します。</td></tr>
+<tr><td class="k">ヘッダー</td><td>100 ミリ秒ごとに更新され、中断してもファイルは読み込めます。</td></tr>
+</table>
+
+<h3>サンプル録音（VOICE の RECORD）</h3>
+<table>
+<tr><td class="k">ソース</td><td>マスター出力です。</td></tr>
+<tr><td class="k">長さ</td><td>最長 120 秒です。</td></tr>
+<tr><td class="k">停止後</td><td>そのトラックのサンプルとして自動で読み込まれます。</td></tr>
+<tr><td class="k">ファイル</td><td>Recordings/Samples/トラック番号_タイムスタンプ.wav、ステレオ 32 ビット浮動小数点です。</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="shortcuts">15. ショートカット</h2>
+
+<p>外部キーボードが必要です。</p>
+<table>
+<tr><td class="k">1 から 6</td><td>ページの切り替え。編集オーバーレイが開いているときは TRACK 1 から 4 と DRUMS の切り替えになります。</td></tr>
+<tr><td class="k">Space</td><td>再生 / 停止。録音確認を含みます。</td></tr>
+<tr><td class="k">Shift+Space</td><td>再生のみ。録音しません。</td></tr>
+<tr><td class="k">Cmd+L</td><td>MIDI Learn の切り替え。</td></tr>
+<tr><td class="k">Cmd+Z</td><td>元に戻す。</td></tr>
+<tr><td class="k">Cmd+Shift+Z</td><td>やり直す。</td></tr>
+<tr><td class="k">ESC</td><td>編集オーバーレイまたは MIDI Learn を閉じる。</td></tr>
+</table>
+<p>タッチ：フレーズ編集オーバーレイを 80pt を超えて下にスワイプすると閉じます。</p>
+
+<footer>MADZINE — HONKI v1.3.4</footer>
+</div>
+</body>
+</html>

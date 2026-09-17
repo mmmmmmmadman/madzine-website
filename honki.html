@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MADZINE — HONKI</title>
+  <meta name="description" content="iPad 8 軌 sequencer 與音源工作站，六個分頁涵蓋音源、混音、調變、表演控件與影像">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .bg-hero {
+      position: relative;
+      height: 50vh;
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+    }
+    .bg-hero__img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.1;
+    }
+    .bg-hero__gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 30%, var(--surface-base) 100%);
+    }
+    .bg-hero__content {
+      position: relative;
+      z-index: 1;
+      padding: var(--space-16) var(--padding-page-x) var(--space-8);
+      max-width: var(--content-narrow);
+      margin: 0 auto;
+      width: 100%;
+    }
+    .bg-hero__content h1 {
+      font-size: var(--text-4xl);
+      margin-bottom: var(--space-3);
+    }
+    .bg-hero__content .card__tag {
+      margin-bottom: var(--space-4);
+    }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-12);
+      align-items: start;
+    }
+    .col-text {
+      position: sticky;
+      top: var(--space-16);
+    }
+    .col-right {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-8);
+    }
+    .col-right > img {
+      width: 100%;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-default);
+      transition: opacity var(--duration-slow) var(--ease-default);
+      cursor: pointer;
+    }
+    .shot-caption {
+      margin-top: calc(-1 * var(--space-6));
+      font-size: var(--text-sm);
+      color: var(--text-tertiary);
+    }
+    .thumb-strip {
+      display: flex;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+    .thumb-strip__item {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      flex-shrink: 0;
+      border-radius: var(--radius-sm);
+      border: 2px solid var(--border-default);
+      cursor: pointer;
+      opacity: 0.6;
+      transition:
+        opacity var(--duration-normal) var(--ease-default),
+        border-color var(--duration-normal) var(--ease-default);
+    }
+    .thumb-strip__item:hover {
+      opacity: 0.85;
+    }
+    .thumb-strip__item.active {
+      opacity: 1;
+      border-color: var(--color-primary);
+    }
+    .feature-list {
+      padding-left: var(--space-6);
+      margin-top: var(--space-4);
+    }
+    .feature-list li {
+      margin-bottom: var(--space-2);
+      font-size: var(--text-base);
+      color: var(--text-secondary);
+    }
+    .manual-list {
+      list-style: none;
+      padding-left: 0;
+      margin-top: var(--space-4);
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-6);
+      font-size: var(--text-base);
+    }
+    .manual-list a {
+      color: var(--text-secondary);
+      text-decoration: underline;
+      transition: color var(--duration-normal) var(--ease-default);
+    }
+    .manual-list a:hover {
+      color: var(--color-primary);
+    }
+    .tech-table {
+      margin-top: var(--space-4);
+      font-size: var(--text-base);
+    }
+    .tech-table dt {
+      color: var(--text-tertiary);
+      margin-top: var(--space-3);
+    }
+    .tech-table dd {
+      margin-left: 0;
+      color: var(--text-primary);
+    }
+    @media (max-width: 768px) {
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+      .col-text {
+        position: static;
+      }
+      .thumb-strip__item {
+        width: 80px;
+        height: 80px;
+      }
+    }
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      background: oklch(0.10 0.005 55 / 0.92);
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .lightbox.is-open {
+      display: flex;
+    }
+    .lightbox img {
+      max-width: 90vw;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: var(--radius-sm);
+    }
+    .launch-btn {
+      display: inline-block;
+      margin-top: var(--space-6);
+      padding: var(--space-3) var(--space-8);
+      font-size: var(--text-base);
+      font-weight: 600;
+      color: white;
+      background: var(--color-primary);
+      border: none;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      transition: opacity var(--duration-normal) var(--ease-default);
+    }
+    .launch-btn:hover {
+      opacity: 0.85;
+    }
+    .bottom-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) var(--space-6);
+      border-top: 1px solid var(--border-default);
+      font-size: var(--text-sm);
+    }
+    .bottom-bar__copyright { color: var(--text-tertiary); }
+    .bottom-bar__nav { display: flex; align-items: center; gap: var(--space-6); }
+    .bottom-bar__nav a { color: var(--text-secondary); text-decoration: none; transition: color var(--duration-normal) var(--ease-default); }
+    .bottom-bar__nav a:hover { color: var(--color-primary); }
+    .bottom-bar__controls { display: flex; align-items: center; gap: var(--space-4); }
+  </style>
+</head>
+<body>
+
+  <!-- Hero background -->
+  <div class="bg-hero">
+    <img class="bg-hero__img" src="assets/images/software/HONKI_1.png" alt="HONKI">
+    <div class="bg-hero__gradient"></div>
+    <div class="bg-hero__content">
+      <a href="software.html" class="section__back" style="color: var(--text-primary);">
+        <span data-i18n="common.back">返回</span>
+      </a>
+      <h1>HONKI</h1>
+      <p class="card__tag">iPad</p>
+      <p data-i18n="apps.honki.subtitle">8 軌 sequencer 與音源工作站</p>
+    </div>
+  </div>
+
+  <main>
+    <section class="section">
+      <div class="container">
+        <div class="two-col">
+          <div class="col-text">
+            <h2 data-i18n="common.intro">功能介紹</h2>
+            <p class="intro-text" data-i18n-html="apps.honki.intro">HONKI 是 iPad 上的 8 軌 sequencer 與音源工作站。每個 pattern 有 8 軌，1 至 4 軌為旋律軌、5 至 8 軌為鼓軌，每軌 8 個段落，可依序或隨機串接。介面分為 MAIN、VOICE、MIXER、UTILITY、PERFORM、VISUAL 六個分頁。<br><br>每軌音源四選一：SYNTH 為 wavetable 振盪器；SAMPLE 支援切片、多取樣鼓組、即時錄音與粒子合成；PHYSICAL 為共振器模型；AU 可載入 Audio Unit 樂器，並以 8 個 MACRO 旋鈕控制。<br><br>MIXER 有 8 個聲道條，每軌具三段 EQ、壓縮器與旁鏈、濾波器，以及 DELAY、REVERB、TEXTURE 三組 send。TEXTURE 為粒子合成 send 效果，MASTER FX 可串接 Audio Unit 效果器。<br><br>UTILITY 有 8 段包絡 SEQUENCER、6 個 LFO 與 4 個 OUTPUT，OUTPUT 可經音訊介面輸出 CV。PERFORM 可自訂旋鈕、按鈕、推桿與 XY PAD 作為表演控件，長按控件可開啟 MOD ROUTE，將 SEQUENCER、LFO 與包絡即時疊加到參數上。<br><br>VISUAL 以攝影機、照片或影片為來源，經 CHROMASCOPE、PARTICLE、MESH、FEEDBACK 四個效果站處理，由音訊驅動，並可輸出到外接螢幕。控件支援 MIDI Learn 對應外部控制器；錄音可將 8 軌 stem 與 master 輸出為 WAV 檔。</p>
+          </div>
+
+          <div class="col-right">
+            <img id="main-image" src="assets/images/software/HONKI_1.png" alt="HONKI MAIN">
+            <p class="shot-caption" id="shot-caption" data-i18n="apps.honki.captions.main">MAIN：phrase 編輯器與段落串接</p>
+            <div class="thumb-strip">
+              <img class="thumb-strip__item active" src="assets/images/software/HONKI_1.png" alt="HONKI MAIN" data-full="assets/images/software/HONKI_1.png" data-caption="apps.honki.captions.main" onclick="switchImage(this)">
+              <img class="thumb-strip__item" src="assets/images/software/HONKI_2.png" alt="HONKI MAIN KEYS" data-full="assets/images/software/HONKI_2.png" data-caption="apps.honki.captions.keys" onclick="switchImage(this)">
+              <img class="thumb-strip__item" src="assets/images/software/HONKI_3.png" alt="HONKI VOICE" data-full="assets/images/software/HONKI_3.png" data-caption="apps.honki.captions.voice" onclick="switchImage(this)">
+              <img class="thumb-strip__item" src="assets/images/software/HONKI_4.png" alt="HONKI MIXER" data-full="assets/images/software/HONKI_4.png" data-caption="apps.honki.captions.mixer" onclick="switchImage(this)">
+              <img class="thumb-strip__item" src="assets/images/software/HONKI_5.png" alt="HONKI UTILITY" data-full="assets/images/software/HONKI_5.png" data-caption="apps.honki.captions.utility" onclick="switchImage(this)">
+              <img class="thumb-strip__item" src="assets/images/software/HONKI_6.png" alt="HONKI PERFORM" data-full="assets/images/software/HONKI_6.png" data-caption="apps.honki.captions.perform" onclick="switchImage(this)">
+              <img class="thumb-strip__item" src="assets/images/software/HONKI_7.png" alt="HONKI VISUAL" data-full="assets/images/software/HONKI_7.png" data-caption="apps.honki.captions.visual" onclick="switchImage(this)">
+            </div>
+
+            <a href="https://apps.apple.com/app/id6801032281" target="_blank" rel="noopener" class="launch-btn" data-i18n="apps.honki.appstore">前往 App Store</a>
+
+            <div>
+              <h2 data-i18n="apps.honki.manual">使用手冊</h2>
+              <ul class="manual-list">
+                <li><a href="assets/manuals/honki/HONKI_Manual_1.3.4_zh-Hant.html" target="_blank" rel="noopener">繁體中文</a></li>
+                <li><a href="assets/manuals/honki/HONKI_Manual_1.3.4_en.html" target="_blank" rel="noopener">English</a></li>
+                <li><a href="assets/manuals/honki/HONKI_Manual_1.3.4_ja.html" target="_blank" rel="noopener">日本語</a></li>
+              </ul>
+            </div>
+
+            <div>
+              <h2 data-i18n="common.tech">技術資訊</h2>
+              <dl class="tech-table">
+                <dt data-i18n="common.platform">平台</dt>
+                <dd>iPad</dd>
+                <dt data-i18n="common.language">開發語言</dt>
+                <dd>Swift / SwiftUI</dd>
+                <dt>Audio</dt>
+                <dd>Audio Unit host (instrument / effect)</dd>
+                <dt>Control</dt>
+                <dd>MIDI Learn / CV output</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <img id="lightbox-img" src="" alt="">
+  </div>
+
+  <!-- Bottom Bar -->
+  <div class="bottom-bar">
+    <span class="bottom-bar__copyright" data-i18n="footer.copyright">&copy; 2025 MADZINE. 保留所有權利。</span>
+    <nav class="bottom-bar__nav">
+      <a href="index.html" data-i18n="nav.home">首頁</a>
+      <a href="software.html" data-i18n="nav.software">軟體</a>
+      <a href="works.html" data-i18n="nav.works">作品</a>
+      <a href="contact.html" data-i18n="nav.contact">聯絡</a>
+    </nav>
+    <div class="bottom-bar__controls">
+      <div class="lang-switcher">
+        <button class="lang-btn" data-lang="zh-TW" onclick="I18N.setLang('zh-TW')">中</button>
+        <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
+        <button class="lang-btn" data-lang="ja" onclick="I18N.setLang('ja')">JP</button>
+      </div>
+      <button id="mode-toggle" class="mode-toggle" aria-label="切換深色模式">☽</button>
+    </div>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    function switchImage(thumb) {
+      var mainImg = document.getElementById('main-image');
+      mainImg.src = thumb.dataset.full;
+      mainImg.alt = thumb.alt;
+      var caption = document.getElementById('shot-caption');
+      caption.setAttribute('data-i18n', thumb.dataset.caption);
+      caption.textContent = I18N.t(thumb.dataset.caption);
+      var allThumbs = document.querySelectorAll('.thumb-strip__item');
+      for (var i = 0; i < allThumbs.length; i++) {
+        allThumbs[i].classList.remove('active');
+      }
+      thumb.classList.add('active');
+    }
+
+    document.getElementById('main-image').addEventListener('click', function() {
+      var lb = document.getElementById('lightbox');
+      document.getElementById('lightbox-img').src = this.src;
+      document.getElementById('lightbox-img').alt = this.alt;
+      lb.classList.add('is-open');
+    });
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('is-open');
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeLightbox();
+    });
+  </script>
+</body>
+</html>

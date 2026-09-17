@@ -118,6 +118,24 @@ const I18N = {
             themes: '10 種色彩主題'
           }
         },
+        honki: {
+          name: 'HONKI',
+          desc: 'iPad 8 軌 sequencer 與音源工作站，六個分頁涵蓋音源、混音、調變、表演控件與影像',
+          subtitle: '8 軌 sequencer 與音源工作站',
+          platform: 'iPad',
+          appstore: '前往 App Store',
+          manual: '使用手冊',
+          intro: 'HONKI 是 iPad 上的 8 軌 sequencer 與音源工作站。每個 pattern 有 8 軌，1 至 4 軌為旋律軌、5 至 8 軌為鼓軌，每軌 8 個段落，可依序或隨機串接。介面分為 MAIN、VOICE、MIXER、UTILITY、PERFORM、VISUAL 六個分頁。<br><br>每軌音源四選一：SYNTH 為 wavetable 振盪器；SAMPLE 支援切片、多取樣鼓組、即時錄音與粒子合成；PHYSICAL 為共振器模型；AU 可載入 Audio Unit 樂器，並以 8 個 MACRO 旋鈕控制。<br><br>MIXER 有 8 個聲道條，每軌具三段 EQ、壓縮器與旁鏈、濾波器，以及 DELAY、REVERB、TEXTURE 三組 send。TEXTURE 為粒子合成 send 效果，MASTER FX 可串接 Audio Unit 效果器。<br><br>UTILITY 有 8 段包絡 SEQUENCER、6 個 LFO 與 4 個 OUTPUT，OUTPUT 可經音訊介面輸出 CV。PERFORM 可自訂旋鈕、按鈕、推桿與 XY PAD 作為表演控件，長按控件可開啟 MOD ROUTE，將 SEQUENCER、LFO 與包絡即時疊加到參數上。<br><br>UTILITY 的 SEQUENCER 曲線與 LFO 波形可直接徒手繪製，手繪 LFO 可加上 S&H / T&H 分段取樣。每軌 DECAY 包絡可作為 MOD ROUTE 調變來源。MIXER 每軌可送往 MASTER 或 A1 至 A3 三組 aux bus，各自對應音訊介面的實體輸出。SYNTH 振盪器直接以 wavetable 發聲，POSITION 最左為純正弦。<br><br>VISUAL 以攝影機、照片或影片為來源，經 CHROMASCOPE、PARTICLE、MESH、FEEDBACK 四個效果站處理，由音訊驅動，並可輸出到外接螢幕。控件支援 MIDI Learn 對應外部控制器；錄音可將 8 軌 stem 與 master 輸出為 WAV 檔。',
+          captions: {
+            main: 'MAIN：phrase 編輯器與段落串接',
+            keys: 'MAIN：KEYS 模式',
+            voice: 'VOICE：音源選擇與參數',
+            mixer: 'MIXER：8 聲道條、send 與 master 效果',
+            utility: 'UTILITY：8 段包絡 SEQUENCER、LFO 與 OUTPUT',
+            perform: 'PERFORM：自訂表演控件',
+            visual: 'VISUAL：音訊驅動影像'
+          }
+        },
         sessionguide: {
           name: 'Session Guide',
           desc: '樂團即興指揮工具，多人手機同步顯示指令與小節倒數',
@@ -549,6 +567,24 @@ const I18N = {
             themes: '10 color themes'
           }
         },
+        honki: {
+          name: 'HONKI',
+          desc: '8-track sequencer and sound-source workstation for iPad, six pages covering sources, mixing, modulation, performance controls and visuals',
+          subtitle: '8-track sequencer and sound-source workstation',
+          platform: 'iPad',
+          appstore: 'View on the App Store',
+          manual: 'User Manual',
+          intro: 'HONKI is an 8-track sequencer and sound-source workstation for iPad. Each pattern has 8 tracks: tracks 1 to 4 are melodic, tracks 5 to 8 are drums, and every track has 8 segments that can be chained in order or at random. The interface is divided into six pages: MAIN, VOICE, MIXER, UTILITY, PERFORM and VISUAL.<br><br>Each track uses one of four sound sources: SYNTH is a wavetable oscillator; SAMPLE supports slicing, multi-sample drum kits, live recording and granular synthesis; PHYSICAL is a resonator model; AU hosts Audio Unit instruments with 8 MACRO knobs.<br><br>MIXER has 8 channel strips, each with a 3-band EQ, compressor with sidechain, filter, and three sends: DELAY, REVERB and TEXTURE. TEXTURE is a granular send effect, and MASTER FX chains Audio Unit effects.<br><br>UTILITY provides an 8-stage envelope SEQUENCER, 6 LFOs and 4 OUTPUTs; the OUTPUTs can send CV through an audio interface. PERFORM lets you build custom performance controls from knobs, buttons, faders and XY pads; a long press on a control opens MOD ROUTE, which overlays the SEQUENCER, LFOs and envelopes onto parameters in real time.<br><br>The SEQUENCER curve and the LFO waveforms in UTILITY can be drawn by hand, and a drawn LFO can be stepped with S&H / T&H. Each track\'s DECAY envelope is available as a MOD ROUTE source. In MIXER each track can be sent to MASTER or to one of three aux buses, A1 to A3, each mapped to a physical output of the audio interface. The SYNTH oscillator plays the wavetable directly, with a pure sine at the leftmost POSITION.<br><br>VISUAL takes the camera, a photo or a video as its source and processes it through four stations, CHROMASCOPE, PARTICLE, MESH and FEEDBACK, driven by the audio, with output to an external display. Controls support MIDI Learn for external controllers, and recording writes the 8 track stems plus the master as WAV files.',
+          captions: {
+            main: 'MAIN: phrase editor and segment chaining',
+            keys: 'MAIN: KEYS mode',
+            voice: 'VOICE: sound source selection and parameters',
+            mixer: 'MIXER: 8 channel strips, sends and master effects',
+            utility: 'UTILITY: 8-stage envelope SEQUENCER, LFOs and OUTPUTs',
+            perform: 'PERFORM: custom performance controls',
+            visual: 'VISUAL: audio-driven visuals'
+          }
+        },
         sessionguide: {
           name: 'Session Guide',
           desc: 'Band conducting tool with synced cues and bar countdown across phones',
@@ -978,6 +1014,24 @@ const I18N = {
             gridxy: 'グリッド X/Y 独立モード',
             icloud: 'iCloud Drive プリセット同期',
             themes: '10種カラーテーマ'
+          }
+        },
+        honki: {
+          name: 'HONKI',
+          desc: 'iPad 用 8 トラックシーケンサー兼音源ワークステーション、音源・ミックス・モジュレーション・パフォーマンス操作・映像を 6 ページで構成',
+          subtitle: '8 トラックシーケンサー兼音源ワークステーション',
+          platform: 'iPad',
+          appstore: 'App Store で見る',
+          manual: 'ユーザーマニュアル',
+          intro: 'HONKI は iPad 用の 8 トラックシーケンサー兼音源ワークステーションです。各パターンは 8 トラックで構成され、トラック 1〜4 はメロディ、5〜8 はドラム。各トラックは 8 セグメントを持ち、順番またはランダムに連結できます。画面は MAIN、VOICE、MIXER、UTILITY、PERFORM、VISUAL の 6 ページに分かれています。<br><br>各トラックの音源は 4 種類から選択：SYNTH はウェーブテーブルオシレーター、SAMPLE はスライス・マルチサンプルのドラムキット・リアルタイム録音・グラニュラー合成に対応、PHYSICAL はレゾネーターモデル、AU は Audio Unit 音源をホストし 8 つの MACRO ノブで操作します。<br><br>MIXER には 8 本のチャンネルストリップがあり、各トラックに 3 バンド EQ、サイドチェイン付きコンプレッサー、フィルター、DELAY・REVERB・TEXTURE の 3 系統センドを備えます。TEXTURE はグラニュラーのセンドエフェクト、MASTER FX は Audio Unit エフェクトをチェーン接続します。<br><br>UTILITY には 8 ステージのエンベロープ SEQUENCER、6 基の LFO、4 系統の OUTPUT があり、OUTPUT はオーディオインターフェース経由で CV を出力できます。PERFORM ではノブ・ボタン・フェーダー・XY パッドでパフォーマンス用の操作子を自由に構成でき、長押しで MOD ROUTE を開き、SEQUENCER・LFO・エンベロープをパラメーターにリアルタイムで重ねられます。<br><br>UTILITY の SEQUENCER カーブと LFO 波形は手描きでき、手描きの LFO には S&H / T&H のステップ処理を加えられます。各トラックの DECAY エンベロープは MOD ROUTE のソースとして使えます。MIXER では各トラックを MASTER または A1〜A3 の 3 系統の AUX バスへ送れ、それぞれオーディオインターフェースの物理出力に対応します。SYNTH のオシレーターは wavetable をそのまま発音し、POSITION の左端は純正弦波です。<br><br>VISUAL はカメラ・写真・動画をソースに、CHROMASCOPE、PARTICLE、MESH、FEEDBACK の 4 ステーションで処理し、オーディオで駆動、外部ディスプレイへ出力できます。操作子は MIDI Learn で外部コントローラーに対応し、録音では 8 トラックのステムとマスターを WAV で書き出します。',
+          captions: {
+            main: 'MAIN：フレーズエディターとセグメント連結',
+            keys: 'MAIN：KEYS モード',
+            voice: 'VOICE：音源選択とパラメーター',
+            mixer: 'MIXER：8 チャンネルストリップ、センドとマスターエフェクト',
+            utility: 'UTILITY：8 ステージエンベロープ SEQUENCER、LFO、OUTPUT',
+            perform: 'PERFORM：カスタムパフォーマンス操作子',
+            visual: 'VISUAL：オーディオ駆動の映像'
           }
         },
         sessionguide: {
