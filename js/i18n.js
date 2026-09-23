@@ -38,7 +38,7 @@ const I18N = {
           title: 'VCV Rack 模組',
           desc: 'MADZINE 系列模組，為模組化合成器帶來獨特的聲音處理工具',
           browse: '瀏覽完整模組說明書',
-          count: '38 個模組，6 大分類'
+          count: '39 個模組，6 大分類'
         },
         apps: {
           title: '應用程式',
@@ -487,7 +487,7 @@ const I18N = {
           title: 'VCV Rack Modules',
           desc: 'MADZINE module series, bringing unique sound processing tools to modular synthesis',
           browse: 'Browse Full Module Manual',
-          count: '38 modules across 6 categories'
+          count: '39 modules across 6 categories'
         },
         apps: {
           title: 'Applications',
@@ -936,7 +936,7 @@ const I18N = {
           title: 'VCV Rack モジュール',
           desc: 'MADZINEモジュールシリーズ。モジュラーシンセシスにユニークなサウンドプロセッシングツールを',
           browse: '完全なモジュールマニュアルを見る',
-          count: '6カテゴリ、38モジュール'
+          count: '6カテゴリ、39モジュール'
         },
         apps: {
           title: 'アプリケーション',
