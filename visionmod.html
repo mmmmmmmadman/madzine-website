@@ -114,6 +114,23 @@
       font-size: var(--text-base);
       color: var(--text-secondary);
     }
+    .manual-list {
+      list-style: none;
+      padding-left: 0;
+      margin-top: var(--space-4);
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-6);
+      font-size: var(--text-base);
+    }
+    .manual-list a {
+      color: var(--text-secondary);
+      text-decoration: underline;
+      transition: color var(--duration-normal) var(--ease-default);
+    }
+    .manual-list a:hover {
+      color: var(--color-primary);
+    }
     .tech-table {
       margin-top: var(--space-4);
       font-size: var(--text-base);
@@ -257,6 +274,15 @@
             </div>
 
             <div>
+              <h2 data-i18n="apps.visionmod.manual">使用手冊</h2>
+              <ul class="manual-list">
+                <li><a href="assets/manuals/visionmod/VisionMOD_Manual_0.9.2_zh-Hant.html" target="_blank" rel="noopener">繁體中文</a></li>
+                <li><a href="assets/manuals/visionmod/VisionMOD_Manual_0.9.2_en.html" target="_blank" rel="noopener">English</a></li>
+                <li><a href="assets/manuals/visionmod/VisionMOD_Manual_0.9.2_ja.html" target="_blank" rel="noopener">日本語</a></li>
+              </ul>
+            </div>
+
+            <div>
               <h2 data-i18n="common.tech">技術資訊</h2>
               <dl class="tech-table">
                 <dt data-i18n="common.language">開發語言</dt>
@@ -264,7 +290,7 @@
                 <dt data-i18n="common.platform">平台</dt>
                 <dd>macOS, Windows</dd>
                 <dt data-i18n="common.version">版本</dt>
-                <dd>v0.6.1</dd>
+                <dd>v0.9.2</dd>
               </dl>
             </div>
           </div>

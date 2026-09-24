@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vision MOD 使用手冊 v0.9.2</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root { --accent: #F27455; }
+* { box-sizing: border-box; }
+body { margin:0; padding:0; background:#0B0B0B; color:#ECECEC; font-family:"Barlow Condensed Light","Barlow Condensed","Noto Sans TC",-apple-system,sans-serif; font-weight:300; line-height:1.6; }
+.wrap { max-width:760px; margin:0 auto; padding:64px 40px 120px; }
+header { border-bottom:1px solid #2A2A2A; padding-bottom:28px; margin-bottom:40px; }
+header .brand { font-size:14px; letter-spacing:0.32em; color:#F27455; text-transform:uppercase; }
+header h1 { font-size:48px; font-weight:300; margin:8px 0 4px; letter-spacing:0.02em; }
+header .sub { font-size:15px; color:#9A9A9A; }
+h2 { font-size:22px; font-weight:400; color:#F27455; margin-top:56px; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #2A2A2A; letter-spacing:0.04em; }
+h3 { font-size:16px; font-weight:500; color:#ECECEC; margin-top:26px; margin-bottom:8px; }
+p { font-size:15px; color:#C9C9C9; margin:8px 0; }
+ul { margin:8px 0; padding-left:22px; }
+li { font-size:15px; color:#C9C9C9; margin:6px 0; }
+.term { color:#ECECEC; font-weight:500; }
+table { width:100%; border-collapse:collapse; margin:16px 0; }
+td { font-size:14px; padding:8px 10px; border-bottom:1px solid #222; color:#C9C9C9; vertical-align:top; }
+td.k { color:#ECECEC; font-weight:500; width:30%; white-space:nowrap; }
+.fig { margin:20px 0 0; }
+.fig img { width:100%; border:1px solid #2A2A2A; display:block; }
+.cap { font-size:13px; color:#9A9A9A; margin:6px 0 16px; }
+nav.toc ul { list-style:none; padding-left:0; columns:2; }
+nav.toc li { margin:4px 0; }
+nav.toc a { color:#C9C9C9; text-decoration:none; font-size:15px; }
+nav.toc a:hover { color:#F27455; }
+footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-size:14px; color:#666; letter-spacing:0.08em; }
+@media (max-width:600px) { .wrap { padding:40px 16px 80px; } nav.toc ul { columns:1; } td.k { white-space:normal; } }
+/* ===== PRINT / PDF ===== */
+@media print {
+  @page { size: A4; margin: 14mm 15mm 16mm; background: #0B0B0B; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  html { background:#0B0B0B; }
+  body { background:#0B0B0B; color:#ECECEC; font-size:10.5pt; line-height:1.5; }
+  .wrap { max-width:none; width:100%; margin:0; padding:0; }
+
+  header { padding-bottom:14px; margin-bottom:22px; break-after:avoid; break-inside:avoid; }
+  header .brand { font-size:9.5pt; }
+  header h1 { font-size:34pt; margin:4px 0 2px; }
+  header .sub { font-size:11pt; }
+
+  h2 { font-size:15pt; margin-top:22px; margin-bottom:10px; padding-bottom:6px;
+       break-after:avoid; break-inside:avoid; }
+  h3 { font-size:11.5pt; margin-top:14px; margin-bottom:5px;
+       break-after:avoid; break-inside:avoid; }
+  p, li { font-size:10.5pt; orphans:2; widows:2; }
+  p { margin:5px 0; break-inside:auto; }
+  ul { margin:5px 0; break-inside:auto; }
+  li { margin:3px 0; break-inside:avoid; }
+
+  table { margin:10px 0; break-inside:auto; }
+  tr { break-inside:avoid; break-after:auto; }
+  td { font-size:10pt; padding:5px 7px; }
+
+  .fig { margin:9px 0 0; break-inside:avoid; break-after:avoid; page-break-inside:avoid; page-break-after:avoid; }
+  /* width:auto keeps the intrinsic aspect ratio when max-height clamps a tall
+     screenshot; width:100% would squash it */
+  .fig img { width:auto; height:auto; max-width:100%; max-height:128mm; display:block; margin:0 auto; }
+  /* very tall UI shots get more height so they stay legible */
+  .fig img[src$="catalog_panel.png"], .fig img[src$="chromascope.png"],
+  .fig img[src$="fundamental_3_drag_drop.png"], .fig img[src$="triposr_panel.png"],
+  .fig img[src$="triposr_preset_dropdown.png"], .fig img[src$="triposr_obj_loaded.png"] { max-height:172mm; }
+  .fig img[src$="main_window.png"], .fig img[src$="particle.png"],
+  .fig img[src$="minimalize.png"] { max-height:152mm; }
+  .cap { font-size:9pt; margin:4px 0 9px; break-before:avoid; break-inside:avoid;
+         page-break-before:avoid; page-break-inside:avoid; orphans:2; widows:2; }
+
+  nav.toc { break-after:page; page-break-after:always; break-inside:avoid; }
+  nav.toc ul { columns:2; }
+  nav.toc a { color:#C9C9C9; font-size:11pt; }
+  a { text-decoration:none; }
+
+  footer { margin-top:28px; padding-top:14px; font-size:9.5pt; break-inside:avoid; }
+}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="brand">MADZINE</div>
+  <h1>Vision MOD</h1>
+  <div class="sub">使用手冊 — v0.9.2 — 繁體中文 — 雲外鏡</div>
+</header>
+
+<nav class="toc">
+<ul>
+<li><a href="#overview">1. 概述</a></li>
+<li><a href="#flow">2. 訊號流與模組面板</a></li>
+<li><a href="#fundamental">3. Fundamental Vision（基礎視覺）</a></li>
+<li><a href="#contour">4. Contour Scanner 與 CV Generator</a></li>
+<li><a href="#sd">5. Stable Diffusion</a></li>
+<li><a href="#chromascope">6. Chromascope</a></li>
+<li><a href="#minimalize">7. Minimalize</a></li>
+<li><a href="#object3d">8. 3D Object（3D 物件）</a></li>
+<li><a href="#triposr">9. Triposr 3D（立體重建）</a></li>
+<li><a href="#particle">10. Particle（粒子）</a></li>
+<li><a href="#flowwarp">11. Flow Warp</a></li>
+<li><a href="#feedback">12. Feedback</a></li>
+<li><a href="#slowmotion">13. Slow Motion（慢動作）</a></li>
+<li><a href="#plugin">14. Plugin（外掛）</a></li>
+<li><a href="#global">15. 全域動作</a></li>
+<li><a href="#signal">16. SIGNAL 視窗</a></li>
+<li><a href="#modulation">17. 調變與 MIDI Learn</a></li>
+<li><a href="#appstore">18. Mac App Store 版本</a></li>
+</ul>
+</nav>
+
+<!-- ============================================================ -->
+<h2 id="overview">1. 概述</h2>
+<p>Vision MOD 是 macOS 與 Windows 上的即時視覺合成器。它借用模組合成器 Complex Oscillator 的概念：兩個振盪器中以其中一個塑形另一個。Modifier 素材提供動態，Carrier 素材是被這動態承載的影像；以一段素材去調變另一段素材，產生新的影音現象。</p>
+<p>源頭之後的每一站都作用於這條合成後的 Carrier 視覺流。去背只在素材源頭（Fundamental Vision）發生；自此之後無內容的區域 alpha 為 0，下游每一站都會丟棄這些像素，因此整條鏈都維持去背狀態。</p>
+<div class="fig"><img src="img/main_window.png" alt="主控制視窗：top bar、目前選取模組的參數面板、Contour Scanner 與 CV Generator 區塊，以及右側的模組面板。"></div>
+<div class="cap">主控制視窗：top bar、目前選取模組的參數面板、Contour Scanner 與 CV Generator 區塊，以及右側的模組面板。</div>
+<h3>Top bar</h3>
+<table>
+<tr><td class="k">HUE</td><td>開關 HUE 色相環面板，調整介面強調色</td></tr>
+<tr><td class="k">SIGNAL</td><td>開關 SIGNAL 浮動視窗（音訊輸入 meter + CV Output 路由設定 + 7 條 CV meter）</td></tr>
+<tr><td class="k">Language</td><td>切換介面語言（EN／日／中），hover 說明同步切換並跨啟動保留</td></tr>
+<tr><td class="k">SD status</td><td>SD 服務狀態：啟動中顯示 SD Loading，完成後顯示使用中的加速後端</td></tr>
+</table>
+<h3>HUE 色相環</h3>
+<table>
+<tr><td class="k">Outer ring</td><td>外環：拖曳改變強調色的色相</td></tr>
+<tr><td class="k">Centre</td><td>中央：垂直拖曳改變強調色的飽和度</td></tr>
+<tr><td class="k">Presets</td><td>預設色相：點選套用珊瑚粉／薄荷綠／天藍／紫羅蘭</td></tr>
+<tr><td class="k">Phase colours</td><td>衍生相位色預覽（互補 +180°／三等分 ±120°／類比 ±30°），僅供參考</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="flow">2. 訊號流與模組面板</h2>
+<p>訊號鏈由主視窗右側的模組面板定義。Fundamental Vision 為固定的素材起點（鎖在第一站），其他模組由使用者自由加入、排序、bypass、刪除。拖曳 grip icon 排序、點 X icon 兩次刪除、勾選框個別 bypass。同一種模組可加入多份 instance，各自獨立記憶參數，由上而下串接執行。</p>
+<div class="fig"><img src="img/catalog_panel.png" alt="模組面板。點一列即在左側面板顯示該模組的參數。每列有 grip icon、X icon 與啟用勾選框。"></div>
+<div class="cap">模組面板。點一列即在左側面板顯示該模組的參數。每列有 grip icon、X icon 與啟用勾選框。</div>
+<table>
+<tr><td class="k">Catalog</td><td>模組面板（Signal Flow）：訊號流模組列表，由上而下依序執行；同一種模組可加多份獨立 instance，各自參數獨立</td></tr>
+<tr><td class="k">Drag to reorder</td><td>拖曳排序：按住 grip icon 上下拖即可改變該 instance 在訊號流中的位置（Fundamental Vision 固定第一站，不可移動）</td></tr>
+<tr><td class="k">Remove</td><td>刪除 instance：點一次跳出三語確認，再點一次刪除；點面板外或按 Esc 取消</td></tr>
+<tr><td class="k">Enable</td><td>啟用該 instance：取消勾選即 bypass（訊號直通至下一站），不影響參數與順序</td></tr>
+</table>
+<h3>+ Module</h3>
+<p>+ Module 按鈕開啟模組庫。可加入的模組：Stable Diffusion、Minimalize、Chromascope、3D Object、Particle、Flow Warp、Feedback、Triposr 3D、Slow Motion、Plugin。Stable Diffusion 只能有一份，已在鏈中時該項目反灰。Fundamental Vision 為固定起點，不能加入也不能刪除。</p>
+<h3>各站共通控制</h3>
+<p>Fundamental Vision 之後的每一站共用相同的標頭控制：啟用勾選框、Mix、Brightness 與 Position / Scale 拖曳區。Mix 是該站的 dry/wet，也是唯一的混合控制，模組內沒有自己的 mix 推桿。新加入的 instance Mix 從 0 開始，因此加入模組當下不會改變畫面，拉高 Mix 才會生效。</p>
+<div class="fig"><img src="img/triposr_panel.png" alt="站面板（圖為 Triposr 3D）。標頭列有啟用勾選框與 RESET；Mix、Brightness 與 Position / Scale 拖曳區為所有站共用。"></div>
+<div class="cap">站面板（圖為 Triposr 3D）。標頭列有啟用勾選框與 RESET；Mix、Brightness 與 Position / Scale 拖曳區為所有站共用。</div>
+<table>
+<tr><td class="k">Mix</td><td>該站 dry/wet 混合：0 直通上一站輸出、1 全效果</td></tr>
+<tr><td class="k">Brightness</td><td>該站輸出亮度增益（0–4，雙擊回 1）</td></tr>
+<tr><td class="k">Position / Scale</td><td>位置／縮放：拖曳移動、滾輪縮放（0.25–4）、雙擊歸零</td></tr>
+<tr><td class="k">Detail panel icon</td><td>點開啟該模組的細項設定面板（筆刷遮罩，開發中）</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="fundamental">3. Fundamental Vision（基礎視覺）</h2>
+<p>素材源頭站。兩個槽並排：左為 Modifier，右為 Carrier。每個槽可接相機、影片檔或照片。Modifier 用來分析 Movement 與 Color 訊號、驅動 Image Displace 與 Flow Warp 的流場；Carrier 是送進訊號鏈的影像本體。</p>
+<div class="fig"><img src="img/fundamental_1.png" alt="Fundamental Vision：Modifier（左）與 Carrier（右），中間為 Mix 推桿。"></div>
+<div class="cap">Fundamental Vision：Modifier（左）與 Carrier（右），中間為 Mix 推桿。</div>
+<table>
+<tr><td class="k">Card</td><td>素材輸入卡：Modifier（左）調變 Carrier（右），Mix 在兩者間混合</td></tr>
+<tr><td class="k">Modifier</td><td>Modifier 槽：調變素材，供應 Movement／Color CV、粒子 Displace 與 Flow Warp 光流的來源</td></tr>
+<tr><td class="k">Carrier</td><td>Carrier 槽：主視覺影像，流向下游處理鏈</td></tr>
+<tr><td class="k">Mix</td><td>Carrier 與 Modifier 兩來源的混合：往右顯示 Carrier、往左顯示 Modifier</td></tr>
+<tr><td class="k">Source type</td><td>來源類型：相機／影片／照片三選一（影片與照片用拖放載入）</td></tr>
+<tr><td class="k">Remove background</td><td>相機去背：MediaPipe 算前景 mask，只保留人物送往後續處理</td></tr>
+<tr><td class="k">Flip H</td><td>水平翻轉（左右鏡像）來源影像；於 producer 階段套用，影響整條 chain</td></tr>
+<tr><td class="k">Flip V</td><td>垂直翻轉（上下鏡像）來源影像；於 producer 階段套用，影響整條 chain</td></tr>
+<tr><td class="k">Video speed</td><td>載入影片的播放速度（0 暫停、1 原速、5 五倍速）</td></tr>
+</table>
+<h3>相機選單與設定</h3>
+<div class="fig"><img src="img/fundamental_2_camera_manu.png" alt="相機選擇下拉選單與相機設定 icon。"></div>
+<div class="cap">相機選擇下拉選單與相機設定 icon。</div>
+<table>
+<tr><td class="k">Camera</td><td>選擇相機輸入裝置</td></tr>
+<tr><td class="k">Settings icon</td><td>點開啟相機設定面板（Brightness／Contrast／Saturation 三項硬體可調）；Carrier 與 Modifier 兩相機各自獨立記憶</td></tr>
+<tr><td class="k">Brightness</td><td>相機亮度（相機驅動層 UVC / V4L2 對應 axis，0–1）</td></tr>
+<tr><td class="k">Contrast</td><td>相機對比（相機驅動層 UVC / V4L2 對應 axis，0–1）</td></tr>
+<tr><td class="k">Saturation</td><td>相機飽和度（相機驅動層 UVC / V4L2 對應 axis，0–1）</td></tr>
+</table>
+<h3>載入影片或照片</h3>
+<div class="fig"><img src="img/fundamental_3_drag_drop.png" alt="把檔案拖到視窗上：左半邊載入 Modifier，右半邊載入 Carrier。"></div>
+<div class="cap">把檔案拖到視窗上：左半邊載入 Modifier，右半邊載入 Carrier。</div>
+<table>
+<tr><td class="k">File path</td><td>目前載入的檔案路徑；把檔案拖進視窗即載入（左半放 Modifier、右半放 Carrier）</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="contour">4. Contour Scanner 與 CV Generator</h2>
+<p>主視窗在模組面板下方固定顯示 Contour Scanner 與 CV Generator。掃描器從畫面偵測輪廓；CV Generator 把掃描、動態與顏色轉成調變訊號。全域動作列（PRESET、PLUGINS、OUTPUT、視覺重啟、說明）位於 Contour Scanner 面板頂端。</p>
+<h3>Contour Scanner</h3>
+<table>
+<tr><td class="k">Card</td><td>輪廓掃描卡：從畫面偵測輪廓，產生 SEQ 訊號與輪廓疊加顯示</td></tr>
+<tr><td class="k">Preview</td><td>輪廓預覽：即時畫面 + 輪廓線 + 可拖曳的掃描範圍圓（ROI）</td></tr>
+<tr><td class="k">Scan ROI</td><td>掃描範圍圓：拖曳圓心移動掃描錨點，拖曳圓邊調整掃描範圍</td></tr>
+<tr><td class="k">Threshold</td><td>輪廓邊緣偵測門檻：值越高只保留越強的邊緣</td></tr>
+<tr><td class="k">Smoothing</td><td>輪廓平滑程度：抑制鋸齒與雜訊</td></tr>
+<tr><td class="k">Scene Threshold</td><td>輪廓更新閘門（非邊緣偵測門檻）：畫面要變化超過本值百分比才重新偵測輪廓。調高則輪廓保持得更靜止、CPU/GPU 負擔更低；調低反應更靈敏，調 0 則幾乎每幀都重算</td></tr>
+<tr><td class="k">Lock</td><td>鎖定當前輪廓：CV 與粒子訊號凍結於勾選瞬間</td></tr>
+<tr><td class="k">Mix</td><td>輪廓疊加到畫面的混合比例</td></tr>
+</table>
+<h3>CV Generator</h3>
+<table>
+<tr><td class="k">Card</td><td>CV Generator：從畫面衍生調變訊號（輪廓 SEQ、Movement 動能、Color）</td></tr>
+<tr><td class="k">Scan Time</td><td>輪廓掃描週期：掃描走完一輪的時間（2-10 秒）；軌道上的白線顯示當前掃描位置</td></tr>
+<tr><td class="k">Smooth</td><td>SEQ 序列訊號的平滑程度</td></tr>
+<tr><td class="k">Gain</td><td>Movement 前景動能訊號的增益（來源：Modifier 整張畫面）</td></tr>
+<tr><td class="k">Foreground</td><td>Movement CV 前景門檻；保留 VAV 原接口，目前 Modifier 路徑不經去背，此門檻暫未生效</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="sd">5. Stable Diffusion</h2>
+<p>把輸入影像轉成 AI 生成畫面。macOS 使用 Stable Diffusion 1.5 + ControlNet + Hyper-SD15 1-step LoRA（Metal）；Windows 使用 Stream Diffusion（CUDA / TensorRT）。鏈中只能有一份 Stable Diffusion。乾濕比例由該站的 Mix 控制；Enable 未勾選時 Mix 強制為 0，訊號鏈不會收到空的 AI 畫面。</p>
+<div class="fig"><img src="img/diffusion.png" alt="Stable Diffusion 面板：Enable、Grayscale、Likeness、Preset、Prompt、LoRA。"></div>
+<div class="cap">Stable Diffusion 面板：Enable、Grayscale、Likeness、Preset、Prompt、LoRA。</div>
+<table>
+<tr><td class="k">Enable</td><td>啟用 Stable Diffusion：勾選後載入模型、把相機畫面即時轉成 AI 生成影像；取消即釋放</td></tr>
+<tr><td class="k">Grayscale</td><td>強制 AI 輸出灰階去色</td></tr>
+<tr><td class="k">Likeness</td><td>AI 輸出貼合相機結構的程度（高=像相機）</td></tr>
+<tr><td class="k">Preset</td><td>切換內建風格 prompt（29 種畫風/材質）</td></tr>
+<tr><td class="k">Prompt</td><td>AI 生成的文字提示（描述想要的畫面風格）</td></tr>
+<tr><td class="k">LoRA</td><td>選擇 LoRA 檔（.safetensors）套用到 Stable Diffusion；清除則不使用 LoRA。未設定時顯示 No LoRA。</td></tr>
+<tr><td class="k">Status</td><td>SD 服務狀態：啟動中顯示 SD Loading，完成後顯示使用中的加速後端</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="chromascope">6. Chromascope</h2>
+<p>在畫面上疊加四個色彩通道。Base Hue 設定起始色相，Hue Spread 決定四個通道以此為中心的分布，每個通道各有自己的 Curve 與 Angle。乾濕比例由該站的 Mix 控制。</p>
+<div class="fig"><img src="img/chromascope.png" alt="Chromascope 面板：Base Hue、Hue Spread，以及各通道的 Curve 與 Angle 推桿。"></div>
+<div class="cap">Chromascope 面板：Base Hue、Hue Spread，以及各通道的 Curve 與 Angle 推桿。</div>
+<table>
+<tr><td class="k">Enable</td><td>啟用 Chromascope 色彩多重宇宙效果</td></tr>
+<tr><td class="k">Base Hue</td><td>Chromascope 基準色相</td></tr>
+<tr><td class="k">Hue Spread</td><td>Chromascope 各通道間色相的分散範圍</td></tr>
+<tr><td class="k">CH 1 to 4 Curve</td><td>Chromascope 該通道的色彩曲線</td></tr>
+<tr><td class="k">CH 1 to 4 Angle</td><td>Chromascope 該通道的色相旋轉角度</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="minimalize">7. Minimalize</h2>
+<p>以追蹤的種子點把畫面重建成多邊形。Topology 可選 Triangle（Delaunay 網格）、Cell（Voronoi）或 Square（Quadtree 矩形）；Fill 切換填滿多邊形或只畫邊線。多邊形顏色取自訊號鏈輸入，Modifier 只用來位移種子點。</p>
+<div class="fig"><img src="img/minimalize.png" alt="Minimalize 面板：Density、Topology、Fill、Displace、Smooth、Line Color、Line Width、Line Sat、Fill Sat。"></div>
+<div class="cap">Minimalize 面板：Density、Topology、Fill、Displace、Smooth、Line Color、Line Width、Line Sat、Fill Sat。</div>
+<table>
+<tr><td class="k">Enable</td><td>啟用 Minimalize 站：把 Chromascope 輸出依 seed 點重新切割成多邊形（Voronoi／Delaunay／Quadtree）</td></tr>
+<tr><td class="k">Density</td><td>seed 點數量上限（2-1500）；數值越高多邊形越細</td></tr>
+<tr><td class="k">Topology</td><td>切割拓樸：Triangle（Delaunay 三角網格）／Cell（Voronoi 細胞）／Square（Quadtree 矩形）</td></tr>
+<tr><td class="k">Fill</td><td>切換填色：勾選後多邊形以 Fill Sat 飽和度填色，未勾僅顯示邊線（線框模式）</td></tr>
+<tr><td class="k">Displace</td><td>seed 點依 Modifier 影像 R/G 通道作 2D 位移（Image Displace 例外路徑：Modifier 此處為位移向量源，不作紋理採色）；0 關閉，值越大多邊形破碎晃動越明顯</td></tr>
+<tr><td class="k">Smooth</td><td>seed 點時間平滑：高值抑制 LK 追蹤抖動，但會降低對畫面變化的反應速度</td></tr>
+<tr><td class="k">Line Color</td><td>多邊形邊線色相（0–1 對應 0–360°）</td></tr>
+<tr><td class="k">Line Width</td><td>多邊形邊線寬度（像素）</td></tr>
+<tr><td class="k">Line Sat</td><td>邊線飽和度（0 為黑/灰，1 為純色相色）</td></tr>
+<tr><td class="k">Fill Sat</td><td>填色飽和度（Fill 未勾選時無視覺效果）</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="object3d">8. 3D Object（3D 物件）</h2>
+<p>以 ray marching 繪製、貼上訊號鏈輸入的 3D 物件。Shape 在五種基本形之間漸變；Distort、Repeat、Spacing、Jitter、Smooth 塑形；Zoom、Pan、Tilt 控制攝影機。Displace 以 Modifier 亮度推擠表面。</p>
+<table>
+<tr><td class="k">Enable</td><td>啟用 3D Object：SDF raymarch 立體物件渲染</td></tr>
+<tr><td class="k">RESET</td><td>還原 3D Object 全部參數至預設值</td></tr>
+<tr><td class="k">Shape</td><td>3D 物件形狀：5 種基本體（球／方塊／環／八面體／陀螺體）之間漸變</td></tr>
+<tr><td class="k">Size</td><td>3D 物件整體尺寸</td></tr>
+<tr><td class="k">Distort</td><td>域扭曲（sin 域變形）強度</td></tr>
+<tr><td class="k">Displace</td><td>用 Modifier 影像亮度位移 3D 物件表面（0 關閉，值越大凹凸越深）</td></tr>
+<tr><td class="k">Repeat</td><td>域重複：空間中複製物件成陣列的量</td></tr>
+<tr><td class="k">Spacing</td><td>重複陣列的間距</td></tr>
+<tr><td class="k">Jitter</td><td>陣列排列的抖動量</td></tr>
+<tr><td class="k">Smooth</td><td>形狀融合的平滑程度（smin）</td></tr>
+<tr><td class="k">Zoom</td><td>相機到物件的距離（拉遠避免過曝）</td></tr>
+<tr><td class="k">Pan</td><td>相機水平環繞角</td></tr>
+<tr><td class="k">Tilt</td><td>相機俯仰角</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="triposr">9. Triposr 3D（立體重建）</h2>
+<p>繪製貼上訊號鏈輸入的 3D 網格。網格來源為你選擇的 OBJ 檔，或 100 種內建 preset 形狀之一；本版本沒有從相機快照重建的功能。鏈中可以有多份 Triposr 3D，各自載入自己的網格。Rotate X / Y / Z、Scale、Displace、Wireframe 皆可調變。</p>
+<div class="fig"><img src="img/triposr_preset_dropdown.png" alt="Preset 下拉選單列出 100 種內建形狀並附縮圖。"></div>
+<div class="cap">Preset 下拉選單列出 100 種內建形狀並附縮圖。</div>
+<div class="fig"><img src="img/triposr_obj_loaded.png" alt="透過 OBJ File 列載入的 OBJ 檔。"></div>
+<div class="cap">透過 OBJ File 列載入的 OBJ 檔。</div>
+<table>
+<tr><td class="k">Rotate Y</td><td>3D mesh 繞 Y 軸的旋轉角度（0–360°）</td></tr>
+<tr><td class="k">Rotate X</td><td>3D mesh 繞 X 軸的旋轉角度（0–360°）</td></tr>
+<tr><td class="k">Rotate Z</td><td>3D mesh 繞 Z 軸的旋轉角度（0–360°）</td></tr>
+<tr><td class="k">Scale</td><td>3D mesh 整體縮放（0.1–5）</td></tr>
+<tr><td class="k">Displace</td><td>用 Modifier 影像亮度沿法線位移 mesh 頂點（0 關閉，值越大凹凸越深）</td></tr>
+<tr><td class="k">Wireframe</td><td>線框混合：0 純實心、1 純線框，中間值為兩者混合</td></tr>
+<tr><td class="k">OBJ File</td><td>選擇 OBJ 檔（.obj）載入 3D 模型；清除則移除該 mesh</td></tr>
+<tr><td class="k">Preset</td><td>選擇內建幾何體（100 種）作為 3D 模型；選 No Preset 取消選取</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="particle">10. Particle（粒子）</h2>
+<p>把訊號鏈輸入取樣成 3D 粒子場。Density、Size、Jitter、Shape 定義粒子；Depth Mix 與 Displace 沿 z 軸移動粒子；Zoom 與 Scale X / Y / Z 變換整個粒子場。</p>
+<div class="fig"><img src="img/particle.png" alt="Particle 面板。"></div>
+<div class="cap">Particle 面板。</div>
+<table>
+<tr><td class="k">Enable</td><td>啟用 Particle 粒子化渲染</td></tr>
+<tr><td class="k">RESET</td><td>還原粒子場變換（Zoom／Scale X·Y·Z／視角）至預設值</td></tr>
+<tr><td class="k">Density</td><td>粒子密度（取樣的粒子數量）</td></tr>
+<tr><td class="k">Size</td><td>粒子大小</td></tr>
+<tr><td class="k">Jitter</td><td>粒子位置抖動量</td></tr>
+<tr><td class="k">Shape</td><td>粒子形狀</td></tr>
+<tr><td class="k">Depth Mix</td><td>深度對粒子 z 軸分布的影響程度</td></tr>
+<tr><td class="k">Displace</td><td>用 Modifier 素材的亮度推動粒子 z 軸位移的強度</td></tr>
+<tr><td class="k">Zoom</td><td>粒子場的視角縮放</td></tr>
+<tr><td class="k">Scale X</td><td>粒子場 X 軸縮放（負值鏡像翻轉）</td></tr>
+<tr><td class="k">Scale Y</td><td>粒子場 Y 軸縮放（負值鏡像翻轉）</td></tr>
+<tr><td class="k">Scale Z</td><td>粒子場 Z 軸縮放（負值鏡像翻轉）</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="flowwarp">11. Flow Warp</h2>
+<p>依 Modifier 計算出的光流位移畫面。</p>
+<div class="fig"><img src="img/flow_warp.png" alt="Flow Warp 面板。"></div>
+<div class="cap">Flow Warp 面板。</div>
+<table>
+<tr><td class="k">Enable</td><td>啟用 Flow Warp 光流位移效果（光流場由 Modifier 素材計算）</td></tr>
+<tr><td class="k">Strength</td><td>光流位移效果的強度</td></tr>
+<tr><td class="k">Direction</td><td>位移方向（正向／反向／雙向）</td></tr>
+<tr><td class="k">Accumulate</td><td>是否累積每幀的位移量</td></tr>
+<tr><td class="k">Preset</td><td>光流速度預設（快／中／極快）</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="feedback">12. Feedback</h2>
+<p>把輸出回饋到自身以產生拖影。</p>
+<div class="fig"><img src="img/feedback.png" alt="Feedback 面板。"></div>
+<div class="cap">Feedback 面板。</div>
+<table>
+<tr><td class="k">Enable</td><td>啟用 Feedback 影像回授效果</td></tr>
+<tr><td class="k">Decay</td><td>影像回授殘影的衰減速度</td></tr>
+<tr><td class="k">Chroma</td><td>回授過程的色偏量</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="slowmotion">13. Slow Motion（慢動作）</h2>
+<p>以 30 fps 把輸入畫面錄成一段，再以較慢速度循環播放。錄滿 Buffer 秒數後段落鎖定；拖曳 Buffer 推桿或把該站關掉再打開即可重新擷取。</p>
+<table>
+<tr><td class="k">Speed</td><td>播放速度（0.05–1，1 = 原速）：畫面固定以 30fps 錄入，讀頭以 30 × 此值的速率播出。0.25 = 4 倍慢動作。段落錄滿後循環播放</td></tr>
+<tr><td class="k">Buffer</td><td>段落長度（0.5–15 秒）：以 30fps 錄滿 N 秒後鎖定該段落並循環播放。拖動此推桿或把本站關再開即重新取段。值越大 VRAM 佔用越多</td></tr>
+<tr><td class="k">Blend</td><td>幀混合：在相鄰兩張已錄幀之間內插，讓慢動作連續不頓挫。關閉則直接跳幀播放</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="plugin">14. Plugin（外掛）</h2>
+<p>把第三方 fragment shader 當作一站執行。外掛是單一 .wgsl 檔，從外掛資料夾讀取（預設 ~/.visionmod/plugins/，只掃第一層）。資料夾由主視窗的 PLUGINS 列選擇，變更後自動重新掃描。本版本 Plugin 面板不顯示參數；使用資料夾中第一個編譯成功的外掛，編譯失敗的外掛會被略過，該站直接透傳畫面。</p>
+<h3>外掛檔頭</h3>
+<p>中繼資料寫在檔案開頭的 //! 註解區塊。api 與 name.en 必填；name.zh、name.ja、author、description、url 與 param 列選填。解析在第一行不是 //! 註解的行停止。外掛 id 為檔名小寫，因此改檔名等同換成另一個外掛。</p>
+<ul>
+<li>//! api = 1</li>
+<li>//! name.en = My Effect</li>
+<li>//! param0 = amount | 0.0 | 1.0 | 0.5 | mod | Amount（id、最小、最大、預設、mod 或 -、標籤）</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="global">15. 全域動作</h2>
+<p>Contour Scanner 面板頂端的動作列作用於整個程式。</p>
+<table>
+<tr><td class="k">PRESET</td><td>SAVE AS 把目前所有參數存成檔案。LOAD 讀取檔案；載入會覆蓋目前所有參數且無法復原，因此會先出現「覆蓋載入 / 取消」的確認。</td></tr>
+<tr><td class="k">PLUGINS</td><td>CHOOSE 開啟資料夾選擇器指定外掛資料夾；DEFAULT 回到預設資料夾。第二列顯示目前使用的資料夾，沒有時顯示「無可用資料夾」。</td></tr>
+<tr><td class="k">OUTPUT</td><td>+ WINDOW 開啟顯示訊號鏈末端的輸出視窗。輸出視窗可裁切、平移、縮放。</td></tr>
+<tr><td class="k">View Panic</td><td>視覺重啟：主視覺凍結時點擊強制刷新 viewport（不重設 GPU 資源）</td></tr>
+<tr><td class="k">Help (i)</td><td>切換 Help 模式：開啟後 hover 元件由 top bar 改顯示在 cursor 旁 tooltip</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="signal">16. SIGNAL 視窗</h2>
+<p>top bar 的 SIGNAL toggle 開啟浮動視窗。左欄為預覽與 7 條 CV meter（Sequence 1 / 2、Movement、Color R / G / B / Saturation）。右欄為 Audio Inputs、CV Output 與 LFO。</p>
+<div class="fig"><img src="img/signal_window.png" alt="SIGNAL 視窗：左側 CV meter；右側 Audio Inputs、CV Output 路由與 LFO。"></div>
+<div class="cap">SIGNAL 視窗：左側 CV meter；右側 Audio Inputs、CV Output 路由與 LFO。</div>
+<h3>CV meter</h3>
+<table>
+<tr><td class="k">Sequence 1</td><td>SEQ1 序列訊號：掃描點沿輪廓移動時與錨點的水平距離（0-10V，已平滑）；填色即當前輸出</td></tr>
+<tr><td class="k">Sequence 2</td><td>SEQ2 序列訊號：掃描點沿輪廓移動時與錨點的垂直距離（0-10V，已平滑）；填色即當前輸出</td></tr>
+<tr><td class="k">Movement</td><td>Movement 動能：Modifier 整張畫面前後幀亮度差的平均 ×Gain（0-10V，已平滑）</td></tr>
+<tr><td class="k">Color Red</td><td>Modifier 畫面的平均紅色量（0-10V），可作 modulation source 與 CV 輸出</td></tr>
+<tr><td class="k">Color Green</td><td>Modifier 畫面的平均綠色量（0-10V），可作 modulation source 與 CV 輸出</td></tr>
+<tr><td class="k">Color Blue</td><td>Modifier 畫面的平均藍色量（0-10V），可作 modulation source 與 CV 輸出</td></tr>
+<tr><td class="k">Color Saturation</td><td>Modifier 畫面的平均飽和度（HSV S，0-10V），可作 modulation source 與 CV 輸出</td></tr>
+</table>
+<h3>Audio Inputs</h3>
+<table>
+<tr><td class="k">Card</td><td>Audio Inputs：4 軌音訊輸入電平（RMS）作為 modulation source</td></tr>
+<tr><td class="k">Device</td><td>音訊輸入／輸出裝置選擇</td></tr>
+<tr><td class="k">Channel</td><td>該軌讀取輸入裝置的哪一個聲道</td></tr>
+<tr><td class="k">Meter</td><td>該軌輸入電平 meter（峰值）；頂端色線對應 Chromascope 同編號通道色</td></tr>
+</table>
+<h3>CV Output</h3>
+<p>Output 下拉選單同時選擇音訊輸出裝置與 MIDI 輸出埠。每一路再各自選擇來源訊號、音訊輸出聲道與 MIDI CC 編號。</p>
+<table>
+<tr><td class="k">Card</td><td>CV Output：把 modulation 訊號送往音訊輸出聲道（ch3 起）與 MIDI 裝置</td></tr>
+<tr><td class="k">Source</td><td>modulation 訊號的路由來源；同時送往音訊輸出通道與 MIDI 裝置（每路指定 CC#，14-bit）</td></tr>
+<tr><td class="k">Ch</td><td>此 CV 訊號送到音訊輸出裝置的哪一個聲道（MIDI 端另以右側 CC# 指定）</td></tr>
+<tr><td class="k">CC</td><td>此路 MIDI 輸出的 CC 編號（0-127）；以 14-bit 送出（MSB=CC、LSB=CC+32），CC&gt;95 時降為 7-bit</td></tr>
+<tr><td class="k">Clock</td><td>設計約束：CV 時脈由音訊輸出 callback 推進；未選輸出裝置時 CV 與掃描／meter／視覺凍結</td></tr>
+</table>
+<h3>LFO</h3>
+<table>
+<tr><td class="k">LFO 1 to 4</td><td>內建 LFO 1 至 4。每列有一個波形按鈕（點擊依序循環 Sine、Triangle、Square、Saw）與一個 Hz 頻率數值（0.01 至 20；拖曳調整，雙擊可鍵盤輸入）。可作為調變來源 LFO 1 至 4。</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="modulation">17. 調變與 MIDI Learn</h2>
+<p>可調變的推桿在標籤左側有一個小圓點。左鍵點圓點切換連線開關；右鍵開啟 popup，從網格選一個 Source 並設定 Amount。Amount 為雙極（-1 至 1，中點 0），來源可把參數往任一方向推。每個參數只保留一條連線。</p>
+<div class="fig"><img src="img/modulation_source.png" alt="調變來源訊號從即時畫面、音訊與內建 LFO 連續生成。"></div>
+<div class="cap">調變來源訊號從即時畫面、音訊與內建 LFO 連續生成。</div>
+<div class="fig"><img src="img/modulation_adjust.png" alt="右鍵點調變圓點開啟 popup：選擇來源，再拖曳 Amount。"></div>
+<div class="cap">右鍵點調變圓點開啟 popup：選擇來源，再拖曳 Amount。</div>
+<h3>來源</h3>
+<table>
+<tr><td class="k">Sequence 1 / 2</td><td>輪廓掃描訊號；Smooth Sequence 1 / 2 為其平滑版本。</td></tr>
+<tr><td class="k">Audio Input 1 to 4 RMS</td><td>四軌音訊輸入的音量。</td></tr>
+<tr><td class="k">Movement</td><td>前景動態能量；Movement Smooth 為其平滑版本。</td></tr>
+<tr><td class="k">Color Red / Green / Blue / Saturation</td><td>Modifier 畫面的平均顏色。</td></tr>
+<tr><td class="k">LFO 1 to 4</td><td>在 SIGNAL 視窗設定的內建 LFO。</td></tr>
+</table>
+<h3>MIDI Learn</h3>
+<p>支援 MIDI 的推桿在數值右側有一個綁定圓點。右鍵點它選 MIDI Learn，再動一下 MIDI 裝置上的控制器；綁定後圓點變成強調色。同一選單會顯示已綁定的通道與 CC，並提供 Clear Binding。只學習 7-bit Control Change 訊息。</p>
+
+<!-- ============================================================ -->
+<h2 id="appstore">18. Mac App Store 版本</h2>
+<p>Mac App Store 版本在完成一次性購買前，會在輸出畫面右下角顯示半透明的 VISION MOD 浮水印。購買列位於 PRESET 上方。</p>
+<table>
+<tr><td class="k">Remove Watermark</td><td>一次性購買，永久移除輸出畫面上的浮水印。價格由 App Store 依你所在地區顯示。購買後該列顯示「已購買：浮水印已移除」。若購買正在等待核准，核准後會自動移除浮水印。</td></tr>
+<tr><td class="k">Restore Purchases</td><td>已經買過（例如重灌或換電腦）時，用同一個 Apple 帳號恢復購買，不會重複收費。</td></tr>
+<tr><td class="k">IMPORT</td><td>透過資料夾選擇器匯入舊 DMG 版本存下的設定（位於 ~/.visionmod 或 ~/.config/visionmod），匯入後立即套用。</td></tr>
+</table>
+
+<footer>MADZINE — Vision MOD v0.9.2</footer>
+</div>
+</body>
+</html>

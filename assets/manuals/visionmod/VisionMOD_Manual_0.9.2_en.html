@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vision MOD Manual</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root { --accent: #F27455; }
+* { box-sizing: border-box; }
+body { margin:0; padding:0; background:#0B0B0B; color:#ECECEC; font-family:"Barlow Condensed Light","Barlow Condensed",-apple-system,sans-serif; font-weight:300; line-height:1.6; }
+.wrap { max-width:760px; margin:0 auto; padding:64px 40px 120px; }
+header { border-bottom:1px solid #2A2A2A; padding-bottom:28px; margin-bottom:40px; }
+header .brand { font-size:14px; letter-spacing:0.32em; color:#F27455; text-transform:uppercase; }
+header h1 { font-size:48px; font-weight:300; margin:8px 0 4px; letter-spacing:0.02em; }
+header .sub { font-size:15px; color:#9A9A9A; }
+h2 { font-size:22px; font-weight:400; color:#F27455; margin-top:56px; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #2A2A2A; letter-spacing:0.04em; }
+h3 { font-size:16px; font-weight:500; color:#ECECEC; margin-top:26px; margin-bottom:8px; }
+p { font-size:15px; color:#C9C9C9; margin:8px 0; }
+ul { margin:8px 0; padding-left:22px; }
+li { font-size:15px; color:#C9C9C9; margin:6px 0; }
+.term { color:#ECECEC; font-weight:500; }
+table { width:100%; border-collapse:collapse; margin:16px 0; }
+td { font-size:14px; padding:8px 10px; border-bottom:1px solid #222; color:#C9C9C9; vertical-align:top; }
+td.k { color:#ECECEC; font-weight:500; width:30%; white-space:nowrap; }
+.fig { margin:20px 0 0; }
+.fig img { width:100%; border:1px solid #2A2A2A; display:block; }
+.cap { font-size:13px; color:#9A9A9A; margin:6px 0 16px; }
+nav.toc ul { list-style:none; padding-left:0; columns:2; }
+nav.toc li { margin:4px 0; }
+nav.toc a { color:#C9C9C9; text-decoration:none; font-size:15px; }
+nav.toc a:hover { color:#F27455; }
+footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-size:14px; color:#666; letter-spacing:0.08em; }
+@media (max-width:600px) { .wrap { padding:40px 16px 80px; } nav.toc ul { columns:1; } td.k { white-space:normal; } }
+/* ===== PRINT / PDF ===== */
+@media print {
+  @page { size: A4; margin: 14mm 15mm 16mm; background: #0B0B0B; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  html { background:#0B0B0B; }
+  body { background:#0B0B0B; color:#ECECEC; font-size:10.5pt; line-height:1.5; }
+  .wrap { max-width:none; width:100%; margin:0; padding:0; }
+
+  header { padding-bottom:14px; margin-bottom:22px; break-after:avoid; break-inside:avoid; }
+  header .brand { font-size:9.5pt; }
+  header h1 { font-size:34pt; margin:4px 0 2px; }
+  header .sub { font-size:11pt; }
+
+  h2 { font-size:15pt; margin-top:22px; margin-bottom:10px; padding-bottom:6px;
+       break-after:avoid; break-inside:avoid; }
+  h3 { font-size:11.5pt; margin-top:14px; margin-bottom:5px;
+       break-after:avoid; break-inside:avoid; }
+  p, li { font-size:10.5pt; orphans:2; widows:2; }
+  p { margin:5px 0; break-inside:auto; }
+  ul { margin:5px 0; break-inside:auto; }
+  li { margin:3px 0; break-inside:avoid; }
+
+  table { margin:10px 0; break-inside:auto; }
+  tr { break-inside:avoid; break-after:auto; }
+  td { font-size:10pt; padding:5px 7px; }
+
+  .fig { margin:9px 0 0; break-inside:avoid; break-after:avoid; page-break-inside:avoid; page-break-after:avoid; }
+  /* width:auto keeps the intrinsic aspect ratio when max-height clamps a tall
+     screenshot; width:100% would squash it */
+  .fig img { width:auto; height:auto; max-width:100%; max-height:128mm; display:block; margin:0 auto; }
+  /* very tall UI shots get more height so they stay legible */
+  .fig img[src$="catalog_panel.png"], .fig img[src$="chromascope.png"],
+  .fig img[src$="fundamental_3_drag_drop.png"], .fig img[src$="triposr_panel.png"],
+  .fig img[src$="triposr_preset_dropdown.png"], .fig img[src$="triposr_obj_loaded.png"] { max-height:172mm; }
+  .fig img[src$="main_window.png"], .fig img[src$="particle.png"],
+  .fig img[src$="minimalize.png"] { max-height:152mm; }
+  .cap { font-size:9pt; margin:4px 0 9px; break-before:avoid; break-inside:avoid;
+         page-break-before:avoid; page-break-inside:avoid; orphans:2; widows:2; }
+
+  nav.toc { break-after:page; page-break-after:always; break-inside:avoid; }
+  nav.toc ul { columns:2; }
+  nav.toc a { color:#C9C9C9; font-size:11pt; }
+  a { text-decoration:none; }
+
+  footer { margin-top:28px; padding-top:14px; font-size:9.5pt; break-inside:avoid; }
+}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="brand">MADZINE</div>
+  <h1>Vision MOD</h1>
+  <div class="sub">User Manual — v0.9.2 — English — 雲外鏡</div>
+</header>
+
+<nav class="toc">
+<ul>
+<li><a href="#overview">1. Overview</a></li>
+<li><a href="#flow">2. Signal Flow and Module Catalog</a></li>
+<li><a href="#fundamental">3. Fundamental Vision</a></li>
+<li><a href="#contour">4. Contour Scanner and CV Generator</a></li>
+<li><a href="#sd">5. Stable Diffusion</a></li>
+<li><a href="#chromascope">6. Chromascope</a></li>
+<li><a href="#minimalize">7. Minimalize</a></li>
+<li><a href="#object3d">8. 3D Object</a></li>
+<li><a href="#triposr">9. Triposr 3D</a></li>
+<li><a href="#particle">10. Particle</a></li>
+<li><a href="#flowwarp">11. Flow Warp</a></li>
+<li><a href="#feedback">12. Feedback</a></li>
+<li><a href="#slowmotion">13. Slow Motion</a></li>
+<li><a href="#plugin">14. Plugin</a></li>
+<li><a href="#global">15. Global Actions</a></li>
+<li><a href="#signal">16. SIGNAL Window</a></li>
+<li><a href="#modulation">17. Modulation and MIDI Learn</a></li>
+<li><a href="#appstore">18. Mac App Store Version</a></li>
+</ul>
+</nav>
+
+<!-- ============================================================ -->
+<h2 id="overview">1. Overview</h2>
+<p>Vision MOD is a real-time visual synthesizer for macOS and Windows. It borrows the Complex Oscillator idea from modular synthesis, where one oscillator shapes the other: the Modifier material provides the dynamics, and the Carrier material is the image carried by those dynamics. One footage modulates another footage, producing a new audio-visual phenomenon.</p>
+<p>Every station downstream of the source operates on the resulting Carrier stream. Background removal only happens at the very source (Fundamental Vision). Areas with no content carry alpha 0 from that point on, and every downstream station discards those pixels, so the subject stays cut out through the whole chain.</p>
+<div class="fig"><img src="img/main_window.png" alt="The main control window: top bar, the parameter panel of the selected module, the Contour Scanner and CV Generator block, and the module catalog on the right."></div>
+<div class="cap">The main control window: top bar, the parameter panel of the selected module, the Contour Scanner and CV Generator block, and the module catalog on the right.</div>
+<h3>Top bar</h3>
+<table>
+<tr><td class="k">HUE</td><td>Toggle the HUE colour-wheel panel to adjust the interface accent colour</td></tr>
+<tr><td class="k">SIGNAL</td><td>Toggle the SIGNAL floating window (audio input meters + CV Output routing + seven CV meters)</td></tr>
+<tr><td class="k">Language</td><td>Switch the interface language (EN / JA / ZH); hover descriptions follow and the choice persists</td></tr>
+<tr><td class="k">SD status</td><td>SD service status: shows SD Loading while starting, then the active acceleration backend</td></tr>
+</table>
+<h3>HUE wheel</h3>
+<table>
+<tr><td class="k">Outer ring</td><td>Outer ring: drag to change the accent hue</td></tr>
+<tr><td class="k">Centre</td><td>Centre: drag vertically to change the accent saturation</td></tr>
+<tr><td class="k">Presets</td><td>Preset hues: click to apply Coral / Mint / Sky / Violet</td></tr>
+<tr><td class="k">Phase colours</td><td>Phase-derived colour preview (complementary +180°, triadic ±120°, analogous ±30°), reference only</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="flow">2. Signal Flow and Module Catalog</h2>
+<p>The pipeline is defined by the module catalog on the right side of the main window. Fundamental Vision is pinned to slot 1 as the source anchor; every other module is added, reordered, bypassed, or removed by the user. Drag the grip icon to reorder, click the X icon (two-click confirmation) to remove, toggle the checkbox to bypass an instance. The same module kind can be added multiple times; each instance keeps its own parameters and is wired in series, top to bottom.</p>
+<div class="fig"><img src="img/catalog_panel.png" alt="The module catalog. Click a row to show that module's parameters in the panel on the left. Each row has a grip icon, an X icon, and an enable checkbox."></div>
+<div class="cap">The module catalog. Click a row to show that module's parameters in the panel on the left. Each row has a grip icon, an X icon, and an enable checkbox.</div>
+<table>
+<tr><td class="k">Catalog</td><td>Module catalog (Signal Flow): the pipeline list, executed top to bottom; the same module kind can be instantiated multiple times with independent parameters</td></tr>
+<tr><td class="k">Drag to reorder</td><td>Drag to reorder: hold the grip icon and drag vertically to change the instance position in the signal flow (Fundamental Vision is pinned to the first slot)</td></tr>
+<tr><td class="k">Remove</td><td>Remove instance: first click prompts a trilingual confirmation; click again to delete, or click outside / press Esc to cancel</td></tr>
+<tr><td class="k">Enable</td><td>Enable this instance: unchecking bypasses the instance (signal passes through to the next station) without affecting parameters or order</td></tr>
+</table>
+<h3>+ Module</h3>
+<p>The + Module button opens the module library popup. Available modules: Stable Diffusion, Minimalize, Chromascope, 3D Object, Particle, Flow Warp, Feedback, Triposr 3D, Slow Motion, Plugin. Stable Diffusion is a single-instance module: once it is in the chain, its entry is greyed out. Fundamental Vision is the fixed anchor and cannot be added or removed.</p>
+<h3>Common station controls</h3>
+<p>Every station after Fundamental Vision shares the same header controls: an enable checkbox, Mix, Brightness, and a Position / Scale pad. Mix is the station dry/wet and is the only mix control; modules have no mix fader of their own. A newly added instance starts with Mix at 0, so adding a module does not change the picture until you raise Mix.</p>
+<div class="fig"><img src="img/triposr_panel.png" alt="A station panel (Triposr 3D shown). The header row holds the enable checkbox and RESET; Mix, Brightness, and the Position / Scale pad are shared by all stations."></div>
+<div class="cap">A station panel (Triposr 3D shown). The header row holds the enable checkbox and RESET; Mix, Brightness, and the Position / Scale pad are shared by all stations.</div>
+<table>
+<tr><td class="k">Mix</td><td>Station dry/wet mix: 0 passes the previous station's output through, 1 is fully wet</td></tr>
+<tr><td class="k">Brightness</td><td>Output brightness gain of this station (0–4, double-click resets to 1)</td></tr>
+<tr><td class="k">Position / Scale</td><td>Position / Scale: drag to move, scroll to zoom (0.25–4), double-click to reset</td></tr>
+<tr><td class="k">Detail panel icon</td><td>Click to open the detail settings panel for this module (brush mask, under development)</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="fundamental">3. Fundamental Vision</h2>
+<p>The source station. Two slots sit side by side: Modifier on the left, Carrier on the right. Each slot takes a camera, a video file, or a photo. The Modifier is analysed for the Movement and Color signals and drives Image Displace and the Flow Warp flow field; the Carrier is the image fed into the chain.</p>
+<div class="fig"><img src="img/fundamental_1.png" alt="Fundamental Vision: Modifier (left) and Carrier (right) with the Mix fader between them."></div>
+<div class="cap">Fundamental Vision: Modifier (left) and Carrier (right) with the Mix fader between them.</div>
+<table>
+<tr><td class="k">Card</td><td>Source input card: Modifier (left) modulates Carrier (right); Mix blends between them</td></tr>
+<tr><td class="k">Modifier</td><td>Modifier slot: the modulating material; source for Movement/Color CV, particle Displace, and the Flow Warp flow field</td></tr>
+<tr><td class="k">Carrier</td><td>Carrier slot: the main image, fed into the downstream processing chain</td></tr>
+<tr><td class="k">Mix</td><td>Blend between the Carrier and Modifier sources: right shows Carrier, left shows Modifier</td></tr>
+<tr><td class="k">Source type</td><td>Source type: camera, video, or photo (drop a file to load video/photo)</td></tr>
+<tr><td class="k">Remove background</td><td>Camera background removal: MediaPipe masks the foreground, keeping only the subject</td></tr>
+<tr><td class="k">Flip H</td><td>Horizontal flip (left-right mirror) of the source image; applied at the producer stage, affecting the whole chain</td></tr>
+<tr><td class="k">Flip V</td><td>Vertical flip (top-bottom mirror) of the source image; applied at the producer stage, affecting the whole chain</td></tr>
+<tr><td class="k">Video speed</td><td>Playback speed of the loaded video (0 pause, 1 normal, 5 fivefold)</td></tr>
+</table>
+<h3>Camera menu and settings</h3>
+<div class="fig"><img src="img/fundamental_2_camera_manu.png" alt="Camera selection dropdown and the camera settings icon."></div>
+<div class="cap">Camera selection dropdown and the camera settings icon.</div>
+<table>
+<tr><td class="k">Camera</td><td>Select the camera input device</td></tr>
+<tr><td class="k">Settings icon</td><td>Click to open the camera settings panel (Brightness / Contrast / Saturation — three hardware-controllable parameters); Carrier and Modifier cameras keep independent settings</td></tr>
+<tr><td class="k">Brightness</td><td>Camera brightness (camera driver layer, UVC / V4L2 corresponding axis, 0–1)</td></tr>
+<tr><td class="k">Contrast</td><td>Camera contrast (camera driver layer, UVC / V4L2 corresponding axis, 0–1)</td></tr>
+<tr><td class="k">Saturation</td><td>Camera saturation (camera driver layer, UVC / V4L2 corresponding axis, 0–1)</td></tr>
+</table>
+<h3>Loading a video or photo</h3>
+<div class="fig"><img src="img/fundamental_3_drag_drop.png" alt="Drop a file onto the window: the left half loads it into the Modifier, the right half into the Carrier."></div>
+<div class="cap">Drop a file onto the window: the left half loads it into the Modifier, the right half into the Carrier.</div>
+<table>
+<tr><td class="k">File path</td><td>Path of the loaded file; drop a file onto the window to load (left half = Modifier, right half = Carrier)</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="contour">4. Contour Scanner and CV Generator</h2>
+<p>Below the module panel, the main window always shows the Contour Scanner card and the CV Generator. The scanner detects contours from the image; the CV Generator turns the scan, motion, and colour into modulation signals. The global action rows (PRESET, PLUGINS, OUTPUT, View Panic, Help) sit at the top of the Contour Scanner card.</p>
+<h3>Contour Scanner</h3>
+<table>
+<tr><td class="k">Card</td><td>Contour Scanner card: detects contours from the image for the SEQ signals and the contour overlay</td></tr>
+<tr><td class="k">Preview</td><td>Contour preview: live image with contour lines and a draggable scan ROI circle</td></tr>
+<tr><td class="k">Scan ROI</td><td>Scan ROI circle: drag the centre to move the scan anchor, drag the edge to resize the scan range</td></tr>
+<tr><td class="k">Threshold</td><td>Contour edge detection threshold: higher keeps only stronger edges</td></tr>
+<tr><td class="k">Smoothing</td><td>Contour smoothing: suppresses jaggedness and noise</td></tr>
+<tr><td class="k">Scene Threshold</td><td>Contour update gate (not the edge detection threshold): the image must change by more than this percent before contours are detected again. Higher holds the contour stiller and costs less CPU/GPU, lower reacts faster, 0 recomputes almost every frame</td></tr>
+<tr><td class="k">Lock</td><td>Lock the current contour: freezes CV and particle signals at this moment</td></tr>
+<tr><td class="k">Mix</td><td>Blend ratio of the contour overlay onto the image</td></tr>
+</table>
+<h3>CV Generator</h3>
+<table>
+<tr><td class="k">Card</td><td>CV Generator: derives modulation signals from the image (contour SEQ, Movement, Color)</td></tr>
+<tr><td class="k">Scan Time</td><td>Contour scan period: time for one full scan pass (2-10 s); the white line on the track shows the current scan position</td></tr>
+<tr><td class="k">Smooth</td><td>Smoothing of the SEQ sequence signals</td></tr>
+<tr><td class="k">Gain</td><td>Gain of the Movement foreground-energy signal (source: full Modifier frame)</td></tr>
+<tr><td class="k">Foreground</td><td>Movement CV foreground threshold; VAV legacy interface, currently inert because the Modifier path is not background-removed</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="sd">5. Stable Diffusion</h2>
+<p>Turns the incoming image into AI-generated visuals. macOS runs Stable Diffusion 1.5 with ControlNet and a Hyper-SD15 1-step LoRA on Metal; Windows runs Stream Diffusion on CUDA / TensorRT. Only one Stable Diffusion instance can exist in the chain. The dry/wet balance is the station Mix; while Enable is unchecked, Mix is forced to 0 so the chain never receives an empty AI frame.</p>
+<div class="fig"><img src="img/diffusion.png" alt="Stable Diffusion panel: Enable, Grayscale, Likeness, Preset, Prompt, LoRA."></div>
+<div class="cap">Stable Diffusion panel: Enable, Grayscale, Likeness, Preset, Prompt, LoRA.</div>
+<table>
+<tr><td class="k">Enable</td><td>Enable Stable Diffusion: loads the model and turns the camera into AI visuals; unchecking releases it</td></tr>
+<tr><td class="k">Grayscale</td><td>Force the AI output to grayscale</td></tr>
+<tr><td class="k">Likeness</td><td>How closely the AI output follows the camera structure (high = like camera)</td></tr>
+<tr><td class="k">Preset</td><td>Switch built-in style prompts (29 styles/materials)</td></tr>
+<tr><td class="k">Prompt</td><td>Text prompt for AI generation (describes the desired style)</td></tr>
+<tr><td class="k">LoRA</td><td>Choose a LoRA file (.safetensors) for Stable Diffusion; clear to disable LoRA. The row shows No LoRA when none is set.</td></tr>
+<tr><td class="k">Status</td><td>SD service status: shows SD Loading while starting, then the active acceleration backend</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="chromascope">6. Chromascope</h2>
+<p>Four colour channels are laid over the image. Base Hue sets the starting hue, Hue Spread distributes the four channels around it, and each channel has its own Curve and Angle. The dry/wet balance is the station Mix.</p>
+<div class="fig"><img src="img/chromascope.png" alt="Chromascope panel: Base Hue, Hue Spread, and the per-channel Curve and Angle faders."></div>
+<div class="cap">Chromascope panel: Base Hue, Hue Spread, and the per-channel Curve and Angle faders.</div>
+<table>
+<tr><td class="k">Enable</td><td>Enable the Chromascope colour effect</td></tr>
+<tr><td class="k">Base Hue</td><td>Chromascope base hue</td></tr>
+<tr><td class="k">Hue Spread</td><td>Chromascope hue spread across channels</td></tr>
+<tr><td class="k">CH 1 to 4 Curve</td><td>Chromascope colour curve for this channel</td></tr>
+<tr><td class="k">CH 1 to 4 Angle</td><td>Chromascope hue rotation angle for this channel</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="minimalize">7. Minimalize</h2>
+<p>Rebuilds the image as polygons from tracked seed points. Topology picks Triangle (Delaunay mesh), Cell (Voronoi), or Square (Quadtree rectangles); Fill toggles between filled polygons and edge-only wireframe. Polygon colour is sampled from the chain input; the Modifier only displaces the seed points.</p>
+<div class="fig"><img src="img/minimalize.png" alt="Minimalize panel: Density, Topology, Fill, Displace, Smooth, Line Color, Line Width, Line Sat, Fill Sat."></div>
+<div class="cap">Minimalize panel: Density, Topology, Fill, Displace, Smooth, Line Color, Line Width, Line Sat, Fill Sat.</div>
+<table>
+<tr><td class="k">Enable</td><td>Enable the Minimalize station: re-partition the Chromascope output into polygons (Voronoi / Delaunay / Quadtree) using seed points</td></tr>
+<tr><td class="k">Density</td><td>Upper bound of seed point count (2-1500); higher values yield finer polygons</td></tr>
+<tr><td class="k">Topology</td><td>Minimalize topology: Triangle (Delaunay mesh) / Cell (Voronoi) / Square (Quadtree rectangles)</td></tr>
+<tr><td class="k">Fill</td><td>Toggle polygon fill: when on, polygons are filled with Fill Sat saturation; when off, only edges are drawn (wireframe)</td></tr>
+<tr><td class="k">Displace</td><td>Seed points are displaced as 2D vectors by the Modifier image R/G channels (Image Displace exception: Modifier acts as a displacement vector source here, not as colour sampling); 0 = off, higher values yield stronger polygon jitter</td></tr>
+<tr><td class="k">Smooth</td><td>Temporal smoothing of seed points: higher values reduce LK tracking jitter but slow the response to image change</td></tr>
+<tr><td class="k">Line Color</td><td>Polygon edge hue (0–1 maps to 0–360°)</td></tr>
+<tr><td class="k">Line Width</td><td>Polygon edge line width (pixels)</td></tr>
+<tr><td class="k">Line Sat</td><td>Edge line saturation (0 = black/grey, 1 = fully saturated hue)</td></tr>
+<tr><td class="k">Fill Sat</td><td>Fill saturation (no visible effect when the Fill toggle is off)</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="object3d">8. 3D Object</h2>
+<p>A ray-marched 3D object skinned with the chain input. Shape morphs between five primitives; Distort, Repeat, Spacing, Jitter, and Smooth shape the field; Zoom, Pan, and Tilt move the camera. Displace pushes the surface by Modifier luma.</p>
+<table>
+<tr><td class="k">Enable</td><td>Enable 3D Object: SDF raymarch solid object rendering</td></tr>
+<tr><td class="k">RESET</td><td>Reset all 3D Object parameters to their defaults</td></tr>
+<tr><td class="k">Shape</td><td>3D object shape: morph between 5 primitives (sphere/box/torus/octahedron/gyroid)</td></tr>
+<tr><td class="k">Size</td><td>Overall size of the 3D object</td></tr>
+<tr><td class="k">Distort</td><td>Domain warp (sine-domain distortion) strength</td></tr>
+<tr><td class="k">Displace</td><td>Displaces the 3D object surface by Modifier image luma (0 = off; higher = deeper relief)</td></tr>
+<tr><td class="k">Repeat</td><td>Domain repeat: amount of spatial array replication</td></tr>
+<tr><td class="k">Spacing</td><td>Spacing of the repeated array</td></tr>
+<tr><td class="k">Jitter</td><td>Jitter of the array arrangement</td></tr>
+<tr><td class="k">Smooth</td><td>Smoothness of shape blending (smin)</td></tr>
+<tr><td class="k">Zoom</td><td>Camera distance to the object (pull back to avoid overexposure)</td></tr>
+<tr><td class="k">Pan</td><td>Camera horizontal orbit angle</td></tr>
+<tr><td class="k">Tilt</td><td>Camera pitch angle</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="triposr">9. Triposr 3D</h2>
+<p>Renders a 3D mesh skinned with the chain input. The mesh comes from an OBJ file you choose or from one of 100 built-in preset shapes; there is no camera snapshot reconstruction in this version. Several Triposr 3D instances can be in the chain, each with its own mesh. Rotate X / Y / Z, Scale, Displace, and Wireframe are modulatable.</p>
+<div class="fig"><img src="img/triposr_preset_dropdown.png" alt="The Preset dropdown lists the 100 built-in shapes with thumbnails."></div>
+<div class="cap">The Preset dropdown lists the 100 built-in shapes with thumbnails.</div>
+<div class="fig"><img src="img/triposr_obj_loaded.png" alt="An OBJ file loaded through the OBJ File row."></div>
+<div class="cap">An OBJ file loaded through the OBJ File row.</div>
+<table>
+<tr><td class="k">Rotate Y</td><td>Rotation of the 3D mesh around the Y axis (0–360°)</td></tr>
+<tr><td class="k">Rotate X</td><td>Rotation of the 3D mesh around the X axis (0–360°)</td></tr>
+<tr><td class="k">Rotate Z</td><td>Rotation of the 3D mesh around the Z axis (0–360°)</td></tr>
+<tr><td class="k">Scale</td><td>Overall scale of the 3D mesh (0.1–5)</td></tr>
+<tr><td class="k">Displace</td><td>Displaces mesh vertices along their normals by Modifier image luma (0 = off; higher = deeper relief)</td></tr>
+<tr><td class="k">Wireframe</td><td>Wireframe blend: 0 solid, 1 pure wireframe, values between mix both</td></tr>
+<tr><td class="k">OBJ File</td><td>Choose an OBJ file (.obj) to load a 3D model; clear to remove it</td></tr>
+<tr><td class="k">Preset</td><td>Choose a built-in shape (100 total) as the 3D model; pick No Preset to deselect</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="particle">10. Particle</h2>
+<p>Samples the chain input into a 3D particle field. Density, Size, Jitter, and Shape define the particles; Depth Mix and Displace move them along the z-axis; Zoom and Scale X / Y / Z transform the whole field.</p>
+<div class="fig"><img src="img/particle.png" alt="Particle panel."></div>
+<div class="cap">Particle panel.</div>
+<table>
+<tr><td class="k">Enable</td><td>Enable Particle rendering</td></tr>
+<tr><td class="k">RESET</td><td>Reset the particle field transform (Zoom / Scale X·Y·Z / orbit) to defaults</td></tr>
+<tr><td class="k">Density</td><td>Particle density (number of sampled particles)</td></tr>
+<tr><td class="k">Size</td><td>Particle size</td></tr>
+<tr><td class="k">Jitter</td><td>Amount of particle position jitter</td></tr>
+<tr><td class="k">Shape</td><td>Particle shape</td></tr>
+<tr><td class="k">Depth Mix</td><td>How much depth affects particle distribution along the z-axis</td></tr>
+<tr><td class="k">Displace</td><td>Strength of Modifier luma displacing particles along the z-axis</td></tr>
+<tr><td class="k">Zoom</td><td>Viewport zoom of the particle field</td></tr>
+<tr><td class="k">Scale X</td><td>Particle field scale along X (negative mirrors)</td></tr>
+<tr><td class="k">Scale Y</td><td>Particle field scale along Y (negative mirrors)</td></tr>
+<tr><td class="k">Scale Z</td><td>Particle field scale along Z (negative mirrors)</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="flowwarp">11. Flow Warp</h2>
+<p>Displaces the image along the optical flow computed from the Modifier.</p>
+<div class="fig"><img src="img/flow_warp.png" alt="Flow Warp panel."></div>
+<div class="cap">Flow Warp panel.</div>
+<table>
+<tr><td class="k">Enable</td><td>Enable the Flow Warp effect (flow field is computed from the Modifier source)</td></tr>
+<tr><td class="k">Strength</td><td>Strength of the optical-flow displacement effect</td></tr>
+<tr><td class="k">Direction</td><td>Displacement direction (forward / reverse / bidirectional)</td></tr>
+<tr><td class="k">Accumulate</td><td>Whether to accumulate displacement across frames</td></tr>
+<tr><td class="k">Preset</td><td>Optical-flow speed preset (fast / medium / ultrafast)</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="feedback">12. Feedback</h2>
+<p>Feeds the output back into itself to build trails.</p>
+<div class="fig"><img src="img/feedback.png" alt="Feedback panel."></div>
+<div class="cap">Feedback panel.</div>
+<table>
+<tr><td class="k">Enable</td><td>Enable the Feedback effect</td></tr>
+<tr><td class="k">Decay</td><td>Decay rate of the image feedback trail</td></tr>
+<tr><td class="k">Chroma</td><td>Colour shift through the feedback loop</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="slowmotion">13. Slow Motion</h2>
+<p>Records the incoming image at 30 fps into a segment, then loops it at a slower speed. The segment locks once Buffer seconds have been recorded; drag the Buffer fader or toggle the station off and on to capture a new segment.</p>
+<table>
+<tr><td class="k">Speed</td><td>Playback speed (0.05–1, 1 = original speed): the image is recorded at a fixed 30 fps and played back at 30 x this value. 0.25 = 4x slow motion. The segment loops once recording fills it</td></tr>
+<tr><td class="k">Buffer</td><td>Segment length (0.5-15 s): after N seconds are recorded at 30 fps the segment locks and loops. Drag this fader, or toggle the station off and on, to capture a new segment. Larger values use more VRAM</td></tr>
+<tr><td class="k">Blend</td><td>Frame blending: interpolates between two adjacent recorded frames so slow motion stays smooth. Off plays discrete frames with visible stutter</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="plugin">14. Plugin</h2>
+<p>Runs a third-party fragment shader as a station. Plugins are single .wgsl files read from the plugin folder (default ~/.visionmod/plugins/, top level only). The folder is chosen with the PLUGINS row in the main window and is rescanned automatically when it changes. In this version the Plugin panel shows no parameters; the first plugin in the folder that compiles is used, and a plugin that fails to compile is skipped so the station passes the image through.</p>
+<h3>Plugin file header</h3>
+<p>Metadata lives in a block of //! comment lines at the top of the file. api and name.en are required; name.zh, name.ja, author, description, url, and param lines are optional. Parsing stops at the first line that is not a //! comment. The plugin id is the file name in lower case, so renaming the file makes it a different plugin.</p>
+<ul>
+<li>//! api = 1</li>
+<li>//! name.en = My Effect</li>
+<li>//! param0 = amount | 0.0 | 1.0 | 0.5 | mod | Amount  (id, min, max, default, mod or -, label)</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="global">15. Global Actions</h2>
+<p>The action rows at the top of the Contour Scanner card apply to the whole program.</p>
+<table>
+<tr><td class="k">PRESET</td><td>SAVE AS writes all current parameters to a file. LOAD reads a file; because loading overwrites every current parameter and cannot be undone, an inline OVERWRITE / CANCEL confirmation appears first.</td></tr>
+<tr><td class="k">PLUGINS</td><td>CHOOSE opens a folder picker for the plugin folder; DEFAULT returns to the default folder. The second row shows the folder in use, or No folder available.</td></tr>
+<tr><td class="k">OUTPUT</td><td>+ WINDOW opens an output window showing the end of the chain. The output window can be cropped, panned, and zoomed.</td></tr>
+<tr><td class="k">View Panic</td><td>View Panic: click to force-repaint when the output viewport freezes (no GPU reset)</td></tr>
+<tr><td class="k">Help (i)</td><td>Toggle Help mode: when on, hover descriptions move from the top bar to a tooltip next to the cursor</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="signal">16. SIGNAL Window</h2>
+<p>The SIGNAL toggle in the top bar opens a floating window. The left column shows a preview and the seven CV meters (Sequence 1 / 2, Movement, Color R / G / B / Saturation). The right column holds Audio Inputs, CV Output, and LFO.</p>
+<div class="fig"><img src="img/signal_window.png" alt="SIGNAL window: CV meters on the left; Audio Inputs, CV Output routes, and LFO on the right."></div>
+<div class="cap">SIGNAL window: CV meters on the left; Audio Inputs, CV Output routes, and LFO on the right.</div>
+<h3>CV meters</h3>
+<table>
+<tr><td class="k">Sequence 1</td><td>SEQ1 sequence signal: horizontal distance between the moving scan point and the anchor (0-10V, smoothed); the fill shows the current output</td></tr>
+<tr><td class="k">Sequence 2</td><td>SEQ2 sequence signal: vertical distance between the moving scan point and the anchor (0-10V, smoothed); the fill shows the current output</td></tr>
+<tr><td class="k">Movement</td><td>Movement energy: mean frame-to-frame luma difference of the full Modifier frame, scaled by Gain (0-10V, smoothed)</td></tr>
+<tr><td class="k">Color Red</td><td>Average red of the Modifier frame (0-10V), usable as a modulation source and CV output</td></tr>
+<tr><td class="k">Color Green</td><td>Average green of the Modifier frame (0-10V), usable as a modulation source and CV output</td></tr>
+<tr><td class="k">Color Blue</td><td>Average blue of the Modifier frame (0-10V), usable as a modulation source and CV output</td></tr>
+<tr><td class="k">Color Saturation</td><td>Average saturation of the Modifier frame (HSV S, 0-10V), usable as a modulation source and CV output</td></tr>
+</table>
+<h3>Audio Inputs</h3>
+<table>
+<tr><td class="k">Card</td><td>Audio Inputs: four audio input tracks whose levels (RMS) serve as modulation sources</td></tr>
+<tr><td class="k">Device</td><td>Audio input/output device selection</td></tr>
+<tr><td class="k">Channel</td><td>Which input device channel this track reads from</td></tr>
+<tr><td class="k">Meter</td><td>Input level meter for this track (peak); the top colour line matches the same-numbered Chromascope channel</td></tr>
+</table>
+<h3>CV Output</h3>
+<p>The Output dropdown selects the audio output device and the MIDI output port together. Each route then picks a source signal, an audio output channel, and a MIDI CC number.</p>
+<table>
+<tr><td class="k">Card</td><td>CV Output: sends modulation signals to audio output channels (ch 3+) and a MIDI device</td></tr>
+<tr><td class="k">Source</td><td>Source of a modulation signal; sent to both an audio output channel and a MIDI device (per-route CC#, 14-bit)</td></tr>
+<tr><td class="k">Ch</td><td>Which audio output channel this CV signal is sent to (the MIDI side uses the CC# field on the right)</td></tr>
+<tr><td class="k">CC</td><td>MIDI CC number for this route (0-127); sent as 14-bit (MSB=CC, LSB=CC+32), falling back to 7-bit when CC&gt;95</td></tr>
+<tr><td class="k">Clock</td><td>Design constraint: the CV clock runs on the audio output callback; with no output device, CV and the scan/meters/visuals freeze</td></tr>
+</table>
+<h3>LFO</h3>
+<table>
+<tr><td class="k">LFO 1 to 4</td><td>Built-in LFO 1 to 4. Each row has a waveform button that cycles Sine, Triangle, Square, Saw, and a rate value in Hz (0.01 to 20; drag, or double-click to type). Available as modulation sources LFO 1 to 4.</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="modulation">17. Modulation and MIDI Learn</h2>
+<p>Modulatable faders have a small dot on the left of the label. Left-click the dot to switch the connection on or off; right-click it to open the popup, pick one Source from the grid, and set Amount. Amount is bipolar (-1 to 1, centre 0), so a source can push the parameter either way. Each parameter holds one connection.</p>
+<div class="fig"><img src="img/modulation_source.png" alt="Modulation source signals are generated continuously from the live image, audio, and the built-in LFOs."></div>
+<div class="cap">Modulation source signals are generated continuously from the live image, audio, and the built-in LFOs.</div>
+<div class="fig"><img src="img/modulation_adjust.png" alt="Right-click a modulation dot to open the popup: choose a source, then drag Amount."></div>
+<div class="cap">Right-click a modulation dot to open the popup: choose a source, then drag Amount.</div>
+<h3>Sources</h3>
+<table>
+<tr><td class="k">Sequence 1 / 2</td><td>Contour scan signals; Smooth Sequence 1 / 2 are the smoothed versions.</td></tr>
+<tr><td class="k">Audio Input 1 to 4 RMS</td><td>Level of the four audio input tracks.</td></tr>
+<tr><td class="k">Movement</td><td>Foreground motion energy; Movement Smooth is the smoothed version.</td></tr>
+<tr><td class="k">Color Red / Green / Blue / Saturation</td><td>Average colour of the Modifier frame.</td></tr>
+<tr><td class="k">LFO 1 to 4</td><td>Built-in LFOs set in the SIGNAL window.</td></tr>
+</table>
+<h3>MIDI Learn</h3>
+<p>Faders that support MIDI have a binding dot on the right of the value. Right-click it and choose MIDI Learn, then move a control on your MIDI device; the dot turns to the accent colour when bound. The same menu shows the bound channel and CC and offers Clear Binding. Only 7-bit Control Change messages are learned.</p>
+
+<!-- ============================================================ -->
+<h2 id="appstore">18. Mac App Store Version</h2>
+<p>The Mac App Store build draws a semi-transparent VISION MOD watermark in the bottom-right corner of the output until the one-time purchase is made. The purchase row sits above PRESET.</p>
+<table>
+<tr><td class="k">Remove Watermark</td><td>One-time purchase that permanently removes the watermark from the output. The App Store shows the price for your region. Once bought, the row reads Purchased: Watermark Removed. If the purchase is waiting for approval, the watermark is removed automatically once it is approved.</td></tr>
+<tr><td class="k">Restore Purchases</td><td>Already purchased (reinstall or another Mac)? Restore with the same Apple Account. You will not be charged again.</td></tr>
+<tr><td class="k">IMPORT</td><td>Imports settings saved by the earlier DMG version (from ~/.visionmod or ~/.config/visionmod) through a folder picker; the imported settings are applied immediately.</td></tr>
+</table>
+
+<footer>MADZINE — Vision MOD v0.9.2</footer>
+</div>
+</body>
+</html>
