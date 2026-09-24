@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HONKI 使用手冊 v1.4.0</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root { --accent: #F27455; }
+* { box-sizing: border-box; }
+body { margin:0; padding:0; background:#0B0B0B; color:#ECECEC; font-family:"Barlow Condensed Light","Barlow Condensed","Noto Sans TC",-apple-system,sans-serif; font-weight:300; line-height:1.6; }
+.wrap { max-width:760px; margin:0 auto; padding:64px 40px 120px; }
+header { border-bottom:1px solid #2A2A2A; padding-bottom:28px; margin-bottom:40px; }
+header .brand { font-size:14px; letter-spacing:0.32em; color:#F27455; text-transform:uppercase; }
+header h1 { font-size:48px; font-weight:300; margin:8px 0 4px; letter-spacing:0.02em; }
+header .sub { font-size:15px; color:#9A9A9A; }
+h2 { font-size:22px; font-weight:400; color:#F27455; margin-top:56px; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #2A2A2A; letter-spacing:0.04em; }
+h3 { font-size:16px; font-weight:500; color:#ECECEC; margin-top:26px; margin-bottom:8px; }
+p { font-size:15px; color:#C9C9C9; margin:8px 0; }
+ul { margin:8px 0; padding-left:22px; }
+li { font-size:15px; color:#C9C9C9; margin:6px 0; }
+.term { color:#ECECEC; font-weight:500; }
+table { width:100%; border-collapse:collapse; margin:16px 0; }
+td { font-size:14px; padding:8px 10px; border-bottom:1px solid #222; color:#C9C9C9; vertical-align:top; }
+td.k { color:#ECECEC; font-weight:500; width:30%; white-space:nowrap; }
+.fig { margin:20px 0 0; }
+.fig img { width:100%; border:1px solid #2A2A2A; display:block; }
+.cap { font-size:13px; color:#9A9A9A; margin:6px 0 16px; }
+nav.toc ul { list-style:none; padding-left:0; columns:2; }
+nav.toc li { margin:4px 0; }
+nav.toc a { color:#C9C9C9; text-decoration:none; font-size:15px; }
+nav.toc a:hover { color:#F27455; }
+footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-size:14px; color:#666; letter-spacing:0.08em; }
+@media (max-width:600px) { .wrap { padding:40px 16px 80px; } nav.toc ul { columns:1; } td.k { white-space:normal; } }
+/* ===== PRINT / PDF ===== */
+@media print {
+  @page { size: A4; margin: 14mm 15mm 16mm; background: #0B0B0B; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  html { background:#0B0B0B; }
+  body { background:#0B0B0B; color:#ECECEC; font-size:10.5pt; line-height:1.5; }
+  .wrap { max-width:none; width:100%; margin:0; padding:0; }
+
+  header { padding-bottom:14px; margin-bottom:22px; break-after:avoid; break-inside:avoid; }
+  header .brand { font-size:9.5pt; }
+  header h1 { font-size:34pt; margin:4px 0 2px; }
+  header .sub { font-size:11pt; }
+
+  h2 { font-size:15pt; margin-top:22px; margin-bottom:10px; padding-bottom:6px;
+       break-after:avoid; break-inside:avoid; }
+  h3 { font-size:11.5pt; margin-top:14px; margin-bottom:5px;
+       break-after:avoid; break-inside:avoid; }
+  p, li { font-size:10.5pt; orphans:2; widows:2; }
+  p { margin:5px 0; break-inside:auto; }
+  ul { margin:5px 0; break-inside:auto; }
+  li { margin:3px 0; break-inside:avoid; }
+
+  table { margin:10px 0; break-inside:auto; }
+  tr { break-inside:avoid; break-after:auto; }
+  td { font-size:10pt; padding:5px 7px; }
+
+  .fig { margin:9px 0 0; break-inside:avoid; break-after:avoid; page-break-inside:avoid; page-break-after:avoid; }
+  /* width:auto keeps the intrinsic aspect ratio when max-height clamps a tall
+     screenshot; width:100% would squash it */
+  .fig img { width:auto; height:auto; max-width:100%; max-height:128mm; display:block; margin:0 auto; }
+  /* very tall UI shots get more height so they stay legible */
+  .fig img[src$="mixer_strip.png"], .fig img[src$="mixer_bus_aux.png"],
+  .fig img[src$="mixer_popover.png"], .fig img[src$="perform_sidebar.png"],
+  .fig img[src$="perform_side_utility.png"], .fig img[src$="perform_side_fxchain.png"],
+  .fig img[src$="perform_effect.png"] { max-height:172mm; }
+  .fig img[src$="drums_ratio.png"], .fig img[src$="utility_lfo.png"],
+  .fig img[src$="main_editor.png"], .fig img[src$="modroute_panel.png"] { max-height:152mm; }
+  .cap { font-size:9pt; margin:4px 0 9px; break-before:avoid; break-inside:avoid;
+         page-break-before:avoid; page-break-inside:avoid; orphans:2; widows:2; }
+
+  nav.toc { break-after:page; page-break-after:always; break-inside:avoid; }
+  nav.toc ul { columns:2; }
+  nav.toc a { color:#C9C9C9; font-size:11pt; }
+  a { text-decoration:none; }
+
+  footer { margin-top:28px; padding-top:14px; font-size:9.5pt; break-inside:avoid; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="brand">MADZINE</div>
+  <h1>HONKI</h1>
+  <div class="sub">使用手冊 — v1.4.0 — 繁體中文</div>
+</header>
+
+<nav class="toc">
+<ul>
+<li><a href="#overview">1. 總覽</a></li>
+<li><a href="#topbar">2. 頂列</a></li>
+<li><a href="#transport">3. Transport</a></li>
+<li><a href="#main">4. MAIN</a></li>
+<li><a href="#voice">5. VOICE</a></li>
+<li><a href="#mixer">6. MIXER</a></li>
+<li><a href="#utility">7. UTILITY</a></li>
+<li><a href="#perform">8. PERFORM</a></li>
+<li><a href="#modroute">9. MOD ROUTE</a></li>
+<li><a href="#visual">10. VISUAL</a></li>
+<li><a href="#setup">11. SETUP</a></li>
+<li><a href="#midilearn">12. MIDI Learn</a></li>
+<li><a href="#motion">13. Motion</a></li>
+<li><a href="#recording">14. 錄音</a></li>
+<li><a href="#shortcuts">15. 快捷鍵</a></li>
+</ul>
+</nav>
+
+<!-- ============================================================ -->
+<h2 id="overview">1. 總覽</h2>
+
+<p>HONKI 是 iPad 上的八軌樂句產生器與音源系統。一個 pattern 有 8 個 track，每個 track 各有 8 個 segment 記憶槽。</p>
+
+<div class="fig"><img src="img/tabs.png" alt="六個分頁按鈕"></div>
+<div class="cap">頂列的六個分頁按鈕：MAIN、VOICE、MIXER、UTILITY、PERFORM、VISUAL。圖中 MAIN 為目前分頁。</div>
+
+<h3>Track 結構</h3>
+<table>
+<tr><td class="k">TRACK 1 至 4</td><td>旋律軌。在 MAIN 的 TRACK 1 至 4 編輯器編輯音符。</td></tr>
+<tr><td class="k">TRACK 5 至 8</td><td>鼓軌。在 MIXER 與 PERFORM 顯示為 FOUNDATION、GROOVE、TIMELINE、LEAD。在 MAIN 的 DRUMS 編輯器編輯。</td></tr>
+<tr><td class="k">角色配對</td><td>TRACK 1 與 5 為 foundation，2 與 6 為 groove，3 與 7 為 timeline，4 與 8 為 lead。</td></tr>
+<tr><td class="k">Segment</td><td>每個 track 有 8 個 segment 槽。播放方式有 SINGLE、SEQUENCER、RANDOM 三種，鼓軌另有 FOLLOW。</td></tr>
+<tr><td class="k">音域預設</td><td>MIDI 音高 36 至 72。</td></tr>
+<tr><td class="k">音源</td><td>每軌四選一：SYNTH、SAMPLE、PHYSICAL、AU。</td></tr>
+</table>
+
+<h3>六個分頁</h3>
+<table>
+<tr><td class="k">MAIN</td><td>樂句編輯與 segment 管理。啟動時的起始分頁。</td></tr>
+<tr><td class="k">VOICE</td><td>音源選擇與參數。</td></tr>
+<tr><td class="k">MIXER</td><td>八軌混音、EQ、壓縮、效果送出、主效果。</td></tr>
+<tr><td class="k">UTILITY</td><td>8 段包絡、LFO、CV 輸出矩陣。</td></tr>
+<tr><td class="k">PERFORM</td><td>自訂控制面板與對應。</td></tr>
+<tr><td class="k">VISUAL</td><td>影像來源與四個影像處理站。</td></tr>
+</table>
+<p>切換分頁：點頂列分頁按鈕，或用外接鍵盤數字鍵 1 至 6。編輯覆蓋層開啟時，數字鍵改為切換 TRACK 1 至 4 與 DRUMS。分頁切換可指定 MIDI Learn。雙指滑動切換分頁已移除。</p>
+
+<h3>標題位置</h3>
+<p>頂列最右的方形按鈕切換標題所在角落，順序為左上、右上、左下、右下。標題在下方時，Transport 列移到畫面上方。</p>
+
+<h3>專案槽</h3>
+<table>
+<tr><td class="k">槽位數</td><td>26 個 bank（A 至 Z），每個 bank 10 個 pattern（00 至 09）。槽位 ID 格式為 A-00。</td></tr>
+<tr><td class="k">每槽儲存內容</td><td>bank、programs、modulation、PERFORM 版面、MASTER FX、各軌 AU。</td></tr>
+<tr><td class="k">全 app 共用（不隨槽位）</td><td>INPUT COMP、HUE、CV 裝置綁定。</td></tr>
+<tr><td class="k">啟動時</td><td>回復上次使用的槽位。</td></tr>
+</table>
+
+<h3>Undo</h3>
+<p>Undo 以整個 bank 的快照為單位，最多 100 步。同一 tick 內的多次修改合併為一步，拖曳過程合併為一步。MIDI Learn 寫入、TAP tempo、載入 bank 不進入 undo。</p>
+
+<!-- ============================================================ -->
+<h2 id="topbar">2. 頂列</h2>
+
+<div class="fig"><img src="img/topbar.png" alt="頂列"></div>
+<div class="cap">頂列：左側在停止時顯示 HONKI 字樣（播放中會改為計時器與「Click Twice to Reset」提示），接著 MADZINE 字樣、A-00 槽位選單、FILE 選單、六個分頁按鈕（MAIN 為目前分頁），最右為標題角落按鈕。</div>
+
+<table>
+<tr><td class="k">計時器</td><td>啟動時顯示「H O N K I」。第一次按 PLAY 並回答錄音確認（Y 或 N）後開始計時，格式 MM:SS。點兩下歸零，旁邊顯示「Click Twice to Reset」提示。</td></tr>
+<tr><td class="k">MADZINE</td><td>品牌文字。</td></tr>
+<tr><td class="k">A-00 選單</td><td>兩層選單。第一層最上方為 CLEAR，之後是 bank A 至 Z；第二層是 pattern 00 至 09。可指定 MIDI Learn 為「下一個 bank」。</td></tr>
+<tr><td class="k">CLEAR</td><td>若 bank 有內容，先詢問「Clear everything?」。清除 bank、programs、SWING 與 TRANSPOSE 歸 0、modulation、PERFORM 版面、MIDI 綁定、各軌 AU、MASTER FX、CV 路由。保留 INPUT COMP、HUE、CV 裝置與 STEREO OUT。</td></tr>
+<tr><td class="k">FILE 選單</td><td>COPY、PASTE、SAVE、LOAD，以及不可點的 VERSION 項目（顯示版本號）。PASTE 只在剪貼簿非空時可用。</td></tr>
+<tr><td class="k">SAVE</td><td>匯出 .honki 檔。iOS 預設檔名為「HONKI 槽位」。</td></tr>
+<tr><td class="k">LOAD</td><td>匯入 .honki 檔。詢問「Replace current bank?」「Current changes will be lost.」。失敗時顯示「Bank File Error」。</td></tr>
+<tr><td class="k">分頁按鈕</td><td>六個，見第 1 章。</td></tr>
+<tr><td class="k">角落按鈕</td><td>右端方形按鈕，顯示目前標題角落。點一下依序輪換。</td></tr>
+</table>
+
+<h3>.honki 檔案</h3>
+<p>目前檔案格式包含 bank、programs、各軌 AU、MASTER FX、modulation、PERFORM 版面。可匯入舊版本的 .honki 檔與純 bank 檔。</p>
+
+<!-- ============================================================ -->
+<h2 id="transport">3. Transport</h2>
+
+<div class="fig"><img src="img/transport.png" alt="Transport 列"></div>
+<div class="cap">Transport 列由左至右：PLAY（圖中為停止狀態，顯示三角形圖示）、MOTION（兩行字，圖中為亮起的開啟狀態）、RESET、BPM 132、TAP、音階按鈕 E Mixolydian、SWING 53（灰顯）、STYLE 選單 TECHNO、SETUP、MIDI、MOD、上下排列的 UNDO 與 REDO，最右為 HUE 色圈。</div>
+
+<table>
+<tr><td class="k">PLAY / STOP</td><td>未進入錄音狀態時按 PLAY，按鈕內出現 Y、REC?、N 三段，5 秒後自動收起。Y 為錄音並播放，N 為只播放。播放中按鈕顯示 STOP。可指定 MIDI Learn。</td></tr>
+<tr><td class="k">錄音停止按鈕</td><td>只在錄音狀態顯示，為紅點膠囊按鈕，位於 PLAY 左側。按下出現「STOP RECORDING?」Y / N，5 秒後自動關閉。產生的檔案見第 14 章。</td></tr>
+<tr><td class="k">MOTION</td><td>按鈕有兩行字：MOTION 與 HOLD RECORD。點一下切換 MOTION 回放：回放開啟時為黃色（預設），關閉時無色。按住 1 秒開始錄製，按住期間紅色由左向右填滿，提早放開或拖離即取消；錄製中按鈕為紅色，點一下停止錄製。開始錄製時回放自動開啟。不可指定 MIDI Learn。見第 13 章。</td></tr>
+<tr><td class="k">RESET</td><td>只在播放中可用，將播放位置歸零。可指定 MIDI Learn。</td></tr>
+<tr><td class="k">BPM</td><td>20 至 300。垂直拖曳調整，點一下輸入數字。使用外部時脈時灰顯 40%。可指定 MIDI Learn。</td></tr>
+<tr><td class="k">TAP</td><td>2 秒視窗內最多 4 次點擊取平均。最後一次點擊 5 秒後清除緩衝。不進入 undo。外部時脈時不可用。</td></tr>
+<tr><td class="k">SCALE</td><td>兩層選單：第一層音階，第二層 12 個根音。按鈕顯示根音與音階名。內建 16 種：Chromatic、Major、Minor、Penta Major、Penta Minor、Dorian、Phrygian、Lydian、Mixolydian、Locrian、Major Triad、Minor Triad、Blues、Arabic、Japanese、Whole Tone；之後列出使用者音階與 USER SCALE EDITOR。選單以星號數量標示目前 STYLE 的推薦程度。</td></tr>
+<tr><td class="k">SWING</td><td>填滿式橫向 fader，0 至 100。點兩下回到 0.5。奇數步延後 stepDuration x 0.25 x swing。三連音音符不受 SWING 影響。可指定 MIDI Learn。</td></tr>
+<tr><td class="k">STYLE</td><td>彈窗內有 AMOUNT 旋鈕（0 至 1）與 9 種風格，兩欄排列：West African、Afro-Cuban、Brazilian、Balkan、Indian、Gamelan、Electronic、Breakbeat、Techno。AMOUNT 與風格索引皆可指定 MIDI Learn。</td></tr>
+<tr><td class="k">SETUP</td><td>開關 SETUP 面板。見第 11 章。</td></tr>
+<tr><td class="k">MIDI</td><td>開關 MIDI Learn 模式。字樣固定為 MIDI，開啟時底色改變。快捷鍵 Cmd+L。開啟時可指定的控件出現虛線外框。按下 MIDI 會關閉 MOD。見第 12 章。</td></tr>
+<tr><td class="k">MOD</td><td>開關 MOD 模式，位於 MIDI 右側。啟動時為關閉。開啟時按鈕為強調色，可調變的控件出現實線強調色外框；點有外框的控件不會改值，而是開啟 MOD ROUTE 面板。沒有外框的控件照常操作。與 MIDI 互斥。不可指定 MIDI Learn。見第 9 章。</td></tr>
+<tr><td class="k">UNDO / REDO</td><td>無可復原內容時灰顯 40%。快捷鍵 Cmd+Z、Cmd+Shift+Z。PERFORM 版面編輯使用 PERFORM 自己的 undo 堆疊。</td></tr>
+<tr><td class="k">HUE</td><td>「HUE」文字與色圈。彈窗標題「ACCENT HUE」：外環拖曳改色相，中央圓盤垂直拖曳改飽和度（0 至 2）。</td></tr>
+</table>
+
+<h3>USER SCALE EDITOR</h3>
+<table>
+<tr><td class="k">CLOSE</td><td>關閉編輯表單。</td></tr>
+<tr><td class="k">SCALE NAME</td><td>音階名稱輸入欄。</td></tr>
+<tr><td class="k">音級按鈕</td><td>12 個，2 列 6 欄，相對於全域 ROOT。預設包含根音。</td></tr>
+<tr><td class="k">音程摘要</td><td>顯示已選音程；未選任何音級時顯示「SELECT AT LEAST ONE PITCH CLASS」。</td></tr>
+<tr><td class="k">SAVE NEW SCALE / SAVE CHANGES</td><td>新增或儲存修改。</td></tr>
+<tr><td class="k">CANCEL EDIT</td><td>取消目前編輯。</td></tr>
+<tr><td class="k">SAVED USER SCALES</td><td>已存音階清單，空時顯示「No user scales saved yet.」。每項有 SELECT、EDIT、DELETE。刪除使用中的音階時，全域音階回到 Chromatic。</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="main">4. MAIN</h2>
+
+<div class="fig"><img src="img/main_full.png" alt="MAIN 全頁"></div>
+<div class="cap">MAIN 全頁。上方為 track 分頁列與參數列；左欄為 MASTER TRANSPOSE、MASTER LOCK / DECAY / DENSITY 旋鈕、KEYS 鈕與 8 條 track 條；右側為嵌入的樂句編輯器，含小節列、START / END 列、左側按鈕欄（最上為 TRI 與 RANGE，最下為音階選單與 lane 下拉選單）與音符格。</div>
+
+<h3>Track 分頁列</h3>
+<div class="fig"><img src="img/main_trackrow.png" alt="track 分頁列"></div>
+<div class="cap">Track 分頁列：兩端各一個斜向箭頭全螢幕按鈕，MULTI、S、提示文字（長按靜音、點兩下獨奏），以及 1-1 至 8-1 八個 track 分頁（圖中 1-1 為目前 track），每個分頁上方有色點。</div>
+<table>
+<tr><td class="k">全螢幕按鈕</td><td>列兩端各一個斜向箭頭按鈕，開啟或關閉編輯器全螢幕。</td></tr>
+<tr><td class="k">MULTI</td><td>多軌同步編輯。開啟時，被同步的旋鈕顯示虛線環。</td></tr>
+<tr><td class="k">S</td><td>清除所有 track 的 solo。</td></tr>
+<tr><td class="k">Track 分頁</td><td>點一下選擇 track；0.35 秒內點兩下切換 SOLO；長按 0.45 秒切換 MUTE。分頁文字為 track 編號與目前 segment（例如 1-1）。</td></tr>
+</table>
+
+<h3>參數列</h3>
+<div class="fig"><img src="img/main_paramrow.png" alt="參數列"></div>
+<div class="cap">參數列：MUTE、SOLO、P（program 選單）、LOCK / DECAY / DENSITY 三個旋鈕、segment 1 至 8（圖中 1 為目前 segment）、SINGLE / SEQUENCER / RANDOM 播放模式。</div>
+<table>
+<tr><td class="k">MUTE / SOLO</td><td>目前 track 的靜音與獨奏。</td></tr>
+<tr><td class="k">P</td><td>Program 選單：SAVE、LOAD、CLEAR，對象為 Program 1 至 8。</td></tr>
+<tr><td class="k">LOCK</td><td>0 至 100%，垂直拖曳，無點兩下重設。</td></tr>
+<tr><td class="k">DECAY</td><td>旋律軌顯示為 0 至 100%，內部範圍 -0.99 至 0.99；鼓軌範圍 0.2 至 2.0（1.0 顯示為 44%）。點兩下重設（鼓軌 1.0，旋律軌 -0.78）。</td></tr>
+<tr><td class="k">DENSITY</td><td>0 至 100%。點兩下清除 segment 的覆寫值。</td></tr>
+<tr><td class="k">Segment 1 至 8</td><td>三種狀態：無、空、有內容。有 RATIO 時顯示標籤。鏈狀態顯示在底部 3pt 條，播放中在頂部顯示 3pt 線。點擊優先順序：鏈設定中 &gt; RANDOM 池 &gt; MULTI &gt; 選擇。</td></tr>
+<tr><td class="k">SINGLE</td><td>只播放目前 segment，顯示 SEG n。</td></tr>
+<tr><td class="k">SEQUENCER</td><td>依序點 START、起點槽、END、終點槽，之後顯示 SEQ a-b。</td></tr>
+<tr><td class="k">RANDOM</td><td>顯示 CHOOSE，點槽位加入或移出隨機池。</td></tr>
+<tr><td class="k">FOLLOW</td><td>鼓軌專用，跟隨配對旋律軌的 segment。</td></tr>
+</table>
+
+<h3>左欄</h3>
+<div class="fig"><img src="img/main_bars.png" alt="左欄"></div>
+<div class="cap">左欄：MASTER TRANSPOSE，MASTER LOCK / DECAY / DENSITY 旋鈕，右上為 KEYS 鈕，之後是 8 條 track 條（標示 1 至 8 與 SEG 1），每條上方有步數刻度與音符名稱。圖中 track 1 有外框表示為目前 track。</div>
+<table>
+<tr><td class="k">MASTER TRANSPOSE</td><td>由左至右為「-」、數值欄、「+」。數值欄點一下輸入數字，垂直拖曳改值。範圍 ±24 半音。</td></tr>
+<tr><td class="k">MASTER LOCK / DECAY / DENSITY</td><td>同時寫入全部 8 軌的對應參數。</td></tr>
+<tr><td class="k">KEYS</td><td>標題列右側唯一的按鈕。開啟時 track 條換成鍵盤，見下方 KEYS 模式。</td></tr>
+<tr><td class="k">track 條</td><td>顯示該軌目前小節的內容。鼓軌的柱高為力度；旋律軌的柱高為音高位置，濃淡為力度。播放範圍外的格子變暗。步數刻度為目前小節的步數編號，頁面與右側編輯器同步。track 條只供檢視，音符在右側編輯器輸入。</td></tr>
+<tr><td class="k">範圍把手</td><td>每條 track 條兩端的把手常駐，拖曳設定播放視窗的起點與終點，拖曳時該軌顯示起訖步數。把手拖到邊緣停留會翻頁。最多 4 指同時拖曳。</td></tr>
+<tr><td class="k">三連音記號</td><td>該段有三連音音符時，track 條每兩格底部出現一條細的三等分記號。第一等分與直拍共用，不另外畫；第二、第三等分有音符時填上軌色，濃淡表示力度。</td></tr>
+</table>
+<p>track 條不支援長按。</p>
+
+<h3>樂句編輯器（TRACK 1 至 4）</h3>
+<div class="fig"><img src="img/main_editor.png" alt="樂句編輯器"></div>
+<div class="cap">樂句編輯器：最上為小節列（「1」與「+」），下方 START 1 END 16 STEPS 16，左側按鈕欄由上而下為 TRI / RANGE、SEMI DOWN / SEMI UP、OCTAVE DOWN / OCTAVE UP、IMPORT MIDI、LOCK / CLEAR、COPY / PASTE、PHRASE FLIP / RATIO、音階選單，最下一列左半為 lane 下拉選單（圖中為 VELOCITY）、右半為 EDIT；右側為音符格，最下為力度條。</div>
+<p>左側按鈕欄由上而下：FOLLOW（有多個小節時才出現）、TRI 與 RANGE、SEMI DOWN 與 SEMI UP、OCTAVE DOWN 與 OCTAVE UP、IMPORT MIDI、LOCK 與 CLEAR、COPY 與 PASTE、PHRASE FLIP 與 RATIO、SCALE 選單，最下一列為 lane 下拉選單與 EDIT。</p>
+<table>
+<tr><td class="k">小節列</td><td>一頁一小節 16 步，最多 64 小節。點頁碼切換；長按 0.6 秒出現「DELETE BAR n?」Y / N。「+」新增小節。超過 8 小節時每次顯示 8 個，兩端有切換鈕；全螢幕顯示全部小節。播放中的小節底部有色帶。</td></tr>
+<tr><td class="k">全螢幕</td><td>全螢幕時一次顯示兩小節，邊緣翻頁一次翻兩小節。頁碼、1 BAR 的 COPY / PASTE 與刪小節仍以單一小節為單位。</td></tr>
+<tr><td class="k">邊緣翻頁</td><td>橫向拖長音符、在 lane 上橫掃、拖曳 START / END 時，到邊緣停留 0.3 秒自動翻頁。垂直改音高不翻頁。</td></tr>
+<tr><td class="k">START / END</td><td>設定播放起訖步，顯示「START n END m STEPS k」；超過 16 步時加上 BARS，RATIO 不是 1x 時加上 RATE。</td></tr>
+<tr><td class="k">FOLLOW</td><td>使頁面跟隨播放。只由此鈕切換。</td></tr>
+<tr><td class="k">TRI</td><td>開關三連音格線，見下方「TRI 三連音格線」。</td></tr>
+<tr><td class="k">RANGE</td><td>開啟 PITCH RANGE 視窗，內有 HIGH 與 LOW 兩欄，為音域上下限。點一下輸入音名，垂直拖曳每 24px 一個半音，兩欄可同時拖曳。HIGH 至少比 LOW 高一個半音。點視窗外關閉。</td></tr>
+<tr><td class="k">SEMI DOWN / UP</td><td>整段移調 ±1 半音，到達極限時不可用。三連音音符一起移調。</td></tr>
+<tr><td class="k">OCTAVE DOWN / UP</td><td>整段移調 ±12 半音，到達極限時不可用。三連音音符一起移調。</td></tr>
+<tr><td class="k">IMPORT MIDI</td><td>匯入 .mid 檔。完成顯示「IMPORTED n NOTE(S)」，有略過時加「SKIPPED m」；錯誤以紅字顯示。訊息 4 秒後消失。不影響三連音音符。</td></tr>
+<tr><td class="k">LOCK</td><td>鎖定模式切換。</td></tr>
+<tr><td class="k">CLEAR</td><td>兩段式：出現「CLEAR LOCK?」，Y 清除含鎖定的全部音符，N 只清除未鎖定音符，三連音音符同樣處理。5 秒後自動取消。</td></tr>
+<tr><td class="k">COPY</td><td>出現「COPY BAR n OR ALL?」，選 1 BAR 或 ALL。三連音音符一起複製。</td></tr>
+<tr><td class="k">PASTE</td><td>可跨 track 貼上，貼上後剪貼簿保留。來源沒有三連音時，目標的三連音會被清除。</td></tr>
+<tr><td class="k">PHRASE FLIP</td><td>將播放視窗內的樂句倒轉，需至少 2 步。三連音音符一起倒轉。</td></tr>
+<tr><td class="k">RATIO</td><td>鈕面顯示 RATIO 與目前值。15 個選項：x8、x6、x4、x3、x2.5、x2、x1.5、1x、/1.5、/2、/2.5、/3、/4、/6、/8。三連音跟著等比縮放。</td></tr>
+<tr><td class="k">SCALE</td><td>Segment 音階選單：GLOBAL、內建音階、使用者音階，各配 12 個根音。</td></tr>
+<tr><td class="k">lane 下拉選單</td><td>位於按鈕欄最下面一列的左半格，選擇音符格下方的 lane，共七項，見下表。</td></tr>
+<tr><td class="k">EDIT</td><td>位於同一列的右半格，緊鄰 lane 下拉選單，用來展開加高的參數編輯區，見下方「EDIT 參數編輯區」。</td></tr>
+</table>
+
+<div class="fig"><img src="img/pitch_range.png" alt="PITCH RANGE 視窗"></div>
+<div class="cap">點 RANGE 開啟的 PITCH RANGE 視窗，HIGH 為 C5、LOW 為 C3。</div>
+
+<h3>lane</h3>
+<table>
+<tr><td class="k">VELOCITY</td><td>1 至 127，拖曳時顯示「VELOCITY n」。新音符為 100。</td></tr>
+<tr><td class="k">PROBABILITY</td><td>0 至 100%，顯示「PROB nn%」。預設 100%。</td></tr>
+<tr><td class="k">PITCH PROBABILITY</td><td>0 至 100%，顯示「PITCH nn%」，為隨機音高機率。預設 0。</td></tr>
+<tr><td class="k">DECAY</td><td>0 至 100%，顯示「DECAY nn%」。預設 50%，即沿用該 segment 的 DECAY；低於 50% 較短，高於 50% 較長。</td></tr>
+<tr><td class="k">RATCHET</td><td>0 至 100%，顯示「RATCHET nn%」，為該步發生重複觸發的機率。預設 0。</td></tr>
+<tr><td class="k">RATCHET COUNT</td><td>重複觸發的次數，九檔：2、3、4、6、8、12、16、24、32，顯示「COUNT n」。預設 2。RATCHET 為 0 的音符，此 lane 的柱變淡，仍可編輯。</td></tr>
+<tr><td class="k">RATCHET COUNT PROBABILITY</td><td>0 至 100%，顯示「COUNT PROB nn%」。預設 0。RATCHET 發生時再判定一次：成立時次數改為隨機，由 1 與不超過所設 COUNT 的各檔中抽出，抽到 1 表示該步不重複觸發；不成立時依所設 COUNT。</td></tr>
+</table>
+<p>所有 lane 都支援垂直拖曳與單指橫掃。鎖定音符的 DECAY 與 RATCHET 值不會被自動產生改掉。</p>
+
+<div class="fig"><img src="img/lane_menu.png" alt="lane 下拉選單"></div>
+<div class="cap">lane 下拉選單展開，由上而下為 VELOCITY、PROBABILITY、PITCH PROBABILITY、DECAY、RATCHET、RATCHET COUNT、RATCHET COUNT PROBABILITY 七項。</div>
+
+<div class="fig"><img src="img/ratchet_lane.png" alt="RATCHET COUNT lane"></div>
+<div class="cap">lane 選為 RATCHET COUNT：音符格下方的柱為各步的重複觸發次數，RATCHET 為 0 的步柱色較淡。</div>
+
+<h3>EDIT 參數編輯區</h3>
+<p>左側按鈕欄最下面一列分成兩半：左半是 lane 下拉選單，右半是 EDIT 按鈕，1 至 8 軌都有。按下 EDIT 展開加高的參數編輯區：上方的音符格收成一半高度，下半空間改放編輯區。再按一次收回，音符格回到原本的高度。EDIT 展開時 lane 下拉選單仍可使用，編輯區跟著目前選定的參數走。</p>
+<div class="fig"><img src="img/edit_button_row.png" alt="EDIT 按鈕列"></div>
+<div class="cap">左側按鈕欄最下面一列：左半為 lane 下拉選單，名稱過長時縮寫；右半為 EDIT 按鈕。</div>
+<p>TRACK 1 至 4 的編輯區就是原本的 lane，只是加高，手勢不變，一樣是垂直拖曳與單指橫掃。編輯區頂端多一列，以該參數的顏色顯示參數全名；這一列只是標示，不吃觸控。下拉選單縮成半格後字樣可能縮寫，這一列一律寫出完整名稱。</p>
+<div class="fig"><img src="img/edit_panel_melodic.png" alt="旋律軌的 EDIT 參數編輯區"></div>
+<div class="cap">TRACK 1 按下 EDIT：上方音符格收成一半高度，下方為加高的參數編輯區，頂端一列以該參數的顏色顯示參數全名。</div>
+
+<h3>TRI 三連音格線</h3>
+<ul>
+<li>TRI 只切換顯示與編輯用的格線。直拍音符與三連音音符是兩份資料，不論 TRI 開或關，兩者都會播放。</li>
+<li>旋律軌的 TRI 只作用於目前這一軌，各軌分開記。TRI 的開關狀態不存檔，重開 app 後為關閉。</li>
+<li>TRI 開啟時，一小節由 16 欄變為 24 欄：每兩個直拍步分成三格。每組第一格與直拍的偶數步是同一個音符。</li>
+<li>TRI 開啟時，直拍奇數步的音符以淡色虛線框顯示在原本的時間位置，不能編輯。TRI 關閉時，三連音音符以淡色虛線框顯示，不能編輯。</li>
+<li>三連音格可用的 lane：VELOCITY、PROBABILITY、DECAY。PITCH PROBABILITY 與三個 RATCHET lane 不適用於三連音，lane 右上角顯示「NOT AVAILABLE ON TRIPLET」，直拍欄仍可編輯。</li>
+<li>新建的三連音音符為力度 100，建立後即為鎖定。</li>
+<li>三連音音符不受 SWING 影響，沒有隨機音高與重複觸發。MUTE、SOLO 與 DENSITY 為 0 時同樣不發聲。</li>
+<li>自動產生不會建立也不會清除三連音音符。刪除小節時三連音一起刪除。</li>
+<li>三連音隨 segment 儲存，包含在 .honki 檔中；舊版檔案仍可載入。</li>
+</ul>
+
+<div class="fig"><img src="img/tri_on.png" alt="TRI 開啟"></div>
+<div class="cap">TRI 開啟：一小節由 16 欄變為 24 欄，直拍奇數步的音符以淡色虛線框顯示，不能編輯。</div>
+
+<div class="fig"><img src="img/tri_off.png" alt="TRI 關閉"></div>
+<div class="cap">TRI 關閉：同一段回到 16 欄的直拍格線。</div>
+
+<div class="fig"><img src="img/ratchet_tri_notice.png" alt="三連音不支援的 lane"></div>
+<div class="cap">TRI 開啟時 lane 選 RATCHET COUNT，lane 右上顯示「RATCHET COUNT NOT AVAILABLE ON TRIPLET」，直拍欄仍可編輯。</div>
+
+<h3>音符格手勢</h3>
+<ul>
+<li>列為音域內的音階音；音符寬度為 gate，透明度為力度。</li>
+<li>音階外的音符顯示 2pt 警告框；鎖定音符顯示 4pt 框。</li>
+<li>點空格建立音符（力度 100、gate 0.5），建立後即為鎖定。點音符刪除，鎖定狀態保留。</li>
+<li>垂直拖曳超過 8pt 改音高；橫向拖曳改 gate（0.01 至 16）。最多 4 指同時操作。從空格開始拖曳不會建立音符。</li>
+<li>跨小節長音：把音符拖長到右緣，停留後翻到下一頁可繼續拉長。起點在前一頁的長音，延伸到本頁的部分由左緣畫起，顏色較淡。</li>
+<li>LOCK 模式下只能點選音符切換鎖定。</li>
+</ul>
+<p>手動輸入的音符預設鎖定，不受 LOCK 旋鈕與自動產生影響。只有 CLEAR 之後選 Y 才會清除鎖定音符。</p>
+
+<div class="fig"><img src="img/editor_two_bars.png" alt="編輯器全螢幕"></div>
+<div class="cap">編輯器全螢幕：一次顯示兩小節，狀態為 START 1 END 32 STEPS 32 BARS 2，按鈕欄最上方多出 FOLLOW。</div>
+
+<div class="fig"><img src="img/note_across_bars.png" alt="長音符"></div>
+<div class="cap">選到第 2 小節的編輯器，E 列有一個延伸數格的長音符；左欄 track 條的步數刻度同步顯示 17 至 29。</div>
+
+<h3>DRUMS 編輯器（TRACK 5 至 8）</h3>
+<table>
+<tr><td class="k">群組排列</td><td>由上而下：TRACK 8 LEAD、7 TIMELINE、6 GROOVE、5 FOUNDATION。</td></tr>
+<tr><td class="k">聲部列</td><td>TRACK 5：Kick、Low Tom；TRACK 6：Snare、Mid Tom、Clap；TRACK 7：HH Closed、HH Open；TRACK 8：High Tom、Crash。名稱隨 STYLE 變動。</td></tr>
+<tr><td class="k">分頁</td><td>四軌共用小節分頁。全螢幕時一次顯示兩小節，邊緣翻頁一次翻兩小節。</td></tr>
+<tr><td class="k">左側滑桿</td><td>VARIATION、REST、GHOST、ACCENT、FILL，各 0 至 1，作用於目標軌。</td></tr>
+<tr><td class="k">目標軌</td><td>每個滑桿旁有 2x2 格選 TRACK 5 至 8，彈窗標題 TARGET TRACK，至少保留一軌。</td></tr>
+<tr><td class="k">LOCK</td><td>鎖定模式切換。</td></tr>
+<tr><td class="k">CLEAR</td><td>先問 WHICH TRACK?（ALL / 8 / 7 / 6 / 5），再問 CLEAR LOCK? Y / N。N 只清除未鎖定的音符，含三連音；Y 全部清除。</td></tr>
+<tr><td class="k">COPY / PASTE</td><td>以四軌為一組複製貼上，三連音音符一起複製。</td></tr>
+<tr><td class="k">RATIO</td><td>整列單一按鈕，鈕面右側顯示四軌共同的值，四軌不同時顯示 MIXED。彈窗標題「RATIO TRACK n」：左側為 5、6、7、8 四個軌道鈕，各顯示該軌目前的值；右側為 15 個比例。選比例後彈窗不關閉，可接著設定其他軌；點彈窗外關閉。</td></tr>
+<tr><td class="k">TRI</td><td>整列單一按鈕，四軌一起切換。有任一軌未開時按下為四軌全開，四軌全開時按下為全關；四軌全開時才亮起。格線規則與旋律軌相同。</td></tr>
+<tr><td class="k">lane 下拉選單</td><td>位於按鈕欄最下面一列的左半格。六項：VELOCITY、PROBABILITY、DECAY、RATCHET、RATCHET COUNT、RATCHET COUNT PROBABILITY，數值定義與旋律軌相同。鼓軌的 DECAY 與三個 RATCHET 值為同一步的所有聲部共用。三連音格只能使用 VELOCITY、PROBABILITY、DECAY。</td></tr>
+<tr><td class="k">EDIT</td><td>位於同一列的右半格，緊鄰 lane 下拉選單，用來展開參數編輯區，見下方「鼓軌的 EDIT 參數編輯區」。</td></tr>
+<tr><td class="k">風格帶</td><td>每群組一條，選 GLOBAL 或指定風格。可指定 MIDI Learn。</td></tr>
+</table>
+<p>鼓格手勢：點一下切換擊點（力度 100）；垂直拖曳超過 8pt 改目前 lane 的值；橫向滑動連續塗抹；LOCK 模式下點一下切換鎖定。鼓格沒有音高與音符長度的手勢。手動輸入的三連音擊點建立後即為鎖定。</p>
+
+<div class="fig"><img src="img/drums_ratio.png" alt="鼓軌 RATIO 彈窗"></div>
+<div class="cap">鼓軌的 RATIO 彈窗，標題為 RATIO TRACK 7：左側 5 至 8 各顯示該軌目前的值，右側為 15 個比例。</div>
+
+<div class="fig"><img src="img/drums_tri.png" alt="鼓軌 TRI"></div>
+<div class="cap">鼓軌的 TRI 開啟：四軌一起切換，四組鼓格都換成三連音格線，lane 為 VELOCITY。</div>
+
+<h3>鼓軌的 EDIT 參數編輯區</h3>
+<p>按下 EDIT 後，右側只顯示目前選中那一軌的群組，該群的聲部列變高。下半改為編輯區，以每條聲部一組交錯排列：第一條聲部的音色名稱一列（名稱旁顯示目前參數的名稱），接著是這條聲部的參數編輯列，再來是第二條聲部的名稱與它的參數列，依序往下。編輯區的欄與上方鼓格的欄逐欄對齊。</p>
+<div class="fig"><img src="img/edit_panel_drums.png" alt="鼓軌的 EDIT 參數編輯區"></div>
+<div class="cap">TRACK 6 按下 EDIT：右側只顯示該軌的群組，聲部列變高；下方為交錯排列的音色名稱列與參數編輯列，欄與上方鼓格逐欄對齊。</div>
+<p>參數編輯列一欄一根柱，柱高等於目前的值。手指按在哪個高度就是哪個值：列的頂端為最大值、底端為最小值。這是絕對位置對應，不是相對拖曳，值會直接跳到手指所在的位置。拖曳中在該列左上角顯示數值，放開後消失。最多 4 指可同時拖不同欄。沒有擊點的步維持空白，拖曳不會新增音符。播放範圍外與循環範圍外的欄顏色較淡。</p>
+<div class="fig"><img src="img/edit_drum_bars_drag.png" alt="拖曳鼓軌參數編輯列"></div>
+<div class="cap">拖曳 MID TOM 的參數編輯列，該列左上角顯示「VELOCITY 72」，放開後消失。</div>
+<p>RATCHET、RATCHET COUNT、RATCHET COUNT PROBABILITY 不適用於三連音。三連音格線開啟時，這三個參數的三連音欄畫成停用的槽，不吃觸控，直拍欄仍可編輯。VELOCITY、PROBABILITY、DECAY 的三連音欄一樣可以編輯。</p>
+<div class="fig"><img src="img/edit_drum_ratchet_triplet.png" alt="三連音不支援的參數"></div>
+<div class="cap">鼓軌 EDIT 展開、TRI 開啟、lane 選 RATCHET：鼓格顯示「RATCHET NOT AVAILABLE ON TRIPLET」，三條參數編輯列的三連音欄畫成停用的槽，直拍欄仍可編輯。</div>
+<p>EDIT 編輯列上的柱與鼓格上的垂直拖曳寫的是同一份值，兩邊改到的是同一筆資料。鼓格維持相對拖曳，只有 EDIT 編輯列採絕對位置。</p>
+
+<h3>KEYS 模式</h3>
+<div class="fig"><img src="img/main_keys.png" alt="KEYS 模式"></div>
+<div class="cap">KEYS 模式：左上為 MASTER TRANSPOSE 的 - 0 + 與 LOCK、DECAY、DENSITY 三個旋鈕，右上 KEYS 亮起。下一列為八度的 - 與 +、範圍 C3-C5、步進位置 STEP 6 / 32、REST 與 RECORD（錄製中為紅底）。下方兩段鍵盤，下段標 C3、上段標 C4。右側為編輯器的按鈕欄與 piano roll。</div>
+<table>
+<tr><td class="k">OCTAVE - / +</td><td>移動鍵盤顯示的八度。</td></tr>
+<tr><td class="k">狀態</td><td>STEP n/m、PLAYING、RECORDING、AUDITION。</td></tr>
+<tr><td class="k">REST</td><td>步進錄音時輸入休止。</td></tr>
+<tr><td class="k">RECORD</td><td>切換錄音。</td></tr>
+<tr><td class="k">鍵盤</td><td>單音。鼓軌不可用，顯示提示文字。</td></tr>
+</table>
+<p>KEYS 開啟且停止播放時，右側音符格在步進位置所在的格顯示一條直線。鍵盤步進輸入只寫入直拍音符。</p>
+
+<!-- ============================================================ -->
+<h2 id="voice">5. VOICE</h2>
+
+<div class="fig"><img src="img/voice_full.png" alt="VOICE 全頁"></div>
+<div class="cap">VOICE 全頁，圖中 TRACK 1 選 SYNTH 音源。上方為標頭列與 8 個 TRACK 格，以及 SEGMENT 列、DECAY 旋鈕、HARM、AUTO、TYPE、VOICE、INV、3RD / 5TH / 7TH、CLEAR 與 SAVE。下方為 SYNTH 面板：波形顯示與 POSITION 旋鈕，OSCILLATOR WAVETABLE 的 PREVIOUS、波表名稱、NEXT、CLEAR 與每幀點數選單，最下為 OCT、TUNE、SWEEP、FOLD、FEEDBACK、TONE、MODULATION、MOD ENV 八個旋鈕。</div>
+
+<h3>標頭與 track 格</h3>
+<div class="fig"><img src="img/voice_header.png" alt="VOICE 標頭"></div>
+<div class="cap">標頭：SOUND SOURCE、EDITING TRACK 1、四個音源按鈕 SYNTH（選中）/ SAMPLE / PHYSICAL / AU。第二列為 TRACK 1 至 8 格，各顯示音源名稱與 M / S。第三列為 SEGMENT 1 至 8、DECAY、HARM、AUTO、TYPE、VOICE、INV、3RD / 5TH / 7TH、CLEAR、SAVE。</div>
+<table>
+<tr><td class="k">音源按鈕</td><td>SYNTH、SAMPLE、PHYSICAL、AU，四選一。</td></tr>
+<tr><td class="k">TRACK 格</td><td>顯示 track 名與音源。M 靜音；S 獨奏，長按 0.4 秒為排他獨奏。狀態與 MIXER 共用。切換 track 時，另一軌若在 RECORD 會停止。</td></tr>
+<tr><td class="k">SEGMENT 1 至 8</td><td>選擇要編輯的 segment。有音色記憶的 segment 顯示圓點。</td></tr>
+<tr><td class="k">DECAY</td><td>目前 track 的 DECAY，與 MAIN 相同。</td></tr>
+<tr><td class="k">CLEAR</td><td>清除目前 segment 的音色記憶。</td></tr>
+<tr><td class="k">SAVE</td><td>將目前面板參數（含和聲設定）存入 segment 記憶。</td></tr>
+</table>
+<p>面板編輯規則：目前 segment 有記憶時，面板改的是記憶內容；沒有記憶時改的是 track 基底。取樣載入或錄音、PHYSICAL 的 MODEL 與 POLYPHONY、AU 載入都作用於 track 基底。SLICE 與 MULTI 為 track 層級設定，兩者互斥。編輯 segment 記憶時，面板顯示「EDITING SEGMENT n MEMORY」浮水印。</p>
+
+<h3>NOTE HARMONIC（SAMPLE 以外的音源）</h3>
+<table>
+<tr><td class="k">HARM</td><td>開關和聲。</td></tr>
+<tr><td class="k">AUTO</td><td>自動選擇和弦類型，開啟時 TYPE 灰顯。</td></tr>
+<tr><td class="k">TYPE</td><td>點一下輪換和弦類型。</td></tr>
+<tr><td class="k">VOICE</td><td>CLSE、DRP2、DRP3、OPEN。</td></tr>
+<tr><td class="k">INV</td><td>ROOT、1ST、2ND、3RD。</td></tr>
+<tr><td class="k">3RD / 5TH / 7TH</td><td>各 0 至 1 的旋鈕，可錄 MOTION 與 MOD ROUTE。</td></tr>
+</table>
+
+<h3>SYNTH</h3>
+<p>TRACK 1 至 5 為 wavetable 合成器，標題「OSCILLATOR WAVETABLE」，TRACK 5 標題「KICK VOICE WAVETABLE」。TRACK 6 至 8 為固定鼓合成器，面板顯示「BUILT-IN DRUM SYNTHESIZER WITH FIXED SOUNDS FOR THIS TRACK.」。</p>
+<table>
+<tr><td class="k">振盪器</td><td>載波直接讀 wavetable 目前幀的波形取代正弦；未載入 wavetable 時為純正弦。</td></tr>
+<tr><td class="k">波形顯示</td><td>顯示目前 wavetable 在 POSITION 位置的幀波形。POSITION 被 MOTION、MIDI 或 PERFORM 調變時顯示即時跟著換。</td></tr>
+<tr><td class="k">POSITION</td><td>位於波形顯示右側。0 至 1，預設 0，幀之間線性內插；最左為第 0 幀（純正弦），向右進入檔案的幀。載波與調變器同時跟隨。TRACK 5 BYPASS 或無 wavetable 時停用。</td></tr>
+<tr><td class="k">BYPASS</td><td>只有 TRACK 5，開啟時 FOLD、FEEDBACK、TONE、MODULATION 不作用，切窗點數選單鎖定。</td></tr>
+<tr><td class="k">PREVIOUS / NEXT</td><td>切換上一個或下一個 wavetable。</td></tr>
+<tr><td class="k">名稱按鈕</td><td>開啟「SELECT WAVETABLE」彈窗，含篩選欄與「NO WAVETABLE」項目。</td></tr>
+<tr><td class="k">CLEAR</td><td>移除 wavetable，振盪器回到純正弦。</td></tr>
+<tr><td class="k">切窗點數</td><td>256 / 512 / 1024 / 2048 / 4096，預設 2048。只改解碼時的切窗長度並重新取樣；單週期短於 2048 點的 wavetable 需改小點數以修正音高偏高。改變後該 track 的 wavetable 重新載入。</td></tr>
+<tr><td class="k">狀態文字</td><td>無 wavetable 時顯示「NO WAVETABLE — OSCILLATOR RUNS AS PURE SINE」；有 wavetable 時顯示表序號、幀數、點數與目前幀。</td></tr>
+<tr><td class="k">OCT</td><td>-4 至 +4。</td></tr>
+<tr><td class="k">TUNE</td><td>±100 音分。</td></tr>
+<tr><td class="k">SWEEP</td><td>0 至 1000 Hz；TRACK 5 為 -500 至 +500 的偏移。</td></tr>
+<tr><td class="k">FOLD</td><td>0 至 10。</td></tr>
+<tr><td class="k">FEEDBACK</td><td>0 至 1。</td></tr>
+<tr><td class="k">TONE</td><td>0 至 10。</td></tr>
+<tr><td class="k">MODULATION</td><td>0 至 10。0 時 wavetable 無作用。</td></tr>
+<tr><td class="k">MOD ENV</td><td>0 至 10；TRACK 5 為 -5 至 +5。</td></tr>
+</table>
+<p>wavetable 最多 32 幀（含第 0 幀正弦），超過時等距抽樣。TRACK 5 在使用者未碰觸參數前跟隨 STYLE 的預設值。</p>
+
+<h3>SAMPLE</h3>
+<div class="fig"><img src="img/voice_sample.png" alt="SAMPLE 面板 MULTI 模式"></div>
+<div class="cap">TRACK 1 的 SAMPLE 面板 MULTI 模式：檔案列為 LOAD FOLDER、SLOT 01 與檔名、ONE SHOT、REVERSE、SLICE、MULTI（選中）、「- 18 +」。左側 16 個 pad 以音名與檔名標示，左下 C1 為選中；中間 PAGE 1（01-16）/ 2（17-18）/ 3；右側為 slot 參數 LEVEL 1.00x、PITCH 0 st、FILTER BYPASS、RESO 0%、PAN MONO，LOAD 與 CLEAR，波形區顯示已載入素材的波形與 S / E 標記，LAUNCH 的 TRIGGER（選中）/ GATE / LOOP / REVERSE，CHOKE OFF（選中）/ A / B / C / D。</div>
+
+<h3>檔案列</h3>
+<table>
+<tr><td class="k">LOAD SAMPLE</td><td>載入單一取樣（一般與 SLICE 模式）。</td></tr>
+<tr><td class="k">RECORD / STOP</td><td>錄製主輸出為取樣，上限 120 秒，錄音中顯示「RECORDING x.x s」。停止後自動載入。</td></tr>
+<tr><td class="k">檔名</td><td>顯示目前取樣檔名，無取樣時顯示「NO SAMPLE」。</td></tr>
+<tr><td class="k">LOAD FOLDER</td><td>MULTI 模式載入整個資料夾，支援 wav、aif、aiff、mp3、m4a、caf、flac，最多 36 個。</td></tr>
+<tr><td class="k">ONE SHOT / LOOP</td><td>播放方式切換。</td></tr>
+<tr><td class="k">REVERSE</td><td>反向播放。</td></tr>
+<tr><td class="k">SLICE</td><td>將取樣等分為 N 段，音符由 C1（24）起對應各段。鼓軌顯示「DRUM TRACK: SLICE FOLLOWS SETUP MIDI NOTE」。</td></tr>
+<tr><td class="k">MULTI</td><td>多取樣 pad 模式，全部 8 軌可用。</td></tr>
+<tr><td class="k">- n +</td><td>MULTI 時為 slot 數（1 至 36），SLICE 時為切片數（2 至 36）。鼓軌固定，顯示「PADS n」。</td></tr>
+</table>
+
+<h3>一般與 SLICE 模式</h3>
+<table>
+<tr><td class="k">波形</td><td>S / E 標記設定起訖點，雙指可同時拖曳。SLICE 時顯示切片邊界。起訖點的 MOTION 在 MOD 模式清除：開啟 Transport 的 MOD，點波形，在面板的 CLEAR MOTION? 回答 Y。</td></tr>
+<tr><td class="k">GRAIN SIZE x DENSITY</td><td>粒子合成主 XY pad。GRAIN SIZE 0.005 至 2 秒；DENSITY 1 至 200 每秒，1 為一般播放。各軸有 - / + 與鎖定。</td></tr>
+<tr><td class="k">SPRAY x JITTER</td><td>粒子合成細節 XY pad，各 0 至 100%。</td></tr>
+<tr><td class="k">GRAIN SHAPE</td><td>0 至 100%。</td></tr>
+<tr><td class="k">PITCH</td><td>±48 半音。</td></tr>
+<tr><td class="k">GAIN</td><td>0 至 8。</td></tr>
+</table>
+
+<h3>MULTI 模式</h3>
+<table>
+<tr><td class="k">Pad</td><td>每頁 16 個，最多 3 頁共 36 個。左下為第一個 slot。標籤為音名（從 C1 起）或鼓聲部名。按下即選擇並試聽。</td></tr>
+<tr><td class="k">鼓軌 pad 數</td><td>固定：TRACK 5 為 2、6 為 3、7 為 2、8 為 2。面板顯示「PAD PER LANE. SETUP MIDI NOTE NOT USED」。</td></tr>
+<tr><td class="k">PAGE 1 / 2 / 3</td><td>切換 pad 頁。</td></tr>
+<tr><td class="k">LOAD / CLEAR</td><td>載入或清除目前 slot 的取樣。</td></tr>
+<tr><td class="k">LEVEL</td><td>0 至 2。</td></tr>
+<tr><td class="k">PITCH</td><td>±24 半音。</td></tr>
+<tr><td class="k">FILTER</td><td>BYPASS、LP n%、HP n%。</td></tr>
+<tr><td class="k">RESO 旋鈕</td><td>FILTER 右側，0 至 100%。</td></tr>
+<tr><td class="k">PAN</td><td>TRACK 1 至 4 顯示 MONO。</td></tr>
+<tr><td class="k">波形</td><td>每個 slot 各自顯示。</td></tr>
+<tr><td class="k">LAUNCH</td><td>TRIGGER、GATE、LOOP、REVERSE；鼓軌只有 TRIGGER 與 REVERSE。</td></tr>
+<tr><td class="k">CHOKE</td><td>OFF、A、B、C、D。</td></tr>
+</table>
+<p>Pad 參數不支援 MOTION 與 MIDI Learn。</p>
+
+<h3>PHYSICAL</h3>
+<table>
+<tr><td class="k">XY 1</td><td>BRIGHTNESS x DAMPING，各 0 至 100%，有 - / + 與軸鎖定。</td></tr>
+<tr><td class="k">XY 2</td><td>POSITION x STRUCTURE，各 0 至 100%，有 - / + 與軸鎖定。</td></tr>
+<tr><td class="k">MODEL</td><td>MODAL、SYM STR、STRING、FM、QUANT、STR&amp;REV。</td></tr>
+<tr><td class="k">POLYPHONY</td><td>1 / 2 / 4 VOICE。</td></tr>
+<tr><td class="k">OCT</td><td>八度。</td></tr>
+<tr><td class="k">TUNE</td><td>微調，點兩下回 0。</td></tr>
+<tr><td class="k">EXT to AUDIO IN</td><td>ON / OFF，預設 ON：外部輸入激發共鳴體，不直接混入乾聲。</td></tr>
+</table>
+
+<h3>AU</h3>
+<table>
+<tr><td class="k">未載入</td><td>顯示「NO INSTRUMENT LOADED」與 LOAD。</td></tr>
+<tr><td class="k">載入中</td><td>顯示「LOADING」與 CANCEL。</td></tr>
+<tr><td class="k">已載入</td><td>顯示名稱與 CHANGE、OPEN EDITOR、UNLOAD。</td></tr>
+<tr><td class="k">OPEN EDITOR</td><td>全螢幕開啟 AU 自己的介面，上方有 CLOSE。</td></tr>
+<tr><td class="k">清單彈窗</td><td>標題「INSTALLED AUDIO UNIT INSTRUMENTS」，依廠商分組，上方 FILTER BY NAME。</td></tr>
+</table>
+<p>AU 在獨立程序中執行，載入完成前無聲。</p>
+<table>
+<tr><td class="k">MACRO KNOBS 1 至 8</td><td>4x2 排列。長按 0.6 秒或點未綁定的旋鈕進入綁定；點名稱開啟「MACRO n PARAMETER」彈窗，內有 CLEAR BINDING。未綁定顯示 ASSIGN PARAMETER，無法綁定時顯示 UNAVAILABLE。綁定存於 bank，可作 PERFORM 目標。</td></tr>
+<tr><td class="k">GLIDE</td><td>送出 CC5 與 CC65。</td></tr>
+<tr><td class="k">MOD</td><td>送出 CC1。</td></tr>
+<tr><td class="k">SUSTAIN</td><td>送出 CC64。</td></tr>
+</table>
+<p>GLIDE、MOD、SUSTAIN 的值只在本次執行期間保留，可指定 MIDI Learn。</p>
+
+<!-- ============================================================ -->
+<h2 id="mixer">6. MIXER</h2>
+
+<div class="fig"><img src="img/mixer_full.png" alt="MIXER 全頁"></div>
+<div class="cap">MIXER 全頁。八條 strip 由左至右為 TRACK 1 至 4、FOUNDATION、GROOVE、TIMELINE、LEAD，每條含 EQ 縮圖、FILTER 條、六個旋鈕、BUS 列、PAN 條、MIX 與 LEVEL fader、M / S。底部為 EFFECT 列：DELAY PRE、REVERB PRE、SIZE / DAMP / DECAY / LEVEL、FILTER、L / R 電平表、MASTER VOLUME、點狀圖示與三線圖示。</div>
+
+<h3>Strip</h3>
+<div class="fig"><img src="img/mixer_strip.png" alt="單一 strip"></div>
+<div class="cap">TRACK 4 的 strip，由上而下：名稱、EQ 縮圖、FILTER 條（OFF）、LOCK / DELAY、DECAY / REVERB、DENSITY / FX CHAIN 六個旋鈕、BUS 列（MASTER 與 A1 / A2 / A3）、PAN 條、MIX（EXT / INT）直向 fader 與 LEVEL 直向 fader、M / S。</div>
+<table>
+<tr><td class="k">名稱</td><td>TRACK 1 至 4，鼓軌為 FOUNDATION、GROOVE、TIMELINE、LEAD。</td></tr>
+<tr><td class="k">EQ 縮圖</td><td>顯示 EQ 曲線，點一下開 EQ 彈窗。</td></tr>
+<tr><td class="k">FILTER</td><td>中央為 OFF，向左為低通（20 kHz 降至 80 Hz），向右為高通（20 Hz 升至 8 kHz）。接近中央 0.04 內吸附，點兩下回 0。</td></tr>
+<tr><td class="k">LOCK / DECAY / DENSITY</td><td>與 MAIN 的同名參數相同。</td></tr>
+<tr><td class="k">DELAY / REVERB / FX CHAIN</td><td>三個效果送出量，各 0 至 1，點兩下回 0.5。可用 MOD ROUTE 調變。</td></tr>
+<tr><td class="k">BUS 選擇</td><td>MASTER / A1 / A2 / A3 四個按鈕，位於六個旋鈕區下方，選擇 LEVEL fader 目前編輯的匯流排。選中鈕以 track 顏色實心顯示。此選擇不存檔，重開 app 回到 MASTER。選 A1 至 A3 時 LEVEL fader 改寫該 aux bus 的送出量（0 至 2，預設 0），PAN 與 MIX 停用；M / S 不受影響。aux 訊號為 mono，取點在 COMPRESSOR 與旁鏈壓縮之後、fader 與 PAN 之前，不經效果回送與主輸出處理；TRACK 5 至 8 取左右平均。</td></tr>
+<tr><td class="k">A1 至 A3 輸出</td><td>三個 aux bus 的實體聲道在 SETUP 的 AUDIO 分頁 AUX BUS 區指定，未指定為 OFF，已被其他用途佔用的聲道會標示 IN USE。</td></tr>
+<tr><td class="k">PAN</td><td>TRACK 1 至 4 為等功率聲像，5 至 8 為左右平衡。中央吸附，點兩下回 0。支援 MOTION、MOD ROUTE 與 MIDI Learn。</td></tr>
+<tr><td class="k">MIX</td><td>EXT / INT 之間的交叉混合，0 為 INT。</td></tr>
+<tr><td class="k">LEVEL</td><td>0 至 2，預設 1。旁邊兩條電平表分別為 fader 前與 fader 後，來源為觸發包絡而非音訊。BUS 選 A1 至 A3 時改為該 aux bus 的送出量。</td></tr>
+<tr><td class="k">M / S</td><td>M 紅色為靜音；S 黃色為獨奏，長按 0.4 秒為排他獨奏。</td></tr>
+</table>
+<p>訊號順序：靜音、EQ、FILTER、COMPRESSOR、旁鏈壓縮、效果送出點、aux 取點、fader、PAN、主輸出。DELAY、REVERB、FX CHAIN 的送出點各自可選 PRE 或 POST。主輸出：效果回送（含 FX CHAIN）、主 FILTER、MASTER VOLUME、軟削波。</p>
+
+<div class="fig"><img src="img/mixer_bus_aux.png" alt="MASTER 與 AUX 鈕"></div>
+<div class="cap">TRACK 1 的 strip：曲線與效果欄，LOCK / DELAY / DECAY / REVERB / DENSITY / FX CHAIN 六個旋鈕，MASTER 與 A1 / A2 / A3 四個匯流排鈕（圖中選 A1），下方為 PAN、EXT-MIX-INT、音量推桿與 M / S。</div>
+
+<h3>EQ 彈窗</h3>
+<div class="fig"><img src="img/mixer_popover.png" alt="EQ 彈窗"></div>
+<div class="cap">FOUNDATION 軌的 EQ 彈窗：標題 FOUNDATION 與 RESET，EQ 曲線上有兩個可拖曳的點，COMPRESSOR 的 SPEED / AMOUNT 旋鈕與壓縮顯示，SIDECHAIN 下拉選單與 AMOUNT 條，EXT IN GAIN 旋鈕（0.0 dB）。</div>
+<table>
+<tr><td class="k">RESET</td><td>增益回 1.0，頻率回 200 / 1000 / 4000 Hz。</td></tr>
+<tr><td class="k">EQ 曲線</td><td>三個點：LOW 40 至 500 Hz，MID 200 至 5000 Hz，HIGH 1000 至 16000 Hz。增益 0 至 2。最多 3 指同時拖曳。</td></tr>
+<tr><td class="k">COMPRESSOR SPEED</td><td>0 至 1，預設 0.5。</td></tr>
+<tr><td class="k">COMPRESSOR AMOUNT</td><td>0 至 1，預設 0。</td></tr>
+<tr><td class="k">SIDECHAIN</td><td>旁鏈來源下拉選單，可選其他 7 軌。</td></tr>
+<tr><td class="k">SIDECHAIN AMOUNT</td><td>旁鏈壓縮量。</td></tr>
+<tr><td class="k">EXT IN GAIN</td><td>外部輸入增益，-60 至 +12 dB。</td></tr>
+</table>
+
+<h3>EFFECT 列</h3>
+<table>
+<tr><td class="k">DELAY PRE / POST</td><td>延遲送出點切換。</td></tr>
+<tr><td class="k">DELAY LEFT / RIGHT</td><td>左半段為自由時間 5 毫秒至 5 秒，右半段為 16 個節拍同步值（1/1 至 1/32，含附點與三連音）。</td></tr>
+<tr><td class="k">DELAY FEEDBACK</td><td>0 至 0.95，預設 0.35。</td></tr>
+<tr><td class="k">DELAY LEVEL</td><td>0 至 1.5，預設 0.8。</td></tr>
+<tr><td class="k">REVERB PRE / POST</td><td>殘響送出點切換。</td></tr>
+<tr><td class="k">SIZE / DAMP / DECAY</td><td>各 0 至 1，預設 0.5。</td></tr>
+<tr><td class="k">REVERB LEVEL</td><td>0 至 1.5，預設 0.8。</td></tr>
+<tr><td class="k">FILTER</td><td>主輸出濾波旋鈕。</td></tr>
+<tr><td class="k">電平表</td><td>L / R 雙色，-60 至 0 dBFS，峰值保持 0.8 秒。</td></tr>
+<tr><td class="k">MASTER VOLUME</td><td>0 至 1。</td></tr>
+<tr><td class="k">點狀圖示</td><td>開啟 FX CHAIN 面板。任一軌的 FX CHAIN 送出大於 0，且至少一個位置的 DRY WET 大於 0 時，以強調色顯示。</td></tr>
+<tr><td class="k">三線圖示</td><td>開啟 MASTER FX。</td></tr>
+</table>
+
+<h3>FX CHAIN 面板</h3>
+<p>FX CHAIN 是一條有三個位置的送出效果鏈，訊號依序通過位置 1、2、3。面板標題為 FX CHAIN，副標為「SIGNAL RUNS POSITION 1 TO 2 TO 3」。</p>
+<table>
+<tr><td class="k">SEND</td><td>「SEND: PRE」或「SEND: POST」，切換送出點。</td></tr>
+<tr><td class="k">RETURN</td><td>整條效果鏈的回送量，0 至 1.5，預設 0.8。</td></tr>
+<tr><td class="k">三個位置</td><td>三欄，欄頭為「INPUT INTO POSITION 1」「THEN POSITION 2」「THEN POSITION 3 OUTPUT」。</td></tr>
+<tr><td class="k">效果選單</td><td>每個位置各選一種：GRANULAR、KARPLUS、GLITCH。沒有空白選項，也沒有上移下移鈕；要改順序，在各位置的選單選不同的效果。同一種效果可以放在多個位置。</td></tr>
+<tr><td class="k">DRY WET</td><td>每個位置 0 至 1。為 0 時欄頭加註 DRY、該欄變半透明，該位置不處理訊號。</td></tr>
+<tr><td class="k">出廠狀態</td><td>位置 1 為 GRANULAR、DRY WET 1；位置 2 為 KARPLUS、DRY WET 0；位置 3 為 GLITCH、DRY WET 0。</td></tr>
+<tr><td class="k">更換效果</td><td>該位置的參數回到預設、FREEZE 關閉，該位置原有的 MOTION 記錄與 MIDI 綁定清除；DRY WET 保留。聲音以短淡入淡出切換。</td></tr>
+</table>
+<p>參數條只顯示名稱。各參數、DRY WET 與 RETURN 支援 MOTION、MOD ROUTE 與 MIDI Learn；效果選單、FREEZE、HOLD 只支援 MIDI Learn。舊專案的 TEXTURE 設定會對應到位置 1。</p>
+
+<div class="fig"><img src="img/fxchain_panel.png" alt="FX CHAIN 面板"></div>
+<div class="cap">FX CHAIN 面板：SEND: PRE 與 RETURN，三個位置依序為 GRANULAR、KARPLUS、GLITCH，右上標示 SIGNAL RUNS POSITION 1 TO 2 TO 3。</div>
+
+<div class="fig"><img src="img/fxchain_active.png" alt="FX CHAIN 同一效果"></div>
+<div class="cap">同一面板，位置 3 改為 KARPLUS：位置 2 與位置 3 顯示同一組參數。</div>
+
+<h3>GRANULAR</h3>
+<table>
+<tr><td class="k">POSITION / SIZE</td><td>粒子合成的讀取位置與粒子長度。</td></tr>
+<tr><td class="k">DENSITY / TEXTURE</td><td>粒子密度與質地。</td></tr>
+<tr><td class="k">SPREAD</td><td>擴散。</td></tr>
+<tr><td class="k">PITCH</td><td>±24 半音，中央為 0。</td></tr>
+<tr><td class="k">FEEDBACK / REVERB</td><td>回授與殘響量。</td></tr>
+<tr><td class="k">FREEZE</td><td>ON / OFF。</td></tr>
+</table>
+
+<h3>KARPLUS</h3>
+<p>六條互相耦合的弦，左右各三條。</p>
+<table>
+<tr><td class="k">VERB</td><td>0 時各弦獨立，1 時接近殘響。</td></tr>
+<tr><td class="k">PITCH</td><td>弦長。</td></tr>
+<tr><td class="k">DIFFUSE</td><td>擴散量。</td></tr>
+<tr><td class="k">DECAY</td><td>0.05 至 20 秒；高於 0.9 時自激。</td></tr>
+<tr><td class="k">DAMP</td><td>中央為 0，負向為低通，正向為高通。</td></tr>
+<tr><td class="k">STIFF</td><td>弦的色散。</td></tr>
+<tr><td class="k">DRIFT</td><td>中央為 0，左右聲道的音高偏移與隨機漂移。</td></tr>
+</table>
+
+<h3>GLITCH</h3>
+<p>切片重複效果。</p>
+<table>
+<tr><td class="k">RATE</td><td>左半段為自由時間 2 毫秒至 2 秒，右半段為 16 個節拍同步值，與 DELAY 相同。條上顯示時間或節拍名稱。</td></tr>
+<tr><td class="k">CHANCE</td><td>觸發重複的機率。</td></tr>
+<tr><td class="k">REPEAT</td><td>重複次數 1 至 16，預設 5。</td></tr>
+<tr><td class="k">SPEED</td><td>中央為 0，0.25 倍至 4 倍。</td></tr>
+<tr><td class="k">REVERSE</td><td>反向播放的機率。</td></tr>
+<tr><td class="k">CRUSH</td><td>位元破壞量。</td></tr>
+<tr><td class="k">GATE</td><td>中央為 0。</td></tr>
+<tr><td class="k">JITTER</td><td>時間抖動量。</td></tr>
+<tr><td class="k">HOLD</td><td>按住時才作用，不存檔。</td></tr>
+</table>
+
+<h3>MASTER FX</h3>
+<table>
+<tr><td class="k">標題</td><td>顯示「1 EFFECT」或「N EFFECTS」。無效果時顯示「NO MASTER EFFECTS」。</td></tr>
+<tr><td class="k">效果槽</td><td>每槽有 bypass、名稱、OPEN、上移、下移、移除 X。</td></tr>
+<tr><td class="k">ADD EFFECT</td><td>依廠商分組列出可用的 Audio Unit 效果。</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="utility">7. UTILITY</h2>
+
+<div class="fig"><img src="img/utility_full.png" alt="UTILITY 全頁"></div>
+<div class="cap">UTILITY 全頁。左上為 SEQUENCER：DRAW 嵌在面板左上角缺口，標題列有 A GROUP B、LOOP（開啟）、TRIGGER，STAGES 旋鈕（8）與 CROSSFADE 旋鈕（0.00），包絡編輯區含段落時間標籤與編輯中群組的曲線，下方 CURVE 八個旋鈕與 SYNC 八個按鈕。右上為 LFO 欄：三個槽位 1 LFO 4、2 LFO 5、3 LFO 6，各有 HZ fader、SYNC / UNI、MORPH 與 SHAPE 的數值、- / + 與鎖定圖示、波形顯示。底部為 OUTPUT 1 至 4，各有 L1 至 L6 與 SEQ 七條 fader 與示波區，圖中顯示 CV OFFLINE。</div>
+
+<h3>SEQUENCER（8 段包絡）</h3>
+<div class="fig"><img src="img/utility_seq.png" alt="SEQUENCER 區"></div>
+<div class="cap">SEQUENCER 區：面板左上角缺口為 DRAW，頂列 A GROUP B、LOOP、TRIGGER；左側 STAGES 8 與 CROSSFADE 0.00；編輯區上緣標示各段時間（圖中每段皆為 0.1s），實線為編輯中群組，細線為另一群組；下方 CURVE 八個旋鈕與 SYNC 八個按鈕。</div>
+<table>
+<tr><td class="k">DRAW</td><td>頁面級常駐開關，嵌在 SEQUENCER 面板左上角。按下開啟，按鈕文字變為 FINISH；畫完一筆不會自動退出，需再按 FINISH 才結束繪圖模式。離開分頁後不保留。開啟時可在 SEQUENCER 曲線區徒手繪製，抬手時在 8 個斷點位置取樣寫入各段 LEVEL，沒畫到的段保留舊值；也可在三個 LFO pad 上徒手繪製波形。</td></tr>
+<tr><td class="k">A GROUP B</td><td>切換編輯群組 A 或 B。STAGES、START、LOOP、TRIGGER 兩組共用；曲線、CURVE、SYNC 各組獨立。</td></tr>
+<tr><td class="k">LOOP</td><td>循環播放。關閉時停在最後一段的電平。</td></tr>
+<tr><td class="k">TRIGGER</td><td>按下立即從頭觸發包絡。</td></tr>
+<tr><td class="k">STAGES</td><td>段數 1 至 8。</td></tr>
+<tr><td class="k">CROSSFADE</td><td>0 至 1，A 與 B 的混合比例。</td></tr>
+<tr><td class="k">編輯區</td><td>橫軸為時間比例，縱軸為 0 至 10 V。斷點垂直拖曳改 LEVEL，橫向拖曳改 DURATION（0.001 至 10 秒；最後一段可放大至 600 秒）。起點把手在最左側。最多 4 指同時操作。顯示編輯群組實線、另一群組細線、混合結果粗線，以及播放位置。</td></tr>
+<tr><td class="k">CURVE</td><td>八個旋鈕，各 -1 至 +1，點兩下回 0。超出 STAGES 的段以 0.55 透明度顯示，仍可調整。</td></tr>
+<tr><td class="k">SYNC</td><td>八個按鈕，將段長改為節拍同步，17 個比例從 1/16 至 16。</td></tr>
+</table>
+
+<h3>LFO</h3>
+<div class="fig"><img src="img/utility_lfo.png" alt="LFO 欄"></div>
+<div class="cap">LFO 欄三個槽位：1 LFO 4（0.01 HZ）、2 LFO 5（1.0 HZ）、3 LFO 6（1.0 HZ）。每槽有 HZ fader、SYNC / UNI 按鈕、MORPH 百分比與 SH 數值（各配 - / + 與鎖定圖示）、波形顯示與播放位置。</div>
+<table>
+<tr><td class="k">槽位按鈕</td><td>三個槽位分別在 LFO 1 / 4、2 / 5、3 / 6 之間切換。未顯示的 LFO 持續運作。</td></tr>
+<tr><td class="k">HZ</td><td>0.01 至 20 Hz，對數刻度，點兩下回 1 Hz。可錄 MOTION。</td></tr>
+<tr><td class="k">SYNC</td><td>節拍同步，11 個分割從 /16 至 x16。</td></tr>
+<tr><td class="k">UNI / BI</td><td>單極或雙極輸出。</td></tr>
+<tr><td class="k">MORPH</td><td>0 至 100%，- / + 每次 1%。</td></tr>
+<tr><td class="k">SHAPE</td><td>-1 至 +1，每步 0.02。</td></tr>
+<tr><td class="k">鎖定圖示</td><td>鎖定該軸。</td></tr>
+<tr><td class="k">XY pad</td><td>橫向 SHAPE，縱向 MORPH。點兩下重設為 MORPH 0.5、SHAPE 0。波形顯示 72 點（自訂波形為 128 點）與播放位置，顯示為調變後的實際值。</td></tr>
+<tr><td class="k">手繪波形</td><td>DRAW 開啟時在 pad 上由左到右畫一筆，抬手即寫入該 LFO 的 128 點自訂波形；沒畫到的區段以最近已畫值延伸。有自訂波形時 MORPH / SHAPE 不作用、XY 拖曳停用、不顯示準星，波形顯示改為自訂波形。槽位中未顯示的 LFO 不可畫。自訂波形隨專案儲存。</td></tr>
+<tr><td class="k">S&amp;H / T&amp;H</td><td>有自訂波形時上排改為模式按鈕與步數。點按鈕在 S&amp;H 與 T&amp;H 間切換，預設 S&amp;H；- / + 調整步數，0 至 32，預設 0，0 顯示 OFF 表示不取樣保持。S&amp;H 每步保持該步起點的值；T&amp;H 每步前半跟隨波形、後半保持步中點的值。</td></tr>
+<tr><td class="k">RESET</td><td>有自訂波形時下排改為 RESET。清除自訂波形並回到 MORPH / SHAPE，XY 拖曳恢復。步數與 S&amp;H / T&amp;H 設定不隨 RESET 歸零。</td></tr>
+</table>
+
+<h3>OUTPUT 1 至 4</h3>
+<div class="fig"><img src="img/utility_outputs.png" alt="OUTPUT 區"></div>
+<div class="cap">OUTPUT 1 至 4，各有七條 fader（L1 至 L6 與 SEQ）與下方示波區。圖中 CV 引擎未啟動，示波區顯示 CV OFFLINE。</div>
+<table>
+<tr><td class="k">Fader</td><td>順序 L1、L2、L3、SEQ、L4、L5、L6，各 -1 至 +1，中央吸附，點兩下回 0。</td></tr>
+<tr><td class="k">示波區</td><td>顯示 ±10 V 的輸出波形與讀值。CV 引擎未啟動時顯示「CV OFFLINE」；未指定聲道時顯示 0 V 平線。</td></tr>
+<tr><td class="k">輸出範圍</td><td>矩陣 ±10 V，SEQ 0 至 10 V，LFO ±5 V。</td></tr>
+</table>
+<p>iPad 的 CV 引擎需在 SETUP 啟用。各 OUTPUT 的實體聲道在 SETUP 的 MOD OUTPUT 區指定。</p>
+
+<!-- ============================================================ -->
+<h2 id="perform">8. PERFORM</h2>
+
+<div class="fig"><img src="img/perform_full.png" alt="PERFORM 全頁"></div>
+<div class="cap">PERFORM 全頁。上方工具列：PERFORM（選中）/ EDIT、SEQ 與 LFO 1 至 3 電平條、MASTER 頻譜、CONTROLS 14 / MAPPINGS 5。畫布上有五個已命名的旋鈕（Lead decay、Filter、Bass decay、Kick decay、HH decay）、XY PAD 1、FADER 1 至 4 與四顆 BUTTON。右側面板分頁為 MIXER、UTILITY、EFFECT、FX CHAIN，圖中停在 MIXER 頁，顯示 T1 至 T8 的 VOL、M、S、電平表與 segment 條。</div>
+
+<h3>工具列</h3>
+<div class="fig"><img src="img/perform_toolbar.png" alt="PERFORM 工具列"></div>
+<div class="cap">工具列：PERFORM / EDIT 切換，SEQ、LFO 1、LFO 2、LFO 3 電平條，MASTER 頻譜，右端為 CONTROLS 14 與 MAPPINGS 5。</div>
+<table>
+<tr><td class="k">PERFORM / EDIT</td><td>演出模式與編輯模式切換。</td></tr>
+<tr><td class="k">SEQ、LFO 1 至 3</td><td>調變來源的即時電平。</td></tr>
+<tr><td class="k">MASTER</td><td>主輸出頻譜。點一下開啟 MASTER SPECTRUM 面板。</td></tr>
+<tr><td class="k">CONTROLS / MAPPINGS</td><td>畫布上的控件數與對應數。</td></tr>
+</table>
+
+<h3>MASTER SPECTRUM 面板</h3>
+<table>
+<tr><td class="k">頻譜</td><td>放大的主輸出頻譜，圖例為 LEFT、RIGHT、REFERENCE。按住讀取該位置的頻率，短點關閉面板。切換 PERFORM / EDIT 也會關閉。</td></tr>
+<tr><td class="k">LOAD REFERENCE FILE</td><td>開啟系統檔案選擇器，選一個音訊檔作為參考。分析時顯示「ANALYSING REFERENCE FILE」，完成後顯示檔名；失敗時顯示「REFERENCE FILE FAILED TO LOAD」。未載入時顯示「NO REFERENCE FILE LOADED」。</td></tr>
+<tr><td class="k">參考線</td><td>取檔案中最大聲的一段分析，畫成一條靜態的強調色曲線，疊在頻譜上；工具列的 MASTER 頻譜上也會顯示。參考線與檔名會保存，重開 app 後仍在。</td></tr>
+<tr><td class="k">CLEAR REFERENCE</td><td>清除參考線。</td></tr>
+</table>
+
+<div class="fig"><img src="img/master_spectrum.png" alt="MASTER SPECTRUM"></div>
+<div class="cap">MASTER SPECTRUM 面板：LEFT、RIGHT 與 REFERENCE 三條曲線，右上為 LOAD REFERENCE FILE 與 CLEAR REFERENCE，圖中載入的參考檔為 master.wav。</div>
+
+<h3>控件</h3>
+<table>
+<tr><td class="k">KNOB</td><td>旋鈕。</td></tr>
+<tr><td class="k">BUTTON</td><td>LATCH 或 MOMENTARY。</td></tr>
+<tr><td class="k">FADER</td><td>VERTICAL 或 HORIZONTAL。可設回彈 SPRING：OFF、MIN、CENTER、MAX。</td></tr>
+<tr><td class="k">PAD（TWO AXIS）</td><td>兩軸模式。X 與 Y 各有 - / + 按鈕與鎖定圖示。鎖定的軸不接受手指拖曳與 - / +；MOTION、MOD ROUTE 與 MIDI 不受鎖定影響。回彈在 MAPPING 面板的 SPRING X、SPRING Y 設定（OFF、MIN、CENTER、MAX），新增時為關閉。</td></tr>
+<tr><td class="k">PAD（FOUR WAY）</td><td>四方向模式。整塊為觸控面，沒有 - / + 與鎖定，中央有十字線，四邊顯示各方向的目標名稱。手指在中心時四個方向皆為 0，往某方向推到邊緣為 1；斜推時水平與垂直各自計算。按鈕類目標在推過一半時觸發。回彈只有 SPRING TO CENTER 一個開關。</td></tr>
+<tr><td class="k">指示點</td><td>每個控件下方的小點數為該控件的對應數，最多 8。</td></tr>
+</table>
+<p>新專案的畫布是空的，沒有預設控件。沒有控件時顯示空白提示與 ENTER EDIT MODE 按鈕。圖中的 30 個控件為截圖當時的版面。</p>
+
+<h3>側面板</h3>
+<div class="fig"><img src="img/perform_sidebar.png" alt="PERFORM 側面板"></div>
+<div class="cap">側面板：上方分頁為 MIXER、UTILITY、EFFECT、FX CHAIN，圖中停在 MIXER 頁；T1 至 T8 每列有 VOL 橫桿、M、S、直向電平表與 8 格 segment 條。</div>
+<table>
+<tr><td class="k">MIXER</td><td>T1 至 T8 各有電平表、VOL（0 至 2）、M、S（長按為排他獨奏）與 8 格 segment 條，含播放位置。點某一格選取該 segment 並把該軌鎖定在該段，再點一次解除。VOL、M、S 在此頁可指定 MIDI Learn，不支援 MOD ROUTE。</td></tr>
+<tr><td class="k">UTILITY</td><td>第一列為 CROSSFADE 橫桿、LOOP 與 TRIG。曲線區只編輯 A 組，B 組以淡線顯示。LFO 1 至 6 各一列：SPEED 橫桿（SYNC 關閉時為 Hz，開啟時為節拍檔位）、SYNC、UNI / BI。SHAPE 與 MORPH 在此頁只顯示。SPEED 支援 MIDI Learn、MOTION 與 MOD ROUTE。</td></tr>
+<tr><td class="k">EFFECT</td><td>DELAY 的 TIME LEFT、TIME RIGHT、FEEDBACK、LEVEL；REVERB 的 SIZE、DAMP、DECAY、LEVEL。</td></tr>
+<tr><td class="k">FX CHAIN</td><td>三個位置各顯示 POSITION n 與效果名稱、DRY WET 與該效果的參數，GRANULAR 另有 FREEZE，GLITCH 另有 HOLD。此頁不能更換效果種類，也沒有 RETURN；更換效果在 MIXER 的 FX CHAIN 面板。</td></tr>
+</table>
+
+<div class="fig"><img src="img/perform_side_utility.png" alt="側面板 UTILITY"></div>
+<div class="cap">側面板的 UTILITY 分頁：CROSSFADE / LOOP / TRIG，8 段包絡曲線，以及 LFO 1 至 6 的頻率條與 SYNC、UNI。</div>
+
+<div class="fig"><img src="img/perform_effect.png" alt="側面板 EFFECT"></div>
+<div class="cap">側面板的 EFFECT 分頁：DELAY 的 TIME LEFT、TIME RIGHT、FEEDBACK、LEVEL，以及 REVERB 的 SIZE、DAMP、DECAY、LEVEL。</div>
+
+<div class="fig"><img src="img/perform_side_fxchain.png" alt="側面板 FX CHAIN"></div>
+<div class="cap">側面板的 FX CHAIN 分頁：三個位置的 DRY WET 與參數，位置 1 為 GRANULAR、位置 2 為 KARPLUS、位置 3 為 GLITCH。</div>
+
+<h3>EDIT 模式</h3>
+<table>
+<tr><td class="k">+ KNOB / + BUTTON / + FADER / + PAD</td><td>新增控件。+ PAD 新增的是兩軸模式的 PAD。</td></tr>
+<tr><td class="k">MAPPING</td><td>開啟對應面板。只在選取單一控件時可用；在畫布上點兩下控件也可開啟。</td></tr>
+<tr><td class="k">DELETE</td><td>兩段式：按一下變為「DELETE?」，2 秒內再按一下才刪除選取的控件。</td></tr>
+<tr><td class="k">UNDO / REDO</td><td>版面編輯專用，32 步。</td></tr>
+<tr><td class="k">TEMPLATE</td><td>內建版面三個：SEGMENT VOICE、LEVEL AND TRIGGER、SENDS。「SAVE CURRENT LAYOUT」儲存目前版面；「MANAGE USER TEMPLATES」可重新命名或刪除使用者版面，刪除需再確認。</td></tr>
+<tr><td class="k">SNAP GRID</td><td>格線吸附開關。</td></tr>
+<tr><td class="k">選取與拖曳</td><td>點控件加入或取消選取，可多選；拖曳移動位置，多選時整組移動。</td></tr>
+</table>
+
+<div class="fig"><img src="img/perform_edit_toolbar.png" alt="EDIT 模式工具列"></div>
+<div class="cap">EDIT 模式的工具列：PERFORM / EDIT、+ KNOB、+ BUTTON、+ FADER、+ PAD、MAPPING、DELETE、UNDO、REDO，右側為 TEMPLATE 與 SNAP GRID。</div>
+
+<div class="fig"><img src="img/perform_fourway.png" alt="FOUR WAY 的 XY PAD"></div>
+<div class="cap">設為 FOUR WAY 的 XY PAD：四個方向各顯示指派的參數，上為 DELAY TIME L、下為 DELAY TIME R、左為 DELAY FEEDBACK、右為 REVERB DECAY。</div>
+
+<h3>MAPPING 面板</h3>
+<table>
+<tr><td class="k">標頭</td><td>MAPPING 標題、控件種類、名稱欄與 CLOSE；點面板背景也會關閉。BUTTON 有 MODE（MOMENTARY / LATCH）；FADER 有 ORIENTATION（VERTICAL / HORIZONTAL）與 SPRING；PAD 有 TWO AXIS / FOUR WAY 與回彈設定。</td></tr>
+<tr><td class="k">對應槽</td><td>左欄 SLOTS，每個控件 8 個。每槽有目標名稱、CLEAR SLOT、REVERSE RANGE、範圍條與目前有效值條。兩軸模式的 PAD 為 8 個槽兩軸共用，每槽以 X / Y 鈕選擇軸。</td></tr>
+<tr><td class="k">DIRECTIONS</td><td>四方向模式的 PAD 改為 UP、DOWN、LEFT、RIGHT 四列，每個方向一個對應，再指定一次會取代前一個，未指定顯示 EMPTY。每列有 CLEAR DIRECTION、REVERSE RANGE 與範圍條。</td></tr>
+<tr><td class="k">TWO AXIS / FOUR WAY</td><td>切換 PAD 模式。該 PAD 已有對應時，第一下顯示確認字樣，2 秒內再點一下才切換。切換會清除該 PAD 的全部對應，可用 UNDO 復原；名稱保留。切到 FOUR WAY 時值回到中心、回彈開啟；切回 TWO AXIS 時回彈關閉。</td></tr>
+<tr><td class="k">目標分組</td><td>MIXER、VOICE、SEGMENT、FX、GLOBAL、CHROMA、PARTICLE、MESH、FEEDBACK。分組下方為 T1 至 T8 軌道鈕，全域分組時軌道鈕灰顯。已在同一控件使用過的目標有標記。</td></tr>
+<tr><td class="k">MIXER 分組</td><td>每軌：MUTE、SOLO、A1 至 A3 LEVEL、LEVEL、MIX、PAN、旁鏈量、三個效果送出、FILTER。</td></tr>
+<tr><td class="k">FX 分組</td><td>DELAY、REVERB、FX CHAIN（RETURN）、FX CHAIN 1、FX CHAIN 2、FX CHAIN 3 與 PRE / POST。每個 FX CHAIN 位置含三種效果的參數、MIX，以及 EFFECT、FREEZE、HOLD。EFFECT 每觸發一次換成下一種效果，順序為 GRANULAR、KARPLUS、GLITCH；HOLD 在按住時作用。</td></tr>
+</table>
+<p>KNOB 不能選擇 SEQUENCER、RANDOM 與 PRE / POST 開關。對應沒有調變量欄位，調變量在 MOD ROUTE 設定：開啟 Transport 的 MOD 後點控件。PERFORM 控件的 MOD ROUTE 只有 SEQ 與 LFO 1 至 6 共 7 個來源，ENV 不可用；兩軸與四方向 PAD 的兩軸各有一組調變量。各種控件都可指定 MIDI Learn，標籤顯示 CC 編號、N 編號或 PB，採 pickup 方式接手。PAD 在 MIDI Learn 模式時顯示兩個角：左上角為垂直軸，右下角為水平軸。</p>
+
+<div class="fig"><img src="img/perform_mapping.png" alt="MAPPING 面板"></div>
+<div class="cap">旋鈕的 MAPPING 面板：左側 8 個 slot（圖中 slot 1 為 MASTER FILTER）與 CLEAR SLOT、REVERSE RANGE，右側為 TARGET 的分類與參數，最下為範圍條。</div>
+
+<div class="fig"><img src="img/fourway_mapping.png" alt="XY PAD 的 MAPPING"></div>
+<div class="cap">XY PAD 的 MAPPING 面板：上方選 TWO AXIS 或 FOUR WAY，左側為 UP / DOWN / LEFT / RIGHT 四個方向與其指派，另有 SPRING TO CENTER、CLEAR DIRECTION 與 REVERSE RANGE。</div>
+
+
+<!-- ============================================================ -->
+<h2 id="modroute">9. MOD ROUTE</h2>
+
+<p>MOD ROUTE 讓一個參數同時接收多個調變來源。手指在控件上時，手動值取代 MOTION 回放；MOD ROUTE 持續作用，並與 MOTION 相加。停止播放時 MOD ROUTE 持續作用。</p>
+
+<h3>開啟方式</h3>
+<ul>
+<li>按 Transport 的 MOD 進入 MOD 模式。可調變的控件出現實線強調色外框。</li>
+<li>點有外框的控件，開啟該參數的 MOD ROUTE 面板，有觸覺回饋。此時控件的值不會改變。</li>
+<li>再按一次 MOD 離開。MOD 模式與 MIDI Learn 模式互斥；每次啟動 app 時 MOD 為關閉。</li>
+</ul>
+<p>舊版的長按開啟方式已移除。</p>
+
+<div class="fig"><img src="img/mod_on.png" alt="MOD 開啟"></div>
+<div class="cap">Transport 的 MOD 開啟時的 MIXER 頁：可調變的控件出現外框。</div>
+
+<h3>可調變的位置</h3>
+<ul>
+<li>MAIN 參數列的 DECAY。</li>
+<li>VOICE 的音源參數，以及取樣的起點、終點與 GRAIN SHAPE。</li>
+<li>MIXER 每軌：DELAY、REVERB、FX CHAIN 送出、旁鏈量、PAN、MIX、LEVEL，以及 A1 至 A3 的送出量。FILTER、LOCK、DENSITY、M、S 與 MIXER 頁的 DECAY 不支援。</li>
+<li>MIXER 的 EFFECT 列：DELAY 的 LEFT、RIGHT、FEEDBACK、LEVEL；REVERB 的 SIZE、DAMP、DECAY、LEVEL；FX CHAIN 的 RETURN、各位置的參數與 DRY WET。</li>
+<li>UTILITY 的 LFO 速度與 XY pad。</li>
+<li>PERFORM 畫布的全部控件；側面板 EFFECT 與 FX CHAIN 的各橫桿、UTILITY 分頁的 LFO SPEED。側面板 MIXER 的 VOL 不支援。</li>
+<li>VISUAL 的 MIX 與參數條。</li>
+</ul>
+
+<h3>面板</h3>
+<table>
+<tr><td class="k">標題</td><td>MOD ROUTE，XY pad 會加註軸名。</td></tr>
+<tr><td class="k">來源按鈕</td><td>16 個，四列：OFF、SEQ、LFO 1 至 6、ENV 1 至 8。OFF 清除全部。</td></tr>
+<tr><td class="k">按鈕邏輯</td><td>點已選且量不為 0 的來源：量歸 0，來源維持選取。點已選且量為 0：設為 +50%。點未選且量不為 0：選取。點未選且量為 0：選取並設 +50%。</td></tr>
+<tr><td class="k">AMOUNT</td><td>-100 至 +100%，標題顯示「來源名 AMOUNT」，未選來源時顯示「SELECT A SOURCE」。</td></tr>
+<tr><td class="k">CLEAR MOTION?</td><td>該參數有 MOTION 記錄時顯示 Y / N 列。</td></tr>
+<tr><td class="k">關閉</td><td>點面板外、回答 Y / N，或關閉 MOD。面板關閉後 MOD 模式仍維持開啟。</td></tr>
+</table>
+
+<div class="fig"><img src="img/modroute_panel.png" alt="MOD ROUTE 面板"></div>
+<div class="cap">MOD ROUTE 面板：OFF、SEQ、LFO 1 至 6、ENV 1 至 8，圖中選 ENV 1，下方 ENV 1 AMOUNT 為 -36%。</div>
+
+<h3>來源</h3>
+<table>
+<tr><td class="k">SEQ</td><td>UTILITY 包絡輸出 0 至 1。</td></tr>
+<tr><td class="k">LFO 1 至 6</td><td>依 UNI / BI 設定為單極或雙極。</td></tr>
+<tr><td class="k">ENV 1 至 8</td><td>各 track 的觸發包絡，0 至 1，依該 track 目前音源（SYNTH、SAMPLE、PHYSICAL、AU）讀取，允許調變自己 track 的參數。ENV 不是 UTILITY OUTPUT 矩陣的欄。PERFORM 控件不可用 ENV，按鈕灰顯。</td></tr>
+</table>
+<p>已設定的參數右上角顯示來源標記：m 為 MOTION，s 為 SEQ，1 至 6 為 LFO，e1 至 e8 為 ENV；來源太多時以「+」截斷。</p>
+
+<h3>與 MIDI Learn 的關係</h3>
+<ul>
+<li>MOD 與 MIDI 不能同時開啟，開啟其中一個會關閉另一個。</li>
+<li>MIDI 綁定只能在 SETUP 移除；重新 learn 會取代舊綁定。</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="visual">10. VISUAL</h2>
+
+<div class="fig"><img src="img/visual_full.png" alt="VISUAL 全頁"></div>
+<div class="cap">VISUAL 全頁。左上為 16:9 預覽與狀態列（60 FPS、SURFACES 1）。右上為 SOURCE 列（鎖頭圖示、ALWAYS ON、CAMERA 選單、BACK CAMERA、兩個翻轉按鈕、1920 x 1080）與四個站：PARTICLE、MESH、FEEDBACK、CHROMASCOPE，各有拖曳把手、ON 按鈕與 MIX 條（圖中前三個為 1.00，CHROMASCOPE 為 0.35）。下方四個參數面板。</div>
+
+<h3>SOURCE 列與站列</h3>
+<div class="fig"><img src="img/visual_layers.png" alt="SOURCE 列與站列"></div>
+<div class="cap">SOURCE 列：鎖頭圖示、SOURCE、ALWAYS ON、CAMERA 下拉、鏡頭選單、水平與垂直翻轉按鈕、解析度 1920 x 1080。下方四列為 PARTICLE、MESH、FEEDBACK、CHROMASCOPE，各有把手、ON 與 MIX 條。</div>
+<table>
+<tr><td class="k">SOURCE / ALWAYS ON</td><td>來源狀態文字。</td></tr>
+<tr><td class="k">來源選單</td><td>CAMERA、PHOTO、VIDEO。</td></tr>
+<tr><td class="k">鏡頭選單</td><td>選相機裝置；無相機時顯示 NO CAMERA FOUND。相機為 1080p 30 fps，前鏡頭鏡像。</td></tr>
+<tr><td class="k">PHOTOS / FILES</td><td>PHOTO 與 VIDEO 來源時顯示，從相簿或檔案載入。載入後顯示檔名，失敗顯示 LOAD FAILED。相片最長邊 1920；影片循環播放且靜音。</td></tr>
+<tr><td class="k">FLIP H / FLIP V</td><td>水平與垂直翻轉。</td></tr>
+<tr><td class="k">解析度</td><td>顯示來源解析度；未就緒時顯示 SOURCE WAITING。</td></tr>
+<tr><td class="k">站列</td><td>四個站 CHROMASCOPE、PARTICLE、MESH、FEEDBACK，拖曳左側把手改順序。ON / OFF 切換，預設只有 CHROMASCOPE 開；全部關閉時輸出原始來源。</td></tr>
+<tr><td class="k">MIX</td><td>0 至 1，預設 CHROMASCOPE 0.75，其餘 1。右上角顯示調變來源標記。</td></tr>
+<tr><td class="k">狀態列</td><td>NN FPS、SURFACES n、EXTERNAL DISPLAY、RENDERER OFFLINE。</td></tr>
+</table>
+<p>VISUAL 的參數值不隨 bank 儲存，只有 MOD ROUTE 路由會存入 bank。</p>
+
+<h3>參數面板</h3>
+<div class="fig"><img src="img/visual_panels.png" alt="四個參數面板"></div>
+<div class="cap">四個參數面板。PARTICLE：SIZE、SHAPE、DENSITY、JITTER、DEPTH MIX、DISPLACE、ZOOM、BRIGHTNESS、SCALE X / Y / Z、AUDIO DEPTH、AUDIO TRACK ALL。MESH：模型選單（PENTAGONAL）、LOAD MODEL、DISPLACE、WIREFRAME、ROTATE X / Y / Z、SCALE、AUDIO DEPTH、BRIGHTNESS、AUDIO TRACK ALL。FEEDBACK：SMOOTH、BRIGHT、CHROMA、DIFFUSE、BRIGHTNESS。CHROMASCOPE：EFFECT / MICROPHONE、BASE HUE、HUE SPREAD、BRIGHTNESS、CURVE 1 至 4、ANGLE 1 至 4。圖中 MESH 的 ROTATE 三條右上角有調變來源標記。</div>
+
+<h3>CHROMASCOPE</h3>
+<table>
+<tr><td class="k">EFFECT</td><td>效果開關。</td></tr>
+<tr><td class="k">MICROPHONE</td><td>以主輸出音訊（L / R / mid / side）驅動影像。</td></tr>
+<tr><td class="k">BASE HUE</td><td>0 至 333，預設 166.5。</td></tr>
+<tr><td class="k">HUE SPREAD</td><td>0 至 100，預設 50。</td></tr>
+<tr><td class="k">BRIGHTNESS</td><td>0 至 4。</td></tr>
+<tr><td class="k">CURVE 1 至 4</td><td>各 0 至 100。</td></tr>
+<tr><td class="k">ANGLE 1 至 4</td><td>各 0 至 360。</td></tr>
+</table>
+
+<h3>PARTICLE</h3>
+<table>
+<tr><td class="k">SIZE</td><td>0.001 至 1。</td></tr>
+<tr><td class="k">SHAPE</td><td>0 至 1，依序為圓、方、三角、六角、菱形、星、環，1 為隨機。不可 MOD ROUTE。</td></tr>
+<tr><td class="k">DENSITY</td><td>0.01 至 2。</td></tr>
+<tr><td class="k">JITTER</td><td>0 至 0.05。</td></tr>
+<tr><td class="k">DEPTH MIX</td><td>0 至 1。</td></tr>
+<tr><td class="k">DISPLACE</td><td>0 至 5。</td></tr>
+<tr><td class="k">ZOOM</td><td>-1 至 +1。</td></tr>
+<tr><td class="k">BRIGHTNESS</td><td>0 至 4。</td></tr>
+<tr><td class="k">SCALE X / Y / Z</td><td>各 -3 至 +3。</td></tr>
+<tr><td class="k">AUDIO DEPTH</td><td>0 至 4，位移量乘以 (1 + 音量 x 深度)。</td></tr>
+<tr><td class="k">AUDIO TRACK</td><td>ALL 或 TRACK 1 至 8。</td></tr>
+</table>
+
+<h3>MESH</h3>
+<table>
+<tr><td class="k">模型選單</td><td>100 個內建模型，有縮圖，預設球體。</td></tr>
+<tr><td class="k">LOAD MODEL</td><td>載入 .obj 檔。</td></tr>
+<tr><td class="k">DISPLACE</td><td>0 至 5。</td></tr>
+<tr><td class="k">WIREFRAME</td><td>0 至 1。</td></tr>
+<tr><td class="k">ROTATE X / Y / Z</td><td>各 0 至 360。</td></tr>
+<tr><td class="k">SCALE</td><td>0.1 至 5。</td></tr>
+<tr><td class="k">AUDIO DEPTH / BRIGHTNESS / AUDIO TRACK</td><td>同 PARTICLE。</td></tr>
+</table>
+
+<h3>FEEDBACK</h3>
+<table>
+<tr><td class="k">SMOOTH</td><td>平滑量。</td></tr>
+<tr><td class="k">BRIGHT</td><td>亮度衰減。</td></tr>
+<tr><td class="k">CHROMA</td><td>0 至 0.005。</td></tr>
+<tr><td class="k">DIFFUSE</td><td>擴散量。</td></tr>
+<tr><td class="k">BRIGHTNESS</td><td>輸出亮度。</td></tr>
+</table>
+
+<h3>音訊驅動與調變</h3>
+<ul>
+<li>音訊來源為 8 軌在 mixer 輸入點的 RMS，乘以 VOL 並套用靜音與獨奏。</li>
+<li>共 39 個參數可 MOD ROUTE。不可調變：站的開關與順序、AUDIO TRACK、SHAPE、MESH 模型。</li>
+<li>MIDI 寫入的是基底值。</li>
+</ul>
+
+<h3>外接螢幕</h3>
+<ul>
+<li>以 USB-C 或 AirPlay 鏡像連接後，外接螢幕顯示影像輸出，不需要停在 VISUAL 分頁。</li>
+<li>檔案與相簿選擇器仍在 iPad 上顯示。</li>
+<li>第一次使用相機時系統會詢問相機權限。</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="setup">11. SETUP</h2>
+
+<p>SETUP 為置中的面板，上方有標題與 CLOSE，點面板外也會關閉。面板分為五個分頁：AUDIO、CV / MIDI、CLOCK、MIDI CONTROL、SYSTEM，再次開啟時回到上次的分頁。多數區塊有 INFO 鈕，點一下展開說明。</p>
+
+<h3>AUDIO</h3>
+
+<div class="fig"><img src="img/setup_audio.png" alt="SETUP AUDIO"></div>
+<div class="cap">SETUP 的 AUDIO 分頁：RATE、MAIN OUT、AUX BUS 的 A1 至 A3，以及 PARALLEL OUT 的逐軌指派。</div>
+
+<table>
+<tr><td class="k">AUDIO DEVICE</td><td>DEVICE 下拉選單，選擇多聲道音訊裝置，未選時顯示 No Device。選擇裝置後 CV 輸出隨即啟動。</td></tr>
+<tr><td class="k">SAMPLE RATE</td><td>44.1 kHz 或 48 kHz，預設 44.1 kHz。</td></tr>
+<tr><td class="k">MAIN OUT</td><td>顯示目前的系統音訊路由名稱，旁邊為系統路由選擇器。</td></tr>
+<tr><td class="k">AUX BUS</td><td>A1 至 A3 各指定一個實體聲道或 OFF。已被其他用途使用的聲道標示 IN USE。</td></tr>
+<tr><td class="k">PARALLEL OUT</td><td>每軌的平行輸出，可選 AUDIO L、AUDIO R、MONO。訊號為 fader 後、效果前。</td></tr>
+<tr><td class="k">EXTERNAL INPUT</td><td>每軌指定外部輸入：OFF、單一聲道，或一組立體聲聲道。</td></tr>
+<tr><td class="k">INPUT COMP</td><td>輸入延遲補償 0 至 250 毫秒，每步 0.1 毫秒。</td></tr>
+</table>
+
+<h3>CV / MIDI</h3>
+
+<div class="fig"><img src="img/setup_cvmidi.png" alt="SETUP CV / MIDI"></div>
+<div class="cap">SETUP 的 CV / MIDI 分頁：每軌的 MIDI CHANNEL、PITCH CONTROL CHANGE、ENVELOPE CONTROL CHANGE、DRUM NOTE、PITCH CV CHANNEL、VOLTS 與 ENVELOPE CV CHANNEL。</div>
+
+<table>
+<tr><td class="k">MIDI OUTPUT</td><td>DEVICE 下拉選單（含 None），以及一次設定全部 track 的 MIDI CHANNEL ALL TRACKS。</td></tr>
+<tr><td class="k">TRACK ROUTING</td><td>8 個 track 各一列，欄位為 MIDI CHANNEL、PITCH CONTROL CHANGE、ENVELOPE CONTROL CHANGE、DRUM NOTE（只有 TRACK 5 至 8）、PITCH CV CHANNEL、VOLTS（1V 或 1.2V）、ENVELOPE CV CHANNEL。右上為 CLEAR ALL。CV 聲道不可重複，選到已使用的聲道時兩者互換；MIDI 聲道可以重複。</td></tr>
+<tr><td class="k">MOD OUTPUT</td><td>指派 UTILITY 的 OUTPUT 1 至 4 的實體聲道。已被 track 的 CV 使用的聲道無法選取；選到另一個 MOD OUTPUT 使用中的聲道時兩者互換。</td></tr>
+<tr><td class="k">BUCHLA PULSE</td><td>SPIKE OFF / ON 與 WIDTH（毫秒）。</td></tr>
+<tr><td class="k">ENV DELAY</td><td>每軌的包絡延遲，單位毫秒。</td></tr>
+</table>
+
+<h3>CLOCK</h3>
+
+<div class="fig"><img src="img/setup_clock.png" alt="SETUP CLOCK"></div>
+<div class="cap">SETUP 的 CLOCK 分頁：CLOCK IN 的 SOURCE 與 DIV MULT，CLOCK OUT 的 CHANNEL、OUT DIV 與 OUT WIDTH，以及 MIDI CLOCK OUT。</div>
+
+<table>
+<tr><td class="k">CLOCK IN</td><td>SOURCE：INT / MIDI / CV。DIV MULT：/4、/2、x1、x2、x4，只在使用外部來源時可用。CV INPUT 選聲道，SIGNAL 顯示訊號，STATUS 顯示狀態。BPM 20 至 300。MIDI 時脈為 24 PPQN，2 秒無訊號視為中斷。</td></tr>
+<tr><td class="k">CLOCK OUT</td><td>CHANNEL、OUT DIV、OUT WIDTH（毫秒）。</td></tr>
+<tr><td class="k">MIDI CLOCK OUT</td><td>OFF / ON。沒有 MIDI 輸出裝置時灰顯。</td></tr>
+</table>
+
+<h3>MIDI CONTROL</h3>
+
+<div class="fig"><img src="img/setup_midictl.png" alt="SETUP MIDI CONTROL"></div>
+<div class="cap">SETUP 的 MIDI CONTROL 分頁：CURRENTLY LEARNING、MIDI INPUT DEVICES 的裝置清單與勾選框，以及 MIDI BINDINGS。</div>
+
+<table>
+<tr><td class="k">CURRENTLY LEARNING</td><td>顯示等待中的 MIDI Learn 目標，等待中有 CANCEL 鈕。</td></tr>
+<tr><td class="k">MIDI INPUT DEVICES</td><td>MIDI 輸入裝置清單，可多選。</td></tr>
+<tr><td class="k">MIDI BINDINGS</td><td>已綁定清單。每項可設 MODE（LATCH / MOMENTARY）、TAKEOVER（JUMP / PICKUP）、SCALE（LINEAR / EXP / LOG）、MIN 與 MAX（0 至 100%，每步 10%），可用 REMOVE 單項刪除或用 CLEAR ALL 全部清除。</td></tr>
+</table>
+
+<h3>SYSTEM</h3>
+
+<div class="fig"><img src="img/setup_system.png" alt="SETUP SYSTEM"></div>
+<div class="cap">SETUP 的 SYSTEM 分頁：RECORDING TRACKS 的 16 個開關與 ALL ON、ALL OFF、LOAD DEFAULT、SAVE DEFAULT，下方顯示預估寫入量與 VIDEO RECORDING 的兩個開關。</div>
+
+<table>
+<tr><td class="k">RECORDING LOCATION</td><td>固定為 Documents/Recordings，檔案 app 路徑「On My iPad / HONKI / Recordings」。Sessions 為分軌錄音，Samples 為取樣錄音。</td></tr>
+<tr><td class="k">RECORDING TRACKS</td><td>選擇分軌錄音要寫入的項目，見第 14 章。</td></tr>
+<tr><td class="k">VIDEO RECORDING</td><td>錄音時同時錄影的兩個開關，見第 14 章。</td></tr>
+<tr><td class="k">GENERATE VELOCITY</td><td>每軌一條 1 至 127 的範圍條，設定自動產生的力度範圍，另有 RESET。</td></tr>
+<tr><td class="k">DIAGNOSTICS</td><td>狀態文字與 EXPORT LOG。</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="midilearn">12. MIDI Learn</h2>
+
+<div class="fig"><img src="img/midilearn_on.png" alt="MIDI Learn 開啟"></div>
+<div class="cap">Transport 的 MIDI 開啟：可指定的控件以虛線框標示，圖為 VOICE 頁。</div>
+
+<h3>進入與離開</h3>
+<ul>
+<li>按 Transport 的 MIDI 或 Cmd+L 進入。可指定的控件顯示虛線外框；XY pad 顯示兩個角，左上角為 Y 軸，右下角為 X 軸。</li>
+<li>再按 MIDI 或 Cmd+L 離開；按 MOD 也會離開。ESC 不會離開 MIDI Learn 模式。</li>
+<li>1.3.4 之後新增的可指定目標：MIXER 的 PAN，FX CHAIN 的各參數、DRY WET、RETURN、效果種類（每次觸發換下一種）、FREEZE 與 HOLD（按住時作用）。</li>
+</ul>
+
+<h3>流程</h3>
+<ol style="padding-left:22px">
+<li style="font-size:15px;color:#C9C9C9;margin:6px 0">點一個控件，進入等待狀態；SETUP 的 CURRENTLY LEARNING 顯示目標。</li>
+<li style="font-size:15px;color:#C9C9C9;margin:6px 0">10 秒內送出 MIDI 訊息。點另一個控件會切換目標。</li>
+<li style="font-size:15px;color:#C9C9C9;margin:6px 0">第一個符合的訊息完成綁定：按鈕為 MOMENTARY，其餘為連續值，曲線預設 LINEAR。既有綁定被取代。</li>
+</ol>
+
+<h3>訊息類型</h3>
+<table>
+<tr><td class="k">可綁定</td><td>CC、Note、Pitch Bend。</td></tr>
+<tr><td class="k">不可綁定</td><td>Program Change。Aftertouch 與 SysEx 忽略。</td></tr>
+</table>
+
+<h3>綁定行為</h3>
+<table>
+<tr><td class="k">MODE</td><td>LATCH 或 MOMENTARY。</td></tr>
+<tr><td class="k">TAKEOVER</td><td>JUMP 直接跳到新值；PICKUP 在經過目前值後才接手。</td></tr>
+<tr><td class="k">SCALE</td><td>LINEAR、EXP、LOG。</td></tr>
+<tr><td class="k">MIN / MAX</td><td>映射範圍。</td></tr>
+<tr><td class="k">分頁切換</td><td>六個分頁各可綁定一個訊息。</td></tr>
+</table>
+<p>綁定儲存於 midi_mappings.json，同時保留 .bak 備份。每個參數只能有一個綁定。</p>
+
+<!-- ============================================================ -->
+<h2 id="motion">13. Motion</h2>
+
+<table>
+<tr><td class="k">回放</td><td>點一下 Transport 的 MOTION 切換回放，預設為開啟（黃色）。手動操作時以手動為準；放開後回到記錄值。</td></tr>
+<tr><td class="k">錄製</td><td>按住 MOTION 1 秒開始錄製（紅色），錄製中點一下停止。開始錄製時回放自動開啟。</td></tr>
+<tr><td class="k">記錄條件</td><td>錄製中、正在播放、手指在控件上，三者同時成立才記錄。</td></tr>
+<tr><td class="k">寫入時機</td><td>停止錄製或停止播放時寫入。</td></tr>
+<tr><td class="k">取樣率</td><td>30 Hz，sample-and-hold。</td></tr>
+<tr><td class="k">lane 長度</td><td>track 參數：每個 segment 一條 64 格 lane。效果與 VISUAL 參數：全域 4 小節 lane。</td></tr>
+<tr><td class="k">可記錄</td><td>mixer（含 PAN）、DECAY、和聲、音源參數（kick、取樣、PHYSICAL；AU 軌不可）、效果（含 FX CHAIN 的參數、DRY WET 與 RETURN）、VISUAL、PERFORM 控件。</td></tr>
+<tr><td class="k">不可記錄</td><td>LOCK、DENSITY、wavetable 選擇、MODEL、POLYPHONY、LOOP、REVERSE、FREEZE、HOLD、音源切換、AU 參數。</td></tr>
+<tr><td class="k">清除單一參數</td><td>開啟 Transport 的 MOD，點該控件，在 MOD ROUTE 面板的 CLEAR MOTION? 回答 Y。</td></tr>
+<tr><td class="k">其他會清除 MOTION 的動作</td><td>segment 的 CLEAR、頂列的 CLEAR，以及更換 FX CHAIN 某位置的效果（只清該位置）。沒有一次清除全部 MOTION 的按鈕。</td></tr>
+<tr><td class="k">指示</td><td>有記錄的控件顯示指示線。</td></tr>
+<tr><td class="k">儲存</td><td>隨 bank 儲存，可 undo。</td></tr>
+</table>
+
+<div class="fig"><img src="img/motion_on.png" alt="MOTION 回放開啟"></div>
+<div class="cap">MOTION 回放開啟時為黃色。</div>
+
+<div class="fig"><img src="img/motion_off.png" alt="MOTION 回放關閉"></div>
+<div class="cap">回放關閉時為深色。</div>
+
+<div class="fig"><img src="img/motion_rec.png" alt="MOTION 錄製中"></div>
+<div class="cap">按住 1 秒進入錄製，錄製中為紅色。</div>
+
+
+<!-- ============================================================ -->
+<h2 id="recording">14. 錄音</h2>
+
+<h3>分軌錄音</h3>
+
+<div class="fig"><img src="img/recording_setup.png" alt="錄音項目設定"></div>
+<div class="cap">錄音的項目在 SETUP 的 SYSTEM 分頁選擇：RECORDING TRACKS 的 16 個開關、預估每分鐘寫入量，以及 VIDEO RECORDING 的 RECORD APP SCREEN 與 RECORD VISUAL OUTPUT。</div>
+
+<table>
+<tr><td class="k">開始</td><td>按 PLAY 後在 Y / REC? / N 中選 Y。</td></tr>
+<tr><td class="k">停止</td><td>按紅點錄音停止按鈕並回答 Y。app 切到背景不會停止錄音。系統音訊被中斷時檔案會先結束，恢復後開新 session；改變取樣率也會開新 session。</td></tr>
+<tr><td class="k">RECORDING TRACKS</td><td>在 SETUP 的 SYSTEM 分頁選擇要寫入的項目，共 16 個開關：TRACK 1 至 8、MASTER、EXTERNAL INPUT、AUX 1、AUX 2、AUX 3、DELAY、REVERB、FX CHAIN。出廠預設為 TRACK 1 至 8、MASTER 與 EXTERNAL INPUT 開啟。另有 ALL ON、ALL OFF、LOAD DEFAULT、SAVE DEFAULT。選擇隨專案儲存；專案沒有記錄時使用 SAVE DEFAULT 存下的預設。錄音中不可更改。下方顯示預估的每分鐘寫入量。全部關閉時顯示「Nothing selected. Recording is unavailable.」，此時選 Y 只會播放。</td></tr>
+<tr><td class="k">檔案</td><td>WAV（32 位元浮點）：track1 至 track4 單聲道、track5 至 track8 立體聲、master 立體聲；aux1 至 aux3 單聲道；delay 與 reverb 立體聲，為效果回送訊號，取點在主 FILTER 與 MASTER VOLUME 之前。EXTERNAL INPUT 開啟時，有外部輸入路由的軌另存 trackN_ext.wav。track 的取樣點為 fader 後。</td></tr>
+<tr><td class="k">VIDEO RECORDING</td><td>SETUP 的 SYSTEM 分頁有 RECORD APP SCREEN 與 RECORD VISUAL OUTPUT 兩個開關，預設皆為 OFF。設定存在裝置上，不隨專案。錄音中不可更改。錄影隨錄音開始與結束，影片存在同一個 session 資料夾。</td></tr>
+<tr><td class="k">AppScreen.mp4</td><td>RECORD APP SCREEN 開啟時錄下 app 畫面，不使用麥克風。開始時系統會出現同意對話框；拒絕不影響錄音。</td></tr>
+<tr><td class="k">VisualOutput.mp4</td><td>RECORD VISUAL OUTPUT 開啟時錄下 VISUAL 的輸出畫面：H.264、1280 x 720、30 fps、無聲，等比縮放並補黑邊。影像引擎未啟動時會自動啟動。</td></tr>
+<tr><td class="k">位置</td><td>Recordings/Sessions/日期-時間/。同一秒內重複時加上 -2、-3。iPad 從檔案 app 的 On My iPad / HONKI / Recordings 取得。</td></tr>
+<tr><td class="k">檔頭</td><td>每 100 毫秒更新，中斷時檔案仍可讀。</td></tr>
+</table>
+
+<h3>取樣錄音（VOICE 的 RECORD）</h3>
+<table>
+<tr><td class="k">來源</td><td>主輸出。</td></tr>
+<tr><td class="k">長度</td><td>最長 120 秒。</td></tr>
+<tr><td class="k">停止後</td><td>自動載入為該軌取樣。</td></tr>
+<tr><td class="k">檔案</td><td>Recordings/Samples/track 編號_時間戳.wav，立體聲 32 位元浮點。</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="shortcuts">15. 快捷鍵</h2>
+
+<p>需外接鍵盤。</p>
+<table>
+<tr><td class="k">1 至 6</td><td>切換分頁。編輯覆蓋層開啟時改為切換 TRACK 1 至 4 與 DRUMS。</td></tr>
+<tr><td class="k">Space</td><td>播放 / 停止，含錄音確認。</td></tr>
+<tr><td class="k">Shift+Space</td><td>只播放，不錄音。</td></tr>
+<tr><td class="k">Cmd+L</td><td>MIDI Learn 開關。</td></tr>
+<tr><td class="k">Cmd+Z</td><td>復原。</td></tr>
+<tr><td class="k">Cmd+Shift+Z</td><td>重做。</td></tr>
+<tr><td class="k">ESC</td><td>關閉編輯覆蓋層。</td></tr>
+</table>
+<p>觸控：樂句編輯覆蓋層向下滑超過 80pt 關閉。</p>
+
+<footer>MADZINE — HONKI v1.4.0</footer>
+</div>
+</body>
+</html>

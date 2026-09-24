@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HONKI Manual</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root { --accent: #F27455; }
+* { box-sizing: border-box; }
+body { margin:0; padding:0; background:#0B0B0B; color:#ECECEC; font-family:"Barlow Condensed Light","Barlow Condensed",-apple-system,sans-serif; font-weight:300; line-height:1.6; }
+.wrap { max-width:760px; margin:0 auto; padding:64px 40px 120px; }
+header { border-bottom:1px solid #2A2A2A; padding-bottom:28px; margin-bottom:40px; }
+header .brand { font-size:14px; letter-spacing:0.32em; color:#F27455; text-transform:uppercase; }
+header h1 { font-size:48px; font-weight:300; margin:8px 0 4px; letter-spacing:0.02em; }
+header .sub { font-size:15px; color:#9A9A9A; }
+h2 { font-size:22px; font-weight:400; color:#F27455; margin-top:56px; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #2A2A2A; letter-spacing:0.04em; }
+h3 { font-size:16px; font-weight:500; color:#ECECEC; margin-top:26px; margin-bottom:8px; }
+p { font-size:15px; color:#C9C9C9; margin:8px 0; }
+ul { margin:8px 0; padding-left:22px; }
+li { font-size:15px; color:#C9C9C9; margin:6px 0; }
+.term { color:#ECECEC; font-weight:500; }
+table { width:100%; border-collapse:collapse; margin:16px 0; }
+td { font-size:14px; padding:8px 10px; border-bottom:1px solid #222; color:#C9C9C9; vertical-align:top; }
+td.k { color:#ECECEC; font-weight:500; width:30%; white-space:nowrap; }
+.fig { margin:20px 0 0; }
+.fig img { width:100%; border:1px solid #2A2A2A; display:block; }
+.cap { font-size:13px; color:#9A9A9A; margin:6px 0 16px; }
+nav.toc ul { list-style:none; padding-left:0; columns:2; }
+nav.toc li { margin:4px 0; }
+nav.toc a { color:#C9C9C9; text-decoration:none; font-size:15px; }
+nav.toc a:hover { color:#F27455; }
+footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-size:14px; color:#666; letter-spacing:0.08em; }
+@media (max-width:600px) { .wrap { padding:40px 16px 80px; } nav.toc ul { columns:1; } td.k { white-space:normal; } }
+/* ===== PRINT / PDF ===== */
+@media print {
+  @page { size: A4; margin: 14mm 15mm 16mm; background: #0B0B0B; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+  html { background:#0B0B0B; }
+  body { background:#0B0B0B; color:#ECECEC; font-size:10.5pt; line-height:1.5; }
+  .wrap { max-width:none; width:100%; margin:0; padding:0; }
+
+  header { padding-bottom:14px; margin-bottom:22px; break-after:avoid; break-inside:avoid; }
+  header .brand { font-size:9.5pt; }
+  header h1 { font-size:34pt; margin:4px 0 2px; }
+  header .sub { font-size:11pt; }
+
+  h2 { font-size:15pt; margin-top:22px; margin-bottom:10px; padding-bottom:6px;
+       break-after:avoid; break-inside:avoid; }
+  h3 { font-size:11.5pt; margin-top:14px; margin-bottom:5px;
+       break-after:avoid; break-inside:avoid; }
+  p, li { font-size:10.5pt; orphans:2; widows:2; }
+  p { margin:5px 0; break-inside:auto; }
+  ul { margin:5px 0; break-inside:auto; }
+  li { margin:3px 0; break-inside:avoid; }
+
+  table { margin:10px 0; break-inside:auto; }
+  tr { break-inside:avoid; break-after:auto; }
+  td { font-size:10pt; padding:5px 7px; }
+
+  .fig { margin:9px 0 0; break-inside:avoid; break-after:avoid; page-break-inside:avoid; page-break-after:avoid; }
+  /* width:auto keeps the intrinsic aspect ratio when max-height clamps a tall
+     screenshot; width:100% would squash it */
+  .fig img { width:auto; height:auto; max-width:100%; max-height:128mm; display:block; margin:0 auto; }
+  /* very tall UI shots get more height so they stay legible */
+  .fig img[src$="mixer_strip.png"], .fig img[src$="mixer_bus_aux.png"],
+  .fig img[src$="mixer_popover.png"], .fig img[src$="perform_sidebar.png"],
+  .fig img[src$="perform_side_utility.png"], .fig img[src$="perform_side_fxchain.png"],
+  .fig img[src$="perform_effect.png"] { max-height:172mm; }
+  .fig img[src$="drums_ratio.png"], .fig img[src$="utility_lfo.png"],
+  .fig img[src$="main_editor.png"], .fig img[src$="modroute_panel.png"] { max-height:152mm; }
+  .cap { font-size:9pt; margin:4px 0 9px; break-before:avoid; break-inside:avoid;
+         page-break-before:avoid; page-break-inside:avoid; orphans:2; widows:2; }
+
+  nav.toc { break-after:page; page-break-after:always; break-inside:avoid; }
+  nav.toc ul { columns:2; }
+  nav.toc a { color:#C9C9C9; font-size:11pt; }
+  a { text-decoration:none; }
+
+  footer { margin-top:28px; padding-top:14px; font-size:9.5pt; break-inside:avoid; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="brand">MADZINE</div>
+  <h1>HONKI</h1>
+  <div class="sub">User Manual — v1.4.0 — English</div>
+</header>
+
+<nav class="toc">
+<ul>
+<li><a href="#overview">1. Overview</a></li>
+<li><a href="#topbar">2. Top Bar</a></li>
+<li><a href="#transport">3. Transport</a></li>
+<li><a href="#main">4. MAIN</a></li>
+<li><a href="#voice">5. VOICE</a></li>
+<li><a href="#mixer">6. MIXER</a></li>
+<li><a href="#utility">7. UTILITY</a></li>
+<li><a href="#perform">8. PERFORM</a></li>
+<li><a href="#modroute">9. MOD ROUTE</a></li>
+<li><a href="#visual">10. VISUAL</a></li>
+<li><a href="#setup">11. SETUP</a></li>
+<li><a href="#midilearn">12. MIDI Learn</a></li>
+<li><a href="#motion">13. Motion</a></li>
+<li><a href="#recording">14. Recording</a></li>
+<li><a href="#shortcuts">15. Keyboard Shortcuts</a></li>
+</ul>
+</nav>
+
+<!-- ============================================================ -->
+<h2 id="overview">1. Overview</h2>
+
+<p>HONKI is an eight-track phrase generator and sound source system for iPad. A pattern has 8 tracks, and each track has 8 segment memory slots.</p>
+
+<div class="fig"><img src="img/tabs.png" alt="The six page tabs"></div>
+<div class="cap">The six page tabs in the top bar: MAIN, VOICE, MIXER, UTILITY, PERFORM, VISUAL. MAIN is the current page in the image.</div>
+
+<h3>Track structure</h3>
+<table>
+<tr><td class="k">TRACK 1 to 4</td><td>Melodic tracks. Notes are edited in the TRACK 1 to 4 editor on MAIN.</td></tr>
+<tr><td class="k">TRACK 5 to 8</td><td>Drum tracks. Shown as FOUNDATION, GROOVE, TIMELINE, LEAD on MIXER and PERFORM. Edited in the DRUMS editor on MAIN.</td></tr>
+<tr><td class="k">Role pairing</td><td>TRACK 1 and 5 are foundation, 2 and 6 groove, 3 and 7 timeline, 4 and 8 lead.</td></tr>
+<tr><td class="k">Segment</td><td>Each track has 8 segment slots. Three playback modes: SINGLE, SEQUENCER, RANDOM. Drum tracks also have FOLLOW.</td></tr>
+<tr><td class="k">Default pitch range</td><td>MIDI pitch 36 to 72.</td></tr>
+<tr><td class="k">Sound source</td><td>One of four per track: SYNTH, SAMPLE, PHYSICAL, AU.</td></tr>
+</table>
+
+<h3>The six pages</h3>
+<table>
+<tr><td class="k">MAIN</td><td>Phrase editing and segment management. The page shown at launch.</td></tr>
+<tr><td class="k">VOICE</td><td>Sound source selection and parameters.</td></tr>
+<tr><td class="k">MIXER</td><td>Eight-track mixing, EQ, compression, effect sends, master effects.</td></tr>
+<tr><td class="k">UTILITY</td><td>8-stage envelope, LFOs, CV output matrix.</td></tr>
+<tr><td class="k">PERFORM</td><td>Custom control panel and mappings.</td></tr>
+<tr><td class="k">VISUAL</td><td>Video source and four video processing stations.</td></tr>
+</table>
+<p>To switch pages, tap a page tab in the top bar or press number keys 1 to 6 on an external keyboard. While an edit overlay is open, the number keys switch between TRACK 1 to 4 and DRUMS instead. Page switching can be assigned with MIDI Learn. Two-finger swipe for page switching has been removed.</p>
+
+<h3>Heading position</h3>
+<p>The square button at the right end of the top bar moves the heading between corners, in the order top left, top right, bottom left, bottom right. When the heading is at the bottom, the Transport bar moves to the top of the screen.</p>
+
+<h3>Project slots</h3>
+<table>
+<tr><td class="k">Slot count</td><td>26 banks (A to Z), 10 patterns per bank (00 to 09). Slot IDs use the format A-00.</td></tr>
+<tr><td class="k">Stored per slot</td><td>bank, programs, modulation, PERFORM layout, MASTER FX, per-track AU.</td></tr>
+<tr><td class="k">App-wide (not per slot)</td><td>INPUT COMP, HUE, CV device binding.</td></tr>
+<tr><td class="k">At launch</td><td>Restores the last used slot.</td></tr>
+</table>
+
+<h3>Undo</h3>
+<p>Undo works on whole-bank snapshots, up to 100 steps. Multiple changes within the same tick merge into one step, and a drag merges into one step. MIDI Learn writes, TAP tempo and bank loading do not enter undo.</p>
+
+<!-- ============================================================ -->
+<h2 id="topbar">2. Top Bar</h2>
+
+<div class="fig"><img src="img/topbar.png" alt="Top bar"></div>
+<div class="cap">Top bar: on the left the HONKI wordmark when stopped (during playback it becomes the timer with the "Click Twice to Reset" hint), then the MADZINE wordmark, the A-00 slot menu, the FILE menu, the six page tabs (MAIN is the current page), and at the far right the heading corner button.</div>
+
+<table>
+<tr><td class="k">Timer</td><td>Shows "H O N K I" at launch. Starts counting after the first PLAY and its recording confirmation (Y or N), in MM:SS format. Tap twice to reset; the "Click Twice to Reset" hint sits next to it.</td></tr>
+<tr><td class="k">MADZINE</td><td>Brand text.</td></tr>
+<tr><td class="k">A-00 menu</td><td>Two-level menu. The first level starts with CLEAR, followed by banks A to Z; the second level is patterns 00 to 09. MIDI Learn can be assigned as "next bank".</td></tr>
+<tr><td class="k">CLEAR</td><td>If the bank has content, asks "Clear everything?" first. Clears the bank, programs, SWING and TRANSPOSE to 0, modulation, PERFORM layout, MIDI bindings, per-track AU, MASTER FX, CV routing. Keeps INPUT COMP, HUE, CV device and STEREO OUT.</td></tr>
+<tr><td class="k">FILE menu</td><td>COPY, PASTE, SAVE, LOAD, plus a non-tappable VERSION item (shows the version number). PASTE is only available when the clipboard is not empty.</td></tr>
+<tr><td class="k">SAVE</td><td>Exports a .honki file. The default file name on iOS is "HONKI slot".</td></tr>
+<tr><td class="k">LOAD</td><td>Imports a .honki file. Asks "Replace current bank?" "Current changes will be lost." On failure shows "Bank File Error".</td></tr>
+<tr><td class="k">Page tabs</td><td>Six tabs, see chapter 1.</td></tr>
+<tr><td class="k">Corner button</td><td>Square button at the right end, showing the current heading corner. Tap to cycle to the next corner.</td></tr>
+</table>
+
+<h3>.honki files</h3>
+<p>The current file format contains the bank, programs, per-track AU, MASTER FX, modulation and PERFORM layout. Older .honki files and plain bank files can be imported.</p>
+
+<!-- ============================================================ -->
+<h2 id="transport">3. Transport</h2>
+
+<div class="fig"><img src="img/transport.png" alt="Transport row"></div>
+<div class="cap">Transport row, left to right: PLAY (stopped in this image, so the triangle icon is shown), MOTION (two lines of text, lit here because it is on), RESET, BPM 132, TAP, scale button E Mixolydian, SWING 53 (dimmed), STYLE menu TECHNO, SETUP, MIDI, MOD, UNDO and REDO stacked, and the HUE wheel at the far right.</div>
+
+<table>
+<tr><td class="k">PLAY / STOP</td><td>When not in the recording state, pressing PLAY shows three segments inside the button: Y, REC?, N. It collapses after 5 seconds. Y records and plays, N plays only. The button shows STOP during playback. Can be assigned with MIDI Learn.</td></tr>
+<tr><td class="k">Recording stop button</td><td>Shown only in the recording state, as a red-dot capsule button to the left of PLAY. Pressing it shows "STOP RECORDING?" Y / N, which closes after 5 seconds. For the files produced, see chapter 14.</td></tr>
+<tr><td class="k">MOTION</td><td>The button has two lines of text: MOTION and HOLD RECORD. Tap to toggle MOTION playback: yellow when playback is on (default), no colour when off. Hold for 1 second to start recording; while holding, red fills from left to right, and releasing early or dragging away cancels. The button is red while recording; tap to stop recording. Playback turns on automatically when recording starts. Cannot be assigned with MIDI Learn. See chapter 13.</td></tr>
+<tr><td class="k">RESET</td><td>Available only during playback. Returns the play position to zero. Can be assigned with MIDI Learn.</td></tr>
+<tr><td class="k">BPM</td><td>20 to 300. Drag vertically to adjust, tap to type a number. Dimmed to 40% when using an external clock. Can be assigned with MIDI Learn.</td></tr>
+<tr><td class="k">TAP</td><td>Averages up to 4 taps within a 2-second window. The buffer clears 5 seconds after the last tap. Not included in undo. Unavailable with an external clock.</td></tr>
+<tr><td class="k">SCALE</td><td>Two-level menu: scale first, then 12 root notes. The button shows the root and scale name. 16 built-in scales: Chromatic, Major, Minor, Penta Major, Penta Minor, Dorian, Phrygian, Lydian, Mixolydian, Locrian, Major Triad, Minor Triad, Blues, Arabic, Japanese, Whole Tone; followed by user scales and USER SCALE EDITOR. The menu marks how well each scale suits the current STYLE with a number of asterisks.</td></tr>
+<tr><td class="k">SWING</td><td>Filled horizontal fader, 0 to 100. Double-tap to return to 0.5. Odd steps are delayed by stepDuration x 0.25 x swing. Triplet notes are not affected by SWING. Can be assigned with MIDI Learn.</td></tr>
+<tr><td class="k">STYLE</td><td>The popover contains an AMOUNT knob (0 to 1) and 9 styles in two columns: West African, Afro-Cuban, Brazilian, Balkan, Indian, Gamelan, Electronic, Breakbeat, Techno. Both AMOUNT and the style index can be assigned with MIDI Learn.</td></tr>
+<tr><td class="k">SETUP</td><td>Opens and closes the SETUP panel. See chapter 11.</td></tr>
+<tr><td class="k">MIDI</td><td>Toggles MIDI Learn mode. The label is always MIDI; the background changes when on. Shortcut Cmd+L. When on, assignable controls show a dashed outline. Pressing MIDI turns MOD off. See chapter 12.</td></tr>
+<tr><td class="k">MOD</td><td>Toggles MOD mode. Located to the right of MIDI. Off at launch. When on, the button is in the accent colour and controls that can be modulated show a solid accent outline; tapping an outlined control does not change its value but opens the MOD ROUTE panel. Controls without an outline work as usual. Mutually exclusive with MIDI. Cannot be assigned with MIDI Learn. See chapter 9.</td></tr>
+<tr><td class="k">UNDO / REDO</td><td>Dimmed to 40% when there is nothing to undo or redo. Shortcuts Cmd+Z, Cmd+Shift+Z. PERFORM layout editing uses PERFORM's own undo stack.</td></tr>
+<tr><td class="k">HUE</td><td>"HUE" text and a colour wheel. Popover title "ACCENT HUE": drag the outer ring to change hue, drag the centre disc vertically to change saturation (0 to 2).</td></tr>
+</table>
+
+<h3>USER SCALE EDITOR</h3>
+<table>
+<tr><td class="k">CLOSE</td><td>Closes the editor sheet.</td></tr>
+<tr><td class="k">SCALE NAME</td><td>Scale name text field.</td></tr>
+<tr><td class="k">Pitch class buttons</td><td>12 buttons, 2 rows of 6, relative to the global ROOT. The root is included by default.</td></tr>
+<tr><td class="k">Interval summary</td><td>Shows the selected intervals; with no pitch class selected it shows "SELECT AT LEAST ONE PITCH CLASS".</td></tr>
+<tr><td class="k">SAVE NEW SCALE / SAVE CHANGES</td><td>Adds a new scale or saves edits.</td></tr>
+<tr><td class="k">CANCEL EDIT</td><td>Cancels the current edit.</td></tr>
+<tr><td class="k">SAVED USER SCALES</td><td>List of saved scales; when empty it shows "No user scales saved yet.". Each entry has SELECT, EDIT, DELETE. Deleting the scale in use returns the global scale to Chromatic.</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="main">4. MAIN</h2>
+
+<div class="fig"><img src="img/main_full.png" alt="MAIN full page"></div>
+<div class="cap">MAIN full page. Track tab row and parameter row at the top; the left column has MASTER TRANSPOSE, the MASTER LOCK / DECAY / DENSITY knobs, the KEYS button and 8 track bars; the embedded phrase editor on the right has the bar row, the START / END row, the left button column (TRI and RANGE at the top, the scale menu and the lane dropdown at the bottom) and the note grid.</div>
+
+<h3>Track tab row</h3>
+<div class="fig"><img src="img/main_trackrow.png" alt="Track tab row"></div>
+<div class="cap">Track tab row: a diagonal-arrow full-screen button at each end, MULTI, S, the hint text (hold to mute, tap twice to solo), and the eight track tabs 1-1 to 8-1 (1-1 is the current track in the image), each with a color dot above it.</div>
+<table>
+<tr><td class="k">Full-screen buttons</td><td>One diagonal-arrow button at each end of the row. Opens or closes the editor in full screen.</td></tr>
+<tr><td class="k">MULTI</td><td>Multi-track synchronized editing. When on, synchronized knobs show a dashed ring.</td></tr>
+<tr><td class="k">S</td><td>Clears solo on all tracks.</td></tr>
+<tr><td class="k">Track tabs</td><td>Tap to select a track; tap twice within 0.35 seconds to toggle SOLO; hold 0.45 seconds to toggle MUTE. The tab text is the track number and current segment (for example 1-1).</td></tr>
+</table>
+
+<h3>Parameter row</h3>
+<div class="fig"><img src="img/main_paramrow.png" alt="Parameter row"></div>
+<div class="cap">Parameter row: MUTE, SOLO, P (program menu), the three knobs LOCK / DECAY / DENSITY, segments 1 to 8 (1 is the current segment in the image), and the playback modes SINGLE / SEQUENCER / RANDOM.</div>
+<table>
+<tr><td class="k">MUTE / SOLO</td><td>Mute and solo for the current track.</td></tr>
+<tr><td class="k">P</td><td>Program menu: SAVE, LOAD, CLEAR, for Program 1 to 8.</td></tr>
+<tr><td class="k">LOCK</td><td>0 to 100%, vertical drag, no double-tap reset.</td></tr>
+<tr><td class="k">DECAY</td><td>Melodic tracks show 0 to 100% with an internal range of -0.99 to 0.99; drum tracks range 0.2 to 2.0 (1.0 shows as 44%). Double-tap resets (drum tracks 1.0, melodic tracks -0.78).</td></tr>
+<tr><td class="k">DENSITY</td><td>0 to 100%. Double-tap clears the segment override.</td></tr>
+<tr><td class="k">Segments 1 to 8</td><td>Three states: missing, empty, filled. Shows a label when a RATIO is set. Chain state is shown as a 3pt bar at the bottom; the playing segment shows a 3pt line at the top. Tap priority: chain setup &gt; RANDOM pool &gt; MULTI &gt; select.</td></tr>
+<tr><td class="k">SINGLE</td><td>Plays only the current segment, shows SEG n.</td></tr>
+<tr><td class="k">SEQUENCER</td><td>Tap START, then the start slot, then END, then the end slot; afterwards shows SEQ a-b.</td></tr>
+<tr><td class="k">RANDOM</td><td>Shows CHOOSE; tap slots to add them to or remove them from the random pool.</td></tr>
+<tr><td class="k">FOLLOW</td><td>Drum tracks only. Follows the segment of the paired melodic track.</td></tr>
+</table>
+
+<h3>Left column</h3>
+<div class="fig"><img src="img/main_bars.png" alt="Left column"></div>
+<div class="cap">Left column: MASTER TRANSPOSE, the MASTER LOCK / DECAY / DENSITY knobs, the KEYS button at the top right, then 8 track bars (labelled 1 to 8 and SEG 1), each with a step ruler and note names above it. In the image, track 1 is outlined as the current track.</div>
+<table>
+<tr><td class="k">MASTER TRANSPOSE</td><td>Left to right: "-", the value field, "+". Tap the value field to type a number, drag vertically to change it. Range ±24 semitones.</td></tr>
+<tr><td class="k">MASTER LOCK / DECAY / DENSITY</td><td>Writes the corresponding parameter on all 8 tracks at once.</td></tr>
+<tr><td class="k">KEYS</td><td>The only button at the right of the header row. When on, the track bars are replaced by a keyboard. See KEYS mode below.</td></tr>
+<tr><td class="k">Track bars</td><td>Show the content of the current bar of each track. On drum tracks the bar height is velocity; on melody tracks the bar height is pitch position and the opacity is velocity. Cells outside the play range are dimmed. The step ruler shows the step numbers of the current bar; the page is synchronised with the editor on the right. Track bars are for viewing only; notes are entered in the editor on the right.</td></tr>
+<tr><td class="k">Range handles</td><td>The handles at both ends of each track bar are always shown. Drag them to set the start and end of the play window; the start and end steps of that track are shown while dragging. Holding a handle at the edge turns the page. Up to 4 fingers can drag at once.</td></tr>
+<tr><td class="k">Triplet marker</td><td>When a segment has triplet notes, a thin three-part marker appears at the bottom of every two cells of the track bar. The first part is shared with the straight step and is not drawn separately; the second and third parts are filled with the track colour when they hold a note, with opacity showing velocity.</td></tr>
+</table>
+<p>Track bars do not support long press.</p>
+
+<h3>Phrase editor (TRACK 1 to 4)</h3>
+<div class="fig"><img src="img/main_editor.png" alt="Phrase editor"></div>
+<div class="cap">Phrase editor: the bar row ("1" and "+") at the top, START 1 END 16 STEPS 16 below it, and the left button column, top to bottom: TRI / RANGE, SEMI DOWN / SEMI UP, OCTAVE DOWN / OCTAVE UP, IMPORT MIDI, LOCK / CLEAR, COPY / PASTE, PHRASE FLIP / RATIO, the scale menu, and the bottom row with the lane dropdown (VELOCITY in the image) on the left half and EDIT on the right half. The note grid is on the right, with velocity bars at the bottom.</div>
+<p>Left button column, top to bottom: FOLLOW (shown only when there is more than one bar), TRI and RANGE, SEMI DOWN and SEMI UP, OCTAVE DOWN and OCTAVE UP, IMPORT MIDI, LOCK and CLEAR, COPY and PASTE, PHRASE FLIP and RATIO, SCALE menu, and the bottom row of lane dropdown and EDIT.</p>
+<table>
+<tr><td class="k">Bar row</td><td>One page is one bar of 16 steps, up to 64 bars. Tap a page number to switch; long-press 0.6 seconds to show "DELETE BAR n?" Y / N. "+" adds a bar. With more than 8 bars, 8 are shown at a time with switch buttons at both ends; full screen shows all bars. The bar being played has a colour band at the bottom.</td></tr>
+<tr><td class="k">Full screen</td><td>Full screen shows two bars at once, and edge page turning moves two bars at a time. Page numbers, COPY / PASTE of 1 BAR and bar deletion still work on a single bar.</td></tr>
+<tr><td class="k">Edge page turning</td><td>When stretching a note horizontally, sweeping across a lane, or dragging START / END, holding at the edge for 0.3 seconds turns the page. Changing pitch vertically does not turn the page.</td></tr>
+<tr><td class="k">START / END</td><td>Sets the start and end steps of playback, shown as "START n END m STEPS k"; BARS is added above 16 steps, and RATE is added when RATIO is not 1x.</td></tr>
+<tr><td class="k">FOLLOW</td><td>Makes the page follow playback. Toggled only by this button.</td></tr>
+<tr><td class="k">TRI</td><td>Toggles the triplet grid. See "TRI triplet grid" below.</td></tr>
+<tr><td class="k">RANGE</td><td>Opens the PITCH RANGE window with two fields, HIGH and LOW, the upper and lower limits of the pitch range. Tap to type a note name, drag vertically for one semitone per 24px; both fields can be dragged at once. HIGH is at least one semitone above LOW. Tap outside the window to close.</td></tr>
+<tr><td class="k">SEMI DOWN / UP</td><td>Transposes the whole segment by ±1 semitone; unavailable at the limit. Triplet notes are transposed as well.</td></tr>
+<tr><td class="k">OCTAVE DOWN / UP</td><td>Transposes the whole segment by ±12 semitones; unavailable at the limit. Triplet notes are transposed as well.</td></tr>
+<tr><td class="k">IMPORT MIDI</td><td>Imports a .mid file. On completion shows "IMPORTED n NOTE(S)", with "SKIPPED m" added when notes were skipped; errors are shown in red. The message disappears after 4 seconds. Does not affect triplet notes.</td></tr>
+<tr><td class="k">LOCK</td><td>Toggles lock mode.</td></tr>
+<tr><td class="k">CLEAR</td><td>Two-stage: "CLEAR LOCK?" appears. Y clears all notes including locked ones, N clears only unlocked notes; triplet notes are handled the same way. Cancels automatically after 5 seconds.</td></tr>
+<tr><td class="k">COPY</td><td>Shows "COPY BAR n OR ALL?"; choose 1 BAR or ALL. Triplet notes are copied as well.</td></tr>
+<tr><td class="k">PASTE</td><td>Can paste across tracks; the clipboard is kept after pasting. When the source has no triplets, the triplets of the destination are cleared.</td></tr>
+<tr><td class="k">PHRASE FLIP</td><td>Reverses the phrase within the play window; requires at least 2 steps. Triplet notes are reversed as well.</td></tr>
+<tr><td class="k">RATIO</td><td>The button face shows RATIO and the current value. 15 options: x8, x6, x4, x3, x2.5, x2, x1.5, 1x, /1.5, /2, /2.5, /3, /4, /6, /8. Triplets scale by the same ratio.</td></tr>
+<tr><td class="k">SCALE</td><td>Segment scale menu: GLOBAL, built-in scales, user scales, each with 12 root notes.</td></tr>
+<tr><td class="k">Lane dropdown</td><td>On the left half of the bottom row of the button column. Selects the lane shown below the note grid, seven items. See the table below.</td></tr>
+<tr><td class="k">EDIT</td><td>On the right half of the same row, beside the lane dropdown. Opens the tall parameter editor. See "EDIT panel" below.</td></tr>
+</table>
+
+<div class="fig"><img src="img/pitch_range.png" alt="PITCH RANGE popover"></div>
+<div class="cap">The PITCH RANGE popover opened with RANGE. HIGH is C5 and LOW is C3.</div>
+
+<h3>Lanes</h3>
+<table>
+<tr><td class="k">VELOCITY</td><td>1 to 127; shows "VELOCITY n" while dragging. New notes are 100.</td></tr>
+<tr><td class="k">PROBABILITY</td><td>0 to 100%; shows "PROB nn%". Default 100%.</td></tr>
+<tr><td class="k">PITCH PROBABILITY</td><td>0 to 100%; shows "PITCH nn%". The probability of a random pitch. Default 0.</td></tr>
+<tr><td class="k">DECAY</td><td>0 to 100%; shows "DECAY nn%". Default 50%, which follows the DECAY of the segment; below 50% is shorter, above 50% is longer.</td></tr>
+<tr><td class="k">RATCHET</td><td>0 to 100%; shows "RATCHET nn%". The probability that the step retriggers. Default 0.</td></tr>
+<tr><td class="k">RATCHET COUNT</td><td>The number of retriggers, nine values: 2, 3, 4, 6, 8, 12, 16, 24, 32; shows "COUNT n". Default 2. For notes whose RATCHET is 0, the bar in this lane is faded but can still be edited.</td></tr>
+<tr><td class="k">RATCHET COUNT PROBABILITY</td><td>0 to 100%; shows "COUNT PROB nn%". Default 0. When a RATCHET occurs, a second check is made: if it passes, the count becomes random, drawn from 1 and the values not exceeding the set COUNT, where 1 means the step does not retrigger; if it does not pass, the set COUNT is used.</td></tr>
+</table>
+<p>All lanes support vertical drag and a one-finger horizontal sweep. The DECAY and RATCHET values of locked notes are not changed by generation.</p>
+
+<div class="fig"><img src="img/lane_menu.png" alt="lane menu"></div>
+<div class="cap">The lane menu open, listing VELOCITY, PROBABILITY, PITCH PROBABILITY, DECAY, RATCHET, RATCHET COUNT and RATCHET COUNT PROBABILITY.</div>
+
+<div class="fig"><img src="img/ratchet_lane.png" alt="RATCHET COUNT lane"></div>
+<div class="cap">The lane set to RATCHET COUNT. The bars under the grid are the retrigger counts; steps whose RATCHET is 0 are drawn dimmer.</div>
+
+<h3>EDIT panel</h3>
+<p>The bottom row of the left button column is split in two: the lane dropdown on the left half, an EDIT button on the right half. All eight tracks have it. EDIT opens a tall parameter editor: the note grid above shrinks to half its height and the editor takes the space below. Pressing EDIT again collapses it and the grid returns to full height. The lane dropdown still works while EDIT is open, so the editor follows whichever parameter is selected.</p>
+<div class="fig"><img src="img/edit_button_row.png" alt="EDIT button row"></div>
+<div class="cap">The bottom row of the left button column: the lane dropdown on the left half, abbreviated when the name is too long, and the EDIT button on the right half.</div>
+<p>On TRACK 1 to 4 the editor is the same lane as before, only taller; the gestures are unchanged, vertical drag and a one-finger horizontal sweep. A row at the top of the editor shows the full parameter name in the colour of that parameter. That row is a label only and does not respond to touch: the dropdown is now half width and may shorten its own wording, while this row always spells the name out in full.</p>
+<div class="fig"><img src="img/edit_panel_melodic.png" alt="EDIT parameter editor, melodic track"></div>
+<div class="cap">TRACK 1 with EDIT on: the note grid drops to half height and the tall parameter editor takes the lower half, with the full parameter name in the parameter colour along its top row.</div>
+
+<h3>TRI triplet grid</h3>
+<ul>
+<li>TRI only switches the grid used for display and editing. Straight notes and triplet notes are two separate sets of data; both play whether TRI is on or off.</li>
+<li>On melody tracks, TRI applies only to the current track and is kept per track. The TRI state is not saved; it is off after the app restarts.</li>
+<li>With TRI on, a bar changes from 16 columns to 24 columns: every two straight steps are divided into three cells. The first cell of each group is the same note as the even straight step.</li>
+<li>With TRI on, notes on odd straight steps are shown at their original time position with a faded dashed frame and cannot be edited. With TRI off, triplet notes are shown with a faded dashed frame and cannot be edited.</li>
+<li>Lanes available on triplet cells: VELOCITY, PROBABILITY, DECAY. PITCH PROBABILITY and the three RATCHET lanes do not apply to triplets; the lane shows "NOT AVAILABLE ON TRIPLET" at its top right, and the straight columns can still be edited.</li>
+<li>A new triplet note has velocity 100 and is locked on creation.</li>
+<li>Triplet notes are not affected by SWING and have no random pitch or retrigger. They are also silent under MUTE, SOLO and when DENSITY is 0.</li>
+<li>Generation neither creates nor clears triplet notes. Deleting a bar deletes its triplets as well.</li>
+<li>Triplets are stored with the segment and included in .honki files; files from older versions still load.</li>
+</ul>
+
+<div class="fig"><img src="img/tri_on.png" alt="TRI on"></div>
+<div class="cap">TRI on. The bar goes from 16 to 24 columns, and notes on odd straight steps appear as dimmed dashed outlines that cannot be edited.</div>
+
+<div class="fig"><img src="img/tri_off.png" alt="TRI off"></div>
+<div class="cap">TRI off. The same phrase back on the 16-column straight grid.</div>
+
+<div class="fig"><img src="img/ratchet_tri_notice.png" alt="lane not available on triplet"></div>
+<div class="cap">With TRI on and the lane set to RATCHET COUNT, the lane shows RATCHET COUNT NOT AVAILABLE ON TRIPLET at its top right; the straight columns remain editable.</div>
+
+<h3>Note grid gestures</h3>
+<ul>
+<li>Rows are the scale notes within the pitch range; note width is gate and opacity is velocity.</li>
+<li>Notes outside the scale show a 2pt warning frame; locked notes show a 4pt frame.</li>
+<li>Tap an empty cell to create a note (velocity 100, gate 0.5), locked on creation. Tap a note to delete it; the lock state is kept.</li>
+<li>Drag vertically more than 8pt to change pitch; drag horizontally to change gate (0.01 to 16). Up to 4 fingers at once. A drag that starts on an empty cell does not create a note.</li>
+<li>Notes across bars: stretch a note to the right edge, hold until the page turns, and keep stretching on the next page. For a long note that starts on the previous page, the part that extends into this page is drawn from the left edge in a lighter colour.</li>
+<li>In LOCK mode, notes can only be tapped to toggle their lock.</li>
+</ul>
+<p>Manually entered notes are locked by default and are not affected by the LOCK knob or by generation. Locked notes are cleared only by choosing Y after CLEAR.</p>
+
+<div class="fig"><img src="img/editor_two_bars.png" alt="editor full screen"></div>
+<div class="cap">The editor full screen. Two bars are shown at once, the status reads START 1 END 32 STEPS 32 BARS 2, and FOLLOW appears at the top of the button column.</div>
+
+<div class="fig"><img src="img/note_across_bars.png" alt="long note"></div>
+<div class="cap">The editor on bar 2, with a long note on the E row spanning several cells. The step ruler on the left track rows follows, showing 17 to 29.</div>
+
+<h3>DRUMS editor (TRACK 5 to 8)</h3>
+<table>
+<tr><td class="k">Group order</td><td>Top to bottom: TRACK 8 LEAD, 7 TIMELINE, 6 GROOVE, 5 FOUNDATION.</td></tr>
+<tr><td class="k">Voice rows</td><td>TRACK 5: Kick, Low Tom; TRACK 6: Snare, Mid Tom, Clap; TRACK 7: HH Closed, HH Open; TRACK 8: High Tom, Crash. Names change with STYLE.</td></tr>
+<tr><td class="k">Pages</td><td>The four tracks share bar pages. Full screen shows two bars at once, and edge page turning moves two bars at a time.</td></tr>
+<tr><td class="k">Left sliders</td><td>VARIATION, REST, GHOST, ACCENT, FILL, each 0 to 1, applied to the target tracks.</td></tr>
+<tr><td class="k">Target tracks</td><td>Each slider has a 2x2 grid beside it for selecting TRACK 5 to 8. Popover title TARGET TRACK; at least one track remains selected.</td></tr>
+<tr><td class="k">LOCK</td><td>Toggles lock mode.</td></tr>
+<tr><td class="k">CLEAR</td><td>First asks WHICH TRACK? (ALL / 8 / 7 / 6 / 5), then CLEAR LOCK? Y / N. N clears only unlocked notes, including triplets; Y clears everything.</td></tr>
+<tr><td class="k">COPY / PASTE</td><td>Copies and pastes the four tracks as one set. Triplet notes are copied as well.</td></tr>
+<tr><td class="k">RATIO</td><td>A single button across the row. The right of the button face shows the value shared by the four tracks, or MIXED when they differ. Popover title "RATIO TRACK n": four track buttons 5, 6, 7, 8 on the left, each showing the current value of that track; 15 ratios on the right. The popover stays open after choosing a ratio, so other tracks can be set next; tap outside to close.</td></tr>
+<tr><td class="k">TRI</td><td>A single button across the row that switches the four tracks together. Pressing it when any track is off turns all four on; pressing it when all four are on turns them all off. It lights only when all four are on. The grid rules are the same as on melody tracks.</td></tr>
+<tr><td class="k">Lane dropdown</td><td>On the left half of the bottom row of the button column. Six items: VELOCITY, PROBABILITY, DECAY, RATCHET, RATCHET COUNT, RATCHET COUNT PROBABILITY, with the same value definitions as on melody tracks. On drum tracks, DECAY and the three RATCHET values are shared by all voices on the same step. Triplet cells can use only VELOCITY, PROBABILITY and DECAY.</td></tr>
+<tr><td class="k">EDIT</td><td>On the right half of the same row, beside the lane dropdown. Opens the parameter editor. See "EDIT panel on drum tracks" below.</td></tr>
+<tr><td class="k">Style band</td><td>One per group; select GLOBAL or a specific style. Can be assigned with MIDI Learn.</td></tr>
+</table>
+<p>Drum grid gestures: tap to toggle a hit (velocity 100); drag vertically more than 8pt to change the value of the current lane; swipe horizontally to paint continuously; in LOCK mode, tap to toggle the lock. The drum grid has no gestures for pitch or note length. Manually entered triplet hits are locked on creation.</p>
+
+<div class="fig"><img src="img/drums_ratio.png" alt="drum RATIO popover"></div>
+<div class="cap">The RATIO popover on a drum track, titled RATIO TRACK 7. Tracks 5 to 8 on the left each show their current value; the 15 ratios are on the right.</div>
+
+<div class="fig"><img src="img/drums_tri.png" alt="drum TRI"></div>
+<div class="cap">TRI on for the drums. All four tracks switch together, every drum grid goes to the triplet grid, and the lane is VELOCITY.</div>
+
+<h3>EDIT panel on drum tracks</h3>
+<p>With EDIT on, the right side shows only the group of the currently selected track, and its voice rows become taller. The lower half becomes an editing area that alternates one block per voice: the name of the first voice with the name of the current parameter beside it, then the parameter row of that voice, then the name of the second voice and its parameter row, and so on down. The columns of the editing area line up with the columns of the grid above.</p>
+<div class="fig"><img src="img/edit_panel_drums.png" alt="EDIT parameter editor, drum track"></div>
+<div class="cap">TRACK 6 with EDIT on: only that track's group is shown and its voice rows grow taller; below it the voice name rows and parameter rows alternate, column-aligned with the drum grid above.</div>
+<p>Each column of a parameter row is one bar whose height is the current value. Touching a column sets the value to the height of the finger: the top of the row is the maximum, the bottom is the minimum. This is an absolute position, not a relative drag, so the value goes to wherever the finger lands. The value is shown at the top left of the row while dragging and disappears when the finger is lifted. Up to 4 fingers can drag different columns at once. Steps with no hit stay empty; dragging never creates a note. Columns outside the play window or outside the loop range are drawn dimmer.</p>
+<div class="fig"><img src="img/edit_drum_bars_drag.png" alt="Dragging a drum parameter row"></div>
+<div class="cap">Dragging the MID TOM parameter row: the value reads out at the top left of the row as "VELOCITY 72" and disappears on release.</div>
+<p>RATCHET, RATCHET COUNT and RATCHET COUNT PROBABILITY do not apply to triplets. With the triplet grid on, the triplet columns of these three parameters are drawn as disabled slots and do not respond to touch; the straight columns still work. VELOCITY, PROBABILITY and DECAY can be edited on triplet columns as well.</p>
+<div class="fig"><img src="img/edit_drum_ratchet_triplet.png" alt="Parameters not available on triplets"></div>
+<div class="cap">Drum track with EDIT on, TRI on and the lane set to RATCHET: the grid shows "RATCHET NOT AVAILABLE ON TRIPLET" and the triplet columns of all three parameter rows are drawn as disabled slots, while the straight columns stay editable.</div>
+<p>The bars in the EDIT rows and the vertical drag on the grid cells write the same values; either way the same data is changed. The grid cells keep their relative drag, and only the EDIT rows use absolute position.</p>
+
+<h3>KEYS mode</h3>
+<div class="fig"><img src="img/main_keys.png" alt="KEYS mode"></div>
+<div class="cap">KEYS mode: top left the MASTER TRANSPOSE - 0 + with the LOCK, DECAY and DENSITY knobs, and KEYS lit at the top right. The next row has the octave - and +, the range C3-C5, the step position STEP 6 / 32, REST and RECORD (red while recording). Below are two keyboard sections, the lower labelled C3 and the upper C4. On the right are the editor button column and the piano roll.</div>
+<table>
+<tr><td class="k">OCTAVE - / +</td><td>Shifts the octave shown on the keyboard.</td></tr>
+<tr><td class="k">Status</td><td>STEP n/m, PLAYING, RECORDING, AUDITION.</td></tr>
+<tr><td class="k">REST</td><td>Enters a rest during step recording.</td></tr>
+<tr><td class="k">RECORD</td><td>Toggles recording.</td></tr>
+<tr><td class="k">Keyboard</td><td>Monophonic. Unavailable on drum tracks, where a hint text is shown.</td></tr>
+</table>
+<p>When KEYS is on and playback is stopped, the note grid on the right shows a vertical line at the cell of the step entry position. Keyboard step entry writes straight notes only.</p>
+
+<!-- ============================================================ -->
+<h2 id="voice">5. VOICE</h2>
+
+<div class="fig"><img src="img/voice_full.png" alt="VOICE full page"></div>
+<div class="cap">VOICE full page, with TRACK 1 set to the SYNTH source. At the top the header row and the 8 TRACK cells, then the SEGMENT row, the DECAY knob, HARM, AUTO, TYPE, VOICE, INV, 3RD / 5TH / 7TH, CLEAR and SAVE. Below, the SYNTH panel: the waveform display with the POSITION knob, the OSCILLATOR WAVETABLE row (PREVIOUS, the table name, NEXT, CLEAR and the points-per-frame menu), and at the bottom the eight knobs OCT, TUNE, SWEEP, FOLD, FEEDBACK, TONE, MODULATION, MOD ENV.</div>
+
+<h3>Header and track cells</h3>
+<div class="fig"><img src="img/voice_header.png" alt="VOICE header"></div>
+<div class="cap">Header: SOUND SOURCE, EDITING TRACK 1, the four source buttons SYNTH (selected) / SAMPLE / PHYSICAL / AU. The second row is the TRACK 1 to 8 cells, each showing the source name and M / S. The third row is SEGMENT 1 to 8, DECAY, HARM, AUTO, TYPE, VOICE, INV, 3RD / 5TH / 7TH, CLEAR, SAVE.</div>
+<table>
+<tr><td class="k">Source buttons</td><td>SYNTH, SAMPLE, PHYSICAL, AU. One of four.</td></tr>
+<tr><td class="k">TRACK cells</td><td>Show the track name and source. M mutes; S solos, hold 0.4 seconds for exclusive solo. State is shared with MIXER. When switching tracks, another track in RECORD stops.</td></tr>
+<tr><td class="k">SEGMENT 1 to 8</td><td>Selects the segment to edit. Segments with a sound memory show a dot.</td></tr>
+<tr><td class="k">DECAY</td><td>DECAY of the current track, same as on MAIN.</td></tr>
+<tr><td class="k">CLEAR</td><td>Clears the sound memory of the current segment.</td></tr>
+<tr><td class="k">SAVE</td><td>Stores the current panel parameters (including the harmonic settings) into the segment memory.</td></tr>
+</table>
+<p>Panel editing rule: when the current segment has a memory, the panel edits the memory; when it has none, the panel edits the track base. Sample loading or recording, the PHYSICAL MODEL and POLYPHONY, and AU loading always apply to the track base. SLICE and MULTI are track-level settings and are mutually exclusive. While editing a segment memory, the panel shows an "EDITING SEGMENT n MEMORY" watermark.</p>
+
+<h3>NOTE HARMONIC (sources other than SAMPLE)</h3>
+<table>
+<tr><td class="k">HARM</td><td>Toggles harmony.</td></tr>
+<tr><td class="k">AUTO</td><td>Selects the chord type automatically; TYPE is dimmed while on.</td></tr>
+<tr><td class="k">TYPE</td><td>Tap to cycle the chord type.</td></tr>
+<tr><td class="k">VOICE</td><td>CLSE, DRP2, DRP3, OPEN.</td></tr>
+<tr><td class="k">INV</td><td>ROOT, 1ST, 2ND, 3RD.</td></tr>
+<tr><td class="k">3RD / 5TH / 7TH</td><td>Knobs, each 0 to 1. Can be recorded with MOTION and routed with MOD ROUTE.</td></tr>
+</table>
+
+<h3>SYNTH</h3>
+<p>TRACK 1 to 5 are wavetable synthesizers, titled "OSCILLATOR WAVETABLE"; TRACK 5 is titled "KICK VOICE WAVETABLE". TRACK 6 to 8 are fixed drum synthesizers; the panel shows "BUILT-IN DRUM SYNTHESIZER WITH FIXED SOUNDS FOR THIS TRACK.".</p>
+<table>
+<tr><td class="k">Oscillator</td><td>The carrier oscillator reads the wavetable directly; the PM modulator reads the same frame of the same table. With no wavetable loaded the oscillator runs as a pure sine.</td></tr>
+<tr><td class="k">Waveform display</td><td>Shows the frame of the current wavetable at the current POSITION. When POSITION is modulated by MOTION, MIDI or PERFORM, the display follows the modulated value in real time.</td></tr>
+<tr><td class="k">POSITION</td><td>Knob to the right of the waveform display. 0 to 1, default 0. Morph position between frames with linear interpolation: the leftmost position (frame 0) is a pure sine, turning right morphs into the frames of the file. Carrier and modulator follow together. Can be recorded with MOTION. Disabled and dimmed while BYPASS is on or no wavetable is loaded.</td></tr>
+<tr><td class="k">BYPASS</td><td>TRACK 5 only. While on, FOLD, FEEDBACK, TONE and MODULATION have no effect and the frame size menu is locked.</td></tr>
+<tr><td class="k">PREVIOUS / NEXT</td><td>Switches to the previous or next wavetable.</td></tr>
+<tr><td class="k">Name button</td><td>Opens the "SELECT WAVETABLE" popover, with a filter field and a "NO WAVETABLE" entry.</td></tr>
+<tr><td class="k">CLEAR</td><td>Removes the wavetable; the oscillator returns to a pure sine.</td></tr>
+<tr><td class="k">Frame size</td><td>Menu labelled "N PTS": 256 / 512 / 1024 / 2048 / 4096, default 2048. Sets the window length used when decoding the file; the table is then resampled to 2048 points per frame. Wavetables with a single cycle shorter than 2048 points need a smaller size to correct the pitch. Changing it reloads the table for that track.</td></tr>
+<tr><td class="k">Status text</td><td>With no wavetable: "NO WAVETABLE" and that the oscillator runs as a pure sine, with the number of available tables. With a wavetable: table index, frame count, frame size and the current frame (frame 1.0 is the sine).</td></tr>
+<tr><td class="k">OCT</td><td>-4 to +4.</td></tr>
+<tr><td class="k">TUNE</td><td>Plus or minus 100 cents.</td></tr>
+<tr><td class="k">SWEEP</td><td>0 to 1000 Hz; on TRACK 5 an offset of -500 to +500.</td></tr>
+<tr><td class="k">FOLD</td><td>0 to 10.</td></tr>
+<tr><td class="k">FEEDBACK</td><td>0 to 1.</td></tr>
+<tr><td class="k">TONE</td><td>0 to 10.</td></tr>
+<tr><td class="k">MODULATION</td><td>0 to 10. At 0 the wavetable has no effect.</td></tr>
+<tr><td class="k">MOD ENV</td><td>0 to 10; on TRACK 5 -5 to +5.</td></tr>
+</table>
+<p>A wavetable holds up to 32 frames including the sine at frame 0; file frames start at 1, and longer files are sampled evenly, always keeping the first and last frame. TRACK 5 follows the STYLE defaults for FOLD, TONE, FEEDBACK and MODULATION until the user touches a parameter.</p>
+
+<h3>SAMPLE</h3>
+<div class="fig"><img src="img/voice_sample.png" alt="SAMPLE panel in MULTI mode"></div>
+<div class="cap">SAMPLE panel in MULTI mode on TRACK 1: the file row LOAD FOLDER, SLOT 01 with the file name, ONE SHOT, REVERSE, SLICE, MULTI (selected), "- 18 +". On the left the 16 pads labeled with note names and file names, C1 (selected) at bottom left; in the middle PAGE 1 (01-16) / 2 (17-18) / 3; on the right the slot parameters LEVEL 1.00x, PITCH 0 st, FILTER BYPASS, RESO 0%, PAN MONO, LOAD and CLEAR, the waveform area showing the loaded sample with the S / E markers, LAUNCH with TRIGGER (selected) / GATE / LOOP / REVERSE, and CHOKE OFF (selected) / A / B / C / D.</div>
+
+<h3>File row</h3>
+<table>
+<tr><td class="k">LOAD SAMPLE</td><td>Loads a single sample (normal and SLICE modes).</td></tr>
+<tr><td class="k">RECORD / STOP</td><td>Records the master output as a sample, up to 120 seconds, showing "RECORDING x.x s" while recording. Loads automatically after stopping.</td></tr>
+<tr><td class="k">File name</td><td>Shows the current sample file name, or "NO SAMPLE" when there is none.</td></tr>
+<tr><td class="k">LOAD FOLDER</td><td>Loads a whole folder in MULTI mode. Supports wav, aif, aiff, mp3, m4a, caf, flac, up to 36 files.</td></tr>
+<tr><td class="k">ONE SHOT / LOOP</td><td>Switches the playback mode.</td></tr>
+<tr><td class="k">REVERSE</td><td>Reverse playback.</td></tr>
+<tr><td class="k">SLICE</td><td>Divides the sample into N equal slices; notes from C1 (24) upward map to the slices. Drum tracks show "DRUM TRACK: SLICE FOLLOWS SETUP MIDI NOTE".</td></tr>
+<tr><td class="k">MULTI</td><td>Multi-sample pad mode, available on all 8 tracks.</td></tr>
+<tr><td class="k">- n +</td><td>Slot count in MULTI (1 to 36), slice count in SLICE (2 to 36). Fixed on drum tracks, shown as "PADS n".</td></tr>
+</table>
+
+<h3>Normal and SLICE modes</h3>
+<table>
+<tr><td class="k">Waveform</td><td>The S / E markers set the start and end points; two fingers can drag both at once. In SLICE mode the slice boundaries are shown. The MOTION of the start and end points is cleared in MOD mode: turn on MOD in the Transport, tap the waveform, and answer Y to CLEAR MOTION? in the panel.</td></tr>
+<tr><td class="k">GRAIN SIZE x DENSITY</td><td>Main granular synthesis XY pad. GRAIN SIZE 0.005 to 2 seconds; DENSITY 1 to 200 per second, 1 is normal playback. Each axis has - / + and a lock.</td></tr>
+<tr><td class="k">SPRAY x JITTER</td><td>Granular synthesis detail XY pad, each 0 to 100%.</td></tr>
+<tr><td class="k">GRAIN SHAPE</td><td>0 to 100%.</td></tr>
+<tr><td class="k">PITCH</td><td>Plus or minus 48 semitones.</td></tr>
+<tr><td class="k">GAIN</td><td>0 to 8.</td></tr>
+</table>
+
+<h3>MULTI mode</h3>
+<table>
+<tr><td class="k">Pads</td><td>16 per page, up to 3 pages for 36 in total. The first slot is at bottom left. Labels are note names (from C1) or drum voice names. Pressing a pad selects it and auditions it.</td></tr>
+<tr><td class="k">Drum track pad count</td><td>Fixed: TRACK 5 has 2, 6 has 3, 7 has 2, 8 has 2. The panel shows "PAD PER LANE. SETUP MIDI NOTE NOT USED".</td></tr>
+<tr><td class="k">PAGE 1 / 2 / 3</td><td>Switches the pad page.</td></tr>
+<tr><td class="k">LOAD / CLEAR</td><td>Loads or clears the sample of the current slot.</td></tr>
+<tr><td class="k">LEVEL</td><td>0 to 2.</td></tr>
+<tr><td class="k">PITCH</td><td>Plus or minus 24 semitones.</td></tr>
+<tr><td class="k">FILTER</td><td>BYPASS, LP n%, HP n%.</td></tr>
+<tr><td class="k">RESO knob</td><td>To the right of FILTER, 0 to 100%.</td></tr>
+<tr><td class="k">PAN</td><td>TRACK 1 to 4 show MONO.</td></tr>
+<tr><td class="k">Waveform</td><td>Shown per slot.</td></tr>
+<tr><td class="k">LAUNCH</td><td>TRIGGER, GATE, LOOP, REVERSE; drum tracks have only TRIGGER and REVERSE.</td></tr>
+<tr><td class="k">CHOKE</td><td>OFF, A, B, C, D.</td></tr>
+</table>
+<p>Pad parameters do not support MOTION or MIDI Learn.</p>
+
+<h3>PHYSICAL</h3>
+<table>
+<tr><td class="k">XY 1</td><td>BRIGHTNESS x DAMPING, each 0 to 100%, with - / + and axis locks.</td></tr>
+<tr><td class="k">XY 2</td><td>POSITION x STRUCTURE, each 0 to 100%, with - / + and axis locks.</td></tr>
+<tr><td class="k">MODEL</td><td>MODAL, SYM STR, STRING, FM, QUANT, STR&amp;REV.</td></tr>
+<tr><td class="k">POLYPHONY</td><td>1 / 2 / 4 VOICE.</td></tr>
+<tr><td class="k">OCT</td><td>Octave.</td></tr>
+<tr><td class="k">TUNE</td><td>Fine tune, double-tap returns to 0.</td></tr>
+<tr><td class="k">EXT to AUDIO IN</td><td>ON / OFF, default ON: the external input excites the resonator and is not mixed in dry.</td></tr>
+</table>
+
+<h3>AU</h3>
+<table>
+<tr><td class="k">Not loaded</td><td>Shows "NO INSTRUMENT LOADED" and LOAD.</td></tr>
+<tr><td class="k">Loading</td><td>Shows "LOADING" and CANCEL.</td></tr>
+<tr><td class="k">Loaded</td><td>Shows the name with CHANGE, OPEN EDITOR, UNLOAD.</td></tr>
+<tr><td class="k">OPEN EDITOR</td><td>Opens the AU's own interface in full screen, with CLOSE at the top.</td></tr>
+<tr><td class="k">List popover</td><td>Titled "INSTALLED AUDIO UNIT INSTRUMENTS", grouped by vendor, with FILTER BY NAME at the top.</td></tr>
+</table>
+<p>The AU runs in a separate process and is silent until loading completes.</p>
+<table>
+<tr><td class="k">MACRO KNOBS 1 to 8</td><td>Arranged 4x2. Hold 0.6 seconds or tap an unbound knob to start binding; tap the name to open the "MACRO n PARAMETER" popover, which contains CLEAR BINDING. Unbound knobs show ASSIGN PARAMETER; when binding is not possible they show UNAVAILABLE. Bindings are stored in the bank and can be PERFORM targets.</td></tr>
+<tr><td class="k">GLIDE</td><td>Sends CC5 and CC65.</td></tr>
+<tr><td class="k">MOD</td><td>Sends CC1.</td></tr>
+<tr><td class="k">SUSTAIN</td><td>Sends CC64.</td></tr>
+</table>
+<p>The GLIDE, MOD and SUSTAIN values are kept only for the current session. They can be assigned with MIDI Learn.</p>
+
+<!-- ============================================================ -->
+<h2 id="mixer">6. MIXER</h2>
+
+<div class="fig"><img src="img/mixer_full.png" alt="MIXER full page"></div>
+<div class="cap">MIXER full page. Eight strips, left to right: TRACK 1 to 4, FOUNDATION, GROOVE, TIMELINE, LEAD, each with an EQ thumbnail, a FILTER bar, six knobs, a BUS row, a PAN bar, the MIX and LEVEL faders and M / S. The EFFECT row at the bottom: DELAY PRE, REVERB PRE, SIZE / DAMP / DECAY / LEVEL, FILTER, L / R meters, MASTER VOLUME, the dot icon and the three-line icon.</div>
+
+<h3>Strip</h3>
+<div class="fig"><img src="img/mixer_strip.png" alt="Single strip"></div>
+<div class="cap">The TRACK 4 strip, top to bottom: name, EQ thumbnail, FILTER bar (OFF), six knobs LOCK / DELAY, DECAY / REVERB, DENSITY / FX CHAIN, the BUS row (MASTER and A1 / A2 / A3), PAN bar, vertical MIX (EXT / INT) fader and vertical LEVEL fader, M / S.</div>
+<table>
+<tr><td class="k">Name</td><td>TRACK 1 to 4; drum tracks are FOUNDATION, GROOVE, TIMELINE, LEAD.</td></tr>
+<tr><td class="k">EQ thumbnail</td><td>Shows the EQ curve; tap to open the EQ popover.</td></tr>
+<tr><td class="k">FILTER</td><td>OFF at the centre; low-pass to the left (20 kHz down to 80 Hz), high-pass to the right (20 Hz up to 8 kHz). Snaps within 0.04 of the centre; double-tap to return to 0.</td></tr>
+<tr><td class="k">LOCK / DECAY / DENSITY</td><td>The same as the parameters of the same names in MAIN.</td></tr>
+<tr><td class="k">DELAY / REVERB / FX CHAIN</td><td>Three effect send amounts, each 0 to 1; double-tap to return to 0.5. Can be modulated with MOD ROUTE.</td></tr>
+<tr><td class="k">BUS select</td><td>Four buttons MASTER / A1 / A2 / A3 below the six-knob area, selecting the bus that the LEVEL fader currently edits. The selected button is shown filled in the track colour. This selection is not saved and returns to MASTER when the app restarts. With A1 to A3 selected, the LEVEL fader writes the send amount to that aux bus (0 to 2, default 0), and PAN and MIX are disabled; M / S are not affected. The aux signal is mono, tapped after COMPRESSOR and sidechain compression and before the fader and PAN, and does not pass through the effect returns or main output processing; TRACK 5 to 8 use the average of left and right.</td></tr>
+<tr><td class="k">A1 to A3 outputs</td><td>The physical channels of the three aux buses are assigned in the AUX BUS section of the AUDIO tab in SETUP. Unassigned is OFF; channels already used for other purposes are marked IN USE.</td></tr>
+<tr><td class="k">PAN</td><td>Equal-power pan on TRACK 1 to 4, left-right balance on 5 to 8. Snaps at the centre; double-tap to return to 0. Supports MOTION, MOD ROUTE and MIDI Learn.</td></tr>
+<tr><td class="k">MIX</td><td>Crossfade between EXT and INT; 0 is INT.</td></tr>
+<tr><td class="k">LEVEL</td><td>0 to 2, default 1. The two meters beside it are pre-fader and post-fader; their source is the trigger envelope, not the audio. With BUS set to A1 to A3, it becomes the send amount to that aux bus.</td></tr>
+<tr><td class="k">M / S</td><td>M in red is mute; S in yellow is solo, and a 0.4-second long press is exclusive solo.</td></tr>
+</table>
+<p>Signal order: mute, EQ, FILTER, COMPRESSOR, sidechain compression, effect send points, aux tap, fader, PAN, main output. The send points of DELAY, REVERB and FX CHAIN can each be set to PRE or POST. Main output: effect returns (including FX CHAIN), main FILTER, MASTER VOLUME, soft clip.</p>
+
+<div class="fig"><img src="img/mixer_bus_aux.png" alt="MASTER and AUX buttons"></div>
+<div class="cap">The strip for TRACK 1: the curve and effect fields, the six knobs LOCK / DELAY / DECAY / REVERB / DENSITY / FX CHAIN, the bus buttons MASTER and A1 / A2 / A3 (A1 selected here), then PAN, EXT-MIX-INT, the fader and M / S.</div>
+
+<h3>EQ popover</h3>
+<div class="fig"><img src="img/mixer_popover.png" alt="EQ popover"></div>
+<div class="cap">The FOUNDATION EQ popover: the title FOUNDATION with RESET, the EQ curve with two draggable points, the COMPRESSOR SPEED / AMOUNT knobs with the compression display, the SIDECHAIN drop-down with the AMOUNT bar, and the EXT IN GAIN knob (0.0 dB).</div>
+<table>
+<tr><td class="k">RESET</td><td>Gain returns to 1.0, frequencies to 200 / 1000 / 4000 Hz.</td></tr>
+<tr><td class="k">EQ curve</td><td>Three points: LOW 40 to 500 Hz, MID 200 to 5000 Hz, HIGH 1000 to 16000 Hz. Gain 0 to 2. Up to 3 fingers can drag at once.</td></tr>
+<tr><td class="k">COMPRESSOR SPEED</td><td>0 to 1, default 0.5.</td></tr>
+<tr><td class="k">COMPRESSOR AMOUNT</td><td>0 to 1, default 0.</td></tr>
+<tr><td class="k">SIDECHAIN</td><td>Sidechain source drop-down; any of the other 7 tracks.</td></tr>
+<tr><td class="k">SIDECHAIN AMOUNT</td><td>Sidechain compression amount.</td></tr>
+<tr><td class="k">EXT IN GAIN</td><td>External input gain, -60 to +12 dB.</td></tr>
+</table>
+
+<h3>EFFECT row</h3>
+<table>
+<tr><td class="k">DELAY PRE / POST</td><td>Switches the delay send point.</td></tr>
+<tr><td class="k">DELAY LEFT / RIGHT</td><td>The left half is free time from 5 ms to 5 s; the right half is 16 tempo-synced values (1/1 to 1/32, including dotted and triplet).</td></tr>
+<tr><td class="k">DELAY FEEDBACK</td><td>0 to 0.95, default 0.35.</td></tr>
+<tr><td class="k">DELAY LEVEL</td><td>0 to 1.5, default 0.8.</td></tr>
+<tr><td class="k">REVERB PRE / POST</td><td>Switches the reverb send point.</td></tr>
+<tr><td class="k">SIZE / DAMP / DECAY</td><td>Each 0 to 1, default 0.5.</td></tr>
+<tr><td class="k">REVERB LEVEL</td><td>0 to 1.5, default 0.8.</td></tr>
+<tr><td class="k">FILTER</td><td>Main output filter knob.</td></tr>
+<tr><td class="k">Meters</td><td>L / R, two colours, -60 to 0 dBFS, peak hold 0.8 seconds.</td></tr>
+<tr><td class="k">MASTER VOLUME</td><td>0 to 1.</td></tr>
+<tr><td class="k">Dot icon</td><td>Opens the FX CHAIN panel. Shown in the accent colour when the FX CHAIN send of any track is above 0 and the DRY WET of at least one position is above 0.</td></tr>
+<tr><td class="k">Three-line icon</td><td>Opens MASTER FX.</td></tr>
+</table>
+
+<h3>FX CHAIN panel</h3>
+<p>FX CHAIN is a send effect chain with three positions; the signal passes through position 1, 2 and 3 in order. The panel title is FX CHAIN, with the subtitle "SIGNAL RUNS POSITION 1 TO 2 TO 3".</p>
+<table>
+<tr><td class="k">SEND</td><td>"SEND: PRE" or "SEND: POST"; switches the send point.</td></tr>
+<tr><td class="k">RETURN</td><td>Return amount of the whole chain, 0 to 1.5, default 0.8.</td></tr>
+<tr><td class="k">Three positions</td><td>Three columns with the headers "INPUT INTO POSITION 1", "THEN POSITION 2" and "THEN POSITION 3 OUTPUT".</td></tr>
+<tr><td class="k">Effect menu</td><td>Each position selects one of GRANULAR, KARPLUS, GLITCH. There is no empty option and there are no move up / move down buttons; to change the order, choose different effects in the menus of the positions. The same effect can be placed in more than one position.</td></tr>
+<tr><td class="k">DRY WET</td><td>0 to 1 per position. At 0, DRY is added to the column header, the column becomes semi-transparent, and that position does not process the signal.</td></tr>
+<tr><td class="k">Factory state</td><td>Position 1 is GRANULAR with DRY WET 1; position 2 is KARPLUS with DRY WET 0; position 3 is GLITCH with DRY WET 0.</td></tr>
+<tr><td class="k">Changing an effect</td><td>The parameters of that position return to their defaults, FREEZE turns off, and the existing MOTION data and MIDI bindings of that position are cleared; DRY WET is kept. The sound switches with a short fade out and fade in.</td></tr>
+</table>
+<p>Parameter bars show the name only. The parameters, DRY WET and RETURN support MOTION, MOD ROUTE and MIDI Learn; the effect menu, FREEZE and HOLD support MIDI Learn only. TEXTURE settings in older projects map to position 1.</p>
+
+<div class="fig"><img src="img/fxchain_panel.png" alt="FX CHAIN panel"></div>
+<div class="cap">The FX CHAIN panel: SEND: PRE and RETURN, the three positions set to GRANULAR, KARPLUS and GLITCH, and SIGNAL RUNS POSITION 1 TO 2 TO 3 at the top right.</div>
+
+<div class="fig"><img src="img/fxchain_active.png" alt="FX CHAIN same effect twice"></div>
+<div class="cap">The same panel with position 3 changed to KARPLUS, so positions 2 and 3 show the same set of parameters.</div>
+
+<h3>GRANULAR</h3>
+<table>
+<tr><td class="k">POSITION / SIZE</td><td>Read position and grain length of the granular engine.</td></tr>
+<tr><td class="k">DENSITY / TEXTURE</td><td>Grain density and texture.</td></tr>
+<tr><td class="k">SPREAD</td><td>Spread.</td></tr>
+<tr><td class="k">PITCH</td><td>±24 semitones, 0 at the centre.</td></tr>
+<tr><td class="k">FEEDBACK / REVERB</td><td>Feedback and reverb amount.</td></tr>
+<tr><td class="k">FREEZE</td><td>ON / OFF.</td></tr>
+</table>
+
+<h3>KARPLUS</h3>
+<p>Six coupled strings, three on the left and three on the right.</p>
+<table>
+<tr><td class="k">VERB</td><td>At 0 the strings are independent; at 1 it approaches a reverb.</td></tr>
+<tr><td class="k">PITCH</td><td>String length.</td></tr>
+<tr><td class="k">DIFFUSE</td><td>Diffusion amount.</td></tr>
+<tr><td class="k">DECAY</td><td>0.05 to 20 seconds; self-oscillates above 0.9.</td></tr>
+<tr><td class="k">DAMP</td><td>0 at the centre; low-pass in the negative direction, high-pass in the positive direction.</td></tr>
+<tr><td class="k">STIFF</td><td>String dispersion.</td></tr>
+<tr><td class="k">DRIFT</td><td>0 at the centre; pitch offset between the left and right channels, and random drift.</td></tr>
+</table>
+
+<h3>GLITCH</h3>
+<p>A slice repeat effect.</p>
+<table>
+<tr><td class="k">RATE</td><td>The left half is free time from 2 ms to 2 s; the right half is 16 tempo-synced values, the same as DELAY. The bar shows the time or the division name.</td></tr>
+<tr><td class="k">CHANCE</td><td>Probability of triggering a repeat.</td></tr>
+<tr><td class="k">REPEAT</td><td>Number of repeats, 1 to 16, default 5.</td></tr>
+<tr><td class="k">SPEED</td><td>0 at the centre; 0.25x to 4x.</td></tr>
+<tr><td class="k">REVERSE</td><td>Probability of reverse playback.</td></tr>
+<tr><td class="k">CRUSH</td><td>Bit crush amount.</td></tr>
+<tr><td class="k">GATE</td><td>0 at the centre.</td></tr>
+<tr><td class="k">JITTER</td><td>Timing jitter amount.</td></tr>
+<tr><td class="k">HOLD</td><td>Active only while held; not saved.</td></tr>
+</table>
+
+<h3>MASTER FX</h3>
+<table>
+<tr><td class="k">Title</td><td>Shows "1 EFFECT" or "N EFFECTS". Shows "NO MASTER EFFECTS" when there are none.</td></tr>
+<tr><td class="k">Effect slots</td><td>Each slot has bypass, name, OPEN, move up, move down, and remove X.</td></tr>
+<tr><td class="k">ADD EFFECT</td><td>Lists the available Audio Unit effects grouped by manufacturer.</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="utility">7. UTILITY</h2>
+
+<div class="fig"><img src="img/utility_full.png" alt="UTILITY full page"></div>
+<div class="cap">UTILITY full page. Top left is the SEQUENCER: DRAW set into the notch at the panel corner, then A GROUP B, LOOP (on), TRIGGER, the STAGES knob (8) and the CROSSFADE knob (0.00), the envelope editing area with stage time labels and the curve of the group being edited, and below it the eight CURVE knobs and eight SYNC buttons. Top right is the LFO column: three slots 1 LFO 4, 2 LFO 5, 3 LFO 6, each with an HZ fader, SYNC / UNI, the MORPH and SHAPE values with - / + and lock icons, and the waveform display. At the bottom OUTPUT 1 to 4, each with the seven faders L1 to L6 and SEQ and a scope area, showing CV OFFLINE in the image.</div>
+
+<h3>SEQUENCER (8-stage envelope)</h3>
+<div class="fig"><img src="img/utility_seq.png" alt="SEQUENCER area"></div>
+<div class="cap">SEQUENCER area: DRAW in the notch at the panel corner, the top row A GROUP B, LOOP, TRIGGER; on the left STAGES 8 and CROSSFADE 0.00; the top edge of the editing area labels each stage time (0.1s for every stage in the image), the solid line is the group being edited and the thin line is the other group; below, the eight CURVE knobs and eight SYNC buttons.</div>
+<table>
+<tr><td class="k">DRAW</td><td>Page-wide toggle set into the top-left corner of the SEQUENCER panel. Press to turn on; the button then reads FINISH. Drawing mode does not end by itself after a stroke; it stays on until you press FINISH, and it is not kept when you leave the page. While on, you can draw freehand in the SEQUENCER curve area (sampled at the 8 breakpoint positions; stages the stroke did not reach keep their old level) and also draw waveforms on the three LFO pads.</td></tr>
+<tr><td class="k">A GROUP B</td><td>Switches the editing group between A and B. STAGES, START, LOOP and TRIGGER are shared by both groups; the curve, CURVE and SYNC are independent per group.</td></tr>
+<tr><td class="k">LOOP</td><td>Loop playback. When off, holds at the level of the last stage.</td></tr>
+<tr><td class="k">TRIGGER</td><td>Trigger mode.</td></tr>
+<tr><td class="k">STAGES</td><td>Stage count 1 to 8.</td></tr>
+<tr><td class="k">CROSSFADE</td><td>0 to 1, the blend between A and B.</td></tr>
+<tr><td class="k">Editing area</td><td>The horizontal axis is time proportion, the vertical axis is 0 to 10 V. Drag a breakpoint vertically to change LEVEL, horizontally to change DURATION (0.001 to 10 seconds; the last stage can extend to 600 seconds). The start handle is at the far left. Up to 4 fingers at once. Shows the editing group as a solid line, the other group as a thin line, the blended result as a thick line, and the playback position.</td></tr>
+<tr><td class="k">CURVE</td><td>Eight knobs, each -1 to +1, double-tap returns to 0. Stages beyond STAGES are shown at 0.55 opacity and can still be adjusted.</td></tr>
+<tr><td class="k">SYNC</td><td>Eight buttons that switch a stage length to tempo sync, with 17 ratios from 1/16 to 16.</td></tr>
+</table>
+
+<h3>LFO</h3>
+<div class="fig"><img src="img/utility_lfo.png" alt="LFO column"></div>
+<div class="cap">The three LFO slots: 1 LFO 4 (0.01 HZ), 2 LFO 5 (1.0 HZ), 3 LFO 6 (1.0 HZ). Each slot has an HZ fader, the SYNC / UNI buttons, the MORPH percentage and SH value (each with - / + and a lock icon), the waveform display and the playback position.</div>
+<table>
+<tr><td class="k">Slot buttons</td><td>The three slots switch between LFO 1 / 4, 2 / 5 and 3 / 6. LFOs not shown keep running.</td></tr>
+<tr><td class="k">HZ</td><td>0.01 to 20 Hz, logarithmic, double-tap returns to 1 Hz. Can be recorded with MOTION.</td></tr>
+<tr><td class="k">SYNC</td><td>Tempo sync, 11 divisions from /16 to x16.</td></tr>
+<tr><td class="k">UNI / BI</td><td>Unipolar or bipolar output.</td></tr>
+<tr><td class="k">MORPH</td><td>0 to 100%, - / + step by 1%.</td></tr>
+<tr><td class="k">SHAPE</td><td>-1 to +1, step 0.02.</td></tr>
+<tr><td class="k">Lock icon</td><td>Locks that axis.</td></tr>
+<tr><td class="k">XY pad</td><td>SHAPE horizontally, MORPH vertically. Double-tap resets to MORPH 0.5, SHAPE 0. The waveform display draws 72 points and the playback position, showing the actual modulated values.</td></tr>
+<tr><td class="k">Drawn waveform</td><td>With DRAW on, draw one stroke on the pad; lifting your finger writes it as that LFO's 128-point custom waveform (left to right is one cycle, top is +1, bottom is -1; gaps between drawn points are interpolated, the ends are extended with the nearest drawn value). Only the LFO currently shown in a slot can be drawn. With a custom waveform the LFO reads the table by phase, MORPH and SHAPE have no effect on the output, XY dragging is disabled, no crosshair is shown, and the display shows the custom waveform. The waveform is saved with the modulation settings.</td></tr>
+<tr><td class="k">S&amp;H / T&amp;H</td><td>With a custom waveform, the top row becomes a mode button and a step count. Tap the button to switch between S&amp;H and T&amp;H (default S&amp;H); - / + change the step count by 1, from 0 to 32, and 0 shows OFF meaning no sample and hold. S&amp;H holds the value read at the start of each step; T&amp;H follows the waveform for the first half of each step and holds the mid-step value for the second half. Neither changes the drawn waveform itself.</td></tr>
+<tr><td class="k">RESET</td><td>With a custom waveform, the bottom row becomes RESET. Clears the custom waveform, returns the rows to MORPH / SHAPE and re-enables XY dragging. The step count and the S&amp;H / T&amp;H setting are kept.</td></tr>
+</table>
+
+<h3>OUTPUT 1 to 4</h3>
+<div class="fig"><img src="img/utility_outputs.png" alt="OUTPUT area"></div>
+<div class="cap">OUTPUT 1 to 4, each with seven faders (L1 to L6 and SEQ) and a scope area below. In the image the CV engine is not running and the scope area shows CV OFFLINE.</div>
+<table>
+<tr><td class="k">Faders</td><td>Order L1, L2, L3, SEQ, L4, L5, L6, each -1 to +1, snapping at center, double-tap returns to 0.</td></tr>
+<tr><td class="k">Scope area</td><td>Shows the output waveform and reading within plus or minus 10 V. Shows "CV OFFLINE" when the CV engine is not running; shows a flat 0 V line when no channel is assigned.</td></tr>
+<tr><td class="k">Output ranges</td><td>Matrix plus or minus 10 V, SEQ 0 to 10 V, LFO plus or minus 5 V.</td></tr>
+</table>
+<p>The iPad CV engine must be enabled in SETUP. The physical channel of each OUTPUT is assigned in the MOD OUTPUT section of SETUP.</p>
+
+<!-- ============================================================ -->
+<h2 id="perform">8. PERFORM</h2>
+
+<div class="fig"><img src="img/perform_full.png" alt="PERFORM full page"></div>
+<div class="cap">PERFORM full page. Toolbar at the top: PERFORM (selected) / EDIT, SEQ and LFO 1 to 3 level bars, MASTER spectrum, CONTROLS 14 / MAPPINGS 5. The canvas holds five named knobs (Lead decay, Filter, Bass decay, Kick decay, HH decay), XY PAD 1, FADER 1 to 4 and four BUTTONs. The side panel tabs are MIXER, UTILITY, EFFECT, FX CHAIN; the MIXER page is open here and shows VOL, M, S, meters and segment bars for T1 to T8.</div>
+
+<h3>Toolbar</h3>
+<div class="fig"><img src="img/perform_toolbar.png" alt="PERFORM toolbar"></div>
+<div class="cap">Toolbar: PERFORM / EDIT switch, SEQ, LFO 1, LFO 2, LFO 3 level bars, MASTER spectrum, and CONTROLS 14 and MAPPINGS 5 at the right end.</div>
+<table>
+<tr><td class="k">PERFORM / EDIT</td><td>Switches between perform mode and edit mode.</td></tr>
+<tr><td class="k">SEQ, LFO 1 to 3</td><td>Live levels of the modulation sources.</td></tr>
+<tr><td class="k">MASTER</td><td>Main output spectrum. Tap to open the MASTER SPECTRUM panel.</td></tr>
+<tr><td class="k">CONTROLS / MAPPINGS</td><td>The number of controls and mappings on the canvas.</td></tr>
+</table>
+
+<h3>MASTER SPECTRUM panel</h3>
+<table>
+<tr><td class="k">Spectrum</td><td>An enlarged main output spectrum with the legend LEFT, RIGHT, REFERENCE. Hold to read the frequency at that position; a short tap closes the panel. Switching PERFORM / EDIT also closes it.</td></tr>
+<tr><td class="k">LOAD REFERENCE FILE</td><td>Opens the system file picker to choose an audio file as a reference. Shows "ANALYSING REFERENCE FILE" during analysis and the file name when done; shows "REFERENCE FILE FAILED TO LOAD" on failure. Shows "NO REFERENCE FILE LOADED" when none is loaded.</td></tr>
+<tr><td class="k">Reference line</td><td>The loudest section of the file is analysed and drawn as a static accent-colour curve over the spectrum; it is also shown on the MASTER spectrum in the toolbar. The reference line and file name are kept and remain after the app restarts.</td></tr>
+<tr><td class="k">CLEAR REFERENCE</td><td>Clears the reference line.</td></tr>
+</table>
+
+<div class="fig"><img src="img/master_spectrum.png" alt="MASTER SPECTRUM"></div>
+<div class="cap">The MASTER SPECTRUM panel: the LEFT, RIGHT and REFERENCE curves, with LOAD REFERENCE FILE and CLEAR REFERENCE at the top right. The reference loaded here is master.wav.</div>
+
+<h3>Controls</h3>
+<table>
+<tr><td class="k">KNOB</td><td>Knob.</td></tr>
+<tr><td class="k">BUTTON</td><td>LATCH or MOMENTARY.</td></tr>
+<tr><td class="k">FADER</td><td>VERTICAL or HORIZONTAL. A return SPRING can be set: OFF, MIN, CENTER, MAX.</td></tr>
+<tr><td class="k">PAD (TWO AXIS)</td><td>Two-axis mode. X and Y each have - / + buttons and a lock icon. A locked axis does not accept finger drags or - / +; MOTION, MOD ROUTE and MIDI are not affected by the lock. The return spring is set with SPRING X and SPRING Y in the MAPPING panel (OFF, MIN, CENTER, MAX) and is off when the pad is added.</td></tr>
+<tr><td class="k">PAD (FOUR WAY)</td><td>Four-way mode. The whole pad is a touch surface with no - / + and no lock, a crosshair at the centre, and the target name of each direction shown on the four sides. With the finger at the centre all four directions are 0; pushing to the edge in a direction gives 1; on a diagonal, horizontal and vertical are calculated separately. Button-type targets trigger when pushed past halfway. The return spring has a single switch, SPRING TO CENTER.</td></tr>
+<tr><td class="k">Indicator dots</td><td>The number of small dots below each control is its number of mappings, up to 8.</td></tr>
+</table>
+<p>The canvas of a new project is empty, with no default controls. When there are no controls, an empty-state hint and an ENTER EDIT MODE button are shown. The 30 controls in the image are the layout at the time of the screenshot.</p>
+
+<h3>Side panel</h3>
+<div class="fig"><img src="img/perform_sidebar.png" alt="PERFORM side panel"></div>
+<div class="cap">Side panel: the tabs at the top are MIXER, UTILITY, EFFECT, FX CHAIN, with the MIXER page open; each row T1 to T8 has a VOL bar, M, S, a vertical meter and an 8-cell segment bar.</div>
+<table>
+<tr><td class="k">MIXER</td><td>T1 to T8 each have a meter, VOL (0 to 2), M, S (long press for exclusive solo) and an 8-cell segment bar with the play position. Tap a cell to select that segment and lock the track to it; tap again to release. VOL, M and S on this page can be assigned with MIDI Learn and do not support MOD ROUTE.</td></tr>
+<tr><td class="k">UTILITY</td><td>The first row has the CROSSFADE bar, LOOP and TRIG. The curve area edits group A only, with group B shown as a faded line. One row each for LFO 1 to 6: SPEED bar (Hz when SYNC is off, tempo divisions when on), SYNC, UNI / BI. SHAPE and MORPH are display only on this page. SPEED supports MIDI Learn, MOTION and MOD ROUTE.</td></tr>
+<tr><td class="k">EFFECT</td><td>DELAY TIME LEFT, TIME RIGHT, FEEDBACK, LEVEL; REVERB SIZE, DAMP, DECAY, LEVEL.</td></tr>
+<tr><td class="k">FX CHAIN</td><td>Each of the three positions shows POSITION n and the effect name, DRY WET and the parameters of that effect; GRANULAR also has FREEZE and GLITCH also has HOLD. The effect type cannot be changed on this page and there is no RETURN; effects are changed in the FX CHAIN panel of MIXER.</td></tr>
+</table>
+
+<div class="fig"><img src="img/perform_side_utility.png" alt="side panel UTILITY"></div>
+<div class="cap">The UTILITY tab of the side panel: CROSSFADE / LOOP / TRIG, the eight-stage envelope curve, and LFO 1 to 6 with their rate bars, SYNC and UNI.</div>
+
+<div class="fig"><img src="img/perform_effect.png" alt="side panel EFFECT"></div>
+<div class="cap">The EFFECT tab of the side panel: TIME LEFT, TIME RIGHT, FEEDBACK and LEVEL for DELAY, then SIZE, DAMP, DECAY and LEVEL for REVERB.</div>
+
+<div class="fig"><img src="img/perform_side_fxchain.png" alt="side panel FX CHAIN"></div>
+<div class="cap">The FX CHAIN tab of the side panel: DRY WET and the parameters for each position, with GRANULAR at position 1, KARPLUS at position 2 and GLITCH at position 3.</div>
+
+<h3>EDIT mode</h3>
+<table>
+<tr><td class="k">+ KNOB / + BUTTON / + FADER / + PAD</td><td>Adds a control. + PAD adds a PAD in two-axis mode.</td></tr>
+<tr><td class="k">MAPPING</td><td>Opens the mapping panel. Available only when a single control is selected; double-tapping a control on the canvas also opens it.</td></tr>
+<tr><td class="k">DELETE</td><td>Two-stage: one press changes it to "DELETE?", and a second press within 2 seconds deletes the selected controls.</td></tr>
+<tr><td class="k">UNDO / REDO</td><td>For layout editing only, 32 steps.</td></tr>
+<tr><td class="k">TEMPLATE</td><td>Three built-in layouts: SEGMENT VOICE, LEVEL AND TRIGGER, SENDS. "SAVE CURRENT LAYOUT" saves the current layout; "MANAGE USER TEMPLATES" renames or deletes user layouts, and deletion asks for confirmation.</td></tr>
+<tr><td class="k">SNAP GRID</td><td>Grid snap switch.</td></tr>
+<tr><td class="k">Select and drag</td><td>Tap a control to add it to or remove it from the selection; multiple selection is possible. Drag to move; with multiple selection the whole group moves.</td></tr>
+</table>
+
+<div class="fig"><img src="img/perform_edit_toolbar.png" alt="EDIT mode toolbar"></div>
+<div class="cap">The toolbar in EDIT mode: PERFORM / EDIT, + KNOB, + BUTTON, + FADER, + PAD, MAPPING, DELETE, UNDO, REDO, with TEMPLATE and SNAP GRID on the right.</div>
+
+<div class="fig"><img src="img/perform_fourway.png" alt="FOUR WAY XY pad"></div>
+<div class="cap">An XY pad set to FOUR WAY. Each direction shows its assignment: DELAY TIME L up, DELAY TIME R down, DELAY FEEDBACK left and REVERB DECAY right.</div>
+
+<h3>MAPPING panel</h3>
+<table>
+<tr><td class="k">Header</td><td>The MAPPING title, the control kind, the name field and CLOSE; tapping the panel background also closes it. BUTTON has MODE (MOMENTARY / LATCH); FADER has ORIENTATION (VERTICAL / HORIZONTAL) and SPRING; PAD has TWO AXIS / FOUR WAY and the spring settings.</td></tr>
+<tr><td class="k">Mapping slots</td><td>The left column SLOTS, 8 per control. Each slot has the target name, CLEAR SLOT, REVERSE RANGE, a range bar and a bar for the current effective value. On a two-axis PAD the 8 slots are shared by both axes, and the X / Y buttons of each slot choose the axis.</td></tr>
+<tr><td class="k">DIRECTIONS</td><td>On a four-way PAD the column becomes four rows, UP, DOWN, LEFT, RIGHT, with one mapping per direction; assigning again replaces the previous one, and an unassigned direction shows EMPTY. Each row has CLEAR DIRECTION, REVERSE RANGE and a range bar.</td></tr>
+<tr><td class="k">TWO AXIS / FOUR WAY</td><td>Switches the PAD mode. When the PAD already has mappings, the first tap shows a confirmation label and a second tap within 2 seconds switches. Switching clears all mappings of the PAD and can be reverted with UNDO; the name is kept. Switching to FOUR WAY returns the value to the centre and turns the spring on; switching back to TWO AXIS turns the spring off.</td></tr>
+<tr><td class="k">Target groups</td><td>MIXER, VOICE, SEGMENT, FX, GLOBAL, CHROMA, PARTICLE, MESH, FEEDBACK. Below the groups are the track buttons T1 to T8, which are dimmed for global groups. Targets already used on the same control are marked.</td></tr>
+<tr><td class="k">MIXER group</td><td>Per track: MUTE, SOLO, A1 to A3 LEVEL, LEVEL, MIX, PAN, sidechain amount, the three effect sends, FILTER.</td></tr>
+<tr><td class="k">FX group</td><td>DELAY, REVERB, FX CHAIN (RETURN), FX CHAIN 1, FX CHAIN 2, FX CHAIN 3 and PRE / POST. Each FX CHAIN position contains the parameters of the three effects, MIX, and EFFECT, FREEZE and HOLD. Each trigger of EFFECT changes to the next effect in the order GRANULAR, KARPLUS, GLITCH; HOLD is active while held.</td></tr>
+</table>
+<p>A KNOB cannot select SEQUENCER, RANDOM or the PRE / POST switches. Mappings have no modulation amount field; modulation amounts are set in MOD ROUTE: turn on MOD in the Transport, then tap the control. MOD ROUTE on PERFORM controls has only 7 sources, SEQ and LFO 1 to 6; ENV is unavailable. On two-axis and four-way PADs, each of the two axes has its own set of modulation amounts. All control kinds can be assigned with MIDI Learn; the label shows the CC number, N number or PB, and takeover uses pickup. In MIDI Learn mode a PAD shows two corners: the top-left corner is the vertical axis and the bottom-right corner is the horizontal axis.</p>
+
+<div class="fig"><img src="img/perform_mapping.png" alt="MAPPING panel"></div>
+<div class="cap">The MAPPING panel for a knob: the eight slots on the left (slot 1 is MASTER FILTER here) with CLEAR SLOT and REVERSE RANGE, the TARGET categories and parameters on the right, and the range bars at the bottom.</div>
+
+<div class="fig"><img src="img/fourway_mapping.png" alt="XY pad MAPPING"></div>
+<div class="cap">The MAPPING panel for an XY pad: TWO AXIS or FOUR WAY at the top, the UP / DOWN / LEFT / RIGHT directions and their assignments on the left, plus SPRING TO CENTER, CLEAR DIRECTION and REVERSE RANGE.</div>
+
+
+<!-- ============================================================ -->
+<h2 id="modroute">9. MOD ROUTE</h2>
+
+<p>MOD ROUTE lets one parameter receive several modulation sources at once. While a finger is on a control, the manual value replaces MOTION playback; MOD ROUTE keeps working and is added to MOTION. MOD ROUTE keeps working when playback is stopped.</p>
+
+<h3>Opening</h3>
+<ul>
+<li>Press MOD in the Transport to enter MOD mode. Controls that can be modulated show a solid accent outline.</li>
+<li>Tap an outlined control to open the MOD ROUTE panel of that parameter, with haptic feedback. The value of the control does not change.</li>
+<li>Press MOD again to leave. MOD mode and MIDI Learn mode are mutually exclusive; MOD is off every time the app launches.</li>
+</ul>
+<p>The long-press method of older versions has been removed.</p>
+
+<div class="fig"><img src="img/mod_on.png" alt="MOD on"></div>
+<div class="cap">The MIXER page with MOD on in the transport. Every control that can be modulated gets an outline.</div>
+
+<h3>Where modulation is available</h3>
+<ul>
+<li>DECAY in the MAIN parameter row.</li>
+<li>VOICE source parameters, and the sample start point, end point and GRAIN SHAPE.</li>
+<li>MIXER per track: DELAY, REVERB and FX CHAIN sends, sidechain amount, PAN, MIX, LEVEL, and the A1 to A3 send amounts. FILTER, LOCK, DENSITY, M, S and DECAY on the MIXER page are not supported.</li>
+<li>MIXER EFFECT row: DELAY LEFT, RIGHT, FEEDBACK, LEVEL; REVERB SIZE, DAMP, DECAY, LEVEL; FX CHAIN RETURN, the parameters of each position and DRY WET.</li>
+<li>UTILITY LFO speed and the XY pad.</li>
+<li>All controls on the PERFORM canvas; the bars of the side panel EFFECT and FX CHAIN pages, and LFO SPEED on the UTILITY tab. VOL on the side panel MIXER page is not supported.</li>
+<li>VISUAL MIX and parameter bars.</li>
+</ul>
+
+<h3>Panel</h3>
+<table>
+<tr><td class="k">Title</td><td>MOD ROUTE; the axis name is added for the XY pad.</td></tr>
+<tr><td class="k">Source buttons</td><td>16 in four rows: OFF, SEQ, LFO 1 to 6, ENV 1 to 8. OFF clears everything.</td></tr>
+<tr><td class="k">Button logic</td><td>Tapping a selected source with a non-zero amount: the amount returns to 0 and the source stays selected. Selected with amount 0: set to +50%. Unselected with a non-zero amount: selected. Unselected with amount 0: selected and set to +50%.</td></tr>
+<tr><td class="k">AMOUNT</td><td>-100 to +100%. The title shows "source name AMOUNT", or "SELECT A SOURCE" when no source is selected.</td></tr>
+<tr><td class="k">CLEAR MOTION?</td><td>A Y / N row shown when the parameter has MOTION data.</td></tr>
+<tr><td class="k">Closing</td><td>Tap outside the panel, answer Y / N, or turn MOD off. MOD mode stays on after the panel closes.</td></tr>
+</table>
+
+<div class="fig"><img src="img/modroute_panel.png" alt="MOD ROUTE panel"></div>
+<div class="cap">The MOD ROUTE panel: OFF, SEQ, LFO 1 to 6 and ENV 1 to 8. ENV 1 is selected here and ENV 1 AMOUNT below reads -36%.</div>
+
+<h3>Sources</h3>
+<table>
+<tr><td class="k">SEQ</td><td>UTILITY envelope output, 0 to 1.</td></tr>
+<tr><td class="k">LFO 1 to 6</td><td>Unipolar or bipolar according to the UNI / BI setting.</td></tr>
+<tr><td class="k">ENV 1 to 8</td><td>The trigger envelope of each track, 0 to 1, read according to the current source of that track (SYNTH, SAMPLE, PHYSICAL, AU). A track may modulate its own parameters. ENV is not a column of the UTILITY OUTPUT matrix. ENV is unavailable on PERFORM controls, where the buttons are dimmed.</td></tr>
+</table>
+<p>A parameter with routing shows source marks at its top right: m for MOTION, s for SEQ, 1 to 6 for LFO, e1 to e8 for ENV; with too many sources the list is truncated with "+".</p>
+
+<h3>Relation to MIDI Learn</h3>
+<ul>
+<li>MOD and MIDI cannot be on at the same time; turning one on turns the other off.</li>
+<li>MIDI bindings can only be removed in SETUP; learning again replaces the old binding.</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="visual">10. VISUAL</h2>
+
+<div class="fig"><img src="img/visual_full.png" alt="VISUAL full page"></div>
+<div class="cap">VISUAL full page. Top left is the 16:9 preview with the status line (60 FPS, SURFACES 1). Top right is the SOURCE row (lock icon, ALWAYS ON, the CAMERA menu, BACK CAMERA, the two flip buttons, 1920 x 1080) and the four stations PARTICLE, MESH, FEEDBACK, CHROMASCOPE, each with a drag handle, an ON button and a MIX bar (the first three at 1.00 and CHROMASCOPE at 0.35 in the image). Below, the four parameter panels.</div>
+
+<h3>SOURCE row and station rows</h3>
+<div class="fig"><img src="img/visual_layers.png" alt="SOURCE row and station rows"></div>
+<div class="cap">SOURCE row: lock icon, SOURCE, ALWAYS ON, the CAMERA drop-down, the lens menu, the horizontal and vertical flip buttons, the resolution 1920 x 1080. The four rows below are PARTICLE, MESH, FEEDBACK, CHROMASCOPE, each with a handle, ON and a MIX bar.</div>
+<table>
+<tr><td class="k">SOURCE / ALWAYS ON</td><td>Source status text.</td></tr>
+<tr><td class="k">Source menu</td><td>CAMERA, PHOTO, VIDEO.</td></tr>
+<tr><td class="k">Lens menu</td><td>Selects the camera device; shows NO CAMERA FOUND when there is none. The camera runs at 1080p 30 fps; the front camera is mirrored.</td></tr>
+<tr><td class="k">PHOTOS / FILES</td><td>Shown for the PHOTO and VIDEO sources; loads from the photo library or from files. After loading the file name is shown; on failure LOAD FAILED. Photos are limited to 1920 on the long edge; videos loop and are muted.</td></tr>
+<tr><td class="k">FLIP H / FLIP V</td><td>Horizontal and vertical flip.</td></tr>
+<tr><td class="k">Resolution</td><td>Shows the source resolution; shows SOURCE WAITING while not ready.</td></tr>
+<tr><td class="k">Station rows</td><td>The four stations CHROMASCOPE, PARTICLE, MESH, FEEDBACK; drag the handle on the left to reorder. ON / OFF toggle; only CHROMASCOPE is on by default. With all stations off, the raw source is output.</td></tr>
+<tr><td class="k">MIX</td><td>0 to 1, default 0.75 for CHROMASCOPE and 1 for the others. The modulation source marker is shown at the top right.</td></tr>
+<tr><td class="k">Status line</td><td>NN FPS, SURFACES n, EXTERNAL DISPLAY, RENDERER OFFLINE.</td></tr>
+</table>
+<p>VISUAL parameter values are not stored with the bank; only the MOD ROUTE routings are stored in the bank.</p>
+
+<h3>Parameter panels</h3>
+<div class="fig"><img src="img/visual_panels.png" alt="The four parameter panels"></div>
+<div class="cap">The four parameter panels. PARTICLE: SIZE, SHAPE, DENSITY, JITTER, DEPTH MIX, DISPLACE, ZOOM, BRIGHTNESS, SCALE X / Y / Z, AUDIO DEPTH, AUDIO TRACK ALL. MESH: the model menu (PENTAGONAL), LOAD MODEL, DISPLACE, WIREFRAME, ROTATE X / Y / Z, SCALE, AUDIO DEPTH, BRIGHTNESS, AUDIO TRACK ALL. FEEDBACK: SMOOTH, BRIGHT, CHROMA, DIFFUSE, BRIGHTNESS. CHROMASCOPE: EFFECT / MICROPHONE, BASE HUE, HUE SPREAD, BRIGHTNESS, CURVE 1 to 4, ANGLE 1 to 4. In the image the three MESH ROTATE bars show a modulation source marker at the top right.</div>
+
+<h3>CHROMASCOPE</h3>
+<table>
+<tr><td class="k">EFFECT</td><td>Effect on/off.</td></tr>
+<tr><td class="k">MICROPHONE</td><td>Drives the image with the master output audio (L / R / mid / side).</td></tr>
+<tr><td class="k">BASE HUE</td><td>0 to 333, default 166.5.</td></tr>
+<tr><td class="k">HUE SPREAD</td><td>0 to 100, default 50.</td></tr>
+<tr><td class="k">BRIGHTNESS</td><td>0 to 4.</td></tr>
+<tr><td class="k">CURVE 1 to 4</td><td>Each 0 to 100.</td></tr>
+<tr><td class="k">ANGLE 1 to 4</td><td>Each 0 to 360.</td></tr>
+</table>
+
+<h3>PARTICLE</h3>
+<table>
+<tr><td class="k">SIZE</td><td>0.001 to 1.</td></tr>
+<tr><td class="k">SHAPE</td><td>0 to 1, in order circle, square, triangle, hexagon, diamond, star, ring; 1 is random. Cannot be routed with MOD ROUTE.</td></tr>
+<tr><td class="k">DENSITY</td><td>0.01 to 2.</td></tr>
+<tr><td class="k">JITTER</td><td>0 to 0.05.</td></tr>
+<tr><td class="k">DEPTH MIX</td><td>0 to 1.</td></tr>
+<tr><td class="k">DISPLACE</td><td>0 to 5.</td></tr>
+<tr><td class="k">ZOOM</td><td>-1 to +1.</td></tr>
+<tr><td class="k">BRIGHTNESS</td><td>0 to 4.</td></tr>
+<tr><td class="k">SCALE X / Y / Z</td><td>Each -3 to +3.</td></tr>
+<tr><td class="k">AUDIO DEPTH</td><td>0 to 4; the displacement is multiplied by (1 + level x depth).</td></tr>
+<tr><td class="k">AUDIO TRACK</td><td>ALL or TRACK 1 to 8.</td></tr>
+</table>
+
+<h3>MESH</h3>
+<table>
+<tr><td class="k">Model menu</td><td>100 built-in models with thumbnails; default is the sphere.</td></tr>
+<tr><td class="k">LOAD MODEL</td><td>Loads an .obj file.</td></tr>
+<tr><td class="k">DISPLACE</td><td>0 to 5.</td></tr>
+<tr><td class="k">WIREFRAME</td><td>0 to 1.</td></tr>
+<tr><td class="k">ROTATE X / Y / Z</td><td>Each 0 to 360.</td></tr>
+<tr><td class="k">SCALE</td><td>0.1 to 5.</td></tr>
+<tr><td class="k">AUDIO DEPTH / BRIGHTNESS / AUDIO TRACK</td><td>Same as PARTICLE.</td></tr>
+</table>
+
+<h3>FEEDBACK</h3>
+<table>
+<tr><td class="k">SMOOTH</td><td>Smoothing amount.</td></tr>
+<tr><td class="k">BRIGHT</td><td>Brightness decay.</td></tr>
+<tr><td class="k">CHROMA</td><td>0 to 0.005.</td></tr>
+<tr><td class="k">DIFFUSE</td><td>Diffusion amount.</td></tr>
+<tr><td class="k">BRIGHTNESS</td><td>Output brightness.</td></tr>
+</table>
+
+<h3>Audio drive and modulation</h3>
+<ul>
+<li>The audio source is the RMS of the 8 tracks at the mixer input point, multiplied by VOL, with mute and solo applied.</li>
+<li>39 parameters in total can be routed with MOD ROUTE. Not modulatable: station on/off and order, AUDIO TRACK, SHAPE, the MESH model.</li>
+<li>MIDI writes the base value.</li>
+</ul>
+
+<h3>External display</h3>
+<ul>
+<li>When connected through USB-C or AirPlay mirroring, the external display shows the video output. You do not need to stay on the VISUAL page.</li>
+<li>File and photo pickers still appear on the iPad.</li>
+<li>The system asks for camera permission the first time the camera is used.</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="setup">11. SETUP</h2>
+
+<p>SETUP is a centred panel with a title and CLOSE at the top; tapping outside the panel also closes it. The panel has five tabs: AUDIO, CV / MIDI, CLOCK, MIDI CONTROL, SYSTEM, and reopens on the tab used last. Most sections have an INFO button that expands a description when tapped.</p>
+
+<h3>AUDIO</h3>
+
+<div class="fig"><img src="img/setup_audio.png" alt="SETUP AUDIO"></div>
+<div class="cap">The AUDIO tab of SETUP: RATE, MAIN OUT, A1 to A3 under AUX BUS, and the per-track assignments under PARALLEL OUT.</div>
+
+<table>
+<tr><td class="k">AUDIO DEVICE</td><td>DEVICE dropdown for selecting a multichannel audio device; shows No Device when none is selected. CV output starts as soon as a device is selected.</td></tr>
+<tr><td class="k">SAMPLE RATE</td><td>44.1 kHz or 48 kHz, default 44.1 kHz.</td></tr>
+<tr><td class="k">MAIN OUT</td><td>Shows the name of the current system audio route, with the system route picker beside it.</td></tr>
+<tr><td class="k">AUX BUS</td><td>A1 to A3 are each assigned a physical channel or OFF. Channels already used for other purposes are marked IN USE.</td></tr>
+<tr><td class="k">PARALLEL OUT</td><td>Parallel output per track: AUDIO L, AUDIO R or MONO. The signal is post-fader, pre-effects.</td></tr>
+<tr><td class="k">EXTERNAL INPUT</td><td>External input per track: OFF, a single channel, or a stereo pair of channels.</td></tr>
+<tr><td class="k">INPUT COMP</td><td>Input latency compensation, 0 to 250 ms in 0.1 ms steps.</td></tr>
+</table>
+
+<h3>CV / MIDI</h3>
+
+<div class="fig"><img src="img/setup_cvmidi.png" alt="SETUP CV / MIDI"></div>
+<div class="cap">The CV / MIDI tab of SETUP: MIDI CHANNEL, PITCH CONTROL CHANGE, ENVELOPE CONTROL CHANGE, DRUM NOTE, PITCH CV CHANNEL, VOLTS and ENVELOPE CV CHANNEL for each track.</div>
+
+<table>
+<tr><td class="k">MIDI OUTPUT</td><td>DEVICE dropdown (including None), and MIDI CHANNEL ALL TRACKS, which sets all tracks at once.</td></tr>
+<tr><td class="k">TRACK ROUTING</td><td>One row for each of the 8 tracks, with the columns MIDI CHANNEL, PITCH CONTROL CHANGE, ENVELOPE CONTROL CHANGE, DRUM NOTE (TRACK 5 to 8 only), PITCH CV CHANNEL, VOLTS (1V or 1.2V), ENVELOPE CV CHANNEL. CLEAR ALL is at the top right. CV channels cannot be duplicated; selecting a channel already in use swaps the two. MIDI channels can be duplicated.</td></tr>
+<tr><td class="k">MOD OUTPUT</td><td>Assigns the physical channels of UTILITY OUTPUT 1 to 4. Channels used by track CV cannot be selected; selecting a channel used by another MOD OUTPUT swaps the two.</td></tr>
+<tr><td class="k">BUCHLA PULSE</td><td>SPIKE OFF / ON and WIDTH (ms).</td></tr>
+<tr><td class="k">ENV DELAY</td><td>Envelope delay per track, in ms.</td></tr>
+</table>
+
+<h3>CLOCK</h3>
+
+<div class="fig"><img src="img/setup_clock.png" alt="SETUP CLOCK"></div>
+<div class="cap">The CLOCK tab of SETUP: SOURCE and DIV MULT under CLOCK IN, CHANNEL, OUT DIV and OUT WIDTH under CLOCK OUT, and MIDI CLOCK OUT.</div>
+
+<table>
+<tr><td class="k">CLOCK IN</td><td>SOURCE: INT / MIDI / CV. DIV MULT: /4, /2, x1, x2, x4, available only with an external source. CV INPUT selects the channel, SIGNAL shows the signal, STATUS shows the state. BPM 20 to 300. MIDI clock is 24 PPQN; 2 seconds without signal is treated as lost.</td></tr>
+<tr><td class="k">CLOCK OUT</td><td>CHANNEL, OUT DIV, OUT WIDTH (ms).</td></tr>
+<tr><td class="k">MIDI CLOCK OUT</td><td>OFF / ON. Dimmed when there is no MIDI output device.</td></tr>
+</table>
+
+<h3>MIDI CONTROL</h3>
+
+<div class="fig"><img src="img/setup_midictl.png" alt="SETUP MIDI CONTROL"></div>
+<div class="cap">The MIDI CONTROL tab of SETUP: CURRENTLY LEARNING, the device list and checkboxes under MIDI INPUT DEVICES, and MIDI BINDINGS.</div>
+
+<table>
+<tr><td class="k">CURRENTLY LEARNING</td><td>Shows the MIDI Learn target that is waiting; a CANCEL button is shown while waiting.</td></tr>
+<tr><td class="k">MIDI INPUT DEVICES</td><td>List of MIDI input devices; more than one can be selected.</td></tr>
+<tr><td class="k">MIDI BINDINGS</td><td>List of bindings. Each item has MODE (LATCH / MOMENTARY), TAKEOVER (JUMP / PICKUP), SCALE (LINEAR / EXP / LOG), MIN and MAX (0 to 100% in 10% steps), and can be deleted singly with REMOVE or all at once with CLEAR ALL.</td></tr>
+</table>
+
+<h3>SYSTEM</h3>
+
+<div class="fig"><img src="img/setup_system.png" alt="SETUP SYSTEM"></div>
+<div class="cap">The SYSTEM tab of SETUP: the 16 switches under RECORDING TRACKS with ALL ON, ALL OFF, LOAD DEFAULT and SAVE DEFAULT, then the estimated write rate and the two switches under VIDEO RECORDING.</div>
+
+<table>
+<tr><td class="k">RECORDING LOCATION</td><td>Fixed at Documents/Recordings; the Files app path is "On My iPad / HONKI / Recordings". Sessions holds multitrack recordings and Samples holds sample recordings.</td></tr>
+<tr><td class="k">RECORDING TRACKS</td><td>Selects the items written by multitrack recording. See chapter 14.</td></tr>
+<tr><td class="k">VIDEO RECORDING</td><td>Two switches for recording video together with audio. See chapter 14.</td></tr>
+<tr><td class="k">GENERATE VELOCITY</td><td>A range bar of 1 to 127 per track that sets the velocity range of generation, plus RESET.</td></tr>
+<tr><td class="k">DIAGNOSTICS</td><td>Status text and EXPORT LOG.</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="midilearn">12. MIDI Learn</h2>
+
+<div class="fig"><img src="img/midilearn_on.png" alt="MIDI Learn on"></div>
+<div class="cap">MIDI on in the transport. Every control that can be bound is marked with a dashed outline; the VOICE page is shown here.</div>
+
+<h3>Entering and leaving</h3>
+<ul>
+<li>Press MIDI in the Transport or Cmd+L to enter. Assignable controls show a dashed outline; the XY pad shows two corners, the top-left corner for the Y axis and the bottom-right corner for the X axis.</li>
+<li>Press MIDI or Cmd+L again to leave; pressing MOD also leaves. ESC does not leave MIDI Learn mode.</li>
+<li>Assignable targets added after 1.3.4: MIXER PAN, and for FX CHAIN the parameters, DRY WET, RETURN, the effect type (each trigger changes to the next), FREEZE and HOLD (active while held).</li>
+</ul>
+
+<h3>Procedure</h3>
+<ol style="padding-left:22px">
+<li style="font-size:15px;color:#C9C9C9;margin:6px 0">Tap a control to enter the waiting state; CURRENTLY LEARNING in SETUP shows the target.</li>
+<li style="font-size:15px;color:#C9C9C9;margin:6px 0">Send a MIDI message within 10 seconds. Tapping another control switches the target.</li>
+<li style="font-size:15px;color:#C9C9C9;margin:6px 0">The first matching message completes the binding: buttons are MOMENTARY, everything else is continuous, and the curve defaults to LINEAR. An existing binding is replaced.</li>
+</ol>
+
+<h3>Message types</h3>
+<table>
+<tr><td class="k">Bindable</td><td>CC, Note, Pitch Bend.</td></tr>
+<tr><td class="k">Not bindable</td><td>Program Change. Aftertouch and SysEx are ignored.</td></tr>
+</table>
+
+<h3>Binding behavior</h3>
+<table>
+<tr><td class="k">MODE</td><td>LATCH or MOMENTARY.</td></tr>
+<tr><td class="k">TAKEOVER</td><td>JUMP jumps straight to the new value; PICKUP takes over only after passing the current value.</td></tr>
+<tr><td class="k">SCALE</td><td>LINEAR, EXP, LOG.</td></tr>
+<tr><td class="k">MIN / MAX</td><td>Mapping range.</td></tr>
+<tr><td class="k">Page switching</td><td>Each of the six pages can bind one message.</td></tr>
+</table>
+<p>Bindings are stored in midi_mappings.json, with a .bak backup kept alongside. Each parameter can have only one binding.</p>
+
+<!-- ============================================================ -->
+<h2 id="motion">13. Motion</h2>
+
+<table>
+<tr><td class="k">Playback</td><td>Tap MOTION in the Transport to toggle playback; it is on by default (yellow). Manual operation takes priority; on release the control returns to the recorded value.</td></tr>
+<tr><td class="k">Recording</td><td>Hold MOTION for 1 second to start recording (red); tap while recording to stop. Playback turns on automatically when recording starts.</td></tr>
+<tr><td class="k">Recording conditions</td><td>Data is recorded only when all three hold: recording is on, playback is running, and a finger is on the control.</td></tr>
+<tr><td class="k">Write timing</td><td>Written when recording stops or playback stops.</td></tr>
+<tr><td class="k">Sample rate</td><td>30 Hz, sample-and-hold.</td></tr>
+<tr><td class="k">Lane length</td><td>Track parameters: one 64-cell lane per segment. Effect and VISUAL parameters: a global 4-bar lane.</td></tr>
+<tr><td class="k">Recordable</td><td>Mixer (including PAN), DECAY, harmonics, source parameters (kick, sample, PHYSICAL; not AU tracks), effects (including the FX CHAIN parameters, DRY WET and RETURN), VISUAL, PERFORM controls.</td></tr>
+<tr><td class="k">Not recordable</td><td>LOCK, DENSITY, wavetable selection, MODEL, POLYPHONY, LOOP, REVERSE, FREEZE, HOLD, source switching, AU parameters.</td></tr>
+<tr><td class="k">Clearing one parameter</td><td>Turn on MOD in the Transport, tap the control, and answer Y to CLEAR MOTION? in the MOD ROUTE panel.</td></tr>
+<tr><td class="k">Other actions that clear MOTION</td><td>CLEAR of a segment, CLEAR in the top bar, and changing the effect of an FX CHAIN position (clears that position only). There is no button that clears all MOTION at once.</td></tr>
+<tr><td class="k">Indication</td><td>Controls with recorded data show an indicator line.</td></tr>
+<tr><td class="k">Storage</td><td>Saved with the bank; can be undone.</td></tr>
+</table>
+
+<div class="fig"><img src="img/motion_on.png" alt="MOTION playback on"></div>
+<div class="cap">MOTION is yellow while playback is on.</div>
+
+<div class="fig"><img src="img/motion_off.png" alt="MOTION playback off"></div>
+<div class="cap">With playback off it is dark.</div>
+
+<div class="fig"><img src="img/motion_rec.png" alt="MOTION recording"></div>
+<div class="cap">Holding it for one second starts recording, and it turns red while recording.</div>
+
+
+<!-- ============================================================ -->
+<h2 id="recording">14. Recording</h2>
+
+<h3>Multitrack recording</h3>
+
+<div class="fig"><img src="img/recording_setup.png" alt="recording selection"></div>
+<div class="cap">What gets recorded is chosen on the SYSTEM tab of SETUP: the 16 switches under RECORDING TRACKS, the estimated write rate per minute, and RECORD APP SCREEN and RECORD VISUAL OUTPUT under VIDEO RECORDING.</div>
+
+<table>
+<tr><td class="k">Start</td><td>Press PLAY and choose Y in Y / REC? / N.</td></tr>
+<tr><td class="k">Stop</td><td>Press the red-dot recording stop button and answer Y. Moving the app to the background does not stop recording. When system audio is interrupted the files are closed first, and a new session starts after it resumes; changing the sample rate also starts a new session.</td></tr>
+<tr><td class="k">RECORDING TRACKS</td><td>In the SYSTEM tab of SETUP, select the items to write with 16 switches: TRACK 1 to 8, MASTER, EXTERNAL INPUT, AUX 1, AUX 2, AUX 3, DELAY, REVERB, FX CHAIN. The factory default has TRACK 1 to 8, MASTER and EXTERNAL INPUT on. There are also ALL ON, ALL OFF, LOAD DEFAULT and SAVE DEFAULT. The selection is saved with the project; a project without a stored selection uses the default saved with SAVE DEFAULT. It cannot be changed while recording. The estimated amount written per minute is shown below. When everything is off, "Nothing selected. Recording is unavailable." is shown, and choosing Y only plays.</td></tr>
+<tr><td class="k">Files</td><td>WAV (32-bit float): track1 to track4 mono, track5 to track8 stereo, master stereo; aux1 to aux3 mono; delay and reverb stereo, which are the effect return signals tapped before the main FILTER and MASTER VOLUME. With EXTERNAL INPUT on, tracks with an external input route also save trackN_ext.wav. Tracks are sampled post-fader.</td></tr>
+<tr><td class="k">VIDEO RECORDING</td><td>The SYSTEM tab of SETUP has two switches, RECORD APP SCREEN and RECORD VISUAL OUTPUT, both OFF by default. The settings are stored on the device, not with the project. They cannot be changed while recording. Video starts and ends with the audio recording, and the videos are saved in the same session folder.</td></tr>
+<tr><td class="k">AppScreen.mp4</td><td>With RECORD APP SCREEN on, the app screen is recorded without using the microphone. The system shows a consent dialog at the start; declining does not affect audio recording.</td></tr>
+<tr><td class="k">VisualOutput.mp4</td><td>With RECORD VISUAL OUTPUT on, the VISUAL output is recorded: H.264, 1280 x 720, 30 fps, no audio, scaled proportionally with black bars. The visual engine starts automatically if it is not running.</td></tr>
+<tr><td class="k">Location</td><td>Recordings/Sessions/date-time/. -2, -3 are added for repeats within the same second. On iPad, access from On My iPad / HONKI / Recordings in the Files app.</td></tr>
+<tr><td class="k">Header</td><td>Updated every 100 ms; files remain readable if interrupted.</td></tr>
+</table>
+
+<h3>Sample recording (RECORD on VOICE)</h3>
+<table>
+<tr><td class="k">Source</td><td>Master output.</td></tr>
+<tr><td class="k">Length</td><td>Up to 120 seconds.</td></tr>
+<tr><td class="k">After stopping</td><td>Loaded automatically as the track's sample.</td></tr>
+<tr><td class="k">File</td><td>Recordings/Samples/track number_timestamp.wav, stereo 32-bit float.</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="shortcuts">15. Keyboard Shortcuts</h2>
+
+<p>Requires an external keyboard.</p>
+<table>
+<tr><td class="k">1 to 6</td><td>Switch tabs. When the editor overlay is open, switches TRACK 1 to 4 and DRUMS instead.</td></tr>
+<tr><td class="k">Space</td><td>Play / stop, including the recording prompt.</td></tr>
+<tr><td class="k">Shift+Space</td><td>Play only, without recording.</td></tr>
+<tr><td class="k">Cmd+L</td><td>MIDI Learn on / off.</td></tr>
+<tr><td class="k">Cmd+Z</td><td>Undo.</td></tr>
+<tr><td class="k">Cmd+Shift+Z</td><td>Redo.</td></tr>
+<tr><td class="k">ESC</td><td>Closes the editor overlay.</td></tr>
+</table>
+<p>Touch: swipe the phrase editor overlay down more than 80pt to close it.</p>
+
+<footer>MADZINE — HONKI v1.4.0</footer>
+</div>
+</body>
+</html>
