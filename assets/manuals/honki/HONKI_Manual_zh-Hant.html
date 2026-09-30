@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>HONKI 使用手冊 v1.4.0</title>
+<title>HONKI 使用手冊 v1.4.6</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root { --accent: #F27455; }
@@ -118,7 +118,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <header>
   <div class="brand"><a href="https://madzine.work" style="color:inherit;text-decoration:none">MADZINE</a></div>
   <h1>HONKI</h1>
-  <div class="sub">使用手冊 — v1.4.0 — 繁體中文</div>
+  <div class="sub">使用手冊 — v1.4.6 — 繁體中文</div>
   <div class="langs"><a href="HONKI_Manual_en.html">English</a> <a href="HONKI_Manual_ja.html">日本語</a> <a href="HONKI_Manual_zh-Hant.html" class="cur">繁體中文</a></div>
 </header>
 
@@ -180,7 +180,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <table>
 <tr><td class="k">槽位數</td><td>26 個 bank（A 至 Z），每個 bank 10 個 pattern（00 至 09）。槽位 ID 格式為 A-00。</td></tr>
 <tr><td class="k">每槽儲存內容</td><td>bank、programs、modulation、PERFORM 版面、MASTER FX、各軌 AU。</td></tr>
-<tr><td class="k">全 app 共用（不隨槽位）</td><td>INPUT COMP、HUE、CV 裝置綁定。</td></tr>
+<tr><td class="k">全 app 共用（不隨槽位）</td><td>INPUT COMP、HUE、CV 裝置綁定、EXTERNAL INPUT 路由。</td></tr>
 <tr><td class="k">啟動時</td><td>回復上次使用的槽位。</td></tr>
 </table>
 
@@ -197,7 +197,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">計時器</td><td>啟動時顯示「H O N K I」。第一次按 PLAY 並回答錄音確認（Y 或 N）後開始計時，格式 MM:SS。點兩下歸零，旁邊顯示「Click Twice to Reset」提示。</td></tr>
 <tr><td class="k">MADZINE</td><td>品牌文字。</td></tr>
 <tr><td class="k">A-00 選單</td><td>兩層選單。第一層最上方為 CLEAR，之後是 bank A 至 Z；第二層是 pattern 00 至 09。可指定 MIDI Learn 為「下一個 bank」。</td></tr>
-<tr><td class="k">CLEAR</td><td>若 bank 有內容，先詢問「Clear everything?」。清除 bank、programs、SWING 與 TRANSPOSE 歸 0、modulation、PERFORM 版面、MIDI 綁定、各軌 AU、MASTER FX、CV 路由。保留 INPUT COMP、HUE、CV 裝置與 STEREO OUT。</td></tr>
+<tr><td class="k">CLEAR</td><td>若 bank 有內容，先詢問「Clear everything?」。清除 bank、programs、SWING 與 TRANSPOSE 歸 0、modulation、PERFORM 版面、MIDI 綁定、各軌 AU、MASTER FX、CV 路由。保留 INPUT COMP、HUE、CV 裝置、STEREO OUT 與 EXTERNAL INPUT 路由；外部輸入路由屬於這台裝置，載入檔案、切換專案槽位或 Undo 時也一律保留。</td></tr>
 <tr><td class="k">FILE 選單</td><td>COPY、PASTE、SAVE、LOAD，以及不可點的 VERSION 項目（顯示版本號）。PASTE 只在剪貼簿非空時可用。</td></tr>
 <tr><td class="k">SAVE</td><td>匯出 .honki 檔。iOS 預設檔名為「HONKI 槽位」。</td></tr>
 <tr><td class="k">LOAD</td><td>匯入 .honki 檔。詢問「Replace current bank?」「Current changes will be lost.」。失敗時顯示「Bank File Error」。</td></tr>
@@ -219,7 +219,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">錄音停止按鈕</td><td>只在錄音狀態顯示，為紅點膠囊按鈕，位於 PLAY 左側。按下出現「STOP RECORDING?」Y / N，5 秒後自動關閉。產生的檔案見第 14 章。</td></tr>
 <tr><td class="k">MOTION</td><td>按鈕有兩行字：MOTION 與 HOLD RECORD。點一下切換 MOTION 回放：回放開啟時為黃色（預設），關閉時無色。按住 1 秒開始錄製，按住期間紅色由左向右填滿，提早放開或拖離即取消；錄製中按鈕為紅色，點一下停止錄製。開始錄製時回放自動開啟。不可指定 MIDI Learn。見第 13 章。</td></tr>
 <tr><td class="k">RESET</td><td>只在播放中可用，將播放位置歸零。可指定 MIDI Learn。</td></tr>
-<tr><td class="k">BPM</td><td>20 至 300。垂直拖曳調整，點一下輸入數字。使用外部時脈時灰顯 40%。可指定 MIDI Learn。</td></tr>
+<tr><td class="k">BPM</td><td>20 至 300。垂直拖曳調整，點一下輸入數字。使用外部時脈時灰顯 40%，並顯示收到的速度；專案 BPM 不會被改寫，時脈來源切回 INT 後恢復原值。可指定 MIDI Learn。</td></tr>
 <tr><td class="k">TAP</td><td>2 秒視窗內最多 4 次點擊取平均。最後一次點擊 5 秒後清除緩衝。不進入 undo。外部時脈時不可用。</td></tr>
 <tr><td class="k">SCALE</td><td>兩層選單：第一層音階，第二層 12 個根音。按鈕顯示根音與音階名。內建 16 種：Chromatic、Major、Minor、Penta Major、Penta Minor、Dorian、Phrygian、Lydian、Mixolydian、Locrian、Major Triad、Minor Triad、Blues、Arabic、Japanese、Whole Tone；之後列出使用者音階與 USER SCALE EDITOR。選單以星號數量標示目前 STYLE 的推薦程度。</td></tr>
 <tr><td class="k">SWING</td><td>填滿式橫向 fader，0 至 100。點兩下回到 0.5。奇數步延後 stepDuration x 0.25 x swing。三連音音符不受 SWING 影響。可指定 MIDI Learn。</td></tr>
@@ -445,6 +445,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">DECAY</td><td>目前 track 的 DECAY，與 MAIN 相同。</td></tr>
 <tr><td class="k">CLEAR</td><td>清除目前 segment 的音色記憶。</td></tr>
 <tr><td class="k">SAVE</td><td>將目前面板參數（含和聲設定）存入 segment 記憶。</td></tr>
+<tr><td class="k">DRUM KIT</td><td>編輯中的 track 音源為 SAMPLE 時顯示在 SAVE 右側，按下開啟 SAVE、LOAD、DELETE 選單。鼓組是 TRACK 5 至 8 的整套 MULTI 設定：MULTI 開關、pad 數、每個已載入 pad 的音檔與 pad 參數。SAVE 會要求輸入名稱（預設為「Kit」加日期時間），音檔會複製到鼓組資料夾，原始檔案搬走也不影響。LOAD 列出已存的鼓組與儲存時間，載入時 TRACK 5 至 8 切到 SAMPLE、清空 pad、開啟 MULTI，再載入鼓組的 pad。DELETE 經確認後刪除鼓組與其音檔。沒有任何鼓組時 LOAD 與 DELETE 灰顯。鼓組存在裝置的 Documents / DrumKits，可在「檔案」app 看到，不屬於專案的一部分。</td></tr>
 </table>
 <p>面板編輯規則：目前 segment 有記憶時，面板改的是記憶內容；沒有記憶時改的是 track 基底。取樣載入或錄音、PHYSICAL 的 MODEL 與 POLYPHONY、AU 載入都作用於 track 基底。SLICE 與 MULTI 為 track 層級設定，兩者互斥。編輯 segment 記憶時，面板顯示「EDITING SEGMENT n MEMORY」浮水印。</p>
 
@@ -856,7 +857,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <table>
 <tr><td class="k">SEQ</td><td>UTILITY 包絡輸出 0 至 1。</td></tr>
 <tr><td class="k">LFO 1 至 6</td><td>依 UNI / BI 設定為單極或雙極。</td></tr>
-<tr><td class="k">ENV 1 至 8</td><td>各 track 的觸發包絡，0 至 1，依該 track 目前音源（SYNTH、SAMPLE、PHYSICAL、AU）讀取，允許調變自己 track 的參數。ENV 不是 UTILITY OUTPUT 矩陣的欄。PERFORM 控件不可用 ENV，按鈕灰顯。</td></tr>
+<tr><td class="k">ENV 1 至 8</td><td>各 track 的觸發包絡，0 至 1，依該 track 目前音源（SYNTH、SAMPLE、PHYSICAL、AU）讀取。track 沒有發聲時包絡照樣運作：空的 sampler、空的 MULTI pad、使用外部輸入的 PHYSICAL、沒有載入樂器的 AU 槽都仍有 ENV 輸出。DECAY 轉到最大時，SAMPLE、PHYSICAL、AU 的 track 包絡被旁通，ENV 讀到 0；SYNTH 的 track 則繼續運作。允許調變自己 track 的參數。ENV 不是 UTILITY OUTPUT 矩陣的欄。PERFORM 控件不可用 ENV，按鈕灰顯。</td></tr>
 </table>
 <p>已設定的參數右上角顯示來源標記：m 為 MOTION，s 為 SEQ，1 至 6 為 LFO，e1 至 e8 為 ENV；來源太多時以「+」截斷。</p>
 
@@ -870,43 +871,46 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <h2 id="visual">10. VISUAL</h2>
 
 <div class="fig"><img src="img/visual_full.png" alt="VISUAL 全頁"></div>
-<div class="cap">VISUAL 全頁。左上為 16:9 預覽與狀態列（60 FPS、SURFACES 1）。右上為 SOURCE 列（鎖頭圖示、ALWAYS ON、CAMERA 選單、BACK CAMERA、兩個翻轉按鈕、1920 x 1080）與四個站：PARTICLE、MESH、FEEDBACK、CHROMASCOPE，各有拖曳把手、ON 按鈕與 MIX 條（圖中前三個為 1.00，CHROMASCOPE 為 0.35）。下方四個參數面板。</div>
+<div class="cap">VISUAL 全頁。左上為 16:9 預覽與狀態列（60 FPS、SURFACES 1）。右上為 SOURCE 列（鎖頭圖示、ALWAYS ON、CAMERA 選單、BACK CAMERA、兩個翻轉按鈕、兩個旋轉按鈕）與四個站：PARTICLE、MESH、FEEDBACK、CHROMASCOPE，各有拖曳把手、ON 按鈕與 MIX 條（圖中前三個為 1.00，CHROMASCOPE 為 0.35）。下方四個參數面板。</div>
 
 <h3>SOURCE 列與站列</h3>
 <div class="fig"><img src="img/visual_layers.png" alt="SOURCE 列與站列"></div>
-<div class="cap">SOURCE 列：鎖頭圖示、SOURCE、ALWAYS ON、CAMERA 下拉、鏡頭選單、水平與垂直翻轉按鈕、解析度 1920 x 1080。下方四列為 PARTICLE、MESH、FEEDBACK、CHROMASCOPE，各有把手、ON 與 MIX 條。</div>
+<div class="cap">SOURCE 列：鎖頭圖示、SOURCE、ALWAYS ON、CAMERA 下拉、鏡頭選單、水平與垂直翻轉按鈕、向左與向右旋轉按鈕。下方四列為 PARTICLE、MESH、FEEDBACK、CHROMASCOPE，各有把手、ON 與 MIX 條。</div>
 <table>
-<tr><td class="k">SOURCE / ALWAYS ON</td><td>來源狀態文字。</td></tr>
+<tr><td class="k">SOURCE / ALWAYS ON</td><td>來源狀態文字。來源有旋轉時，ALWAYS ON 的位置改顯示旋轉角度（90、180 或 270）。</td></tr>
 <tr><td class="k">來源選單</td><td>CAMERA、PHOTO、VIDEO。</td></tr>
-<tr><td class="k">鏡頭選單</td><td>選相機裝置；無相機時顯示 NO CAMERA FOUND。相機為 1080p 30 fps，前鏡頭鏡像。</td></tr>
-<tr><td class="k">PHOTOS / FILES</td><td>PHOTO 與 VIDEO 來源時顯示，從相簿或檔案載入。載入後顯示檔名，失敗顯示 LOAD FAILED。相片最長邊 1920；影片循環播放且靜音。</td></tr>
+<tr><td class="k">鏡頭選單</td><td>選相機裝置；無相機時顯示 NO CAMERA FOUND。再選一次目前已選的裝置會重新啟動相機。相機為 1080p 30 fps，前鏡頭鏡像。</td></tr>
+<tr><td class="k">PHOTOS / FILES</td><td>PHOTO 與 VIDEO 來源時顯示，從相簿或檔案載入。載入後顯示檔名。相片最長邊 1920；影片循環播放且靜音。</td></tr>
 <tr><td class="k">FLIP H / FLIP V</td><td>水平與垂直翻轉。</td></tr>
-<tr><td class="k">解析度</td><td>顯示來源解析度；未就緒時顯示 SOURCE WAITING。</td></tr>
+<tr><td class="k">向左旋轉 / 向右旋轉</td><td>每按一次將來源逆時針或順時針旋轉 90 度。原本在這個位置的解析度顯示已移除。</td></tr>
 <tr><td class="k">站列</td><td>四個站 CHROMASCOPE、PARTICLE、MESH、FEEDBACK，拖曳左側把手改順序。ON / OFF 切換，預設只有 CHROMASCOPE 開；全部關閉時輸出原始來源。</td></tr>
-<tr><td class="k">MIX</td><td>0 至 1，預設 CHROMASCOPE 0.75，其餘 1。右上角顯示調變來源標記。</td></tr>
-<tr><td class="k">狀態列</td><td>NN FPS、SURFACES n、EXTERNAL DISPLAY、RENDERER OFFLINE。</td></tr>
+<tr><td class="k">MIX</td><td>0 至 1，預設 CHROMASCOPE 0.75，其餘 1。右上角顯示調變來源標記。四條 MIX 可以一指一次設定：從任一條 MIX 按下，往上或往下移到其他列，橫向位置就是該列的值，途中經過的列也會一併設定。MIDI Learn 與 MOD ROUTE 模式下不可用。</td></tr>
+<tr><td class="k">狀態列</td><td>NN FPS、SURFACES n、EXTERNAL DISPLAY、RENDERER OFFLINE，之後接著來源狀態。載入失敗以紅字顯示 PHOTO LOAD FAILED、VIDEO LOAD FAILED、MODEL READ FAILED 或 MODEL LOAD FAILED。相機顯示 CAMERA OFF、CAMERA STARTING、CAMERA WAITING、CAMERA NO FRAMES（運作中但超過 2 秒沒有畫面），或相機停止的原因，例如 CAMERA IN USE、NO CAMERA INPUT。紅色的相機狀態點一下即可重新連接相機；PERMISSION DENIED 不能點，需到系統設定開啟相機權限。影片顯示 VIDEO FAILED 或 VIDEO STALLED。</td></tr>
 </table>
-<p>VISUAL 的參數值不隨 bank 儲存，只有 MOD ROUTE 路由會存入 bank。</p>
+<p>VISUAL 的參數值不隨 bank 儲存，只有 MOD ROUTE 路由會存入 bank。這些值改存在裝置上，下次啟動時還原：四個站的參數、CHROMASCOPE 的 AUDIO、GLIDE TIME、站的順序與開關、MESH 內建模型、FLIP、旋轉與所選相機。不還原的有：載入的相片、影片與 .obj 模型、MOTION 與 MOD ROUTE 的值、外部顯示器鏡像開關。來源若是 PHOTO 或 VIDEO，還原時一律回到 CAMERA。</p>
 
 <h3>參數面板</h3>
 <div class="fig"><img src="img/visual_panels.png" alt="四個參數面板"></div>
-<div class="cap">四個參數面板。PARTICLE：SIZE、SHAPE、DENSITY、JITTER、DEPTH MIX、DISPLACE、ZOOM、BRIGHTNESS、SCALE X / Y / Z、AUDIO DEPTH、AUDIO TRACK ALL。MESH：模型選單（PENTAGONAL）、LOAD MODEL、DISPLACE、WIREFRAME、ROTATE X / Y / Z、SCALE、AUDIO DEPTH、BRIGHTNESS、AUDIO TRACK ALL。FEEDBACK：SMOOTH、BRIGHT、CHROMA、DIFFUSE、BRIGHTNESS。CHROMASCOPE：EFFECT / MICROPHONE、BASE HUE、HUE SPREAD、BRIGHTNESS、CURVE 1 至 4、ANGLE 1 至 4。圖中 MESH 的 ROTATE 三條右上角有調變來源標記。</div>
+<div class="cap">四個參數面板。PARTICLE：SIZE、SHAPE、DENSITY、JITTER、DEPTH MIX、DISPLACE、ZOOM、BRIGHTNESS、SCALE X / Y / Z、AUDIO DEPTH、AUDIO TRACK ALL。MESH：模型選單（PENTAGONAL）、LOAD MODEL、DISPLACE、WIREFRAME、ROTATE X / Y / Z、SCALE、AUDIO DEPTH、BRIGHTNESS、AUDIO TRACK ALL。FEEDBACK：SMOOTH、BRIGHT、CHROMA、DIFFUSE、BRIGHTNESS。CHROMASCOPE（舊版面）：EFFECT / MICROPHONE、BASE HUE、HUE SPREAD、BRIGHTNESS、CURVE 1 至 4、ANGLE 1 至 4；目前的 CHROMASCOPE 面板見下一節。圖中 MESH 的 ROTATE 三條右上角有調變來源標記。</div>
 
 <h3>CHROMASCOPE</h3>
+<p>CHROMASCOPE 最多畫八層，每個 track 一層。每一層都用自己 track 的波形來畫，所以 TRACK 1 至 8 各有自己的色帶。LEVEL 推桿為 0 的 track 沒有層，其餘的層會往前補齊，因此色相、角度、曲線的級距都是以實際顯示的層數計算。</p>
 <table>
-<tr><td class="k">EFFECT</td><td>效果開關。</td></tr>
-<tr><td class="k">MICROPHONE</td><td>以主輸出音訊（L / R / mid / side）驅動影像。</td></tr>
-<tr><td class="k">BASE HUE</td><td>0 至 333，預設 166.5。</td></tr>
-<tr><td class="k">HUE SPREAD</td><td>0 至 100，預設 50。</td></tr>
-<tr><td class="k">BRIGHTNESS</td><td>0 至 4。</td></tr>
-<tr><td class="k">CURVE 1 至 4</td><td>各 0 至 100。</td></tr>
-<tr><td class="k">ANGLE 1 至 4</td><td>各 0 至 360。</td></tr>
+<tr><td class="k">AUDIO</td><td>0 至 5，預設 1。驅動各層的 track 音訊倍率，0 為關閉音訊驅動。3 以內是單純倍率；3 至 5 會連波形的負半週一起抬起，畫面填得更滿。取代原本的 EFFECT 與 MICROPHONE 開關。</td></tr>
+<tr><td class="k">BASE HUE</td><td>0 至 333，預設 166.5。第一層的色相。</td></tr>
+<tr><td class="k">HUE SPREAD</td><td>0 至 100，預設 50。分布在各層的色相範圍，每往後一層平均位移一級。</td></tr>
+<tr><td class="k">BRIGHTNESS</td><td>0 至 4，預設 1.5。</td></tr>
+<tr><td class="k">CURVE</td><td>0 至 100，預設 50。第一層的曲線。</td></tr>
+<tr><td class="k">SPREAD（CURVE 旁）</td><td>-100 至 +100，預設 0，有中間線。每往後一層加到 CURVE 上，結果限制在 0 至 100。</td></tr>
+<tr><td class="k">ANGLE</td><td>0 至 360，預設 0。第一層的角度。</td></tr>
+<tr><td class="k">SPREAD（ANGLE 旁）</td><td>0 至 360，預設 45。每往後一層加到 ANGLE 上。</td></tr>
+<tr><td class="k">LEVEL 1 至 8</td><td>八支直向推桿，0 至 1，預設 1，每個 track 一支。決定該 track 那一層的強度，0 就沒有那一層。雙擊回到 1。八支推桿可以一指橫掃一次設定：橫向位置選推桿，縱向位置設值。</td></tr>
 </table>
 
 <h3>PARTICLE</h3>
 <table>
 <tr><td class="k">SIZE</td><td>0.001 至 1。</td></tr>
-<tr><td class="k">SHAPE</td><td>0 至 1，依序為圓、方、三角、六角、菱形、星、環，1 為隨機。不可 MOD ROUTE。</td></tr>
+<tr><td class="k">SHAPE</td><td>0 至 1，依序為圓、方、三角、六角、菱形、星、環，1 為隨機。形狀在各段之間連續變形，可用 MOD ROUTE 調變。</td></tr>
 <tr><td class="k">DENSITY</td><td>0.01 至 2。</td></tr>
 <tr><td class="k">JITTER</td><td>0 至 0.05。</td></tr>
 <tr><td class="k">DEPTH MIX</td><td>0 至 1。</td></tr>
@@ -938,10 +942,17 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">BRIGHTNESS</td><td>輸出亮度。</td></tr>
 </table>
 
+<h3>RANDOM 與 GLIDE TIME</h3>
+<p>FEEDBACK 面板最下面兩列是 RANDOM 與 GLIDE TIME。兩者作用於整個 VISUAL 頁，站的順序改變時會跟著 FEEDBACK 面板移動，FEEDBACK 關閉時仍可使用。</p>
+<table>
+<tr><td class="k">RANDOM</td><td>把已開啟的站的所有連續參數各自隨機設到範圍內的值；MIX 條與 GLIDE TIME 不動，關閉的站不處理。MESH 開啟且使用內建模型時，RANDOM 也會立即換成另一個內建模型；載入的 .obj 模型不會被換掉。只改基底值，MOTION 與 MOD ROUTE 的值維持不變。</td></tr>
+<tr><td class="k">GLIDE TIME</td><td>0 至 10 秒，未滿 100 ms 以毫秒顯示，其餘以秒顯示。參數在這段時間內從目前值平滑滑到隨機值；MESH 模型則立即切換。</td></tr>
+</table>
+
 <h3>音訊驅動與調變</h3>
 <ul>
-<li>音訊來源為 8 軌在 mixer 輸入點的 RMS，乘以 VOL 並套用靜音與獨奏。</li>
-<li>共 39 個參數可 MOD ROUTE。不可調變：站的開關與順序、AUDIO TRACK、SHAPE、MESH 模型。</li>
+<li>PARTICLE 與 MESH 由 8 軌在 mixer 輸入點的 RMS 驅動，乘以 VOL 並套用靜音與獨奏。CHROMASCOPE 則讀取各 track 的波形給自己的那一層。</li>
+<li>共 46 個參數可 MOD ROUTE，包括 CHROMASCOPE 的八支 LEVEL 推桿、AUDIO 與 GLIDE TIME。不可調變：站的開關與順序、AUDIO TRACK、MESH 模型與 LOAD MODEL。</li>
 <li>MIDI 寫入的是基底值。</li>
 </ul>
 
@@ -955,7 +966,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <!-- ============================================================ -->
 <h2 id="setup">11. SETUP</h2>
 
-<p>SETUP 為置中的面板，上方有標題與 CLOSE，點面板外也會關閉。面板分為五個分頁：AUDIO、CV / MIDI、CLOCK、MIDI CONTROL、SYSTEM，再次開啟時回到上次的分頁。多數區塊有 INFO 鈕，點一下展開說明。</p>
+<p>SETUP 為置中的面板，上方有標題、MANUAL 鈕與 CLOSE，點面板外也會關閉。MANUAL 會在瀏覽器開啟這份使用手冊（英文、日文、繁體中文）。面板分為五個分頁：AUDIO、CV / MIDI、CLOCK、MIDI CONTROL、SYSTEM，再次開啟時回到上次的分頁。多數區塊有 INFO 鈕，點一下展開說明。</p>
 
 <h3>AUDIO</h3>
 
@@ -992,6 +1003,8 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 
 <table>
 <tr><td class="k">CLOCK IN</td><td>SOURCE：INT / MIDI / CV。DIV MULT：/4、/2、x1、x2、x4，只在使用外部來源時可用。CV INPUT 選聲道，SIGNAL 顯示訊號，STATUS 顯示狀態。BPM 20 至 300。MIDI 時脈為 24 PPQN，2 秒無訊號視為中斷。</td></tr>
+<tr><td class="k">TRANSPORT</td><td>只在 SOURCE 為 MIDI 時顯示。ANY SOURCE（預設）接受所有已啟用 MIDI 輸入送來的 start、stop、continue；CLOCK ONLY 只接受送時脈的那台裝置。</td></tr>
+<tr><td class="k">跟隨外部時脈</td><td>sequencer 靠微調播放速率跟上收到的 MIDI 時脈，播放位置不會跳動。BPM 顯示收到的速度，但專案 BPM 不會被改寫也不會存檔；SOURCE 切回 INT 後恢復原本的 BPM。</td></tr>
 <tr><td class="k">CLOCK OUT</td><td>CHANNEL、OUT DIV、OUT WIDTH（毫秒）。</td></tr>
 <tr><td class="k">MIDI CLOCK OUT</td><td>OFF / ON。沒有 MIDI 輸出裝置時灰顯。</td></tr>
 </table>
@@ -1095,6 +1108,8 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <table>
 <tr><td class="k">開始</td><td>按 PLAY 後在 Y / REC? / N 中選 Y。</td></tr>
 <tr><td class="k">停止</td><td>按紅點錄音停止按鈕並回答 Y。app 切到背景不會停止錄音。系統音訊被中斷時檔案會先結束，恢復後開新 session；改變取樣率也會開新 session。</td></tr>
+<tr><td class="k">連續性</td><td>長時間錄音不會再掉段：寫檔已分散進行，MASTER 與外部輸入的檔案不會被餓死。session 進行中若音訊引擎重新啟動，例如改外部輸入路由或回到前景，引擎停住的那段時間會在每個檔案補上靜音，所有檔案長度維持一致，錄影也繼續寫在同一個檔案。因路由改變而新增或消失的外部輸入檔案，會在進行中的 session 內直接新增或結束。</td></tr>
+<tr><td class="k">Recording Stopped</td><td>檔案無法建立或寫入、儲存空間用完、或檔案達到 WAV 大小上限時，錄音停止、REC 解除，並跳出標題為「Recording Stopped」的提示說明原因，例如「Recording stopped because a recording file could not be written. The audio recorded up to that point has been saved.」或「Recording could not start because the recording files could not be created.」。之前寫入的內容都留在 session 資料夾。播放不受影響。</td></tr>
 <tr><td class="k">RECORDING TRACKS</td><td>在 SETUP 的 SYSTEM 分頁選擇要寫入的項目，共 16 個開關：TRACK 1 至 8、MASTER、EXTERNAL INPUT、AUX 1、AUX 2、AUX 3、DELAY、REVERB、FX CHAIN。出廠預設為 TRACK 1 至 8、MASTER 與 EXTERNAL INPUT 開啟。另有 ALL ON、ALL OFF、LOAD DEFAULT、SAVE DEFAULT。選擇隨專案儲存；專案沒有記錄時使用 SAVE DEFAULT 存下的預設。錄音中不可更改。下方顯示預估的每分鐘寫入量。全部關閉時顯示「Nothing selected. Recording is unavailable.」，此時選 Y 只會播放。</td></tr>
 <tr><td class="k">檔案</td><td>WAV（32 位元浮點）：track1 至 track4 單聲道、track5 至 track8 立體聲、master 立體聲；aux1 至 aux3 單聲道；delay 與 reverb 立體聲，為效果回送訊號，取點在主 FILTER 與 MASTER VOLUME 之前。EXTERNAL INPUT 開啟時，有外部輸入路由的軌另存 trackN_ext.wav。track 的取樣點為 fader 後。</td></tr>
 <tr><td class="k">VIDEO RECORDING</td><td>SETUP 的 SYSTEM 分頁有 RECORD APP SCREEN 與 RECORD VISUAL OUTPUT 兩個開關，預設皆為 OFF。設定存在裝置上，不隨專案。錄音中不可更改。錄影隨錄音開始與結束，影片存在同一個 session 資料夾。</td></tr>
@@ -1127,7 +1142,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 </table>
 <p>觸控：樂句編輯覆蓋層向下滑超過 80pt 關閉。</p>
 
-<footer>MADZINE — HONKI v1.4.0</footer>
+<footer>MADZINE — HONKI v1.4.6</footer>
 </main>
 </div>
 <script>

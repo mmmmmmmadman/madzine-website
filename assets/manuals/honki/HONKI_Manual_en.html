@@ -118,7 +118,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <header>
   <div class="brand"><a href="https://madzine.work" style="color:inherit;text-decoration:none">MADZINE</a></div>
   <h1>HONKI</h1>
-  <div class="sub">User Manual — v1.4.0 — English</div>
+  <div class="sub">User Manual — v1.4.6 — English</div>
   <div class="langs"><a href="HONKI_Manual_en.html" class="cur">English</a> <a href="HONKI_Manual_ja.html">日本語</a> <a href="HONKI_Manual_zh-Hant.html">繁體中文</a></div>
 </header>
 
@@ -180,7 +180,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <table>
 <tr><td class="k">Slot count</td><td>26 banks (A to Z), 10 patterns per bank (00 to 09). Slot IDs use the format A-00.</td></tr>
 <tr><td class="k">Stored per slot</td><td>bank, programs, modulation, PERFORM layout, MASTER FX, per-track AU.</td></tr>
-<tr><td class="k">App-wide (not per slot)</td><td>INPUT COMP, HUE, CV device binding.</td></tr>
+<tr><td class="k">App-wide (not per slot)</td><td>INPUT COMP, HUE, CV device binding, EXTERNAL INPUT routing.</td></tr>
 <tr><td class="k">At launch</td><td>Restores the last used slot.</td></tr>
 </table>
 
@@ -197,7 +197,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">Timer</td><td>Shows "H O N K I" at launch. Starts counting after the first PLAY and its recording confirmation (Y or N), in MM:SS format. Tap twice to reset; the "Click Twice to Reset" hint sits next to it.</td></tr>
 <tr><td class="k">MADZINE</td><td>Brand text.</td></tr>
 <tr><td class="k">A-00 menu</td><td>Two-level menu. The first level starts with CLEAR, followed by banks A to Z; the second level is patterns 00 to 09. MIDI Learn can be assigned as "next bank".</td></tr>
-<tr><td class="k">CLEAR</td><td>If the bank has content, asks "Clear everything?" first. Clears the bank, programs, SWING and TRANSPOSE to 0, modulation, PERFORM layout, MIDI bindings, per-track AU, MASTER FX, CV routing. Keeps INPUT COMP, HUE, CV device and STEREO OUT.</td></tr>
+<tr><td class="k">CLEAR</td><td>If the bank has content, asks "Clear everything?" first. Clears the bank, programs, SWING and TRANSPOSE to 0, modulation, PERFORM layout, MIDI bindings, per-track AU, MASTER FX, CV routing. Keeps INPUT COMP, HUE, CV device, STEREO OUT and the EXTERNAL INPUT routing; the external input routing belongs to the device and is also kept when loading a file, switching a project slot or using Undo.</td></tr>
 <tr><td class="k">FILE menu</td><td>COPY, PASTE, SAVE, LOAD, plus a non-tappable VERSION item (shows the version number). PASTE is only available when the clipboard is not empty.</td></tr>
 <tr><td class="k">SAVE</td><td>Exports a .honki file. The default file name on iOS is "HONKI slot".</td></tr>
 <tr><td class="k">LOAD</td><td>Imports a .honki file. Asks "Replace current bank?" "Current changes will be lost." On failure shows "Bank File Error".</td></tr>
@@ -219,7 +219,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">Recording stop button</td><td>Shown only in the recording state, as a red-dot capsule button to the left of PLAY. Pressing it shows "STOP RECORDING?" Y / N, which closes after 5 seconds. For the files produced, see chapter 14.</td></tr>
 <tr><td class="k">MOTION</td><td>The button has two lines of text: MOTION and HOLD RECORD. Tap to toggle MOTION playback: yellow when playback is on (default), no colour when off. Hold for 1 second to start recording; while holding, red fills from left to right, and releasing early or dragging away cancels. The button is red while recording; tap to stop recording. Playback turns on automatically when recording starts. Cannot be assigned with MIDI Learn. See chapter 13.</td></tr>
 <tr><td class="k">RESET</td><td>Available only during playback. Returns the play position to zero. Can be assigned with MIDI Learn.</td></tr>
-<tr><td class="k">BPM</td><td>20 to 300. Drag vertically to adjust, tap to type a number. Dimmed to 40% when using an external clock. Can be assigned with MIDI Learn.</td></tr>
+<tr><td class="k">BPM</td><td>20 to 300. Drag vertically to adjust, tap to type a number. Dimmed to 40% when using an external clock and shows the incoming tempo; the project BPM is not changed and returns when the clock source is set back to INT. Can be assigned with MIDI Learn.</td></tr>
 <tr><td class="k">TAP</td><td>Averages up to 4 taps within a 2-second window. The buffer clears 5 seconds after the last tap. Not included in undo. Unavailable with an external clock.</td></tr>
 <tr><td class="k">SCALE</td><td>Two-level menu: scale first, then 12 root notes. The button shows the root and scale name. 16 built-in scales: Chromatic, Major, Minor, Penta Major, Penta Minor, Dorian, Phrygian, Lydian, Mixolydian, Locrian, Major Triad, Minor Triad, Blues, Arabic, Japanese, Whole Tone; followed by user scales and USER SCALE EDITOR. The menu marks how well each scale suits the current STYLE with a number of asterisks.</td></tr>
 <tr><td class="k">SWING</td><td>Filled horizontal fader, 0 to 100. Double-tap to return to 0.5. Odd steps are delayed by stepDuration x 0.25 x swing. Triplet notes are not affected by SWING. Can be assigned with MIDI Learn.</td></tr>
@@ -445,6 +445,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">DECAY</td><td>DECAY of the current track, same as on MAIN.</td></tr>
 <tr><td class="k">CLEAR</td><td>Clears the sound memory of the current segment.</td></tr>
 <tr><td class="k">SAVE</td><td>Stores the current panel parameters (including the harmonic settings) into the segment memory.</td></tr>
+<tr><td class="k">DRUM KIT</td><td>Shown to the right of SAVE while the edited track uses the SAMPLE source. Opens a menu with SAVE, LOAD and DELETE. A drum kit is the MULTI setup of TRACK 5 to 8: the MULTI state, the pad count, the audio file of each loaded pad and its pad parameters. SAVE asks for a name (default "Kit" followed by the date and time) and copies the audio files into the kit folder, so the kit stays complete even if the original files are moved. LOAD lists the saved kits with their save time; loading switches TRACK 5 to 8 to SAMPLE, clears their pads, turns MULTI on and loads the pads of the kit. DELETE removes a kit and its audio files after confirmation. LOAD and DELETE are dimmed when no kit is saved. Kits are stored on the device under Documents / DrumKits, visible in the Files app, and are not part of the project.</td></tr>
 </table>
 <p>Panel editing rule: when the current segment has a memory, the panel edits the memory; when it has none, the panel edits the track base. Sample loading or recording, the PHYSICAL MODEL and POLYPHONY, and AU loading always apply to the track base. SLICE and MULTI are track-level settings and are mutually exclusive. While editing a segment memory, the panel shows an "EDITING SEGMENT n MEMORY" watermark.</p>
 
@@ -856,7 +857,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <table>
 <tr><td class="k">SEQ</td><td>UTILITY envelope output, 0 to 1.</td></tr>
 <tr><td class="k">LFO 1 to 6</td><td>Unipolar or bipolar according to the UNI / BI setting.</td></tr>
-<tr><td class="k">ENV 1 to 8</td><td>The trigger envelope of each track, 0 to 1, read according to the current source of that track (SYNTH, SAMPLE, PHYSICAL, AU). A track may modulate its own parameters. ENV is not a column of the UTILITY OUTPUT matrix. ENV is unavailable on PERFORM controls, where the buttons are dimmed.</td></tr>
+<tr><td class="k">ENV 1 to 8</td><td>The trigger envelope of each track, 0 to 1, read according to the current source of that track (SYNTH, SAMPLE, PHYSICAL, AU). The envelope keeps running even when the track makes no sound: an empty sampler, an empty MULTI pad, PHYSICAL with an external input or an AU slot without an instrument still produce ENV. With DECAY at maximum, the envelope is bypassed on SAMPLE, PHYSICAL and AU tracks and ENV reads 0; on SYNTH tracks it keeps running. A track may modulate its own parameters. ENV is not a column of the UTILITY OUTPUT matrix. ENV is unavailable on PERFORM controls, where the buttons are dimmed.</td></tr>
 </table>
 <p>A parameter with routing shows source marks at its top right: m for MOTION, s for SEQ, 1 to 6 for LFO, e1 to e8 for ENV; with too many sources the list is truncated with "+".</p>
 
@@ -870,43 +871,46 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <h2 id="visual">10. VISUAL</h2>
 
 <div class="fig"><img src="img/visual_full.png" alt="VISUAL full page"></div>
-<div class="cap">VISUAL full page. Top left is the 16:9 preview with the status line (60 FPS, SURFACES 1). Top right is the SOURCE row (lock icon, ALWAYS ON, the CAMERA menu, BACK CAMERA, the two flip buttons, 1920 x 1080) and the four stations PARTICLE, MESH, FEEDBACK, CHROMASCOPE, each with a drag handle, an ON button and a MIX bar (the first three at 1.00 and CHROMASCOPE at 0.35 in the image). Below, the four parameter panels.</div>
+<div class="cap">VISUAL full page. Top left is the 16:9 preview with the status line (60 FPS, SURFACES 1). Top right is the SOURCE row (lock icon, ALWAYS ON, the CAMERA menu, BACK CAMERA, the two flip buttons and the two rotate buttons) and the four stations PARTICLE, MESH, FEEDBACK, CHROMASCOPE, each with a drag handle, an ON button and a MIX bar (the first three at 1.00 and CHROMASCOPE at 0.35 in the image). Below, the four parameter panels.</div>
 
 <h3>SOURCE row and station rows</h3>
 <div class="fig"><img src="img/visual_layers.png" alt="SOURCE row and station rows"></div>
-<div class="cap">SOURCE row: lock icon, SOURCE, ALWAYS ON, the CAMERA drop-down, the lens menu, the horizontal and vertical flip buttons, the resolution 1920 x 1080. The four rows below are PARTICLE, MESH, FEEDBACK, CHROMASCOPE, each with a handle, ON and a MIX bar.</div>
+<div class="cap">SOURCE row: lock icon, SOURCE, ALWAYS ON, the CAMERA drop-down, the lens menu, the horizontal and vertical flip buttons, the rotate left and rotate right buttons. The four rows below are PARTICLE, MESH, FEEDBACK, CHROMASCOPE, each with a handle, ON and a MIX bar.</div>
 <table>
-<tr><td class="k">SOURCE / ALWAYS ON</td><td>Source status text.</td></tr>
+<tr><td class="k">SOURCE / ALWAYS ON</td><td>Source status text. When the source is rotated, the rotation angle (90, 180 or 270) is shown in place of ALWAYS ON.</td></tr>
 <tr><td class="k">Source menu</td><td>CAMERA, PHOTO, VIDEO.</td></tr>
-<tr><td class="k">Lens menu</td><td>Selects the camera device; shows NO CAMERA FOUND when there is none. The camera runs at 1080p 30 fps; the front camera is mirrored.</td></tr>
-<tr><td class="k">PHOTOS / FILES</td><td>Shown for the PHOTO and VIDEO sources; loads from the photo library or from files. After loading the file name is shown; on failure LOAD FAILED. Photos are limited to 1920 on the long edge; videos loop and are muted.</td></tr>
+<tr><td class="k">Lens menu</td><td>Selects the camera device; shows NO CAMERA FOUND when there is none. Choosing the device that is already selected restarts the camera. The camera runs at 1080p 30 fps; the front camera is mirrored.</td></tr>
+<tr><td class="k">PHOTOS / FILES</td><td>Shown for the PHOTO and VIDEO sources; loads from the photo library or from files. After loading the file name is shown. Photos are limited to 1920 on the long edge; videos loop and are muted.</td></tr>
 <tr><td class="k">FLIP H / FLIP V</td><td>Horizontal and vertical flip.</td></tr>
-<tr><td class="k">Resolution</td><td>Shows the source resolution; shows SOURCE WAITING while not ready.</td></tr>
+<tr><td class="k">ROTATE LEFT / ROTATE RIGHT</td><td>Rotates the source by 90 degrees per press, counter-clockwise or clockwise. The resolution readout that used to sit here has been removed.</td></tr>
 <tr><td class="k">Station rows</td><td>The four stations CHROMASCOPE, PARTICLE, MESH, FEEDBACK; drag the handle on the left to reorder. ON / OFF toggle; only CHROMASCOPE is on by default. With all stations off, the raw source is output.</td></tr>
-<tr><td class="k">MIX</td><td>0 to 1, default 0.75 for CHROMASCOPE and 1 for the others. The modulation source marker is shown at the top right.</td></tr>
-<tr><td class="k">Status line</td><td>NN FPS, SURFACES n, EXTERNAL DISPLAY, RENDERER OFFLINE.</td></tr>
+<tr><td class="k">MIX</td><td>0 to 1, default 0.75 for CHROMASCOPE and 1 for the others. The modulation source marker is shown at the top right. The four MIX bars can be set in a single finger movement: start on any MIX bar, then move up or down to reach the other rows while the horizontal position sets the value; rows crossed on the way are set as well. Not available in MIDI Learn or MOD ROUTE mode.</td></tr>
+<tr><td class="k">Status line</td><td>NN FPS, SURFACES n, EXTERNAL DISPLAY, RENDERER OFFLINE, followed by the state of the source. Loading problems are shown in red as PHOTO LOAD FAILED, VIDEO LOAD FAILED, MODEL READ FAILED or MODEL LOAD FAILED. For the camera: CAMERA OFF, CAMERA STARTING, CAMERA WAITING, CAMERA NO FRAMES (running but no image for more than 2 seconds), or the reason the camera stopped, such as CAMERA IN USE or NO CAMERA INPUT. A red camera state can be tapped to reconnect the camera; PERMISSION DENIED cannot, and needs the camera permission in the system settings. For video: VIDEO FAILED or VIDEO STALLED.</td></tr>
 </table>
-<p>VISUAL parameter values are not stored with the bank; only the MOD ROUTE routings are stored in the bank.</p>
+<p>VISUAL parameter values are not stored with the bank; only the MOD ROUTE routings are stored in the bank. They are kept on the device instead and restored at the next launch: the parameters of the four stations, AUDIO of CHROMASCOPE, GLIDE TIME, the station order and on / off states, the built-in MESH model, FLIP, rotation and the selected camera. Not restored: loaded photos, videos and .obj models, the MOTION and MOD ROUTE values, and the external display mirror switch. A PHOTO or VIDEO source is restored as CAMERA.</p>
 
 <h3>Parameter panels</h3>
 <div class="fig"><img src="img/visual_panels.png" alt="The four parameter panels"></div>
-<div class="cap">The four parameter panels. PARTICLE: SIZE, SHAPE, DENSITY, JITTER, DEPTH MIX, DISPLACE, ZOOM, BRIGHTNESS, SCALE X / Y / Z, AUDIO DEPTH, AUDIO TRACK ALL. MESH: the model menu (PENTAGONAL), LOAD MODEL, DISPLACE, WIREFRAME, ROTATE X / Y / Z, SCALE, AUDIO DEPTH, BRIGHTNESS, AUDIO TRACK ALL. FEEDBACK: SMOOTH, BRIGHT, CHROMA, DIFFUSE, BRIGHTNESS. CHROMASCOPE: EFFECT / MICROPHONE, BASE HUE, HUE SPREAD, BRIGHTNESS, CURVE 1 to 4, ANGLE 1 to 4. In the image the three MESH ROTATE bars show a modulation source marker at the top right.</div>
+<div class="cap">The four parameter panels. PARTICLE: SIZE, SHAPE, DENSITY, JITTER, DEPTH MIX, DISPLACE, ZOOM, BRIGHTNESS, SCALE X / Y / Z, AUDIO DEPTH, AUDIO TRACK ALL. MESH: the model menu (PENTAGONAL), LOAD MODEL, DISPLACE, WIREFRAME, ROTATE X / Y / Z, SCALE, AUDIO DEPTH, BRIGHTNESS, AUDIO TRACK ALL. FEEDBACK: SMOOTH, BRIGHT, CHROMA, DIFFUSE, BRIGHTNESS. CHROMASCOPE (older layout): EFFECT / MICROPHONE, BASE HUE, HUE SPREAD, BRIGHTNESS, CURVE 1 to 4, ANGLE 1 to 4; the current CHROMASCOPE panel is described below. In the image the three MESH ROTATE bars show a modulation source marker at the top right.</div>
 
 <h3>CHROMASCOPE</h3>
+<p>CHROMASCOPE draws up to eight layers, one per track. Each layer is drawn from the waveform of its own track, so TRACK 1 to 8 each get their own colour band. A track whose LEVEL fader is at 0 has no layer; the remaining layers close up, so the colour, angle and curve steps are always counted over the layers that are actually shown.</p>
 <table>
-<tr><td class="k">EFFECT</td><td>Effect on/off.</td></tr>
-<tr><td class="k">MICROPHONE</td><td>Drives the image with the master output audio (L / R / mid / side).</td></tr>
-<tr><td class="k">BASE HUE</td><td>0 to 333, default 166.5.</td></tr>
-<tr><td class="k">HUE SPREAD</td><td>0 to 100, default 50.</td></tr>
-<tr><td class="k">BRIGHTNESS</td><td>0 to 4.</td></tr>
-<tr><td class="k">CURVE 1 to 4</td><td>Each 0 to 100.</td></tr>
-<tr><td class="k">ANGLE 1 to 4</td><td>Each 0 to 360.</td></tr>
+<tr><td class="k">AUDIO</td><td>0 to 5, default 1. Multiplies the track audio that drives the layers; 0 turns the audio drive off. Up to 3 it is a plain multiplier; from 3 to 5 the negative half of the waveform is lifted as well, so the image fills further. Replaces the earlier EFFECT and MICROPHONE switches.</td></tr>
+<tr><td class="k">BASE HUE</td><td>0 to 333, default 166.5. Hue of the first layer.</td></tr>
+<tr><td class="k">HUE SPREAD</td><td>0 to 100, default 50. Hue range spread over the layers; each further layer is shifted by an equal step.</td></tr>
+<tr><td class="k">BRIGHTNESS</td><td>0 to 4, default 1.5.</td></tr>
+<tr><td class="k">CURVE</td><td>0 to 100, default 50. Curve of the first layer.</td></tr>
+<tr><td class="k">SPREAD (next to CURVE)</td><td>-100 to +100, default 0, with a centre line. Added to CURVE for each further layer; the result stays within 0 to 100.</td></tr>
+<tr><td class="k">ANGLE</td><td>0 to 360, default 0. Angle of the first layer.</td></tr>
+<tr><td class="k">SPREAD (next to ANGLE)</td><td>0 to 360, default 45. Added to ANGLE for each further layer.</td></tr>
+<tr><td class="k">LEVEL 1 to 8</td><td>Eight vertical faders, 0 to 1, default 1, one per track. Sets the intensity of that track's layer; 0 removes the layer. Double-tap returns a fader to 1. The eight faders can be set in one horizontal finger sweep: the horizontal position picks the fader, the vertical position sets its value.</td></tr>
 </table>
 
 <h3>PARTICLE</h3>
 <table>
 <tr><td class="k">SIZE</td><td>0.001 to 1.</td></tr>
-<tr><td class="k">SHAPE</td><td>0 to 1, in order circle, square, triangle, hexagon, diamond, star, ring; 1 is random. Cannot be routed with MOD ROUTE.</td></tr>
+<tr><td class="k">SHAPE</td><td>0 to 1, in order circle, square, triangle, hexagon, diamond, star, ring; 1 is random. The shape morphs continuously between the steps and can be routed with MOD ROUTE.</td></tr>
 <tr><td class="k">DENSITY</td><td>0.01 to 2.</td></tr>
 <tr><td class="k">JITTER</td><td>0 to 0.05.</td></tr>
 <tr><td class="k">DEPTH MIX</td><td>0 to 1.</td></tr>
@@ -938,10 +942,17 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">BRIGHTNESS</td><td>Output brightness.</td></tr>
 </table>
 
+<h3>RANDOM and GLIDE TIME</h3>
+<p>The two bottom rows of the FEEDBACK panel hold RANDOM and GLIDE TIME. They act on the whole VISUAL page, move together with the FEEDBACK panel when the station order changes, and stay active when FEEDBACK is off.</p>
+<table>
+<tr><td class="k">RANDOM</td><td>Sets every continuous parameter of the stations that are on to a random value within its range; the MIX bars and GLIDE TIME are not touched, and stations that are off are skipped. When MESH is on and uses a built-in model, RANDOM also switches to a different built-in model at once; a loaded .obj model is not replaced. Only the base values change; MOTION and MOD ROUTE values stay as they are.</td></tr>
+<tr><td class="k">GLIDE TIME</td><td>0 to 10 seconds, shown in milliseconds below 100 ms and in seconds above. The parameters glide from their current value to the random value over this time; the MESH model switches immediately.</td></tr>
+</table>
+
 <h3>Audio drive and modulation</h3>
 <ul>
-<li>The audio source is the RMS of the 8 tracks at the mixer input point, multiplied by VOL, with mute and solo applied.</li>
-<li>39 parameters in total can be routed with MOD ROUTE. Not modulatable: station on/off and order, AUDIO TRACK, SHAPE, the MESH model.</li>
+<li>PARTICLE and MESH are driven by the RMS of the 8 tracks at the mixer input point, multiplied by VOL, with mute and solo applied. CHROMASCOPE reads the waveform of each track for its own layer.</li>
+<li>46 parameters in total can be routed with MOD ROUTE, including the eight CHROMASCOPE LEVEL faders, AUDIO and GLIDE TIME. Not modulatable: station on/off and order, AUDIO TRACK, the MESH model and LOAD MODEL.</li>
 <li>MIDI writes the base value.</li>
 </ul>
 
@@ -955,7 +966,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <!-- ============================================================ -->
 <h2 id="setup">11. SETUP</h2>
 
-<p>SETUP is a centred panel with a title and CLOSE at the top; tapping outside the panel also closes it. The panel has five tabs: AUDIO, CV / MIDI, CLOCK, MIDI CONTROL, SYSTEM, and reopens on the tab used last. Most sections have an INFO button that expands a description when tapped.</p>
+<p>SETUP is a centred panel with a title, a MANUAL button and CLOSE at the top; tapping outside the panel also closes it. MANUAL opens this user manual in the browser (English, Japanese and Traditional Chinese). The panel has five tabs: AUDIO, CV / MIDI, CLOCK, MIDI CONTROL, SYSTEM, and reopens on the tab used last. Most sections have an INFO button that expands a description when tapped.</p>
 
 <h3>AUDIO</h3>
 
@@ -992,6 +1003,8 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 
 <table>
 <tr><td class="k">CLOCK IN</td><td>SOURCE: INT / MIDI / CV. DIV MULT: /4, /2, x1, x2, x4, available only with an external source. CV INPUT selects the channel, SIGNAL shows the signal, STATUS shows the state. BPM 20 to 300. MIDI clock is 24 PPQN; 2 seconds without signal is treated as lost.</td></tr>
+<tr><td class="k">TRANSPORT</td><td>Shown only with SOURCE set to MIDI. ANY SOURCE (default) accepts start, stop and continue from every enabled MIDI input. CLOCK ONLY accepts them only from the device that sends the clock.</td></tr>
+<tr><td class="k">Following an external clock</td><td>The sequencer follows the incoming MIDI clock by fine-adjusting its playback rate, without jumping in position. The BPM display shows the incoming tempo, but the project BPM is not rewritten and is not saved; it comes back when SOURCE is set to INT again.</td></tr>
 <tr><td class="k">CLOCK OUT</td><td>CHANNEL, OUT DIV, OUT WIDTH (ms).</td></tr>
 <tr><td class="k">MIDI CLOCK OUT</td><td>OFF / ON. Dimmed when there is no MIDI output device.</td></tr>
 </table>
@@ -1095,6 +1108,8 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <table>
 <tr><td class="k">Start</td><td>Press PLAY and choose Y in Y / REC? / N.</td></tr>
 <tr><td class="k">Stop</td><td>Press the red-dot recording stop button and answer Y. Moving the app to the background does not stop recording. When system audio is interrupted the files are closed first, and a new session starts after it resumes; changing the sample rate also starts a new session.</td></tr>
+<tr><td class="k">Continuity</td><td>Long recordings no longer drop sections: writing to disk is spread out so that the MASTER and external input files are never starved. When the audio engine restarts within a session, for example after changing the external input routing or returning to the foreground, the time the engine was stopped is filled with silence in every file, so all files keep the same length, and a video recording continues in the same file. External input files that appear or disappear with a routing change are added or closed inside the running session.</td></tr>
+<tr><td class="k">Recording Stopped</td><td>When a file cannot be created or written, or the storage is full, or a file reaches the maximum WAV size, recording stops, REC is released and an alert titled "Recording Stopped" explains the cause, for example "Recording stopped because a recording file could not be written. The audio recorded up to that point has been saved." or "Recording could not start because the recording files could not be created." Everything written up to that point remains in the session folder. Playback continues.</td></tr>
 <tr><td class="k">RECORDING TRACKS</td><td>In the SYSTEM tab of SETUP, select the items to write with 16 switches: TRACK 1 to 8, MASTER, EXTERNAL INPUT, AUX 1, AUX 2, AUX 3, DELAY, REVERB, FX CHAIN. The factory default has TRACK 1 to 8, MASTER and EXTERNAL INPUT on. There are also ALL ON, ALL OFF, LOAD DEFAULT and SAVE DEFAULT. The selection is saved with the project; a project without a stored selection uses the default saved with SAVE DEFAULT. It cannot be changed while recording. The estimated amount written per minute is shown below. When everything is off, "Nothing selected. Recording is unavailable." is shown, and choosing Y only plays.</td></tr>
 <tr><td class="k">Files</td><td>WAV (32-bit float): track1 to track4 mono, track5 to track8 stereo, master stereo; aux1 to aux3 mono; delay and reverb stereo, which are the effect return signals tapped before the main FILTER and MASTER VOLUME. With EXTERNAL INPUT on, tracks with an external input route also save trackN_ext.wav. Tracks are sampled post-fader.</td></tr>
 <tr><td class="k">VIDEO RECORDING</td><td>The SYSTEM tab of SETUP has two switches, RECORD APP SCREEN and RECORD VISUAL OUTPUT, both OFF by default. The settings are stored on the device, not with the project. They cannot be changed while recording. Video starts and ends with the audio recording, and the videos are saved in the same session folder.</td></tr>
@@ -1127,7 +1142,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 </table>
 <p>Touch: swipe the phrase editor overlay down more than 80pt to close it.</p>
 
-<footer>MADZINE — HONKI v1.4.0</footer>
+<footer>MADZINE — HONKI v1.4.6</footer>
 </main>
 </div>
 <script>
