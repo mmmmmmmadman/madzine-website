@@ -437,7 +437,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 
 <h3>Header and track cells</h3>
 <div class="fig"><img src="img/voice_header.png" alt="VOICE header"></div>
-<div class="cap">Header: SOUND SOURCE, EDITING TRACK 1, the four source buttons SYNTH (selected) / SAMPLE / PHYSICAL / AU. The second row is the TRACK 1 to 8 cells, each showing the source name and M / S. The third row is SEGMENT 1 to 8, DECAY, HARM, AUTO, TYPE, VOICE, INV, 3RD / 5TH / 7TH, CLEAR, SAVE.</div>
+<div class="cap">Header: SOUND SOURCE, EDITING TRACK 5, the four source buttons SYNTH / SAMPLE (selected) / PHYSICAL / AU. The second row is the TRACK 1 to 8 cells, each showing the source name and M / S. The third row is SEGMENT 1 to 8 and DECAY; on a SAMPLE track the right end of this row holds CLEAR, SAVE and DRUM KIT. In the image the DRUM KIT menu is open over the right side, showing TRACKS 5-8, SAVE, LOAD and DELETE.</div>
 <table>
 <tr><td class="k">Source buttons</td><td>SYNTH, SAMPLE, PHYSICAL, AU. One of four.</td></tr>
 <tr><td class="k">TRACK cells</td><td>Show the track name and source. M mutes; S solos, hold 0.4 seconds for exclusive solo. State is shared with MIXER. When switching tracks, another track in RECORD stops.</td></tr>
@@ -447,6 +447,10 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">SAVE</td><td>Stores the current panel parameters (including the harmonic settings) into the segment memory.</td></tr>
 <tr><td class="k">DRUM KIT</td><td>Shown to the right of SAVE while the edited track uses the SAMPLE source. Opens a menu with SAVE, LOAD and DELETE. A drum kit is the MULTI setup of TRACK 5 to 8: the MULTI state, the pad count, the audio file of each loaded pad and its pad parameters. SAVE asks for a name (default "Kit" followed by the date and time) and copies the audio files into the kit folder, so the kit stays complete even if the original files are moved. LOAD lists the saved kits with their save time; loading switches TRACK 5 to 8 to SAMPLE, clears their pads, turns MULTI on and loads the pads of the kit. DELETE removes a kit and its audio files after confirmation. LOAD and DELETE are dimmed when no kit is saved. Kits are stored on the device under Documents / DrumKits, visible in the Files app, and are not part of the project.</td></tr>
 </table>
+<div class="fig"><img src="img/drumkit_menu.png" alt="DRUM KIT menu"></div>
+<div class="cap">The DRUM KIT menu: the TRACKS 5-8 heading, SAVE, LOAD and DELETE. LOAD and DELETE open a list of the saved kits.</div>
+<div class="fig"><img src="img/drumkit_save.png" alt="SAVE DRUM KIT dialog"></div>
+<div class="cap">The SAVE DRUM KIT dialog: a note that the TRACK 5 to 8 sampler setup and audio files are copied into the kit folder, the name field with the default "Kit" plus date and time, and the CANCEL and SAVE buttons.</div>
 <p>Panel editing rule: when the current segment has a memory, the panel edits the memory; when it has none, the panel edits the track base. Sample loading or recording, the PHYSICAL MODEL and POLYPHONY, and AU loading always apply to the track base. SLICE and MULTI are track-level settings and are mutually exclusive. While editing a segment memory, the panel shows an "EDITING SEGMENT n MEMORY" watermark.</p>
 
 <h3>NOTE HARMONIC (sources other than SAMPLE)</h3>
@@ -871,11 +875,11 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <h2 id="visual">10. VISUAL</h2>
 
 <div class="fig"><img src="img/visual_full.png" alt="VISUAL full page"></div>
-<div class="cap">VISUAL full page. Top left is the 16:9 preview with the status line (60 FPS, SURFACES 1). Top right is the SOURCE row (lock icon, ALWAYS ON, the CAMERA menu, BACK CAMERA, the two flip buttons and the two rotate buttons) and the four stations PARTICLE, MESH, FEEDBACK, CHROMASCOPE, each with a drag handle, an ON button and a MIX bar (the first three at 1.00 and CHROMASCOPE at 0.35 in the image). Below, the four parameter panels.</div>
+<div class="cap">VISUAL full page. Top left is the 16:9 preview with the status line (60 FPS, SURFACES 1). Top right is the SOURCE row (lock icon, ALWAYS ON, the CAMERA menu, FRONT CAMERA, the two flip buttons and the two rotate buttons) and the four stations PARTICLE, MESH, FEEDBACK, CHROMASCOPE, each with a drag handle, an ON button and a MIX bar. To the right of the MIX bars are the RANDOM button, the GLIDE TIME heading and the HOURS / MINUTES / SECONDS bars. Below, the four parameter panels.</div>
 
 <h3>SOURCE row and station rows</h3>
 <div class="fig"><img src="img/visual_layers.png" alt="SOURCE row and station rows"></div>
-<div class="cap">SOURCE row: lock icon, SOURCE, ALWAYS ON, the CAMERA drop-down, the lens menu, the horizontal and vertical flip buttons, the rotate left and rotate right buttons. The four rows below are PARTICLE, MESH, FEEDBACK, CHROMASCOPE, each with a handle, ON and a MIX bar.</div>
+<div class="cap">SOURCE row: lock icon, SOURCE, ALWAYS ON, the CAMERA drop-down, the lens menu, the horizontal and vertical flip buttons, the rotate left and rotate right buttons. The four rows below are PARTICLE, MESH, FEEDBACK, CHROMASCOPE, each with a handle, ON and a MIX bar. The column on the right holds RANDOM, GLIDE TIME and the HOURS, MINUTES and SECONDS bars.</div>
 <table>
 <tr><td class="k">SOURCE / ALWAYS ON</td><td>Source status text. When the source is rotated, the rotation angle (90, 180 or 270) is shown in place of ALWAYS ON.</td></tr>
 <tr><td class="k">Source menu</td><td>CAMERA, PHOTO, VIDEO.</td></tr>
@@ -891,7 +895,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 
 <h3>Parameter panels</h3>
 <div class="fig"><img src="img/visual_panels.png" alt="The four parameter panels"></div>
-<div class="cap">The four parameter panels. PARTICLE: SIZE, SHAPE, DENSITY, JITTER, DEPTH MIX, DISPLACE, ZOOM, BRIGHTNESS, SCALE X / Y / Z, AUDIO DEPTH, AUDIO TRACK ALL. MESH: the model menu (PENTAGONAL), LOAD MODEL, DISPLACE, WIREFRAME, ROTATE X / Y / Z, SCALE, AUDIO DEPTH, BRIGHTNESS, AUDIO TRACK ALL. FEEDBACK: SMOOTH, BRIGHT, CHROMA, DIFFUSE, BRIGHTNESS. CHROMASCOPE (older layout): EFFECT / MICROPHONE, BASE HUE, HUE SPREAD, BRIGHTNESS, CURVE 1 to 4, ANGLE 1 to 4; the current CHROMASCOPE panel is described below. In the image the three MESH ROTATE bars show a modulation source marker at the top right.</div>
+<div class="cap">The four parameter panels. PARTICLE: SIZE, SHAPE, DENSITY, JITTER, DEPTH MIX, DISPLACE, ZOOM, BRIGHTNESS, SCALE X / Y / Z, AUDIO DEPTH, AUDIO TRACK ALL. MESH: the model menu (GEAR 8), LOAD MODEL, DISPLACE, WIREFRAME, ROTATE X / Y / Z, SCALE, AUDIO DEPTH, BRIGHTNESS, AUDIO TRACK ALL. FEEDBACK: SMOOTH, BRIGHT, CHROMA, DIFFUSE, BRIGHTNESS. CHROMASCOPE: AUDIO, BASE HUE, HUE SPREAD, BRIGHTNESS, CURVE and its SPREAD, ANGLE and its SPREAD, and the LEVEL 1 to 8 faders. Bars with a modulation source or a MIDI assignment show a marker at the top right.</div>
 
 <h3>CHROMASCOPE</h3>
 <p>CHROMASCOPE draws up to eight layers, one per track. Each layer is drawn from the waveform of its own track, so TRACK 1 to 8 each get their own colour band. A track whose LEVEL fader is at 0 has no layer; the remaining layers close up, so the colour, angle and curve steps are always counted over the layers that are actually shown.</p>
@@ -943,10 +947,12 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 </table>
 
 <h3>RANDOM and GLIDE TIME</h3>
-<p>The two bottom rows of the FEEDBACK panel hold RANDOM and GLIDE TIME. They act on the whole VISUAL page, move together with the FEEDBACK panel when the station order changes, and stay active when FEEDBACK is off.</p>
+<div class="fig"><img src="img/visual_random_glide.png" alt="RANDOM and GLIDE TIME"></div>
+<div class="cap">The RANDOM button, the GLIDE TIME heading and the three bars HOURS, MINUTES and SECONDS, to the right of the four station rows.</div>
+<p>RANDOM and GLIDE TIME sit in the upper part of the page, to the right of the four station rows next to the MIX bars. They act on the whole VISUAL page and do not depend on any station being on.</p>
 <table>
-<tr><td class="k">RANDOM</td><td>Sets every continuous parameter of the stations that are on to a random value within its range; the MIX bars and GLIDE TIME are not touched, and stations that are off are skipped. When MESH is on and uses a built-in model, RANDOM also switches to a different built-in model at once; a loaded .obj model is not replaced. Only the base values change; MOTION and MOD ROUTE values stay as they are.</td></tr>
-<tr><td class="k">GLIDE TIME</td><td>0 to 10 seconds, shown in milliseconds below 100 ms and in seconds above. The parameters glide from their current value to the random value over this time; the MESH model switches immediately.</td></tr>
+<tr><td class="k">RANDOM</td><td>Sets every continuous parameter of the stations that are on to a random value within its range; the MIX bars and GLIDE TIME are not touched, and stations that are off are skipped. When MESH is on and uses a built-in model, RANDOM also switches to a different built-in model at once; a loaded .obj model is not replaced. Only the base values change; MOTION and MOD ROUTE values stay as they are. RANDOM can be triggered from a MIDI controller: turn on LEARN, tap RANDOM, then press the controller. It can also be placed on the PERFORM page as a button control, found under VISUAL RANDOM in the GLOBAL group. MOD ROUTE does not support button actions, so RANDOM cannot be routed there.</td></tr>
+<tr><td class="k">GLIDE TIME</td><td>Three horizontal bars, HOURS, MINUTES and SECONDS. Drag sideways to set a value; tap without dragging to type a number on the keyboard. The total is the sum of the three, up to 24 hours. The parameters glide from their current value to the random value over this time; the MESH model switches immediately. MOD ROUTE, MIDI Learn and the PERFORM page control the total time in seconds, not the three bars separately.</td></tr>
 </table>
 
 <h3>Audio drive and modulation</h3>
@@ -967,6 +973,8 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <h2 id="setup">11. SETUP</h2>
 
 <p>SETUP is a centred panel with a title, a MANUAL button and CLOSE at the top; tapping outside the panel also closes it. MANUAL opens this user manual in the browser (English, Japanese and Traditional Chinese). The panel has five tabs: AUDIO, CV / MIDI, CLOCK, MIDI CONTROL, SYSTEM, and reopens on the tab used last. Most sections have an INFO button that expands a description when tapped.</p>
+<div class="fig"><img src="img/setup_manual_button.png" alt="SETUP header with MANUAL button"></div>
+<div class="cap">The SETUP header: the title, the MANUAL button with its description, and CLOSE on the right.</div>
 
 <h3>AUDIO</h3>
 
@@ -999,7 +1007,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <h3>CLOCK</h3>
 
 <div class="fig"><img src="img/setup_clock.png" alt="SETUP CLOCK"></div>
-<div class="cap">The CLOCK tab of SETUP: SOURCE and DIV MULT under CLOCK IN, CHANNEL, OUT DIV and OUT WIDTH under CLOCK OUT, and MIDI CLOCK OUT.</div>
+<div class="cap">The CLOCK tab of SETUP with SOURCE set to MIDI: SOURCE, DIV MULT, TRANSPORT and STATUS under CLOCK IN, CHANNEL, OUT DIV and OUT WIDTH under CLOCK OUT, and MIDI CLOCK OUT.</div>
 
 <table>
 <tr><td class="k">CLOCK IN</td><td>SOURCE: INT / MIDI / CV. DIV MULT: /4, /2, x1, x2, x4, available only with an external source. CV INPUT selects the channel, SIGNAL shows the signal, STATUS shows the state. BPM 20 to 300. MIDI clock is 24 PPQN; 2 seconds without signal is treated as lost.</td></tr>
@@ -1008,6 +1016,8 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">CLOCK OUT</td><td>CHANNEL, OUT DIV, OUT WIDTH (ms).</td></tr>
 <tr><td class="k">MIDI CLOCK OUT</td><td>OFF / ON. Dimmed when there is no MIDI output device.</td></tr>
 </table>
+<div class="fig"><img src="img/setup_transport.png" alt="CLOCK IN with TRANSPORT"></div>
+<div class="cap">CLOCK IN with SOURCE set to MIDI: the TRANSPORT row with ANY SOURCE and CLOCK ONLY, and the STATUS line showing Waiting for MIDI clock.</div>
 
 <h3>MIDI CONTROL</h3>
 

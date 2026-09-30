@@ -437,7 +437,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 
 <h3>ヘッダーとトラックセル</h3>
 <div class="fig"><img src="img/voice_header.png" alt="VOICE ヘッダー"></div>
-<div class="cap">ヘッダー：SOUND SOURCE、EDITING TRACK 1、4 つの音源ボタン SYNTH（選択中）/ SAMPLE / PHYSICAL / AU。2 行目は TRACK 1 から 8 のセルで、それぞれ音源名と M / S を表示します。3 行目は SEGMENT 1 から 8、DECAY、HARM、AUTO、TYPE、VOICE、INV、3RD / 5TH / 7TH、CLEAR、SAVE。</div>
+<div class="cap">ヘッダー：SOUND SOURCE、EDITING TRACK 5、4 つの音源ボタン SYNTH / SAMPLE（選択中）/ PHYSICAL / AU。2 行目は TRACK 1 から 8 のセルで、それぞれ音源名と M / S を表示します。3 行目は SEGMENT 1 から 8 と DECAY で、SAMPLE トラックではこの行の右端に CLEAR、SAVE、DRUM KIT があります。図では右側に DRUM KIT メニューが開いていて、TRACKS 5-8、SAVE、LOAD、DELETE が見えます。</div>
 <table>
 <tr><td class="k">音源ボタン</td><td>SYNTH、SAMPLE、PHYSICAL、AU から 1 つを選びます。</td></tr>
 <tr><td class="k">TRACK セル</td><td>トラック名と音源を表示します。M はミュート、S はソロで、0.4 秒長押しで排他ソロになります。状態は MIXER と共有です。トラックを切り替えたとき、別のトラックが RECORD 中なら停止します。</td></tr>
@@ -447,6 +447,10 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">SAVE</td><td>現在のパネルのパラメータ（ハーモニー設定を含む）をセグメントメモリに保存します。</td></tr>
 <tr><td class="k">DRUM KIT</td><td>編集中のトラックの音源が SAMPLE のとき、SAVE の右に表示されます。押すと SAVE、LOAD、DELETE のメニューが開きます。ドラムキットは TRACK 5 から 8 の MULTI 設定一式で、MULTI のオン / オフ、パッド数、読み込み済みの各パッドのオーディオファイルとパッドパラメータを含みます。SAVE では名前を入力し（初期値は「Kit」と日時）、オーディオファイルはキットのフォルダにコピーされるため、元のファイルを移動してもキットはそのまま使えます。LOAD には保存済みのキットが保存日時とともに並び、読み込むと TRACK 5 から 8 が SAMPLE に切り替わり、パッドが消去され、MULTI が有効になってキットのパッドが読み込まれます。DELETE は確認のうえでキットとそのオーディオファイルを削除します。保存済みのキットがないときは LOAD と DELETE がグレー表示になります。キットは端末の Documents / DrumKits に保存され、ファイル App から見ることができます。プロジェクトには含まれません。</td></tr>
 </table>
+<div class="fig"><img src="img/drumkit_menu.png" alt="DRUM KIT メニュー"></div>
+<div class="cap">DRUM KIT メニュー：見出しの TRACKS 5-8、SAVE、LOAD、DELETE。LOAD と DELETE は保存済みキットの一覧を開きます。</div>
+<div class="fig"><img src="img/drumkit_save.png" alt="SAVE DRUM KIT ダイアログ"></div>
+<div class="cap">SAVE DRUM KIT ダイアログ：TRACK 5 から 8 のサンプラー設定とオーディオファイルをキットフォルダにコピーするという説明、初期値「Kit」と日時が入った名前欄、CANCEL と SAVE のボタン。</div>
 <p>パネル編集の規則：現在のセグメントにメモリがあるときは、パネルの変更はメモリの内容に対して行われます。メモリがないときはトラックのベースに対して行われます。サンプルの読み込みと録音、PHYSICAL の MODEL と POLYPHONY、AU の読み込みはトラックのベースに作用します。SLICE と MULTI はトラック単位の設定で、互いに排他です。セグメントメモリを編集中は、パネルに「EDITING SEGMENT n MEMORY」の透かしが表示されます。</p>
 
 <h3>NOTE HARMONIC（SAMPLE 以外の音源）</h3>
@@ -871,11 +875,11 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <h2 id="visual">10. VISUAL</h2>
 
 <div class="fig"><img src="img/visual_full.png" alt="VISUAL ページ全体"></div>
-<div class="cap">VISUAL 全ページ。左上は 16:9 のプレビューとステータス行（60 FPS、SURFACES 1）。右上は SOURCE 列（錠アイコン、ALWAYS ON、CAMERA メニュー、BACK CAMERA、2 つの反転ボタン、2 つの回転ボタン）と 4 つのステーション PARTICLE、MESH、FEEDBACK、CHROMASCOPE で、それぞれドラッグハンドル、ON ボタン、MIX バーがあります（図では前の 3 つが 1.00、CHROMASCOPE が 0.35）。下に 4 つのパラメータパネル。</div>
+<div class="cap">VISUAL 全ページ。左上は 16:9 のプレビューとステータス行（60 FPS、SURFACES 1）。右上は SOURCE 列（錠アイコン、ALWAYS ON、CAMERA メニュー、FRONT CAMERA、2 つの反転ボタン、2 つの回転ボタン）と 4 つのステーション PARTICLE、MESH、FEEDBACK、CHROMASCOPE で、それぞれドラッグハンドル、ON ボタン、MIX バーがあります。MIX バーの右には RANDOM ボタン、GLIDE TIME の見出し、HOURS / MINUTES / SECONDS のバーがあります。下に 4 つのパラメータパネル。</div>
 
 <h3>SOURCE 列とステーション列</h3>
 <div class="fig"><img src="img/visual_layers.png" alt="SOURCE 列とステーション列"></div>
-<div class="cap">SOURCE 列：錠アイコン、SOURCE、ALWAYS ON、CAMERA ドロップダウン、レンズメニュー、水平と垂直の反転ボタン、左回転と右回転のボタン。下の 4 行は PARTICLE、MESH、FEEDBACK、CHROMASCOPE で、それぞれハンドル、ON、MIX バーがあります。</div>
+<div class="cap">SOURCE 列：錠アイコン、SOURCE、ALWAYS ON、CAMERA ドロップダウン、レンズメニュー、水平と垂直の反転ボタン、左回転と右回転のボタン。下の 4 行は PARTICLE、MESH、FEEDBACK、CHROMASCOPE で、それぞれハンドル、ON、MIX バーがあります。右の列には RANDOM、GLIDE TIME、HOURS、MINUTES、SECONDS のバーがあります。</div>
 <table>
 <tr><td class="k">SOURCE / ALWAYS ON</td><td>ソースの状態表示です。ソースを回転しているときは、ALWAYS ON の代わりに回転角度（90、180、270）が表示されます。</td></tr>
 <tr><td class="k">ソースメニュー</td><td>CAMERA、PHOTO、VIDEO。</td></tr>
@@ -891,7 +895,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 
 <h3>パラメータパネル</h3>
 <div class="fig"><img src="img/visual_panels.png" alt="4 つのパラメータパネル"></div>
-<div class="cap">4 つのパラメータパネル。PARTICLE：SIZE、SHAPE、DENSITY、JITTER、DEPTH MIX、DISPLACE、ZOOM、BRIGHTNESS、SCALE X / Y / Z、AUDIO DEPTH、AUDIO TRACK ALL。MESH：モデルメニュー（PENTAGONAL）、LOAD MODEL、DISPLACE、WIREFRAME、ROTATE X / Y / Z、SCALE、AUDIO DEPTH、BRIGHTNESS、AUDIO TRACK ALL。FEEDBACK：SMOOTH、BRIGHT、CHROMA、DIFFUSE、BRIGHTNESS。CHROMASCOPE（旧レイアウト）：EFFECT / MICROPHONE、BASE HUE、HUE SPREAD、BRIGHTNESS、CURVE 1 から 4、ANGLE 1 から 4。現在の CHROMASCOPE パネルは下の項で説明します。図では MESH の ROTATE 3 本の右上に変調ソースのマーカーがあります。</div>
+<div class="cap">4 つのパラメータパネル。PARTICLE：SIZE、SHAPE、DENSITY、JITTER、DEPTH MIX、DISPLACE、ZOOM、BRIGHTNESS、SCALE X / Y / Z、AUDIO DEPTH、AUDIO TRACK ALL。MESH：モデルメニュー（GEAR 8）、LOAD MODEL、DISPLACE、WIREFRAME、ROTATE X / Y / Z、SCALE、AUDIO DEPTH、BRIGHTNESS、AUDIO TRACK ALL。FEEDBACK：SMOOTH、BRIGHT、CHROMA、DIFFUSE、BRIGHTNESS。CHROMASCOPE：AUDIO、BASE HUE、HUE SPREAD、BRIGHTNESS、CURVE とその SPREAD、ANGLE とその SPREAD、LEVEL 1 から 8 のフェーダー。変調ソースや MIDI 割り当てのあるバーは右上にマーカーが付きます。</div>
 
 <h3>CHROMASCOPE</h3>
 <p>CHROMASCOPE はトラックごとに 1 層、最大 8 層を描きます。各層はそのトラック自身の波形から描かれるため、TRACK 1 から 8 がそれぞれ自分の色の帯を持ちます。LEVEL フェーダーが 0 のトラックには層がなく、残りの層が詰めて並ぶので、色、角度、カーブの段差は実際に表示されている層の数で数えられます。</p>
@@ -943,10 +947,12 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 </table>
 
 <h3>RANDOM と GLIDE TIME</h3>
-<p>FEEDBACK パネルの下 2 行には RANDOM と GLIDE TIME があります。どちらも VISUAL ページ全体に働き、ステーションの順序を変えると FEEDBACK パネルと一緒に移動し、FEEDBACK がオフでも使えます。</p>
+<div class="fig"><img src="img/visual_random_glide.png" alt="RANDOM と GLIDE TIME"></div>
+<div class="cap">4 つのステーション列の右にある RANDOM ボタン、GLIDE TIME の見出し、HOURS、MINUTES、SECONDS の 3 本のバー。</div>
+<p>RANDOM と GLIDE TIME はページ上段、4 つのステーション列の右、MIX バーの隣にあります。どちらも VISUAL ページ全体に働き、ステーションのオン・オフには関係なく使えます。</p>
 <table>
-<tr><td class="k">RANDOM</td><td>オンになっているステーションの連続パラメータをすべて、それぞれの範囲内のランダムな値にします。MIX バーと GLIDE TIME は変わらず、オフのステーションは対象外です。MESH がオンで内蔵モデルを使っているときは、別の内蔵モデルにも即座に切り替わります。読み込んだ .obj モデルは置き換えられません。変わるのはベース値だけで、MOTION と MOD ROUTE の値はそのままです。</td></tr>
-<tr><td class="k">GLIDE TIME</td><td>0 から 10 秒。100 ms 未満はミリ秒、それ以上は秒で表示されます。パラメータは現在の値からランダムな値へこの時間をかけて滑らかに移り、MESH のモデルは即座に切り替わります。</td></tr>
+<tr><td class="k">RANDOM</td><td>オンになっているステーションの連続パラメータをすべて、それぞれの範囲内のランダムな値にします。MIX バーと GLIDE TIME は変わらず、オフのステーションは対象外です。MESH がオンで内蔵モデルを使っているときは、別の内蔵モデルにも即座に切り替わります。読み込んだ .obj モデルは置き換えられません。変わるのはベース値だけで、MOTION と MOD ROUTE の値はそのままです。RANDOM は MIDI コントローラーから押せます：LEARN をオンにし、RANDOM をタップしてからコントローラーを操作します。PERFORM ページにもボタン型のコントロールとして置けます（GLOBAL グループの VISUAL RANDOM）。MOD ROUTE はボタン型の動作に対応していないため、RANDOM は MOD ROUTE には割り当てられません。</td></tr>
+<tr><td class="k">GLIDE TIME</td><td>HOURS、MINUTES、SECONDS の 3 本の横バー。横にドラッグして値を決めます。ドラッグせずにタップすると、キーボードで数値を入力できます。合計は 3 本の和で、最長 24 時間です。パラメータは現在の値からランダムな値へこの時間をかけて滑らかに移り、MESH のモデルは即座に切り替わります。MOD ROUTE、MIDI Learn、PERFORM ページが扱うのは 3 本を別々にではなく、合計の秒数です。</td></tr>
 </table>
 
 <h3>オーディオ駆動とモジュレーション</h3>
@@ -967,6 +973,8 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <h2 id="setup">11. SETUP</h2>
 
 <p>SETUP は中央に表示されるパネルで、上部にタイトル、MANUAL ボタン、CLOSE があり、パネルの外をタップしても閉じます。MANUAL を押すとこの取扱説明書（英語、日本語、繁体字中国語）がブラウザで開きます。パネルは AUDIO、CV / MIDI、CLOCK、MIDI CONTROL、SYSTEM の 5 つのタブに分かれ、次に開いたときは前回のタブに戻ります。多くのセクションに INFO ボタンがあり、タップすると説明が開きます。</p>
+<div class="fig"><img src="img/setup_manual_button.png" alt="MANUAL ボタンのある SETUP ヘッダー"></div>
+<div class="cap">SETUP のヘッダー：タイトル、説明付きの MANUAL ボタン、右端の CLOSE。</div>
 
 <h3>AUDIO</h3>
 
@@ -999,7 +1007,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <h3>CLOCK</h3>
 
 <div class="fig"><img src="img/setup_clock.png" alt="SETUP CLOCK"></div>
-<div class="cap">SETUP の CLOCK タブ。CLOCK IN の SOURCE と DIV MULT、CLOCK OUT の CHANNEL、OUT DIV、OUT WIDTH、そして MIDI CLOCK OUT。</div>
+<div class="cap">SOURCE を MIDI にした SETUP の CLOCK タブ。CLOCK IN の SOURCE、DIV MULT、TRANSPORT、STATUS、CLOCK OUT の CHANNEL、OUT DIV、OUT WIDTH、そして MIDI CLOCK OUT。</div>
 
 <table>
 <tr><td class="k">CLOCK IN</td><td>SOURCE：INT / MIDI / CV。DIV MULT：/4、/2、x1、x2、x4 で、外部ソース使用時のみ使用できます。CV INPUT でチャンネルを選び、SIGNAL に信号、STATUS に状態が表示されます。BPM 20 から 300。MIDI クロックは 24 PPQN で、2 秒間信号がないと途切れたとみなします。</td></tr>
@@ -1008,6 +1016,8 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">CLOCK OUT</td><td>CHANNEL、OUT DIV、OUT WIDTH（ミリ秒）。</td></tr>
 <tr><td class="k">MIDI CLOCK OUT</td><td>OFF / ON。MIDI 出力デバイスがないときはグレー表示になります。</td></tr>
 </table>
+<div class="fig"><img src="img/setup_transport.png" alt="TRANSPORT のある CLOCK IN"></div>
+<div class="cap">SOURCE を MIDI にした CLOCK IN：ANY SOURCE と CLOCK ONLY の TRANSPORT 行、Waiting for MIDI clock を示す STATUS 行。</div>
 
 <h3>MIDI CONTROL</h3>
 

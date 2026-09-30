@@ -437,7 +437,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 
 <h3>標頭與 track 格</h3>
 <div class="fig"><img src="img/voice_header.png" alt="VOICE 標頭"></div>
-<div class="cap">標頭：SOUND SOURCE、EDITING TRACK 1、四個音源按鈕 SYNTH（選中）/ SAMPLE / PHYSICAL / AU。第二列為 TRACK 1 至 8 格，各顯示音源名稱與 M / S。第三列為 SEGMENT 1 至 8、DECAY、HARM、AUTO、TYPE、VOICE、INV、3RD / 5TH / 7TH、CLEAR、SAVE。</div>
+<div class="cap">標頭：SOUND SOURCE、EDITING TRACK 5、四個音源按鈕 SYNTH / SAMPLE（選中）/ PHYSICAL / AU。第二列為 TRACK 1 至 8 格，各顯示音源名稱與 M / S。第三列為 SEGMENT 1 至 8 與 DECAY；SAMPLE 軌時這列右端有 CLEAR、SAVE 與 DRUM KIT。圖中右側展開了 DRUM KIT 選單，可見 TRACKS 5-8、SAVE、LOAD、DELETE。</div>
 <table>
 <tr><td class="k">音源按鈕</td><td>SYNTH、SAMPLE、PHYSICAL、AU，四選一。</td></tr>
 <tr><td class="k">TRACK 格</td><td>顯示 track 名與音源。M 靜音；S 獨奏，長按 0.4 秒為排他獨奏。狀態與 MIXER 共用。切換 track 時，另一軌若在 RECORD 會停止。</td></tr>
@@ -447,6 +447,10 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">SAVE</td><td>將目前面板參數（含和聲設定）存入 segment 記憶。</td></tr>
 <tr><td class="k">DRUM KIT</td><td>編輯中的 track 音源為 SAMPLE 時顯示在 SAVE 右側，按下開啟 SAVE、LOAD、DELETE 選單。鼓組是 TRACK 5 至 8 的整套 MULTI 設定：MULTI 開關、pad 數、每個已載入 pad 的音檔與 pad 參數。SAVE 會要求輸入名稱（預設為「Kit」加日期時間），音檔會複製到鼓組資料夾，原始檔案搬走也不影響。LOAD 列出已存的鼓組與儲存時間，載入時 TRACK 5 至 8 切到 SAMPLE、清空 pad、開啟 MULTI，再載入鼓組的 pad。DELETE 經確認後刪除鼓組與其音檔。沒有任何鼓組時 LOAD 與 DELETE 灰顯。鼓組存在裝置的 Documents / DrumKits，可在「檔案」app 看到，不屬於專案的一部分。</td></tr>
 </table>
+<div class="fig"><img src="img/drumkit_menu.png" alt="DRUM KIT 選單"></div>
+<div class="cap">DRUM KIT 選單：標題 TRACKS 5-8，以及 SAVE、LOAD、DELETE。LOAD 與 DELETE 會展開已存鼓組的清單。</div>
+<div class="fig"><img src="img/drumkit_save.png" alt="SAVE DRUM KIT 對話框"></div>
+<div class="cap">SAVE DRUM KIT 對話框：說明 TRACK 5 至 8 的取樣設定與音檔會複製進鼓組資料夾，名稱欄預設為「Kit」加日期時間，下方為 CANCEL 與 SAVE。</div>
 <p>面板編輯規則：目前 segment 有記憶時，面板改的是記憶內容；沒有記憶時改的是 track 基底。取樣載入或錄音、PHYSICAL 的 MODEL 與 POLYPHONY、AU 載入都作用於 track 基底。SLICE 與 MULTI 為 track 層級設定，兩者互斥。編輯 segment 記憶時，面板顯示「EDITING SEGMENT n MEMORY」浮水印。</p>
 
 <h3>NOTE HARMONIC（SAMPLE 以外的音源）</h3>
@@ -871,11 +875,11 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <h2 id="visual">10. VISUAL</h2>
 
 <div class="fig"><img src="img/visual_full.png" alt="VISUAL 全頁"></div>
-<div class="cap">VISUAL 全頁。左上為 16:9 預覽與狀態列（60 FPS、SURFACES 1）。右上為 SOURCE 列（鎖頭圖示、ALWAYS ON、CAMERA 選單、BACK CAMERA、兩個翻轉按鈕、兩個旋轉按鈕）與四個站：PARTICLE、MESH、FEEDBACK、CHROMASCOPE，各有拖曳把手、ON 按鈕與 MIX 條（圖中前三個為 1.00，CHROMASCOPE 為 0.35）。下方四個參數面板。</div>
+<div class="cap">VISUAL 全頁。左上為 16:9 預覽與狀態列（60 FPS、SURFACES 1）。右上為 SOURCE 列（鎖頭圖示、ALWAYS ON、CAMERA 選單、FRONT CAMERA、兩個翻轉按鈕、兩個旋轉按鈕）與四個站：PARTICLE、MESH、FEEDBACK、CHROMASCOPE，各有拖曳把手、ON 按鈕與 MIX 條。MIX 條右邊是 RANDOM 鈕、GLIDE TIME 標題與 HOURS / MINUTES / SECONDS 三支橫桿。下方四個參數面板。</div>
 
 <h3>SOURCE 列與站列</h3>
 <div class="fig"><img src="img/visual_layers.png" alt="SOURCE 列與站列"></div>
-<div class="cap">SOURCE 列：鎖頭圖示、SOURCE、ALWAYS ON、CAMERA 下拉、鏡頭選單、水平與垂直翻轉按鈕、向左與向右旋轉按鈕。下方四列為 PARTICLE、MESH、FEEDBACK、CHROMASCOPE，各有把手、ON 與 MIX 條。</div>
+<div class="cap">SOURCE 列：鎖頭圖示、SOURCE、ALWAYS ON、CAMERA 下拉、鏡頭選單、水平與垂直翻轉按鈕、向左與向右旋轉按鈕。下方四列為 PARTICLE、MESH、FEEDBACK、CHROMASCOPE，各有把手、ON 與 MIX 條。最右一欄是 RANDOM、GLIDE TIME 與 HOURS、MINUTES、SECONDS 三支橫桿。</div>
 <table>
 <tr><td class="k">SOURCE / ALWAYS ON</td><td>來源狀態文字。來源有旋轉時，ALWAYS ON 的位置改顯示旋轉角度（90、180 或 270）。</td></tr>
 <tr><td class="k">來源選單</td><td>CAMERA、PHOTO、VIDEO。</td></tr>
@@ -891,7 +895,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 
 <h3>參數面板</h3>
 <div class="fig"><img src="img/visual_panels.png" alt="四個參數面板"></div>
-<div class="cap">四個參數面板。PARTICLE：SIZE、SHAPE、DENSITY、JITTER、DEPTH MIX、DISPLACE、ZOOM、BRIGHTNESS、SCALE X / Y / Z、AUDIO DEPTH、AUDIO TRACK ALL。MESH：模型選單（PENTAGONAL）、LOAD MODEL、DISPLACE、WIREFRAME、ROTATE X / Y / Z、SCALE、AUDIO DEPTH、BRIGHTNESS、AUDIO TRACK ALL。FEEDBACK：SMOOTH、BRIGHT、CHROMA、DIFFUSE、BRIGHTNESS。CHROMASCOPE（舊版面）：EFFECT / MICROPHONE、BASE HUE、HUE SPREAD、BRIGHTNESS、CURVE 1 至 4、ANGLE 1 至 4；目前的 CHROMASCOPE 面板見下一節。圖中 MESH 的 ROTATE 三條右上角有調變來源標記。</div>
+<div class="cap">四個參數面板。PARTICLE：SIZE、SHAPE、DENSITY、JITTER、DEPTH MIX、DISPLACE、ZOOM、BRIGHTNESS、SCALE X / Y / Z、AUDIO DEPTH、AUDIO TRACK ALL。MESH：模型選單（GEAR 8）、LOAD MODEL、DISPLACE、WIREFRAME、ROTATE X / Y / Z、SCALE、AUDIO DEPTH、BRIGHTNESS、AUDIO TRACK ALL。FEEDBACK：SMOOTH、BRIGHT、CHROMA、DIFFUSE、BRIGHTNESS。CHROMASCOPE：AUDIO、BASE HUE、HUE SPREAD、BRIGHTNESS、CURVE 與其 SPREAD、ANGLE 與其 SPREAD，以及 LEVEL 1 至 8 fader。有調變來源或 MIDI 指派的橫桿右上角會有標記。</div>
 
 <h3>CHROMASCOPE</h3>
 <p>CHROMASCOPE 最多畫八層，每個 track 一層。每一層都用自己 track 的波形來畫，所以 TRACK 1 至 8 各有自己的色帶。LEVEL 推桿為 0 的 track 沒有層，其餘的層會往前補齊，因此色相、角度、曲線的級距都是以實際顯示的層數計算。</p>
@@ -943,10 +947,12 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 </table>
 
 <h3>RANDOM 與 GLIDE TIME</h3>
-<p>FEEDBACK 面板最下面兩列是 RANDOM 與 GLIDE TIME。兩者作用於整個 VISUAL 頁，站的順序改變時會跟著 FEEDBACK 面板移動，FEEDBACK 關閉時仍可使用。</p>
+<div class="fig"><img src="img/visual_random_glide.png" alt="RANDOM 與 GLIDE TIME"></div>
+<div class="cap">四個站列右側的 RANDOM 鈕、GLIDE TIME 標題，以及 HOURS、MINUTES、SECONDS 三支橫桿。</div>
+<p>RANDOM 與 GLIDE TIME 在頁面上段、四個站列的右側，MIX 條旁邊。兩者作用於整個 VISUAL 頁，不受任何站開關影響。</p>
 <table>
-<tr><td class="k">RANDOM</td><td>把已開啟的站的所有連續參數各自隨機設到範圍內的值；MIX 條與 GLIDE TIME 不動，關閉的站不處理。MESH 開啟且使用內建模型時，RANDOM 也會立即換成另一個內建模型；載入的 .obj 模型不會被換掉。只改基底值，MOTION 與 MOD ROUTE 的值維持不變。</td></tr>
-<tr><td class="k">GLIDE TIME</td><td>0 至 10 秒，未滿 100 ms 以毫秒顯示，其餘以秒顯示。參數在這段時間內從目前值平滑滑到隨機值；MESH 模型則立即切換。</td></tr>
+<tr><td class="k">RANDOM</td><td>把已開啟的站的所有連續參數各自隨機設到範圍內的值；MIX 條與 GLIDE TIME 不動，關閉的站不處理。MESH 開啟且使用內建模型時，RANDOM 也會立即換成另一個內建模型；載入的 .obj 模型不會被換掉。只改基底值，MOTION 與 MOD ROUTE 的值維持不變。RANDOM 可由 MIDI 控制器觸發：開啟 LEARN，點 RANDOM，再按控制器。也可放進 PERFORM 頁作為按鍵型控制，在 GLOBAL 群組的 VISUAL RANDOM。MOD ROUTE 不支援按鍵型動作，RANDOM 無法指派到 MOD ROUTE。</td></tr>
+<tr><td class="k">GLIDE TIME</td><td>HOURS、MINUTES、SECONDS 三支橫桿。橫向拖曳設值；點一下不拖曳可用鍵盤輸入數字。總時間為三者相加，最長 24 小時。參數在這段時間內從目前值平滑滑到隨機值；MESH 模型則立即切換。MOD ROUTE、MIDI Learn 與 PERFORM 頁控制的是總秒數，不是三支橫桿各自的值。</td></tr>
 </table>
 
 <h3>音訊驅動與調變</h3>
@@ -967,6 +973,8 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <h2 id="setup">11. SETUP</h2>
 
 <p>SETUP 為置中的面板，上方有標題、MANUAL 鈕與 CLOSE，點面板外也會關閉。MANUAL 會在瀏覽器開啟這份使用手冊（英文、日文、繁體中文）。面板分為五個分頁：AUDIO、CV / MIDI、CLOCK、MIDI CONTROL、SYSTEM，再次開啟時回到上次的分頁。多數區塊有 INFO 鈕，點一下展開說明。</p>
+<div class="fig"><img src="img/setup_manual_button.png" alt="含 MANUAL 鈕的 SETUP 標頭"></div>
+<div class="cap">SETUP 標頭：標題、附說明文字的 MANUAL 鈕，以及右端的 CLOSE。</div>
 
 <h3>AUDIO</h3>
 
@@ -999,7 +1007,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <h3>CLOCK</h3>
 
 <div class="fig"><img src="img/setup_clock.png" alt="SETUP CLOCK"></div>
-<div class="cap">SETUP 的 CLOCK 分頁：CLOCK IN 的 SOURCE 與 DIV MULT，CLOCK OUT 的 CHANNEL、OUT DIV 與 OUT WIDTH，以及 MIDI CLOCK OUT。</div>
+<div class="cap">SOURCE 設為 MIDI 時 SETUP 的 CLOCK 分頁：CLOCK IN 的 SOURCE、DIV MULT、TRANSPORT 與 STATUS，CLOCK OUT 的 CHANNEL、OUT DIV 與 OUT WIDTH，以及 MIDI CLOCK OUT。</div>
 
 <table>
 <tr><td class="k">CLOCK IN</td><td>SOURCE：INT / MIDI / CV。DIV MULT：/4、/2、x1、x2、x4，只在使用外部來源時可用。CV INPUT 選聲道，SIGNAL 顯示訊號，STATUS 顯示狀態。BPM 20 至 300。MIDI 時脈為 24 PPQN，2 秒無訊號視為中斷。</td></tr>
@@ -1008,6 +1016,8 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">CLOCK OUT</td><td>CHANNEL、OUT DIV、OUT WIDTH（毫秒）。</td></tr>
 <tr><td class="k">MIDI CLOCK OUT</td><td>OFF / ON。沒有 MIDI 輸出裝置時灰顯。</td></tr>
 </table>
+<div class="fig"><img src="img/setup_transport.png" alt="含 TRANSPORT 的 CLOCK IN"></div>
+<div class="cap">SOURCE 設為 MIDI 時的 CLOCK IN：TRANSPORT 列的 ANY SOURCE 與 CLOCK ONLY，以及顯示 Waiting for MIDI clock 的 STATUS 列。</div>
 
 <h3>MIDI CONTROL</h3>
 
