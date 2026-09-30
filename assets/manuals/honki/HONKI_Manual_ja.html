@@ -9,12 +9,19 @@
 :root { --accent: #F27455; }
 * { box-sizing: border-box; }
 body { margin:0; padding:0; background:#0B0B0B; color:#ECECEC; font-family:"Barlow Condensed Light","Noto Sans JP",-apple-system,sans-serif; font-weight:300; line-height:1.6; }
-.wrap { max-width:760px; margin:0 auto; padding:64px 40px 120px; }
+.layout { display:grid; grid-template-columns:250px minmax(0,760px); grid-template-rows:auto 1fr;
+  grid-template-areas:"toc head" "toc main"; column-gap:56px; justify-content:center; padding:0 40px; }
+.layout > header { grid-area:head; padding-top:64px; }
+.wrap { grid-area:main; min-width:0; padding:0 0 120px; }
 header { border-bottom:1px solid #2A2A2A; padding-bottom:28px; margin-bottom:40px; }
-header .brand { font-size:14px; letter-spacing:0.32em; color:#F27455; text-transform:uppercase; }
+header .brand { font-size:16px; letter-spacing:0.32em; color:#F27455; text-transform:uppercase; }
 header h1 { font-size:48px; font-weight:300; margin:8px 0 4px; letter-spacing:0.02em; }
 header .sub { font-size:15px; color:#9A9A9A; }
-h2 { font-size:22px; font-weight:400; color:#F27455; margin-top:56px; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #2A2A2A; letter-spacing:0.04em; }
+header .langs { margin-top:10px; font-size:16px; letter-spacing:0.06em; }
+header .langs a { color:#9A9A9A; text-decoration:none; margin-right:14px; }
+header .langs a:hover, header .langs a.cur { color:#F27455; }
+h2 { font-size:22px; font-weight:400; color:#F27455; margin-top:56px; margin-bottom:16px; padding-bottom:10px; border-bottom:1px solid #2A2A2A; letter-spacing:0.04em; scroll-margin-top:24px; }
+.wrap > h2:first-child { margin-top:0; }
 h3 { font-size:16px; font-weight:500; color:#ECECEC; margin-top:26px; margin-bottom:8px; }
 p { font-size:15px; color:#C9C9C9; margin:8px 0; }
 ul { margin:8px 0; padding-left:22px; }
@@ -25,28 +32,50 @@ td { font-size:14px; padding:8px 10px; border-bottom:1px solid #222; color:#C9C9
 td.k { color:#ECECEC; font-weight:500; width:30%; white-space:nowrap; }
 .fig { margin:20px 0 0; }
 .fig img { width:100%; border:1px solid #2A2A2A; display:block; }
-.cap { font-size:13px; color:#9A9A9A; margin:6px 0 16px; }
-nav.toc ul { list-style:none; padding-left:0; columns:2; }
-nav.toc li { margin:4px 0; }
-nav.toc a { color:#C9C9C9; text-decoration:none; font-size:15px; }
+.cap { font-size:14px; color:#9A9A9A; margin:6px 0 16px; }
+/* ===== TABLE OF CONTENTS (desktop: fixed left column) ===== */
+nav.toc { grid-area:toc; align-self:start; position:sticky; top:0; height:100vh; overflow-y:auto;
+  padding:64px 16px 32px 0; border-right:1px solid #2A2A2A; background:#0B0B0B; }
+nav.toc ul { list-style:none; margin:0; padding:0; }
+nav.toc li { margin:0; }
+nav.toc a { display:block; color:#9A9A9A; text-decoration:none; font-size:16px; line-height:1.35;
+  padding:7px 12px 7px 14px; border-left:2px solid transparent; }
 nav.toc a:hover { color:#F27455; }
+nav.toc a.active { color:#F27455; border-left-color:#F27455; }
 footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-size:14px; color:#666; letter-spacing:0.08em; }
-@media (max-width:600px) { .wrap { padding:40px 16px 80px; } nav.toc ul { columns:1; } td.k { white-space:normal; } }
+/* ===== NARROW: single column, table of contents becomes a sticky horizontal bar ===== */
+@media (max-width:899px) {
+  .layout { display:block; padding:0; }
+  .layout > header { padding:40px 24px 24px; margin-bottom:0; }
+  .wrap { padding:32px 24px 80px; }
+  nav.toc { position:sticky; top:0; z-index:10; height:auto; overflow-x:auto; overflow-y:hidden;
+    padding:0; border-right:0; border-bottom:1px solid #2A2A2A; scrollbar-width:none; }
+  nav.toc::-webkit-scrollbar { display:none; }
+  nav.toc ul { display:flex; white-space:nowrap; padding:0 14px; }
+  nav.toc a { padding:12px 10px 10px; border-left:0; border-bottom:2px solid transparent; }
+  nav.toc a.active { border-bottom-color:#F27455; }
+  h2 { scroll-margin-top:64px; }
+}
+@media (max-width:600px) { .layout > header { padding:32px 16px 20px; } .wrap { padding:24px 16px 80px; } td.k { white-space:normal; } }
 /* ===== PRINT / PDF ===== */
 @media print {
   @page { size: A4; margin: 14mm 15mm 16mm; background: #0B0B0B; }
   * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
   html { background:#0B0B0B; }
   body { background:#0B0B0B; color:#ECECEC; font-size:10.5pt; line-height:1.5; }
+  .layout { display:block; max-width:none; width:100%; margin:0; padding:0; }
   .wrap { max-width:none; width:100%; margin:0; padding:0; }
+  .layout > header { padding:0 0 14px; margin-bottom:22px; }
 
   header { padding-bottom:14px; margin-bottom:22px; break-after:avoid; break-inside:avoid; }
   header .brand { font-size:9.5pt; }
   header h1 { font-size:34pt; margin:4px 0 2px; }
   header .sub { font-size:11pt; }
+  header .langs { font-size:9.5pt; }
 
   h2 { font-size:15pt; margin-top:22px; margin-bottom:10px; padding-bottom:6px;
        break-after:avoid; break-inside:avoid; }
+  .wrap > h2:first-child { margin-top:22px; }
   h3 { font-size:11.5pt; margin-top:14px; margin-bottom:5px;
        break-after:avoid; break-inside:avoid; }
   p, li { font-size:10.5pt; orphans:2; widows:2; }
@@ -72,23 +101,22 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
   .cap { font-size:9pt; margin:4px 0 9px; break-before:avoid; break-inside:avoid;
          page-break-before:avoid; page-break-inside:avoid; orphans:2; widows:2; }
 
-  nav.toc { break-after:page; page-break-after:always; break-inside:avoid; }
-  nav.toc ul { columns:2; }
-  nav.toc a { color:#C9C9C9; font-size:11pt; }
+  nav.toc { position:static; height:auto; overflow:visible; padding:0; border:0; background:none;
+            break-after:page; page-break-after:always; break-inside:avoid; }
+  nav.toc ul { display:block; columns:2; padding:0; }
+  nav.toc li { margin:4px 0; }
+  nav.toc a, nav.toc a.active { display:inline; padding:0; border:0; color:#C9C9C9; font-size:11pt; }
   a { text-decoration:none; }
 
   footer { margin-top:28px; padding-top:14px; font-size:9.5pt; break-inside:avoid; }
 }
-header .langs { margin-top:10px; font-size:14px; letter-spacing:0.06em; }
-header .langs a { color:#9A9A9A; text-decoration:none; margin-right:14px; }
-header .langs a:hover, header .langs a.cur { color:#F27455; }
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="layout">
 
 <header>
-  <div class="brand">MADZINE</div>
+  <div class="brand"><a href="https://madzine.work" style="color:inherit;text-decoration:none">MADZINE</a></div>
   <h1>HONKI</h1>
   <div class="sub">取扱説明書 — v1.4.0 — 日本語</div>
   <div class="langs"><a href="HONKI_Manual_en.html">English</a> <a href="HONKI_Manual_ja.html" class="cur">日本語</a> <a href="HONKI_Manual_zh-Hant.html">繁體中文</a></div>
@@ -113,6 +141,8 @@ header .langs a:hover, header .langs a.cur { color:#F27455; }
 <li><a href="#shortcuts">15. ショートカット</a></li>
 </ul>
 </nav>
+
+<main class="wrap">
 
 <!-- ============================================================ -->
 <h2 id="overview">1. 概要</h2>
@@ -1098,6 +1128,49 @@ header .langs a:hover, header .langs a.cur { color:#F27455; }
 <p>タッチ：フレーズ編集オーバーレイを下へ 80pt を超えてスワイプすると閉じます。</p>
 
 <footer>MADZINE — HONKI v1.4.0</footer>
+</main>
 </div>
+<script>
+(function () {
+  var nav = document.querySelector('nav.toc');
+  if (!nav) return;
+  var items = [];
+  Array.prototype.forEach.call(nav.querySelectorAll('a[href^="#"]'), function (a) {
+    var h = document.getElementById(a.getAttribute('href').slice(1));
+    if (h) items.push({ a: a, h: h });
+  });
+  if (!items.length) return;
+  var current = null, pending = false;
+  function reveal(a) {
+    if (nav.scrollWidth > nav.clientWidth + 1) {
+      nav.scrollLeft = a.offsetLeft - (nav.clientWidth - a.offsetWidth) / 2;
+    } else if (nav.scrollHeight > nav.clientHeight + 1) {
+      if (a.offsetTop < nav.scrollTop) nav.scrollTop = a.offsetTop - 16;
+      else if (a.offsetTop + a.offsetHeight > nav.scrollTop + nav.clientHeight)
+        nav.scrollTop = a.offsetTop + a.offsetHeight - nav.clientHeight + 16;
+    }
+  }
+  function update() {
+    pending = false;
+    var narrow = window.innerWidth < 900;
+    var line = narrow ? nav.offsetHeight + 32 : 120;
+    var active = items[0];
+    for (var i = 0; i < items.length; i++) {
+      if (items[i].h.getBoundingClientRect().top <= line) active = items[i]; else break;
+    }
+    var doc = document.documentElement;
+    if (window.innerHeight + window.scrollY >= doc.scrollHeight - 2) active = items[items.length - 1];
+    if (active === current) return;
+    if (current) current.a.classList.remove('active');
+    current = active;
+    active.a.classList.add('active');
+    reveal(active.a);
+  }
+  function schedule() { if (!pending) { pending = true; requestAnimationFrame(update); } }
+  window.addEventListener('scroll', schedule, { passive: true });
+  window.addEventListener('resize', function () { current = null; schedule(); });
+  update();
+})();
+</script>
 </body>
 </html>
