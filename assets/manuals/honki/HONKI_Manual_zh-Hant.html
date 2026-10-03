@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>HONKI 使用手冊 v1.4.6</title>
+<title>HONKI 使用手冊 v1.4.8</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root { --accent: #F27455; }
@@ -118,7 +118,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <header>
   <div class="brand"><a href="https://madzine.work" style="color:inherit;text-decoration:none">MADZINE</a></div>
   <h1>HONKI</h1>
-  <div class="sub">使用手冊 — v1.4.6 — 繁體中文</div>
+  <div class="sub">使用手冊 — v1.4.8 — 繁體中文</div>
   <div class="langs"><a href="HONKI_Manual_en.html">English</a> <a href="HONKI_Manual_ja.html">日本語</a> <a href="HONKI_Manual_zh-Hant.html" class="cur">繁體中文</a></div>
 </header>
 
@@ -265,7 +265,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">MUTE / SOLO</td><td>目前 track 的靜音與獨奏。</td></tr>
 <tr><td class="k">P</td><td>Program 選單：SAVE、LOAD、CLEAR，對象為 Program 1 至 8。</td></tr>
 <tr><td class="k">LOCK</td><td>0 至 100%，垂直拖曳，無點兩下重設。</td></tr>
-<tr><td class="k">DECAY</td><td>旋律軌顯示為 0 至 100%，內部範圍 -0.99 至 0.99；鼓軌範圍 0.2 至 2.0（1.0 顯示為 44%）。點兩下重設（鼓軌 1.0，旋律軌 -0.78）。</td></tr>
+<tr><td class="k">DECAY</td><td>衰減時間倍率，所有軌道範圍皆為 0.2 至 2.0（1.0 顯示為 44%）。往上轉衰減變長；旋律軌的尾巴可超過音符長度，直到同軌下一個音進來。點兩下重設為 1.0。</td></tr>
 <tr><td class="k">DENSITY</td><td>0 至 100%。點兩下清除 segment 的覆寫值。</td></tr>
 <tr><td class="k">Segment 1 至 8</td><td>三種狀態：無、空、有內容。有 RATIO 時顯示標籤。鏈狀態顯示在底部 3pt 條，播放中在頂部顯示 3pt 線。點擊優先順序：鏈設定中 &gt; RANDOM 池 &gt; MULTI &gt; 選擇。</td></tr>
 <tr><td class="k">SINGLE</td><td>只播放目前 segment，顯示 SEG n。</td></tr>
@@ -538,7 +538,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">POLYPHONY</td><td>1 / 2 / 4 VOICE。</td></tr>
 <tr><td class="k">OCT</td><td>八度。</td></tr>
 <tr><td class="k">TUNE</td><td>微調，點兩下回 0。</td></tr>
-<tr><td class="k">EXT to AUDIO IN</td><td>ON / OFF，預設 ON：外部輸入激發共鳴體，不直接混入乾聲。</td></tr>
+<tr><td class="k">EXT to AUDIO IN</td><td>ON / OFF，預設 OFF。ON：外部輸入激發共鳴體，不直接混入乾聲。OFF：共鳴體由內建激發，外部輸入當作乾聲混入。</td></tr>
 </table>
 
 <h3>AU</h3>
@@ -1001,7 +1001,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">TRACK ROUTING</td><td>8 個 track 各一列，欄位為 MIDI CHANNEL、PITCH CONTROL CHANGE、ENVELOPE CONTROL CHANGE、DRUM NOTE（只有 TRACK 5 至 8）、PITCH CV CHANNEL、VOLTS（1V 或 1.2V）、ENVELOPE CV CHANNEL。右上為 CLEAR ALL。CV 聲道不可重複，選到已使用的聲道時兩者互換；MIDI 聲道可以重複。</td></tr>
 <tr><td class="k">MOD OUTPUT</td><td>指派 UTILITY 的 OUTPUT 1 至 4 的實體聲道。已被 track 的 CV 使用的聲道無法選取；選到另一個 MOD OUTPUT 使用中的聲道時兩者互換。</td></tr>
 <tr><td class="k">BUCHLA PULSE</td><td>SPIKE OFF / ON 與 WIDTH（毫秒）。</td></tr>
-<tr><td class="k">ENV DELAY</td><td>每軌的包絡延遲，單位毫秒。</td></tr>
+<tr><td class="k">ENV DELAY</td><td>每軌的包絡延遲，單位毫秒。CV 與 MIDI 輸出都適用：包絡 CV 晚於音高 CV，包絡 MIDI CC 晚於音高 MIDI CC。0 為同時送出。</td></tr>
 </table>
 
 <h3>CLOCK</h3>
@@ -1039,7 +1039,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">RECORDING LOCATION</td><td>固定為 Documents/Recordings，檔案 app 路徑「On My iPad / HONKI / Recordings」。Sessions 為分軌錄音，Samples 為取樣錄音。</td></tr>
 <tr><td class="k">RECORDING TRACKS</td><td>選擇分軌錄音要寫入的項目，見第 14 章。</td></tr>
 <tr><td class="k">VIDEO RECORDING</td><td>錄音時同時錄影的兩個開關，見第 14 章。</td></tr>
-<tr><td class="k">GENERATE VELOCITY</td><td>每軌一條 1 至 127 的範圍條，設定自動產生的力度範圍，另有 RESET。</td></tr>
+<tr><td class="k">GENERATE VELOCITY</td><td>每軌一條 1 至 127 的範圍條，設定自動產生的力度範圍，另有 RESET。預設範圍 80 至 110 時強拍會加重，可超出上限；範圍改過之後，強拍落在範圍的上段，不超出上限。</td></tr>
 <tr><td class="k">DIAGNOSTICS</td><td>狀態文字與 EXPORT LOG。</td></tr>
 </table>
 
@@ -1152,7 +1152,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 </table>
 <p>觸控：樂句編輯覆蓋層向下滑超過 80pt 關閉。</p>
 
-<footer>MADZINE — HONKI v1.4.6</footer>
+<footer>MADZINE — HONKI v1.4.8</footer>
 </main>
 </div>
 <script>

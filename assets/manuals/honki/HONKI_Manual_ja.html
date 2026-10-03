@@ -118,7 +118,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <header>
   <div class="brand"><a href="https://madzine.work" style="color:inherit;text-decoration:none">MADZINE</a></div>
   <h1>HONKI</h1>
-  <div class="sub">取扱説明書 — v1.4.6 — 日本語</div>
+  <div class="sub">取扱説明書 — v1.4.8 — 日本語</div>
   <div class="langs"><a href="HONKI_Manual_en.html">English</a> <a href="HONKI_Manual_ja.html" class="cur">日本語</a> <a href="HONKI_Manual_zh-Hant.html">繁體中文</a></div>
 </header>
 
@@ -265,7 +265,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">MUTE / SOLO</td><td>現在のトラックのミュートとソロです。</td></tr>
 <tr><td class="k">P</td><td>Program メニュー：SAVE、LOAD、CLEAR。対象は Program 1 から 8 です。</td></tr>
 <tr><td class="k">LOCK</td><td>0 から 100%。縦ドラッグです。ダブルタップによるリセットはありません。</td></tr>
-<tr><td class="k">DECAY</td><td>メロディトラックでは 0 から 100% で表示され、内部範囲は -0.99 から 0.99 です。ドラムトラックの範囲は 0.2 から 2.0（1.0 が 44% と表示）です。ダブルタップでリセット（ドラムトラック 1.0、メロディトラック -0.78）します。</td></tr>
+<tr><td class="k">DECAY</td><td>ディケイの時間倍率で、全トラック 0.2 から 2.0（1.0 が 44% と表示）です。上げるとディケイが長くなり、メロディトラックではテールが音符の長さを超えて、同じトラックの次の音が鳴るまで伸びます。ダブルタップで 1.0 にリセットします。</td></tr>
 <tr><td class="k">DENSITY</td><td>0 から 100%。ダブルタップでセグメントの上書き値を消去します。</td></tr>
 <tr><td class="k">セグメント 1 から 8</td><td>3 つの状態：なし、空、内容あり。RATIO があるときはラベルを表示します。チェーン状態は下端の 3pt バー、再生中は上端の 3pt ラインで示します。タップの優先順位：チェーン設定中、RANDOM プール、MULTI、選択の順です。</td></tr>
 <tr><td class="k">SINGLE</td><td>現在のセグメントだけを再生します。表示は SEG n です。</td></tr>
@@ -537,7 +537,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">POLYPHONY</td><td>1 / 2 / 4 VOICE。</td></tr>
 <tr><td class="k">OCT</td><td>オクターブです。</td></tr>
 <tr><td class="k">TUNE</td><td>微調整です。ダブルタップで 0 に戻ります。</td></tr>
-<tr><td class="k">EXT to AUDIO IN</td><td>ON / OFF、初期値は ON：外部入力で共鳴体を励起し、ドライ音は直接ミックスしません。</td></tr>
+<tr><td class="k">EXT to AUDIO IN</td><td>ON / OFF、初期値は OFF。ON：外部入力で共鳴体を励起し、ドライ音は直接ミックスしません。OFF：共鳴体は内蔵の励起を使い、外部入力はドライ音としてミックスされます。</td></tr>
 </table>
 
 <h3>AU</h3>
@@ -1001,7 +1001,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">TRACK ROUTING</td><td>8 トラック各 1 行で、列は MIDI CHANNEL、PITCH CONTROL CHANGE、ENVELOPE CONTROL CHANGE、DRUM NOTE（TRACK 5 から 8 のみ）、PITCH CV CHANNEL、VOLTS（1V または 1.2V）、ENVELOPE CV CHANNEL です。右上に CLEAR ALL があります。CV チャンネルは重複できず、使用中のチャンネルを選ぶと両者が入れ替わります。MIDI チャンネルは重複できます。</td></tr>
 <tr><td class="k">MOD OUTPUT</td><td>UTILITY の OUTPUT 1 から 4 の物理チャンネルを割り当てます。トラックの CV で使用中のチャンネルは選べません。別の MOD OUTPUT で使用中のチャンネルを選ぶと両者が入れ替わります。</td></tr>
 <tr><td class="k">BUCHLA PULSE</td><td>SPIKE OFF / ON と WIDTH（ミリ秒）。</td></tr>
-<tr><td class="k">ENV DELAY</td><td>トラックごとのエンベロープディレイ、単位はミリ秒。</td></tr>
+<tr><td class="k">ENV DELAY</td><td>トラックごとのエンベロープディレイ、単位はミリ秒。CV と MIDI 出力の両方に効きます：エンベロープ CV はピッチ CV より後、エンベロープの MIDI CC はピッチの MIDI CC より後に送られます。0 では同時に送られます。</td></tr>
 </table>
 
 <h3>CLOCK</h3>
@@ -1039,7 +1039,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">RECORDING LOCATION</td><td>Documents/Recordings に固定です。ファイルアプリでのパスは「On My iPad / HONKI / Recordings」。Sessions はマルチトラック録音、Samples はサンプル録音です。</td></tr>
 <tr><td class="k">RECORDING TRACKS</td><td>マルチトラック録音で書き出す項目を選びます。第 14 章を参照してください。</td></tr>
 <tr><td class="k">VIDEO RECORDING</td><td>録音と同時に録画する 2 つのスイッチです。第 14 章を参照してください。</td></tr>
-<tr><td class="k">GENERATE VELOCITY</td><td>トラックごとに 1 から 127 の範囲バーがあり、自動生成のベロシティ範囲を設定します。RESET もあります。</td></tr>
+<tr><td class="k">GENERATE VELOCITY</td><td>トラックごとに 1 から 127 の範囲バーがあり、自動生成のベロシティ範囲を設定します。RESET もあります。初期範囲 80 から 110 では強拍が強調され、最大値を超えることがあります。範囲を変更すると、強拍は範囲の上側に収まり、最大値を超えません。</td></tr>
 <tr><td class="k">DIAGNOSTICS</td><td>状態の表示と EXPORT LOG。</td></tr>
 </table>
 
@@ -1152,7 +1152,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 </table>
 <p>タッチ：フレーズ編集オーバーレイを下へ 80pt を超えてスワイプすると閉じます。</p>
 
-<footer>MADZINE — HONKI v1.4.6</footer>
+<footer>MADZINE — HONKI v1.4.8</footer>
 </main>
 </div>
 <script>

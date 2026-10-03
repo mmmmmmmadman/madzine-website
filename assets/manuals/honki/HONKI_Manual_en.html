@@ -118,7 +118,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <header>
   <div class="brand"><a href="https://madzine.work" style="color:inherit;text-decoration:none">MADZINE</a></div>
   <h1>HONKI</h1>
-  <div class="sub">User Manual — v1.4.6 — English</div>
+  <div class="sub">User Manual — v1.4.8 — English</div>
   <div class="langs"><a href="HONKI_Manual_en.html" class="cur">English</a> <a href="HONKI_Manual_ja.html">日本語</a> <a href="HONKI_Manual_zh-Hant.html">繁體中文</a></div>
 </header>
 
@@ -265,7 +265,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">MUTE / SOLO</td><td>Mute and solo for the current track.</td></tr>
 <tr><td class="k">P</td><td>Program menu: SAVE, LOAD, CLEAR, for Program 1 to 8.</td></tr>
 <tr><td class="k">LOCK</td><td>0 to 100%, vertical drag, no double-tap reset.</td></tr>
-<tr><td class="k">DECAY</td><td>Melodic tracks show 0 to 100% with an internal range of -0.99 to 0.99; drum tracks range 0.2 to 2.0 (1.0 shows as 44%). Double-tap resets (drum tracks 1.0, melodic tracks -0.78).</td></tr>
+<tr><td class="k">DECAY</td><td>Decay time scale, 0.2 to 2.0 on all tracks (1.0 shows as 44%). Turning it up makes the decay longer; on melodic tracks the tail can run past the note length until the next note on the same track. Double-tap resets to 1.0.</td></tr>
 <tr><td class="k">DENSITY</td><td>0 to 100%. Double-tap clears the segment override.</td></tr>
 <tr><td class="k">Segments 1 to 8</td><td>Three states: missing, empty, filled. Shows a label when a RATIO is set. Chain state is shown as a 3pt bar at the bottom; the playing segment shows a 3pt line at the top. Tap priority: chain setup &gt; RANDOM pool &gt; MULTI &gt; select.</td></tr>
 <tr><td class="k">SINGLE</td><td>Plays only the current segment, shows SEG n.</td></tr>
@@ -538,7 +538,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">POLYPHONY</td><td>1 / 2 / 4 VOICE.</td></tr>
 <tr><td class="k">OCT</td><td>Octave.</td></tr>
 <tr><td class="k">TUNE</td><td>Fine tune, double-tap returns to 0.</td></tr>
-<tr><td class="k">EXT to AUDIO IN</td><td>ON / OFF, default ON: the external input excites the resonator and is not mixed in dry.</td></tr>
+<tr><td class="k">EXT to AUDIO IN</td><td>ON / OFF, default OFF. ON: the external input excites the resonator and is not mixed in dry. OFF: the resonator uses its internal exciter and the external input is mixed in dry.</td></tr>
 </table>
 
 <h3>AU</h3>
@@ -1001,7 +1001,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">TRACK ROUTING</td><td>One row for each of the 8 tracks, with the columns MIDI CHANNEL, PITCH CONTROL CHANGE, ENVELOPE CONTROL CHANGE, DRUM NOTE (TRACK 5 to 8 only), PITCH CV CHANNEL, VOLTS (1V or 1.2V), ENVELOPE CV CHANNEL. CLEAR ALL is at the top right. CV channels cannot be duplicated; selecting a channel already in use swaps the two. MIDI channels can be duplicated.</td></tr>
 <tr><td class="k">MOD OUTPUT</td><td>Assigns the physical channels of UTILITY OUTPUT 1 to 4. Channels used by track CV cannot be selected; selecting a channel used by another MOD OUTPUT swaps the two.</td></tr>
 <tr><td class="k">BUCHLA PULSE</td><td>SPIKE OFF / ON and WIDTH (ms).</td></tr>
-<tr><td class="k">ENV DELAY</td><td>Envelope delay per track, in ms.</td></tr>
+<tr><td class="k">ENV DELAY</td><td>Envelope delay per track, in ms. Applies to both CV and MIDI output: the envelope CV after the pitch CV, and the envelope MIDI CC after the pitch MIDI CC. 0 sends both at the same time.</td></tr>
 </table>
 
 <h3>CLOCK</h3>
@@ -1039,7 +1039,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">RECORDING LOCATION</td><td>Fixed at Documents/Recordings; the Files app path is "On My iPad / HONKI / Recordings". Sessions holds multitrack recordings and Samples holds sample recordings.</td></tr>
 <tr><td class="k">RECORDING TRACKS</td><td>Selects the items written by multitrack recording. See chapter 14.</td></tr>
 <tr><td class="k">VIDEO RECORDING</td><td>Two switches for recording video together with audio. See chapter 14.</td></tr>
-<tr><td class="k">GENERATE VELOCITY</td><td>A range bar of 1 to 127 per track that sets the velocity range of generation, plus RESET.</td></tr>
+<tr><td class="k">GENERATE VELOCITY</td><td>A range bar of 1 to 127 per track that sets the velocity range of generation, plus RESET. At the default range of 80 to 110, strong beats are accented and can exceed the maximum; once the range is changed, strong beats land in the upper part of the range and do not exceed the maximum.</td></tr>
 <tr><td class="k">DIAGNOSTICS</td><td>Status text and EXPORT LOG.</td></tr>
 </table>
 
@@ -1152,7 +1152,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 </table>
 <p>Touch: swipe the phrase editor overlay down more than 80pt to close it.</p>
 
-<footer>MADZINE — HONKI v1.4.6</footer>
+<footer>MADZINE — HONKI v1.4.8</footer>
 </main>
 </div>
 <script>
