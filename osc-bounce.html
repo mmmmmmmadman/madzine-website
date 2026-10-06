@@ -31,15 +31,23 @@
     --shadow: rgba(0, 0, 0, 0.16);
     --fill-edge: rgba(0, 0, 0, 0.45);
     --font: 'Barlow Condensed', 'Noto Sans JP', 'Noto Sans TC', system-ui, sans-serif;
-    --font-help: 'Noto Sans JP', 'Noto Sans TC', 'Barlow Condensed', system-ui, sans-serif;
+    --font-help: 'Barlow Condensed', 'Noto Sans JP', 'Noto Sans TC', system-ui, sans-serif;
     --top-h: 56px;
     --palette-h: 76px;
     --gap: 8px;
   }
-  /* Traditional Chinese: Chinese glyphs from Noto Sans TC, not the Japanese forms */
-  html:lang(zh) {
+  /* Latin always Barlow Condensed (it has no CJK glyphs, so CJK falls through).
+     Japanese / English: kana and kanji from Noto Sans JP.
+     Traditional Chinese: Chinese glyphs from Noto Sans TC, not the Japanese forms.
+     Set per element (not only on html) so the hidden help-text measurer in ui.js,
+     which carries its own lang attribute, gets the right font for that language. */
+  :lang(ja), :lang(en) {
+    --font: 'Barlow Condensed', 'Noto Sans JP', 'Noto Sans TC', system-ui, sans-serif;
+    --font-help: 'Barlow Condensed', 'Noto Sans JP', 'Noto Sans TC', system-ui, sans-serif;
+  }
+  :lang(zh) {
     --font: 'Barlow Condensed', 'Noto Sans TC', 'Noto Sans JP', system-ui, sans-serif;
-    --font-help: 'Noto Sans TC', 'Noto Sans JP', 'Barlow Condensed', system-ui, sans-serif;
+    --font-help: 'Barlow Condensed', 'Noto Sans TC', 'Noto Sans JP', system-ui, sans-serif;
   }
   html, body {
     margin: 0;
@@ -109,13 +117,21 @@
   }
   #help-top { padding-top: 6px; }
   #help-bottom { padding-bottom: 6px; }
+  /* Every short label in the bar stays on one line; only the help text wraps. */
+  #title, #count { white-space: nowrap; }
   #title {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
     font-size: 20px;
     letter-spacing: 0.12em;
     color: var(--accent-text);
     line-height: 24px;
   }
   #count {
+    flex: 0 0 auto;
+    font-variant-numeric: tabular-nums;
     font-size: 16px;
     letter-spacing: 0.06em;
     color: var(--fg-secondary);
@@ -135,10 +151,15 @@
     font-size: 18px;
     letter-spacing: 0.12em;
     line-height: 20px;
+    white-space: nowrap;
     cursor: pointer;
   }
   .textbtn:active { background: var(--bg-track); border-color: var(--fg-dim); }
-  #lang { min-width: 64px; padding: 0 12px; letter-spacing: 0.06em; }
+  /* Fixed widths: switching language never changes the size of these buttons.
+     #lang shows one of 中 / 日 / EN; #clear fits the widest label (クリア, about 59 px of text). */
+  #lang, #clear { flex: 0 0 auto; min-width: 0; padding: 0; text-align: center; }
+  #lang { width: 56px; letter-spacing: 0.06em; }
+  #clear { width: 96px; }
 
   /* ---------- palette ---------- */
   #palette {
@@ -174,6 +195,7 @@
     font-size: 16px;
     letter-spacing: 0.06em;
     line-height: 20px;
+    white-space: nowrap;
     cursor: pointer;
   }
   .pick canvas { width: 40px; height: 40px; flex: 0 0 40px; display: block; }
@@ -1827,11 +1849,12 @@
   // STRINGS - one table, same keys for every language.
   // Character names (SINE / TRI / SAW / PULSE), ball names and BALL stay English.
   // ======================================================================
-  var LANGS = ['ja', 'en', 'zh'];
+  // Cycle order of the language button: 中 -> 日 -> EN -> 中.
+  var LANGS = ['zh', 'ja', 'en'];
   var STRINGS = {
     ja: {
       htmlLang: 'ja',
-      button: 'JP',
+      button: '日',
       helpTop: 'ボールが当たると音が鳴り、高い位置ほど高い音に。枠を狭めるとボールが速くなります。',
       helpBottom: 'キャラクターを選んでタップで配置、調整パネルが開きます。ドラッグで移動。BALL でボールを変更：大きいと何人も同時に鳴り、小さいと速く、やわらかいとまろやかな音に。',
       clear: 'クリア',
@@ -1855,7 +1878,7 @@
     },
     zh: {
       htmlLang: 'zh-Hant',
-      button: '中文',
+      button: '中',
       helpTop: '球碰到角色就會發出聲音，位置越高音越高。把框縮小，球會變快。',
       helpBottom: '選好角色後點一下放置，會開啟調整面板；拖曳可移動。BALL 換球：大球能一次碰到好幾個角色一起響，小球比較快，軟的球聲音比較柔和。',
       clear: '清除',
@@ -1900,6 +1923,31 @@
     faders.forEach(function (f) {
       var word = s[f.dataset.param];
       Array.prototype.forEach.call(f.querySelectorAll('.word'), function (el) { el.textContent = word; });
+    });
+  }
+
+  // The help texts wrap to a different number of lines per language. Each help
+  // block reserves the height of its tallest language at the current width, so
+  // switching language never resizes the play area.
+  var helpMeasure = document.createElement('p');
+  helpMeasure.className = 'help';
+  helpMeasure.setAttribute('aria-hidden', 'true');
+  helpMeasure.style.cssText = 'position:absolute;left:0;top:0;visibility:hidden;padding:0;';
+  document.body.appendChild(helpMeasure);
+
+  function reserveHelpHeight() {
+    [[helpTop, 'helpTop'], [helpBottom, 'helpBottom']].forEach(function (pair) {
+      var el = pair[0], key = pair[1];
+      var cs = getComputedStyle(el);
+      var padV = (parseFloat(cs.paddingTop) || 0) + (parseFloat(cs.paddingBottom) || 0);
+      helpMeasure.style.width = el.clientWidth + 'px';
+      var maxH = 0;
+      LANGS.forEach(function (code) {
+        helpMeasure.lang = STRINGS[code].htmlLang;
+        helpMeasure.textContent = STRINGS[code][key];
+        maxH = Math.max(maxH, helpMeasure.offsetHeight);
+      });
+      el.style.minHeight = Math.ceil(maxH + padV) + 'px';
     });
   }
 
@@ -2056,6 +2104,7 @@
     canvas.width = Math.round(vw * dpr);
     canvas.height = Math.round(vh * dpr);
 
+    reserveHelpHeight();
     var tb = topbar.getBoundingClientRect();
     var pb = palette.getBoundingClientRect();
     var tcs = getComputedStyle(topbar);
@@ -2197,7 +2246,7 @@
     lang = LANGS[(LANGS.indexOf(lang) + 1) % LANGS.length];
     saveLang(lang);
     applyLang();
-    layout();   // help text height differs per language
+    layout();   // help blocks keep their reserved height; this only re-lays the bar
   });
 
   // ---------- audio unlock + outside-click close ----------
@@ -2436,21 +2485,16 @@
       highlight[sim.noteIndexForY(dc.y)] = CHARACTERS[dc.type];
     }
 
-    // pitch grid (lines only, no note names)
+    // no background pitch grid; only the line of the pitch a dragged character snaps to
     var scale = window.OSCSim.SCALE;
     for (var i = 0; i < scale.length; i++) {
+      if (!highlight[i]) continue;
       var gy = Math.round(sim.yForNoteIndex(i)) + 0.5;
-      var isC = scale[i].name.charAt(0) === 'C';
       ctx.beginPath();
       ctx.moveTo(0, gy);
       ctx.lineTo(area.w, gy);
-      if (highlight[i]) {
-        ctx.strokeStyle = rgbStr(highlight[i].rgb, 0.45);
-        ctx.lineWidth = 2;
-      } else {
-        ctx.strokeStyle = isC ? COLOR.gridLineC : COLOR.gridLine;
-        ctx.lineWidth = 1;
-      }
+      ctx.strokeStyle = rgbStr(highlight[i].rgb, 0.45);
+      ctx.lineWidth = 2;
       ctx.stroke();
     }
 
@@ -2577,6 +2621,7 @@
     if (document.fonts.addEventListener) {
       document.fonts.addEventListener('loadingdone', function () {
         // only when the bars actually changed height, so open panels stay open
+        reserveHelpHeight();
         var tb = topbar.getBoundingClientRect(), pb = palette.getBoundingClientRect();
         if (Math.abs(tb.bottom - area.y) > 0.5 || Math.abs((pb.top - tb.bottom) - area.h) > 0.5) layout();
       });
