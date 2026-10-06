@@ -274,13 +274,18 @@
   .fader .label svg { width: 22px; height: 22px; flex: 0 0 22px; display: block; overflow: visible; }
   /* ---------- ball picker ---------- */
   .ballbtn { --pick-color: var(--fg-primary); margin-left: 8px; }
+  /* 12 balls. Each cell: icon above label, fixed 104 x 68 px, so switching language
+     never changes the panel size. Widest label (WATERMELON, Barlow Condensed Light 16px
+     + 0.06em spacing) measures 82 px; the label area is 98 px wide (102 px at 375 px,
+     84 px at 320 px viewport width).
+     Columns: 6 x 2 rows (>= 720 px wide), 4 x 3 rows (>= 500 px), 3 x 4 rows (phones). */
   #ballpanel {
     position: fixed;
     left: 0;
     top: 0;
     padding: 12px;
     display: grid;
-    grid-template-columns: repeat(5, 116px);
+    grid-template-columns: repeat(6, 104px);
     gap: 8px;
     background: var(--bg-elevated);
     border: 1px solid var(--stroke);
@@ -290,11 +295,14 @@
   }
   #ballpanel[hidden] { display: none; }
   .ballitem {
-    height: 52px;
-    padding: 0 8px;
+    min-width: 0;
+    height: 68px;
+    padding: 4px 2px;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    gap: 2px;
     background: transparent;
     border: 1px solid var(--stroke);
     border-radius: 8px;
@@ -306,9 +314,13 @@
     cursor: pointer;
   }
   .ballitem canvas { width: 36px; height: 36px; flex: 0 0 36px; display: block; }
+  .ballitem span { display: block; max-width: 100%; height: 20px; overflow: hidden; text-overflow: ellipsis; }
   .ballitem.selected { background: var(--bg-track); border-color: var(--fg-primary); color: var(--fg-primary); }
-  @media (max-width: 660px) {
-    #ballpanel { grid-template-columns: repeat(2, minmax(0, 1fr)); width: min(360px, calc(100vw - 16px)); }
+  @media (max-width: 719px) {
+    #ballpanel { grid-template-columns: repeat(4, 104px); }
+  }
+  @media (max-width: 499px) {
+    #ballpanel { padding: 8px; grid-template-columns: repeat(3, minmax(0, 1fr)); width: min(360px, calc(100vw - 16px)); }
   }
 
   #panel .row { display: flex; gap: 8px; width: 208px; }
@@ -389,8 +401,18 @@
     { id: 'pingpong', label: 'PINGPONG', radius: 11, hardness: 0.75, color: [243, 154, 58],  image: null },
     { id: 'marble',   label: 'MARBLE',   radius: 15, hardness: 0.95, color: [236, 236, 240], image: null },
     { id: 'wood',     label: 'WOOD',     radius: 20, hardness: 0.65, color: [190, 138, 84],  image: null },
+    // GUM: sticks to whatever it touches for `stick` seconds, then leaves at `speedMul`
+    // x the speed of a plain ball of the same size. names: per-language label (UI).
+    { id: 'gum',      label: 'GUM',      radius: 24, hardness: 0.06, color: [255, 112, 178], image: null,
+      stick: 0.16, speedMul: 0.8, names: { en: 'GUM', ja: 'ガム', zh: '口香糖' } },
     { id: 'rubber',   label: 'RUBBER',   radius: 26, hardness: 0.45, color: [142, 91, 214],  image: null },
     { id: 'tennis',   label: 'TENNIS',   radius: 34, hardness: 0.32, color: [200, 224, 74],  image: null },
+    // WATERMELON: breaks after `breakHits` collisions (characters or walls, one per step)
+    // within `breakWindow` seconds, then becomes the default ball (see _afterStep).
+    // 12 in 4 s: open field with a few characters lasts minutes; minimum bounds or a
+    // tight cluster of characters breaks it in about 2-4 s.
+    { id: 'watermelon', label: 'WATERMELON', radius: 42, hardness: 0.60, color: [96, 172, 64], image: null,
+      breakHits: 12, breakWindow: 4.0, names: { en: 'WATERMELON', ja: 'スイカ', zh: '西瓜' } },
     { id: 'sponge',   label: 'SPONGE',   radius: 46, hardness: 0.12, color: [222, 178, 104], image: null },
     { id: 'cotton',   label: 'COTTON',   radius: 54, hardness: 0.00, color: [244, 244, 244], image: null },
     { id: 'stone',    label: 'STONE',    radius: 66, hardness: 0.85, color: [128, 124, 120], image: null }
@@ -443,6 +465,78 @@
     return 0.005 + (1 - clamp(h, 0, 1)) * 0.015;
   }
 
+  // ---------- sticky balls (BALLS[].stick > 0) ----------
+  // Deformation of a sticky ball as a pure function of the time since it stuck.
+  // Returns k: > 0 squashed along the contact normal (flattened against the surface),
+  // < 0 stretched along the normal (being pulled off), 0 = round.
+  // Draw: scale along the normal by (1 - k), across by (1 + 0.6 k), and shift the
+  // center by -k * r along the normal so the contact side stays on the surface.
+  var STICK_SQUASH = 0.32;        // peak flattening while stuck
+  var STICK_PULL = 0.16;          // stretch at the moment it lets go
+  var STICK_SQUASH_TAU = 0.014;   // s, how fast it flattens on impact
+  var STICK_WOBBLE_TAU = 0.07;    // s, decay of the wobble after letting go
+  var STICK_WOBBLE_HZ = 8;        // wobble frequency after letting go
+  var STICK_ANIM_TAIL = 0.45;     // s after letting go; deformation is 0 beyond this
+  function smoothstep(e0, e1, x) {
+    var t = clamp((x - e0) / (e1 - e0), 0, 1);
+    return t * t * (3 - 2 * t);
+  }
+  function stickDeform(age, stick) {
+    if (!(stick > 0) || age < 0) return 0;
+    if (age < stick) {
+      var squash = STICK_SQUASH * (1 - Math.exp(-age / STICK_SQUASH_TAU));
+      var pull = smoothstep(0.55, 1, age / stick);
+      return squash * (1 - pull) - STICK_PULL * pull;
+    }
+    var tau = age - stick;
+    if (tau > STICK_ANIM_TAIL) return 0;
+    return -STICK_PULL * Math.exp(-tau / STICK_WOBBLE_TAU) * Math.cos(tau * 2 * Math.PI * STICK_WOBBLE_HZ);
+  }
+
+  // ---------- breakable balls (BALLS[].breakHits > 0, e.g. WATERMELON) ----------
+  // A collision = one step in which the ball's travel direction was reflected
+  // (wall and/or any number of characters in the same step count once). Reflections
+  // closer than BREAK_DEBOUNCE to the last counted one are the same impact (a ball
+  // squeezed into a gap chatters for a few steps) and are not counted again.
+  // When breakHits collisions fall inside the last breakWindow seconds the ball breaks:
+  // a shatter record { t, x, y, r, vx, vy } is kept for MELON_SHATTER_TIME seconds
+  // (the UI draws the burst as a pure function of the record and sim time) and the
+  // ball becomes BALLS[DEFAULT_BALL] at the same place, moving the same way.
+  var BREAK_DEBOUNCE = 0.1;       // s
+  var MELON_SHATTER_TIME = 0.8;   // s, length of the burst animation
+  var MELON_TILT = 0.5;           // rad, stem tilted toward the viewer in the rest pose
+  // Ball orientation (rolling look): row-major 3x3 rotation, body -> screen
+  // (x right, y down, z toward the viewer). Body z = stem axis.
+  function restOrientation() {
+    var c = Math.cos(MELON_TILT), s = Math.sin(MELON_TILT);
+    return [1, 0, 0,
+            0, s, -c,
+            0, c, s];
+  }
+  // m <- Rot(axis (ax, ay, 0), angle) * m, re-orthonormalized.
+  function rollOrientation(m, ax, ay, angle) {
+    var cs = Math.cos(angle), sn = Math.sin(angle), t = 1 - cs;
+    var q = [t * ax * ax + cs, t * ax * ay,      sn * ay,
+             t * ax * ay,      t * ay * ay + cs, -sn * ax,
+             -sn * ay,         sn * ax,          cs];
+    var o = [], r, k;
+    for (r = 0; r < 3; r++) {
+      for (k = 0; k < 3; k++) {
+        o[r * 3 + k] = q[r * 3] * m[k] + q[r * 3 + 1] * m[3 + k] + q[r * 3 + 2] * m[6 + k];
+      }
+    }
+    // Gram-Schmidt on the columns (body axes)
+    var c0 = [o[0], o[3], o[6]], c1 = [o[1], o[4], o[7]];
+    var l0 = Math.sqrt(c0[0] * c0[0] + c0[1] * c0[1] + c0[2] * c0[2]);
+    c0 = [c0[0] / l0, c0[1] / l0, c0[2] / l0];
+    var d = c0[0] * c1[0] + c0[1] * c1[1] + c0[2] * c1[2];
+    c1 = [c1[0] - d * c0[0], c1[1] - d * c0[1], c1[2] - d * c0[2]];
+    var l1 = Math.sqrt(c1[0] * c1[0] + c1[1] * c1[1] + c1[2] * c1[2]);
+    c1 = [c1[0] / l1, c1[1] / l1, c1[2] / l1];
+    var c2 = [c0[1] * c1[2] - c0[2] * c1[1], c0[2] * c1[0] - c0[0] * c1[2], c0[0] * c1[1] - c0[1] * c1[0]];
+    for (r = 0; r < 3; r++) { m[r * 3] = c0[r]; m[r * 3 + 1] = c1[r]; m[r * 3 + 2] = c2[r]; }
+  }
+
   // ---------- bounds ----------
   var BOUNDS_MIN_PX = 140;        // minimum bounds width/height
   var BOUNDS_MIN_DIAMETERS = 3;   // and at least this many ball diameters
@@ -490,11 +584,20 @@
     this.ballScale = 1;         // play-area size factor applied to ball radius and speed
     // r: actual (scaled) radius used for collision and drawing
     this.ball = { x: 0.5, y: 0.5, vx: 0, vy: 0, r: BALLS[DEFAULT_BALL].radius };
+    // sticky ball state (only used when BALLS[ballType].stick > 0):
+    // stuckAt = sim time the last stick began, stuckUntil = sim time it lets go,
+    // (stuckNx, stuckNy) = contact normal pointing from the surface into the ball,
+    // (stuckCx, stuckCy) = contact point on the surface. Velocity already points away.
+    this._clearStick();
     this.bounds = { left: 0, top: 0, right: 1, bottom: 1 };   // ball area inside the play area
     this.speed = speedForRadius(BALLS[DEFAULT_BALL].radius);
     this.charRadius = 32;
     this.onHit = null;          // function (character, hit) {}  hit = { cutoff, attack }
     this._initialized = false;
+    // breakable ball state (BALLS[ballType].breakHits > 0): sim times of recent collisions
+    this.breakHitTimes = [];
+    this.shatters = [];         // { t, x, y, r, vx, vy }, kept for MELON_SHATTER_TIME
+    this.ball.rot = restOrientation();   // rolling orientation (drawing only)
   }
 
   Sim.MAX_CHARACTERS = MAX_CHARACTERS;
@@ -509,6 +612,24 @@
   Sim.scaledRadius = scaledRadius;
   Sim.cutoffForHardness = cutoffForHardness;
   Sim.attackForHardness = attackForHardness;
+  Sim.stickDeform = stickDeform;
+  Sim.STICK_ANIM_TAIL = STICK_ANIM_TAIL;
+  Sim.DEFAULT_BALL = DEFAULT_BALL;
+  Sim.MELON_SHATTER_TIME = MELON_SHATTER_TIME;
+  Sim.restOrientation = restOrientation;
+
+  Sim.prototype._clearStick = function () {
+    var b = this.ball;
+    b.stuckAt = -1000;
+    b.stuckUntil = -1000;
+    b.stuckNx = 0; b.stuckNy = -1;
+    b.stuckCx = 0; b.stuckCy = 0;
+  };
+
+  // Is the ball currently held by a surface (sticky ball only)?
+  Sim.prototype.isStuck = function () {
+    return this.time < this.ball.stuckUntil;
+  };
 
   // Set play area size. Positions and bounds are scaled proportionally and clamped.
   Sim.prototype.setBounds = function (w, h) {
@@ -547,6 +668,8 @@
     bd.top *= sy; bd.bottom *= sy;
     this.ball.x *= sx;
     this.ball.y *= sy;
+    this.ball.stuckCx *= sx;
+    this.ball.stuckCy *= sy;
     this._enforceBounds();
     this._separateBall();
   };
@@ -556,8 +679,53 @@
     index = clamp(Math.round(index), 0, BALLS.length - 1);
     this.ballType = index;
     this.ball.r = scaledRadius(BALLS[index].radius, this.ballScale);
+    this._clearStick();      // a new ball is never held
+    this.breakHitTimes.length = 0;   // a new ball starts undamaged
     this._enforceBounds();   // also refreshes speed, keeps direction
     this._separateBall();
+  };
+
+  // Damage of a breakable ball, 0 (intact) .. 1 (breaks on the next collision):
+  // recent collisions / breakHits. 0 for balls that cannot break.
+  Sim.prototype.breakDamage = function () {
+    var def = BALLS[this.ballType];
+    if (!(def.breakHits > 0)) return 0;
+    var n = 0;
+    for (var i = 0; i < this.breakHitTimes.length; i++) {
+      if (this.time - this.breakHitTimes[i] < def.breakWindow) n++;
+    }
+    return clamp(n / def.breakHits, 0, 1);
+  };
+
+  // Called after every fixed step with the velocity from before the step.
+  // Rolls the orientation, counts collisions of a breakable ball and breaks it.
+  Sim.prototype._afterStep = function (h, vx0, vy0) {
+    var b = this.ball, i;
+    var sp = Math.sqrt(b.vx * b.vx + b.vy * b.vy);
+    if (sp > 1e-9 && b.r > 0 && this.time >= b.stuckUntil) {
+      rollOrientation(b.rot, -b.vy / sp, b.vx / sp, sp * h / b.r);
+    }
+    for (i = this.shatters.length - 1; i >= 0; i--) {
+      if (this.time - this.shatters[i].t > MELON_SHATTER_TIME) this.shatters.splice(i, 1);
+    }
+    var def = BALLS[this.ballType];
+    if (!(def.breakHits > 0)) return;
+    var times = this.breakHitTimes;
+    while (times.length && this.time - times[0] >= def.breakWindow) times.shift();
+    // a collision reflects the travel direction (speed changes alone keep it)
+    var sp0 = Math.sqrt(vx0 * vx0 + vy0 * vy0);
+    if (sp0 < 1e-9 || sp < 1e-9) return;
+    if ((vx0 * b.vx + vy0 * b.vy) / (sp0 * sp) > 1 - 1e-9) return;
+    if (times.length && this.time - times[times.length - 1] < BREAK_DEBOUNCE) return;
+    times.push(this.time);
+    if (times.length >= def.breakHits) this._shatter();
+  };
+
+  // Break the current ball: leave a shatter record, become the default ball here.
+  Sim.prototype._shatter = function () {
+    var b = this.ball;
+    this.shatters.push({ t: this.time, x: b.x, y: b.y, r: b.r, vx: b.vx, vy: b.vy });
+    this.setBallType(DEFAULT_BALL);   // keeps direction, clamps to bounds, pushes out of characters
   };
 
   Sim.prototype.ballDef = function () { return BALLS[this.ballType]; };
@@ -660,8 +828,11 @@
   };
 
   Sim.prototype._updateSpeed = function () {
-    // speed curve from the base radius (ball character), scaled with the play area
-    this.speed = speedForRadius(BALLS[this.ballType].radius) * this.ballScale *
+    // speed curve from the base radius (ball character), scaled with the play area;
+    // speedMul (optional, e.g. GUM) makes a ball slower than a plain ball of its size
+    var def = BALLS[this.ballType];
+    var mul = def.speedMul > 0 ? def.speedMul : 1;
+    this.speed = speedForRadius(def.radius) * mul * this.ballScale *
                  this.boundsSpeedMultiplier();
     this._normalizeBallSpeed();
   };
@@ -785,22 +956,58 @@
     if (!(dt > 0)) return;
     this.accumulator += Math.min(dt, MAX_FRAME_DT);
     while (this.accumulator >= STEP) {
+      var vx0 = this.ball.vx, vy0 = this.ball.vy;
       this._step(STEP);
+      this._afterStep(STEP, vx0, vy0);
       this.accumulator -= STEP;
     }
+  };
+
+  // Sticky ball: hold the ball where it is for BALLS[].stick seconds.
+  // (nx, ny): sum of the contact normals (surface -> ball). Velocity is already
+  // reflected, so the ball simply resumes moving when the hold ends.
+  Sim.prototype._beginStick = function (nx, ny) {
+    var stick = BALLS[this.ballType].stick;
+    if (!(stick > 0)) return;
+    var l = Math.sqrt(nx * nx + ny * ny);
+    var b = this.ball;
+    if (l < 1e-6) {
+      // contacts cancel out: use the direction the ball leaves in
+      var m = Math.sqrt(b.vx * b.vx + b.vy * b.vy);
+      if (m < 1e-9) return;
+      nx = b.vx / m; ny = b.vy / m; l = 1;
+    }
+    b.stuckNx = nx / l; b.stuckNy = ny / l;
+    b.stuckAt = this.time;
+    b.stuckUntil = this.time + stick;
+    b.stuckCx = b.x - b.stuckNx * b.r;
+    b.stuckCy = b.y - b.stuckNy * b.r;
   };
 
   Sim.prototype._step = function (h) {
     this.time += h;
     var b = this.ball, bd = this.bounds;
+
+    if (this.time < b.stuckUntil) {
+      // held by a surface: no motion, no collision, no sound. Characters dragged onto
+      // the ball only push it out; the contact point follows the ball (bounds can be
+      // dragged and the play area resized while it is held).
+      this._separateBall();
+      b.stuckCx = b.x - b.stuckNx * b.r;
+      b.stuckCy = b.y - b.stuckNy * b.r;
+      return;
+    }
+
     b.x += b.vx * h;
     b.y += b.vy * h;
 
-    // walls (user-adjustable bounds)
-    if (b.x < bd.left + b.r) { b.x = bd.left + b.r; b.vx = Math.abs(b.vx); }
-    else if (b.x > bd.right - b.r) { b.x = bd.right - b.r; b.vx = -Math.abs(b.vx); }
-    if (b.y < bd.top + b.r) { b.y = bd.top + b.r; b.vy = Math.abs(b.vy); }
-    else if (b.y > bd.bottom - b.r) { b.y = bd.bottom - b.r; b.vy = -Math.abs(b.vy); }
+    // walls (user-adjustable bounds); wnx/wny = normals of the walls actually hit
+    var wnx = 0, wny = 0;
+    if (b.x < bd.left + b.r) { if (b.vx < 0) wnx += 1; b.x = bd.left + b.r; b.vx = Math.abs(b.vx); }
+    else if (b.x > bd.right - b.r) { if (b.vx > 0) wnx -= 1; b.x = bd.right - b.r; b.vx = -Math.abs(b.vx); }
+    if (b.y < bd.top + b.r) { if (b.vy < 0) wny += 1; b.y = bd.top + b.r; b.vy = Math.abs(b.vy); }
+    else if (b.y > bd.bottom - b.r) { if (b.vy > 0) wny -= 1; b.y = bd.bottom - b.r; b.vy = -Math.abs(b.vy); }
+    var wallHit = wnx !== 0 || wny !== 0;
 
     // characters (circles), all contacts of this step resolved together:
     // 1. gather every character the ball overlaps (plus, if there is at least one
@@ -825,6 +1032,7 @@
     }
     if (!overlapping) {
       this._normalizeBallSpeed();
+      if (wallHit) this._beginStick(wnx, wny);
       return;
     }
 
@@ -865,6 +1073,7 @@
       if (!moved) break;
     }
     this._normalizeBallSpeed();
+    if (wallHit || hits.length) this._beginStick(wnx + sx, wny + sy);
 
     // the retrigger guard keeps a ball resting against a character from re-firing
     var hit = null;
@@ -1686,8 +1895,324 @@
     return rgbStr(rgb.map(function (v) { return clamp(Math.round(v * f), 0, 255); }));
   }
 
-  function drawBall(g, def, x, y, r) {
+  // GUM: translucent bubble-gum blob. Pure function of sim time and the stick state
+  // (anim, optional; menu icons pass nothing and get the resting shape).
+  // anim = { t, stuckAt, stick, nx, ny, cx, cy } - see Sim.stickDeform / Sim._beginStick.
+  var GUM_EDGE = [214, 62, 138];       // outline, 4.3:1 on white
+  var GUM_STRAND_TIME = 0.14;          // s after letting go that the gum string is visible
+  function drawGum(g, def, x, y, r, anim) {
     var col = def.color;
+    var t = anim ? anim.t : 0;
+    var age = anim ? anim.t - anim.stuckAt : -1;
+    var k = anim ? window.OSCSim.stickDeform(age, anim.stick) : 0;
+    var nx = anim ? anim.nx : 0, ny = anim ? anim.ny : -1;
+    var i, a;
+    g.save();
+    g.lineCap = 'round';
+    g.lineJoin = 'round';
+
+    // string of gum back to the surface it just let go of
+    if (anim && age >= anim.stick && age < anim.stick + GUM_STRAND_TIME) {
+      var u = (age - anim.stick) / GUM_STRAND_TIME;
+      var dx = anim.cx - x, dy = anim.cy - y, dl = Math.sqrt(dx * dx + dy * dy);
+      if (dl > r * 1.02) {
+        // pinched band: wide where it leaves the ball and the surface, thin in the middle
+        var ux = dx / dl, uy = dy / dl, px = -uy, py = ux;
+        var ex = x + ux * r * 0.8, ey = y + uy * r * 0.8;
+        var mx = (ex + anim.cx) / 2, my = (ey + anim.cy) / 2;
+        var fade = 1 - u * u;
+        var w0 = r * 0.3 * fade, w1 = r * 0.2 * fade, wm = r * 0.035 * fade;
+        var co = 2 * wm - (w0 + w1) / 2;
+        g.fillStyle = rgbStr(col, 0.8 * fade);
+        g.beginPath();
+        g.moveTo(ex + px * w0, ey + py * w0);
+        g.quadraticCurveTo(mx + px * co, my + py * co, anim.cx + px * w1, anim.cy + py * w1);
+        g.lineTo(anim.cx - px * w1, anim.cy - py * w1);
+        g.quadraticCurveTo(mx - px * co, my - py * co, ex - px * w0, ey - py * w0);
+        g.closePath();
+        g.fill();
+      }
+    }
+
+    // body: squashed along the contact normal, contact side kept on the surface
+    g.save();
+    g.translate(x - nx * r * k, y - ny * r * k);
+    g.rotate(Math.atan2(ny, nx));
+    g.scale(1 - k, 1 + 0.6 * k);
+    var N = 36;
+    g.beginPath();
+    for (i = 0; i <= N; i++) {
+      a = (i / N) * Math.PI * 2;
+      var rr = r * (1 + 0.022 * Math.sin(3 * a + t * 4.2) + 0.012 * Math.sin(5 * a - t * 6.1));
+      if (i === 0) g.moveTo(Math.cos(a) * rr, Math.sin(a) * rr);
+      else g.lineTo(Math.cos(a) * rr, Math.sin(a) * rr);
+    }
+    g.closePath();
+    g.restore();
+    var grad = g.createRadialGradient(x - r * 0.3, y - r * 0.35, r * 0.1, x, y, r * 1.05);
+    grad.addColorStop(0, 'rgba(255,196,224,0.9)');
+    grad.addColorStop(0.6, rgbStr(col, 0.82));
+    grad.addColorStop(1, 'rgba(236,84,156,0.88)');
+    g.fillStyle = grad;
+    g.fill();
+    g.lineWidth = Math.max(1, r * 0.07);
+    g.strokeStyle = rgbStr(GUM_EDGE);
+    g.stroke();
+
+    // chewed fold + gloss (follow the squash a little through the center shift)
+    var hx = x - nx * r * k, hy = y - ny * r * k;
+    g.strokeStyle = 'rgba(214,62,138,0.45)';
+    g.lineWidth = Math.max(1, r * 0.07);
+    g.beginPath();
+    g.moveTo(hx - r * 0.15, hy + r * 0.55);
+    g.quadraticCurveTo(hx + r * 0.35, hy + r * 0.45, hx + r * 0.55, hy + r * 0.05);
+    g.stroke();
+    g.fillStyle = 'rgba(255,255,255,0.85)';
+    g.beginPath();
+    g.ellipse(hx - r * 0.34, hy - r * 0.36, Math.max(1, r * 0.3), Math.max(0.6, r * 0.15), -0.7, 0, Math.PI * 2);
+    g.fill();
+    g.beginPath();
+    g.arc(hx + r * 0.05, hy - r * 0.6, Math.max(0.6, r * 0.07), 0, Math.PI * 2);
+    g.fill();
+    g.restore();
+  }
+
+  // WATERMELON: striped sphere that rolls with the ball, cracks when it is close to
+  // breaking, and bursts into pieces when it breaks (rules: OSCSim, BALLS[].breakHits).
+  var MELON = {
+    rindLight: [150, 206, 104],
+    rind: [96, 172, 64],         // skin (also BALLS[].color)
+    rindDark: [70, 140, 50],
+    stripe: [28, 92, 40],        // dark green stripes
+    edge: [22, 70, 30],          // outline, crack gap
+    flesh: [232, 58, 70],        // red flesh
+    fleshLight: [250, 120, 120],
+    white: [236, 244, 214],      // inner rind
+    seed: [26, 26, 26],
+    stem: [120, 96, 48]
+  };
+  var MELON_STRIPES = 10;        // stripes around the stem axis
+  var MELON_STRIPE_HALF = Math.PI / MELON_STRIPES * 0.42;   // half width (longitude, rad)
+  var MELON_STRIPE_SAMPLES = 18;
+  var MELON_CRACK_START = 0.5;   // damage (0..1) where cracks start to show
+  var MELON_PIECES = 22;
+  var MELON_REST = window.OSCSim.restOrientation();
+
+  // Integer hash -> 0..1 (deterministic, no Math.random).
+  function melonHash(a, b) {
+    var h = (Math.imul(a | 0, 0x27d4eb2d) ^ Math.imul((b | 0) + 0x165667b1, 0x9e3779b1)) | 0;
+    h = Math.imul(h ^ (h >>> 15), 0x85ebca6b);
+    h = Math.imul(h ^ (h >>> 13), 0xc2b2ae35);
+    h ^= h >>> 16;
+    return (h >>> 0) / 4294967296;
+  }
+
+  // Body point (latitude phi, longitude th; body z = stem) -> screen-space unit
+  // vector [x, y, z] (z > 0 faces the viewer).
+  function melonPoint(m, phi, th) {
+    var cp = Math.cos(phi);
+    var px = cp * Math.cos(th), py = cp * Math.sin(th), pz = Math.sin(phi);
+    return [m[0] * px + m[1] * py + m[2] * pz,
+            m[3] * px + m[4] * py + m[5] * pz,
+            m[6] * px + m[7] * py + m[8] * pz];
+  }
+
+  // Clip a closed polygon on the sphere to the visible half (z >= 0) and return
+  // its 2D outline in radii. Where the polygon leaves and re-enters the visible
+  // half, the outline follows the ball's edge along the shorter arc.
+  function melonClipVisible(pts) {
+    var out = [], n = pts.length, i;
+    for (i = 0; i < n; i++) {
+      var p = pts[i], q = pts[(i + 1) % n];
+      var pin = p[2] >= 0, qin = q[2] >= 0;
+      if (pin) out.push([p[0], p[1], false]);
+      if (pin !== qin) {
+        var t = p[2] / (p[2] - q[2]);
+        var ix = p[0] + (q[0] - p[0]) * t, iy = p[1] + (q[1] - p[1]) * t;
+        var l = Math.sqrt(ix * ix + iy * iy) || 1;
+        out.push([ix / l, iy / l, true, pin]);   // [x, y, on edge, leaving]
+      }
+    }
+    var res = [];
+    for (i = 0; i < out.length; i++) {
+      var a = out[i];
+      res.push(a);
+      var b = out[(i + 1) % out.length];
+      if (a[2] && a[3] && b[2]) {
+        // left the visible half at a, comes back at b: walk along the edge
+        var a0 = Math.atan2(a[1], a[0]), a1 = Math.atan2(b[1], b[0]);
+        var da = a1 - a0;
+        while (da > Math.PI) da -= 2 * Math.PI;
+        while (da < -Math.PI) da += 2 * Math.PI;
+        var steps = Math.ceil(Math.abs(da) / 0.15);
+        for (var k = 1; k < steps; k++) {
+          var aa = a0 + da * k / steps;
+          res.push([Math.cos(aa), Math.sin(aa), true]);
+        }
+      }
+    }
+    return res;
+  }
+
+  // anim (optional): { rot: Sim ball orientation, damage: Sim.breakDamage() }
+  function drawWatermelon(g, def, x, y, r, anim) {
+    var m = anim && anim.rot ? anim.rot : MELON_REST;
+    var crack = anim ? clamp((anim.damage - MELON_CRACK_START) / (1 - MELON_CRACK_START), 0, 1) : 0;
+    var i, k, p, phi;
+    g.save();
+    g.beginPath();
+    g.arc(x, y, r, 0, Math.PI * 2);
+    var grad = g.createRadialGradient(x - r * 0.35, y - r * 0.35, r * 0.1, x, y, r);
+    grad.addColorStop(0, rgbStr(MELON.rindLight));
+    grad.addColorStop(0.6, rgbStr(MELON.rind));
+    grad.addColorStop(1, rgbStr(MELON.rindDark));
+    g.fillStyle = grad;
+    g.fill();
+    g.save();
+    g.clip();
+    // stripes: jagged bands between two meridians around the stem axis
+    g.fillStyle = rgbStr(MELON.stripe);
+    var N = MELON_STRIPE_SAMPLES, half = MELON_STRIPE_HALF;
+    for (k = 0; k < MELON_STRIPES; k++) {
+      var th = k * 2 * Math.PI / MELON_STRIPES;
+      var band = [];
+      for (i = 0; i <= 2 * N + 1; i++) {
+        var j = i <= N ? i : 2 * N + 1 - i;       // up one edge, back down the other
+        phi = -Math.PI / 2 + Math.PI * j / N;
+        var edge = i <= N ? -half + half * 0.35 * Math.sin(j * 1.9 + k)
+                          : half + half * 0.35 * Math.sin(j * 2.3 + k * 2);
+        band.push(melonPoint(m, phi, th + edge));
+      }
+      var vis = melonClipVisible(band);
+      if (vis.length < 3) continue;
+      g.beginPath();
+      for (i = 0; i < vis.length; i++) {
+        p = vis[i];
+        if (i === 0) g.moveTo(x + p[0] * r, y + p[1] * r); else g.lineTo(x + p[0] * r, y + p[1] * r);
+      }
+      g.closePath();
+      g.fill();
+    }
+    // stem spot (only on the near side)
+    var sz = m[8];
+    if (sz > 0.15) {
+      g.fillStyle = rgbStr(MELON.stem);
+      g.beginPath();
+      g.arc(x + m[2] * r, y + m[5] * r, Math.max(1, r * 0.07 * sz), 0, Math.PI * 2);
+      g.fill();
+    }
+    // cracks: appear near the break threshold and grow with damage (fixed on screen)
+    if (crack > 0) {
+      var nCracks = Math.min(4, 1 + Math.floor(crack * 4));
+      var lw = Math.max(1.2, r * 0.07 * (0.6 + crack));
+      g.lineCap = 'round';
+      g.lineJoin = 'round';
+      for (k = 0; k < nCracks; k++) {
+        var ang = -0.4 + k * 2.4 + (melonHash(k, 11) - 0.5) * 0.5;   // golden-angle spread
+        var len = r * (0.45 + 0.75 * crack) * (0.7 + 0.3 * melonHash(k, 12));
+        var c0x = x + Math.cos(ang) * r * 0.08, c0y = y + Math.sin(ang) * r * 0.08;
+        g.beginPath();
+        g.moveTo(c0x, c0y);
+        for (i = 1; i <= 5; i++) {
+          var aa = ang + (melonHash(k, 20 + i) - 0.5) * 1.1;
+          g.lineTo(c0x + Math.cos(aa) * len * i / 5, c0y + Math.sin(aa) * len * i / 5);
+        }
+        g.strokeStyle = rgbStr(MELON.edge);     // dark gap
+        g.lineWidth = lw * 1.8;
+        g.stroke();
+        g.strokeStyle = rgbStr(MELON.flesh);    // red flesh showing inside
+        g.lineWidth = lw * 0.8;
+        g.stroke();
+      }
+    }
+    g.restore();
+    g.beginPath();
+    g.arc(x, y, r, 0, Math.PI * 2);
+    g.lineWidth = Math.max(1, r * 0.06);
+    g.strokeStyle = rgbStr(MELON.edge);
+    g.stroke();
+    g.fillStyle = 'rgba(255,255,255,0.55)';
+    g.beginPath();
+    g.arc(x - r * 0.38, y - r * 0.4, Math.max(1, r * 0.13), 0, Math.PI * 2);
+    g.fill();
+    g.restore();
+  }
+
+  // Burst of a broken watermelon: pure function of the shatter record
+  // s = { t, x, y, r, vx, vy } (OSCSim.shatters) and the sim time. Pieces fly out,
+  // slow down, spin and fade; they never collide.
+  function drawMelonShatter(g, s, now) {
+    var dur = window.OSCSim.MELON_SHATTER_TIME;
+    var age = now - s.t;
+    if (age < 0 || age > dur) return;
+    var u = age / dur;
+    var seed = (Math.round(s.x * 8) * 73856093) ^ (Math.round(s.y * 8) * 19349663) ^ Math.round(s.t * 1000);
+    var ease = 1 - Math.pow(1 - u, 3);                 // fast out, slows down
+    var alpha = u < 0.6 ? 1 : 1 - (u - 0.6) / 0.4;
+    var r = s.r, sp = Math.sqrt(s.vx * s.vx + s.vy * s.vy) || 1;
+    var mdx = s.vx / sp, mdy = s.vy / sp;
+    var n = MELON_PIECES, i;
+    g.save();
+    g.globalAlpha = alpha;
+    g.lineJoin = 'round';
+    // splash ring
+    g.strokeStyle = rgbStr(MELON.flesh, 0.5 * (1 - u));
+    g.lineWidth = Math.max(1, r * 0.08);
+    g.beginPath();
+    g.arc(s.x, s.y, r * (0.6 + 1.2 * ease), 0, Math.PI * 2);
+    g.stroke();
+    for (i = 0; i < n; i++) {
+      var h1 = melonHash(seed, i * 4), h2 = melonHash(seed, i * 4 + 1);
+      var h3 = melonHash(seed, i * 4 + 2), h4 = melonHash(seed, i * 4 + 3);
+      var kind = i % 11 < 5 ? 0 : (i % 11 < 8 ? 1 : 2);  // 0 flesh, 1 rind, 2 seed
+      var ang = (i / n) * Math.PI * 2 + (h1 - 0.5) * 0.9;
+      var dist = r * (0.9 + 1.4 * h2) * (kind === 2 ? 1.25 : 1);
+      // pieces also drift a little along the old travel direction
+      var px = s.x + Math.cos(ang) * (r * 0.3 + dist * ease) + mdx * r * 0.5 * ease;
+      var py = s.y + Math.sin(ang) * (r * 0.3 + dist * ease) + mdy * r * 0.5 * ease;
+      var size = r * (kind === 2 ? 0.09 : (0.26 + 0.2 * h3)) * (1 - 0.35 * u);
+      g.save();
+      g.translate(px, py);
+      g.rotate(ang + (h4 - 0.5) * 6 * ease);
+      if (kind === 0) {
+        // red flesh chunk
+        g.fillStyle = rgbStr(h3 > 0.5 ? MELON.flesh : MELON.fleshLight);
+        g.beginPath();
+        g.moveTo(size, 0);
+        g.lineTo(-size * 0.6, size * (0.7 + 0.3 * h2));
+        g.lineTo(-size * (0.7 + 0.3 * h1), -size * 0.6);
+        g.closePath();
+        g.fill();
+      } else if (kind === 1) {
+        // rind shard: curved strip, red / pale / green from inside out
+        var rs = size * 1.4;
+        g.lineCap = 'round';
+        g.strokeStyle = rgbStr(MELON.flesh);
+        g.lineWidth = rs * 0.5;
+        g.beginPath(); g.arc(0, rs * 0.9, rs * 1.05, -Math.PI / 2 - 0.55, -Math.PI / 2 + 0.55); g.stroke();
+        g.strokeStyle = rgbStr(MELON.white);
+        g.lineWidth = rs * 0.35;
+        g.beginPath(); g.arc(0, rs * 0.9, rs * 1.25, -Math.PI / 2 - 0.55, -Math.PI / 2 + 0.55); g.stroke();
+        g.strokeStyle = rgbStr(MELON.stripe);
+        g.lineWidth = rs * 0.3;
+        g.beginPath(); g.arc(0, rs * 0.9, rs * 1.45, -Math.PI / 2 - 0.55, -Math.PI / 2 + 0.55); g.stroke();
+      } else {
+        // black seed
+        var ss = Math.max(1.5, size);
+        g.fillStyle = rgbStr(MELON.seed);
+        g.beginPath();
+        g.ellipse(0, 0, ss * 1.3, ss * 0.75, 0, 0, Math.PI * 2);
+        g.fill();
+      }
+      g.restore();
+    }
+    g.restore();
+  }
+
+  function drawBall(g, def, x, y, r, anim) {
+    var col = def.color;
+    if (def.id === 'gum' && !(def._img && !def._imgFailed)) { drawGum(g, def, x, y, r, anim); return; }
+    if (def.id === 'watermelon' && !(def._img && !def._imgFailed)) { drawWatermelon(g, def, x, y, r, anim); return; }
     if (def._img && !def._imgFailed) {
       g.save();
       g.beginPath();
@@ -1924,6 +2449,7 @@
       var word = s[f.dataset.param];
       Array.prototype.forEach.call(f.querySelectorAll('.word'), function (el) { el.textContent = word; });
     });
+    ballItems.forEach(function (it, i) { it.label.textContent = ballName(BALLS[i]); });
   }
 
   // The help texts wrap to a different number of lines per language. Each help
@@ -1999,7 +2525,7 @@
     b.className = 'ballitem';
     var icon = document.createElement('canvas');
     var label = document.createElement('span');
-    label.textContent = def.label;
+    label.textContent = ballName(def);
     b.appendChild(icon);
     b.appendChild(label);
     b.addEventListener('click', function () {
@@ -2008,8 +2534,14 @@
       drawBallIcons();
     });
     ballPanel.appendChild(b);
-    ballItems.push({ btn: b, icon: icon });
+    ballItems.push({ btn: b, icon: icon, label: label });
   });
+
+  // Ball label in the current language: BALLS[].names[lang] when the ball has
+  // per-language names (GUM), otherwise the English label.
+  function ballName(def) {
+    return (def.names && def.names[lang]) || def.label;
+  }
 
   // Icon radius keeps the size order of the balls and always fits the cell.
   // Square-root scale, so the smallest ball stays visible next to the largest.
@@ -2548,7 +3080,14 @@
 
     // ball
     var b = sim.ball;
-    drawBall(ctx, sim.ballDef(), b.x, b.y, b.r);
+    var bdef = sim.ballDef();
+    drawBall(ctx, bdef, b.x, b.y, b.r, {
+      t: sim.time, stuckAt: b.stuckAt, stick: bdef.stick || 0,
+      nx: b.stuckNx, ny: b.stuckNy, cx: b.stuckCx, cy: b.stuckCy,
+      rot: b.rot, damage: sim.breakDamage()
+    });
+    // pieces of a ball that just broke (WATERMELON), drawn over the new ball
+    for (var si = 0; si < sim.shatters.length; si++) drawMelonShatter(ctx, sim.shatters[si], sim.time);
 
     // bounds handles: bar at the middle of each edge, kept fully visible
     var activeHandles = {};
@@ -2601,9 +3140,12 @@
   }
 
   var lastFrame = null;
+  var shownBallType = -1;   // ball type the BALL button / picker currently show
   function frame(ts) {
     if (lastFrame !== null) sim.update((ts - lastFrame) / 1000);
     lastFrame = ts;
+    // the sim can change the ball by itself (a WATERMELON breaks into the default ball)
+    if (sim.ballType !== shownBallType) { shownBallType = sim.ballType; drawBallIcons(); }
     render();
     paintPaletteIcons();
     requestAnimationFrame(frame);
