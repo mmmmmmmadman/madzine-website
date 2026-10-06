@@ -1,0 +1,2444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="theme-color" content="#161616">
+<meta name="robots" content="noindex, nofollow">
+<title>OSC BOUNCE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300&family=Noto+Sans+JP:wght@300&family=Noto+Sans+TC:wght@300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-base: #161616;
+    --bg-area: #1d1d1d;
+    --bg-elevated: #262626;
+    --bg-track: #333333;
+    --stroke: #3a3a3a;
+    --fg-primary: #e8e8e8;
+    --fg-secondary: #a6a6a6;
+    --fg-dim: #707070;
+    --accent: rgb(235, 150, 129);      /* HSB 12, 0.45, 0.92 */
+    --accent-dim: rgb(153, 121, 113);  /* HSB 12, 0.26, 0.60 */
+    --ink: #1a1a1a;
+    --font: 'Barlow Condensed', 'Noto Sans JP', 'Noto Sans TC', system-ui, sans-serif;
+    --font-help: 'Noto Sans JP', 'Noto Sans TC', 'Barlow Condensed', system-ui, sans-serif;
+    --top-h: 56px;
+    --palette-h: 76px;
+    --gap: 8px;
+  }
+  /* Traditional Chinese: Chinese glyphs from Noto Sans TC, not the Japanese forms */
+  html:lang(zh) {
+    --font: 'Barlow Condensed', 'Noto Sans TC', 'Noto Sans JP', system-ui, sans-serif;
+    --font-help: 'Noto Sans TC', 'Noto Sans JP', 'Barlow Condensed', system-ui, sans-serif;
+  }
+  html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg-base);
+    color: var(--fg-primary);
+    font-family: var(--font);
+    font-weight: 300;
+    line-height: 1.2;
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior: none;
+  }
+  * { box-sizing: border-box; }
+  button {
+    font-family: var(--font);
+    font-weight: 300;
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  #stage {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* ---------- top bar ---------- */
+  /* #topbar and #palette are wrappers: their bounding boxes define the play area */
+  #topbar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    padding: env(safe-area-inset-top) calc(var(--gap) + env(safe-area-inset-right)) 0 calc(var(--gap) + env(safe-area-inset-left));
+    display: flex;
+    flex-direction: column;
+    z-index: 2;
+  }
+  #topbar .bar {
+    height: var(--top-h);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .help {
+    margin: 0;
+    font-family: var(--font-help);
+    font-weight: 300;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0.02em;
+    color: var(--fg-secondary);
+    text-align: center;
+    line-break: strict;
+    pointer-events: none;
+  }
+  #help-top { padding-top: 6px; }
+  #help-bottom { padding-bottom: 6px; }
+  #title {
+    font-size: 20px;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    line-height: 24px;
+  }
+  #count {
+    font-size: 16px;
+    letter-spacing: 0.06em;
+    color: var(--fg-secondary);
+    line-height: 20px;
+    transition: color 0.15s;
+  }
+  #count.reject { color: #ffffff; }
+  #topbar .spacer { flex: 1 1 auto; }
+  .textbtn {
+    min-width: 88px;
+    height: 44px;
+    padding: 0 16px;
+    background: transparent;
+    border: 1px solid var(--stroke);
+    border-radius: 8px;
+    color: var(--fg-primary);
+    font-size: 18px;
+    letter-spacing: 0.12em;
+    line-height: 20px;
+    cursor: pointer;
+  }
+  .textbtn:active { background: var(--bg-track); border-color: var(--fg-dim); }
+  #lang { min-width: 64px; padding: 0 12px; letter-spacing: 0.06em; }
+
+  /* ---------- palette ---------- */
+  #palette {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 0 calc(var(--gap) + env(safe-area-inset-right)) env(safe-area-inset-bottom) calc(var(--gap) + env(safe-area-inset-left));
+    display: flex;
+    flex-direction: column;
+    z-index: 2;
+  }
+  #picks {
+    height: var(--palette-h);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--gap);
+  }
+  .pick {
+    flex: 0 1 132px;
+    min-width: 0;
+    height: 64px;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: transparent;
+    border: 1px solid var(--stroke);
+    border-radius: 10px;
+    color: var(--fg-secondary);
+    font-size: 16px;
+    letter-spacing: 0.06em;
+    line-height: 20px;
+    cursor: pointer;
+  }
+  .pick canvas { width: 40px; height: 40px; flex: 0 0 40px; display: block; }
+  .pick.selected {
+    background: var(--bg-elevated);
+    border-color: var(--pick-color, var(--accent));
+    color: var(--fg-primary);
+  }
+  @media (max-width: 420px) {
+    :root { --top-h: 52px; --palette-h: 70px; }
+    #topbar .bar { gap: 10px; }
+    #help-top { padding-top: 4px; }
+    #help-bottom { padding-bottom: 4px; }
+    .pick { flex-direction: column; gap: 2px; padding: 4px 2px; }
+    .pick canvas { width: 32px; height: 32px; flex: 0 0 32px; }
+  }
+
+  /* ---------- character panel ---------- */
+  #panel {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 232px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--stroke);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    z-index: 5;
+  }
+  #panel[hidden] { display: none; }
+  .fader {
+    position: relative;
+    width: 208px;
+    height: 44px;
+    border-radius: 8px;
+    background: var(--bg-track);
+    overflow: hidden;
+    cursor: pointer;
+    touch-action: none;
+  }
+  .fader .fill {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    overflow: hidden;
+    background: var(--fader-color, var(--accent));
+  }
+  .fader .label {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 208px;
+    height: 44px;
+    padding-left: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    letter-spacing: 0.12em;
+    line-height: 20px;
+    color: var(--fg-primary);
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .fader .fill .label { color: var(--ink); }
+  /* icons use currentColor, so they turn dark inside the filled part with the text */
+  .fader .label svg { width: 22px; height: 22px; flex: 0 0 22px; display: block; overflow: visible; }
+  /* ---------- ball picker ---------- */
+  .ballbtn { --pick-color: var(--fg-primary); margin-left: 8px; }
+  #ballpanel {
+    position: fixed;
+    left: 0;
+    top: 0;
+    padding: 12px;
+    display: grid;
+    grid-template-columns: repeat(5, 116px);
+    gap: 8px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--stroke);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    z-index: 6;
+  }
+  #ballpanel[hidden] { display: none; }
+  .ballitem {
+    height: 52px;
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: 1px solid var(--stroke);
+    border-radius: 8px;
+    color: var(--fg-secondary);
+    font-size: 16px;
+    letter-spacing: 0.06em;
+    line-height: 20px;
+    white-space: nowrap;
+    cursor: pointer;
+  }
+  .ballitem canvas { width: 36px; height: 36px; flex: 0 0 36px; display: block; }
+  .ballitem.selected { background: var(--bg-track); border-color: var(--fg-primary); color: var(--fg-primary); }
+  @media (max-width: 660px) {
+    #ballpanel { grid-template-columns: repeat(2, minmax(0, 1fr)); width: min(360px, calc(100vw - 16px)); }
+  }
+
+  #panel .row { display: flex; gap: 8px; width: 208px; }
+  #panel .row .textbtn { flex: 1 1 0; min-width: 0; padding: 0; }
+</style>
+</head>
+<body>
+  <canvas id="stage"></canvas>
+
+  <header id="topbar">
+    <p id="help-top" class="help"></p>
+    <div class="bar">
+      <div id="title">OSC BOUNCE</div>
+      <div id="count">0 / 16</div>
+      <div class="spacer"></div>
+      <button id="lang" class="textbtn" type="button">EN</button>
+      <button id="clear" class="textbtn" type="button">CLEAR</button>
+    </div>
+  </header>
+
+  <nav id="palette">
+    <div id="picks"></div>
+    <p id="help-bottom" class="help"></p>
+  </nav>
+
+  <div id="panel" hidden>
+    <!-- Each label exists twice: light on the track, dark inside the fill (clipped by the fill width). -->
+    <div class="fader" data-param="decay">
+      <div class="label"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 3 V17 H17 M3 4 C4.5 11 8.5 15 17 15.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="word">LENGTH</span></div>
+      <div class="fill"><div class="label"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 3 V17 H17 M3 4 C4.5 11 8.5 15 17 15.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="word">LENGTH</span></div></div>
+    </div>
+    <div class="fader" data-param="reverb">
+      <div class="label"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="1.8" fill="currentColor"/><path d="M7 6 A5 5 0 0 1 7 14 M9.8 3.1 A9 9 0 0 1 9.8 16.9 M13.6 2 A12.5 12.5 0 0 1 13.6 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span class="word">SPACE</span></div>
+      <div class="fill"><div class="label"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="4" cy="10" r="1.8" fill="currentColor"/><path d="M7 6 A5 5 0 0 1 7 14 M9.8 3.1 A9 9 0 0 1 9.8 16.9 M13.6 2 A12.5 12.5 0 0 1 13.6 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span class="word">SPACE</span></div></div>
+    </div>
+    <div class="fader" data-param="delay">
+      <div class="label"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="3.5" cy="10" r="2.6" fill="currentColor"/><circle cx="9.5" cy="10" r="1.9" fill="currentColor"/><circle cx="14.5" cy="10" r="1.3" fill="currentColor"/><circle cx="18.2" cy="10" r="0.8" fill="currentColor"/></svg><span class="word">ECHO</span></div>
+      <div class="fill"><div class="label"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="3.5" cy="10" r="2.6" fill="currentColor"/><circle cx="9.5" cy="10" r="1.9" fill="currentColor"/><circle cx="14.5" cy="10" r="1.3" fill="currentColor"/><circle cx="18.2" cy="10" r="0.8" fill="currentColor"/></svg><span class="word">ECHO</span></div></div>
+    </div>
+    <div class="row">
+      <button id="remove" class="textbtn" type="button">REMOVE</button>
+      <button id="close" class="textbtn" type="button">CLOSE</button>
+    </div>
+  </div>
+
+  <div id="ballpanel" hidden></div>
+
+  <script data-src="sim.js">
+/*
+ * OSC Bounce - simulation core
+ * Pure logic. No DOM, no Canvas, no Web Audio.
+ * Coordinates are in "play area" units (CSS pixels of the play area, origin top-left).
+ * Designed to map 1:1 onto a Swift struct/class later.
+ */
+(function (global) {
+  'use strict';
+
+  // ---------- constants ----------
+  var MAX_CHARACTERS = 16;
+  var STEP = 1 / 240;            // fixed simulation step in seconds
+  var MAX_FRAME_DT = 0.1;        // ignore longer gaps (tab hidden, etc.)
+  var RETRIGGER_GUARD = 0.1;     // seconds; same character cannot fire a new hit within this
+
+  var DECAY_MIN = 0.05;          // seconds
+  var DECAY_MAX = 2.5;           // seconds
+  var DEFAULT_DECAY = 0.4;
+  var DEFAULT_REVERB = 0.25;
+  var DEFAULT_DELAY = 0.0;
+  var PAN_RANGE = 0.7;
+
+  // ---------- ball table (single place; looks are drawn by the UI from `id`) ----------
+  // radius: px. hardness: 0 (softest) .. 1 (hardest). color: base color for drawing.
+  // image: optional artwork path; UI falls back to Canvas drawing if missing/failed.
+  // Sorted small -> large. Large balls can touch several characters at once.
+  var BALLS = [
+    { id: 'steel',    label: 'STEEL',    radius: 5,  hardness: 1.00, color: [196, 200, 206], image: null },
+    { id: 'glass',    label: 'GLASS',    radius: 8,  hardness: 0.90, color: [170, 220, 230], image: null },
+    { id: 'pingpong', label: 'PINGPONG', radius: 11, hardness: 0.75, color: [243, 154, 58],  image: null },
+    { id: 'marble',   label: 'MARBLE',   radius: 15, hardness: 0.95, color: [236, 236, 240], image: null },
+    { id: 'wood',     label: 'WOOD',     radius: 20, hardness: 0.65, color: [190, 138, 84],  image: null },
+    { id: 'rubber',   label: 'RUBBER',   radius: 26, hardness: 0.45, color: [142, 91, 214],  image: null },
+    { id: 'tennis',   label: 'TENNIS',   radius: 34, hardness: 0.32, color: [200, 224, 74],  image: null },
+    { id: 'sponge',   label: 'SPONGE',   radius: 46, hardness: 0.12, color: [222, 178, 104], image: null },
+    { id: 'cotton',   label: 'COTTON',   radius: 54, hardness: 0.00, color: [244, 244, 244], image: null },
+    { id: 'stone',    label: 'STONE',    radius: 66, hardness: 0.85, color: [128, 124, 120], image: null }
+  ];
+  var DEFAULT_BALL = 3; // MARBLE
+
+  // ---------- ball conversions ----------
+  var BALL_R_MIN = Math.min.apply(null, BALLS.map(function (b) { return b.radius; }));
+  var BALL_R_MAX = Math.max.apply(null, BALLS.map(function (b) { return b.radius; }));
+  var REF_RADIUS = BALLS[DEFAULT_BALL].radius;
+  var REF_SPEED = 300;            // px/s of the reference radius at full bounds
+  var SIZE_SPEED_RATIO = 2.5;     // smallest ball is this many times faster than largest
+  var SPEED_EXP = Math.log(SIZE_SPEED_RATIO) / Math.log(BALL_R_MAX / BALL_R_MIN);
+
+  // radius -> base speed (px/s). Smaller = faster.
+  function speedForRadius(r) {
+    return REF_SPEED * Math.pow(REF_RADIUS / r, SPEED_EXP);
+  }
+
+  // Contact skin: once the ball touches a character, every other character within
+  // this extra distance that the ball is moving toward is hit in the same step.
+  // Keeps "a big ball lands on a cluster" from depending on sub-pixel timing.
+  var CONTACT_SKIN_RATIO = 0.15;  // x ball radius
+  var CONTACT_SKIN_MIN = 2;       // px
+  var SEPARATION_ITERATIONS = 4;
+  // hardness -> lowpass cutoff (Hz), exponential 500 Hz .. 12 kHz
+  var CUTOFF_SOFT = 500, CUTOFF_HARD = 12000;
+  function cutoffForHardness(h) {
+    return CUTOFF_SOFT * Math.pow(CUTOFF_HARD / CUTOFF_SOFT, clamp(h, 0, 1));
+  }
+  // hardness -> attack (s), 5 ms (hard) .. 20 ms (soft)
+  function attackForHardness(h) {
+    return 0.005 + (1 - clamp(h, 0, 1)) * 0.015;
+  }
+
+  // ---------- bounds ----------
+  var BOUNDS_MIN_PX = 140;        // minimum bounds width/height
+  var BOUNDS_MIN_DIAMETERS = 3;   // and at least this many ball diameters
+  var BOUNDS_MAX_SPEEDUP = 2.5;   // speed multiplier at the minimum bounds
+
+  // C major pentatonic from C3 (MIDI 48) to C6 (MIDI 84)
+  var PENTATONIC_STEPS = [0, 2, 4, 7, 9];
+  var NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+  var SCALE = (function () {
+    var notes = [];
+    for (var octave = 3; octave <= 5; octave++) {
+      for (var i = 0; i < PENTATONIC_STEPS.length; i++) {
+        notes.push(12 * (octave + 1) + PENTATONIC_STEPS[i]);
+      }
+    }
+    notes.push(84); // C6
+    return notes.map(function (midi) {
+      return {
+        midi: midi,
+        freq: 440 * Math.pow(2, (midi - 69) / 12),
+        name: NOTE_NAMES[midi % 12] + (Math.floor(midi / 12) - 1)
+      };
+    });
+  })();
+
+  function clamp(v, lo, hi) { return v < lo ? lo : (v > hi ? hi : v); }
+
+  // decay normalized 0..1 <-> seconds (exponential)
+  function decayFromNorm(n) {
+    return DECAY_MIN * Math.pow(DECAY_MAX / DECAY_MIN, clamp(n, 0, 1));
+  }
+  function normFromDecay(sec) {
+    return Math.log(sec / DECAY_MIN) / Math.log(DECAY_MAX / DECAY_MIN);
+  }
+
+  // ---------- Sim ----------
+  function Sim() {
+    this.width = 1;
+    this.height = 1;
+    this.time = 0;              // simulation clock (seconds)
+    this.accumulator = 0;
+    this.nextId = 1;
+    this.characters = [];       // { id, type, x, y, decayNorm, reverb, delay, lastHit }
+    this.ballType = DEFAULT_BALL;
+    this.ball = { x: 0.5, y: 0.5, vx: 0, vy: 0, r: BALLS[DEFAULT_BALL].radius };
+    this.bounds = { left: 0, top: 0, right: 1, bottom: 1 };   // ball area inside the play area
+    this.speed = speedForRadius(this.ball.r);
+    this.charRadius = 32;
+    this.onHit = null;          // function (character, hit) {}  hit = { cutoff, attack }
+    this._initialized = false;
+  }
+
+  Sim.MAX_CHARACTERS = MAX_CHARACTERS;
+  Sim.SCALE = SCALE;
+  Sim.BALLS = BALLS;
+  Sim.DEFAULT_DECAY_NORM = normFromDecay(DEFAULT_DECAY);
+  Sim.decayFromNorm = decayFromNorm;
+  Sim.speedForRadius = speedForRadius;
+  Sim.BALL_R_MAX = BALL_R_MAX;
+  Sim.cutoffForHardness = cutoffForHardness;
+  Sim.attackForHardness = attackForHardness;
+
+  // Set play area size. Positions and bounds are scaled proportionally and clamped.
+  Sim.prototype.setBounds = function (w, h) {
+    w = Math.max(1, w);
+    h = Math.max(1, h);
+    var oldW = this.width, oldH = this.height;
+    this.charRadius = clamp(Math.min(w, h) * 0.075, 26, 46);
+
+    if (!this._initialized) {
+      this.width = w;
+      this.height = h;
+      this.bounds = { left: 0, top: 0, right: w, bottom: h };
+      this.ball.x = w * 0.5;
+      this.ball.y = h * 0.5;
+      var a = 0.62; // fixed launch angle (radians)
+      this.ball.vx = Math.cos(a);
+      this.ball.vy = -Math.sin(a);
+      this._initialized = true;
+      this._updateSpeed();
+      return;
+    }
+
+    var sx = w / oldW, sy = h / oldH;
+    this.width = w;
+    this.height = h;
+    var R = this.charRadius;
+    for (var i = 0; i < this.characters.length; i++) {
+      var c = this.characters[i];
+      c.x = clamp(c.x * sx, R, w - R);
+      c.y = clamp(c.y * sy, R, h - R);
+    }
+    var bd = this.bounds;
+    bd.left *= sx; bd.right *= sx;
+    bd.top *= sy; bd.bottom *= sy;
+    this.ball.x *= sx;
+    this.ball.y *= sy;
+    this._enforceBounds();
+  };
+
+  // ---------- ball type ----------
+  Sim.prototype.setBallType = function (index) {
+    index = clamp(Math.round(index), 0, BALLS.length - 1);
+    this.ballType = index;
+    this.ball.r = BALLS[index].radius;
+    this._enforceBounds();   // also refreshes speed, keeps direction
+  };
+
+  Sim.prototype.ballDef = function () { return BALLS[this.ballType]; };
+
+  // Sound color of the current ball (one note per character per hit).
+  Sim.prototype.currentHit = function () {
+    var def = BALLS[this.ballType];
+    return {
+      cutoff: cutoffForHardness(def.hardness),
+      attack: attackForHardness(def.hardness)
+    };
+  };
+
+  // ---------- bounds (ball walls) ----------
+  Sim.prototype.minBoundsSize = function () {
+    var m = Math.max(BOUNDS_MIN_PX, BOUNDS_MIN_DIAMETERS * 2 * this.ball.r);
+    return { w: Math.min(m, this.width), h: Math.min(m, this.height) };
+  };
+
+  // side: 'left' | 'right' | 'top' | 'bottom'. value in play area coordinates.
+  Sim.prototype.setEdge = function (side, value) {
+    var bd = this.bounds, min = this.minBoundsSize();
+    if (side === 'left') bd.left = clamp(value, 0, bd.right - min.w);
+    else if (side === 'right') bd.right = clamp(value, bd.left + min.w, this.width);
+    else if (side === 'top') bd.top = clamp(value, 0, bd.bottom - min.h);
+    else if (side === 'bottom') bd.bottom = clamp(value, bd.top + min.h, this.height);
+    this._enforceBounds();
+  };
+
+  Sim.prototype.resetBounds = function () {
+    this.bounds = { left: 0, top: 0, right: this.width, bottom: this.height };
+    this._enforceBounds();
+  };
+
+  Sim.prototype.isFullBounds = function () {
+    var bd = this.bounds;
+    return bd.left <= 0.5 && bd.top <= 0.5 && bd.right >= this.width - 0.5 && bd.bottom >= this.height - 0.5;
+  };
+
+  // Speed multiplier from bounds area: 1 at full area, BOUNDS_MAX_SPEEDUP at minimum area,
+  // log-smooth in between.
+  Sim.prototype.boundsSpeedMultiplier = function () {
+    var bd = this.bounds, min = this.minBoundsSize();
+    var full = this.width * this.height;
+    var minArea = min.w * min.h;
+    var area = Math.max(minArea, (bd.right - bd.left) * (bd.bottom - bd.top));
+    if (minArea >= full) return 1;
+    var u = clamp(Math.log(area / full) / Math.log(minArea / full), 0, 1);
+    return Math.pow(BOUNDS_MAX_SPEEDUP, u);
+  };
+
+  // Keep bounds valid (inside play area, at least the minimum size), keep the ball inside,
+  // and refresh the speed.
+  Sim.prototype._enforceBounds = function () {
+    var bd = this.bounds, min = this.minBoundsSize();
+    bd.left = clamp(bd.left, 0, this.width);
+    bd.right = clamp(bd.right, 0, this.width);
+    bd.top = clamp(bd.top, 0, this.height);
+    bd.bottom = clamp(bd.bottom, 0, this.height);
+    if (bd.right - bd.left < min.w) {
+      var cx = clamp((bd.left + bd.right) / 2, min.w / 2, this.width - min.w / 2);
+      bd.left = cx - min.w / 2; bd.right = cx + min.w / 2;
+    }
+    if (bd.bottom - bd.top < min.h) {
+      var cy = clamp((bd.top + bd.bottom) / 2, min.h / 2, this.height - min.h / 2);
+      bd.top = cy - min.h / 2; bd.bottom = cy + min.h / 2;
+    }
+    this._clampBall();
+    this._updateSpeed();
+  };
+
+  Sim.prototype._clampBall = function () {
+    var b = this.ball, bd = this.bounds;
+    b.x = clamp(b.x, bd.left + b.r, bd.right - b.r);
+    b.y = clamp(b.y, bd.top + b.r, bd.bottom - b.r);
+  };
+
+  Sim.prototype._updateSpeed = function () {
+    this.speed = speedForRadius(this.ball.r) * this.boundsSpeedMultiplier();
+    this._normalizeBallSpeed();
+  };
+
+  Sim.prototype._normalizeBallSpeed = function () {
+    var b = this.ball;
+    var m = Math.sqrt(b.vx * b.vx + b.vy * b.vy);
+    if (m < 1e-9) { b.vx = this.speed; b.vy = 0; return; }
+    b.vx = b.vx / m * this.speed;
+    b.vy = b.vy / m * this.speed;
+  };
+
+  // Can the ball ever touch this character with the current bounds?
+  Sim.prototype.isReachable = function (c) {
+    var b = this.ball, bd = this.bounds;
+    var px = clamp(c.x, bd.left + b.r, bd.right - b.r);
+    var py = clamp(c.y, bd.top + b.r, bd.bottom - b.r);
+    var dx = c.x - px, dy = c.y - py;
+    var reach = this.charRadius + b.r;
+    return dx * dx + dy * dy < reach * reach;
+  };
+
+  // ---------- pitch mapping (always uses the full play area) ----------
+  Sim.prototype._pitchTop = function () { return this.charRadius; };
+  Sim.prototype._pitchBottom = function () { return this.height - this.charRadius; };
+
+  // y -> scale index (0 = lowest). Higher on screen (smaller y) = higher pitch.
+  Sim.prototype.noteIndexForY = function (y) {
+    var top = this._pitchTop(), bottom = this._pitchBottom();
+    var span = Math.max(1, bottom - top);
+    var t = 1 - clamp((y - top) / span, 0, 1);
+    return Math.round(t * (SCALE.length - 1));
+  };
+
+  Sim.prototype.noteForY = function (y) {
+    return SCALE[this.noteIndexForY(y)];
+  };
+
+  // y position of the center of a scale index (for drawing grid lines)
+  Sim.prototype.yForNoteIndex = function (index) {
+    var top = this._pitchTop(), bottom = this._pitchBottom();
+    var t = index / (SCALE.length - 1);
+    return bottom - t * (bottom - top);
+  };
+
+  Sim.prototype.panForX = function (x) {
+    return clamp((x / this.width) * 2 - 1, -1, 1) * PAN_RANGE;
+  };
+
+  Sim.prototype.decaySeconds = function (c) {
+    return decayFromNorm(c.decayNorm);
+  };
+
+  // ---------- character management ----------
+  Sim.prototype.canAdd = function () {
+    return this.characters.length < MAX_CHARACTERS;
+  };
+
+  // Returns the new character, or null if full.
+  Sim.prototype.addCharacter = function (type, x, y) {
+    if (!this.canAdd()) return null;
+    var R = this.charRadius;
+    var c = {
+      id: this.nextId++,
+      type: type,
+      x: clamp(x, R, this.width - R),
+      y: clamp(y, R, this.height - R),
+      decayNorm: Sim.DEFAULT_DECAY_NORM,
+      reverb: DEFAULT_REVERB,
+      delay: DEFAULT_DELAY,
+      lastHit: -1000,
+      prevHit: -1000,
+      hitCount: 0,
+      hitR: 0,
+      prevHitR: 0
+    };
+    this.characters.push(c);
+    return c;
+  };
+
+  Sim.prototype.getCharacter = function (id) {
+    for (var i = 0; i < this.characters.length; i++) {
+      if (this.characters[i].id === id) return this.characters[i];
+    }
+    return null;
+  };
+
+  Sim.prototype.removeCharacter = function (id) {
+    for (var i = 0; i < this.characters.length; i++) {
+      if (this.characters[i].id === id) { this.characters.splice(i, 1); return true; }
+    }
+    return false;
+  };
+
+  Sim.prototype.clear = function () {
+    this.characters.length = 0;
+  };
+
+  Sim.prototype.moveCharacter = function (id, x, y) {
+    var c = this.getCharacter(id);
+    if (!c) return;
+    var R = this.charRadius;
+    c.x = clamp(x, R, this.width - R);
+    c.y = clamp(y, R, this.height - R);
+  };
+
+  // Topmost (last drawn) character under the point, or null. `slop` enlarges the hit radius.
+  Sim.prototype.hitTest = function (x, y, slop) {
+    var R = this.charRadius + (slop || 0);
+    for (var i = this.characters.length - 1; i >= 0; i--) {
+      var c = this.characters[i];
+      var dx = x - c.x, dy = y - c.y;
+      if (dx * dx + dy * dy <= R * R) return c;
+    }
+    return null;
+  };
+
+  // ---------- stepping ----------
+  // dt: real elapsed seconds since last call.
+  Sim.prototype.update = function (dt) {
+    if (!(dt > 0)) return;
+    this.accumulator += Math.min(dt, MAX_FRAME_DT);
+    while (this.accumulator >= STEP) {
+      this._step(STEP);
+      this.accumulator -= STEP;
+    }
+  };
+
+  Sim.prototype._step = function (h) {
+    this.time += h;
+    var b = this.ball, bd = this.bounds;
+    b.x += b.vx * h;
+    b.y += b.vy * h;
+
+    // walls (user-adjustable bounds)
+    if (b.x < bd.left + b.r) { b.x = bd.left + b.r; b.vx = Math.abs(b.vx); }
+    else if (b.x > bd.right - b.r) { b.x = bd.right - b.r; b.vx = -Math.abs(b.vx); }
+    if (b.y < bd.top + b.r) { b.y = bd.top + b.r; b.vy = Math.abs(b.vy); }
+    else if (b.y > bd.bottom - b.r) { b.y = bd.bottom - b.r; b.vy = -Math.abs(b.vy); }
+
+    // characters (circles), all contacts of this step resolved together:
+    // 1. gather every character the ball overlaps (plus, if there is at least one
+    //    overlap, those within the contact skin) using the same ball position,
+    // 2. reflect once about the sum of the normals of the contacts being approached,
+    // 3. separate from all overlaps iteratively (no single contact wins),
+    // 4. every approached contact fires its own hit (one note each).
+    var minDist = this.charRadius + b.r;
+    var skin = Math.max(CONTACT_SKIN_MIN, b.r * CONTACT_SKIN_RATIO);
+    var reach = minDist + skin;
+    var near = [], overlapping = false, i, c, dx, dy, d2, d;
+    for (i = 0; i < this.characters.length; i++) {
+      c = this.characters[i];
+      dx = b.x - c.x; dy = b.y - c.y;
+      d2 = dx * dx + dy * dy;
+      if (d2 >= reach * reach) continue;
+      d = Math.sqrt(d2);
+      var nx, ny;
+      if (d < 1e-6) { nx = 0; ny = -1; } else { nx = dx / d; ny = dy / d; }
+      if (d < minDist) overlapping = true;
+      near.push({ c: c, nx: nx, ny: ny });
+    }
+    if (!overlapping) {
+      this._normalizeBallSpeed();
+      return;
+    }
+
+    var sx = 0, sy = 0, hits = [];
+    for (i = 0; i < near.length; i++) {
+      var n = near[i];
+      if (b.vx * n.nx + b.vy * n.ny < 0) {   // ball moving toward this character
+        sx += n.nx; sy += n.ny;
+        hits.push(n.c);
+      }
+    }
+    if (hits.length) {
+      var sl = Math.sqrt(sx * sx + sy * sy);
+      if (sl < 1e-6) {
+        // normals cancel out (wedged head-on): send the ball straight back
+        b.vx = -b.vx; b.vy = -b.vy;
+      } else {
+        var mx = sx / sl, my = sy / sl;
+        var vn = b.vx * mx + b.vy * my;     // < 0, since every summed normal opposes v
+        if (vn < 0) { b.vx -= 2 * vn * mx; b.vy -= 2 * vn * my; }
+      }
+    }
+
+    for (var it = 0; it < SEPARATION_ITERATIONS; it++) {
+      var moved = false;
+      for (i = 0; i < this.characters.length; i++) {
+        c = this.characters[i];
+        dx = b.x - c.x; dy = b.y - c.y;
+        d2 = dx * dx + dy * dy;
+        if (d2 >= minDist * minDist) continue;
+        d = Math.sqrt(d2);
+        if (d < 1e-6) { b.y = c.y - minDist; }
+        else { b.x = c.x + dx / d * minDist; b.y = c.y + dy / d * minDist; }
+        moved = true;
+      }
+      // keep the ball inside the bounds even after being pushed out by a character
+      this._clampBall();
+      if (!moved) break;
+    }
+    this._normalizeBallSpeed();
+
+    // the retrigger guard keeps a ball resting against a character from re-firing
+    var hit = null;
+    for (i = 0; i < hits.length; i++) {
+      c = hits[i];
+      if (this.time - c.lastHit < RETRIGGER_GUARD) continue;
+      c.prevHit = c.lastHit;
+      c.lastHit = this.time;
+      c.hitCount += 1;           // discrete hit counter (drives the face expression)
+      c.prevHitR = c.hitR;
+      c.hitR = this.ball.r;      // radius of the ball that made this hit
+      if (!hit) hit = this.currentHit();
+      if (this.onHit) this.onHit(c, hit);
+    }
+  };
+
+  global.OSCSim = Sim;
+})(typeof window !== 'undefined' ? window : this);
+
+</script>
+  <script data-src="audio.js">
+/*
+ * OSC Bounce - audio engine
+ * Only sound. Receives: waveform, frequency, decay, reverb send, delay send, pan,
+ * ball-hardness cutoff and attack.
+ */
+(function (global) {
+  'use strict';
+
+  var LEVEL = {           // loudness compensation per waveform
+    sine: 1.0,
+    triangle: 0.7,
+    sawtooth: 0.35,
+    square: 0.35
+  };
+  var PEAK = 0.32;        // base peak gain per voice
+  var ATTACK = 0.005;     // seconds
+  var FLOOR = 0.0001;     // exponential ramp target
+
+  function Audio() {
+    this.ctx = null;
+    this.master = null;
+    this.reverbIn = null;
+    this.delayIn = null;
+  }
+
+  // Call from a user gesture. Creates the context on first call, resumes afterwards.
+  Audio.prototype.ensure = function () {
+    if (!this.ctx) {
+      var Ctor = global.AudioContext || global.webkitAudioContext;
+      if (!Ctor) return;
+      this.ctx = new Ctor();
+      this._build();
+      this._unlock();
+    }
+    if (this.ctx.state === 'suspended' && this.ctx.resume) {
+      this.ctx.resume();
+    }
+  };
+
+  Audio.prototype.isRunning = function () {
+    return !!this.ctx && this.ctx.state === 'running';
+  };
+
+  // Play one silent sample (older iOS Safari needs a started source inside the gesture).
+  Audio.prototype._unlock = function () {
+    var ctx = this.ctx;
+    var buf = ctx.createBuffer(1, 1, ctx.sampleRate);
+    var src = ctx.createBufferSource();
+    src.buffer = buf;
+    src.connect(ctx.destination);
+    src.start(0);
+  };
+
+  Audio.prototype._build = function () {
+    var ctx = this.ctx;
+
+    // master -> limiter -> out
+    var limiter = ctx.createDynamicsCompressor();
+    limiter.threshold.value = -6;
+    limiter.knee.value = 0;
+    limiter.ratio.value = 20;
+    limiter.attack.value = 0.003;
+    limiter.release.value = 0.12;
+    limiter.connect(ctx.destination);
+
+    this.master = ctx.createGain();
+    this.master.gain.value = 0.8;
+    this.master.connect(limiter);
+
+    // shared reverb
+    var convolver = ctx.createConvolver();
+    convolver.buffer = this._makeImpulse(2.5);
+    var reverbReturn = ctx.createGain();
+    reverbReturn.gain.value = 0.9;
+    this.reverbIn = ctx.createGain();
+    this.reverbIn.connect(convolver);
+    convolver.connect(reverbReturn);
+    reverbReturn.connect(this.master);
+
+    // shared delay with filtered feedback
+    var delay = ctx.createDelay(2.0);
+    delay.delayTime.value = 0.33;
+    var fbFilter = ctx.createBiquadFilter();
+    fbFilter.type = 'lowpass';
+    fbFilter.frequency.value = 3000;
+    var feedback = ctx.createGain();
+    feedback.gain.value = 0.4;
+    var delayReturn = ctx.createGain();
+    delayReturn.gain.value = 0.8;
+    this.delayIn = ctx.createGain();
+    this.delayIn.connect(delay);
+    delay.connect(fbFilter);
+    fbFilter.connect(feedback);
+    feedback.connect(delay);
+    delay.connect(delayReturn);
+    delayReturn.connect(this.master);
+  };
+
+  // Stereo decaying noise impulse response generated in code.
+  Audio.prototype._makeImpulse = function (seconds) {
+    var ctx = this.ctx;
+    var rate = ctx.sampleRate;
+    var len = Math.floor(rate * seconds);
+    var buf = ctx.createBuffer(2, len, rate);
+    for (var ch = 0; ch < 2; ch++) {
+      var data = buf.getChannelData(ch);
+      for (var i = 0; i < len; i++) {
+        var t = i / len;
+        var env = Math.pow(1 - t, 2.5) * Math.exp(-3 * t);
+        data[i] = (Math.random() * 2 - 1) * env;
+      }
+    }
+    return buf;
+  };
+
+  /*
+   * p = {
+   *   wave: 'sine'|'triangle'|'sawtooth'|'square', freq, decay (s),
+   *   reverb 0..1, delay 0..1, pan -1..1,
+   *   cutoff (Hz, optional)   ball-hardness lowpass,
+   *   attack (s, optional)    default 5 ms
+   * }
+   * One call = one note.
+   */
+  Audio.prototype.trigger = function (p) {
+    if (!this.ctx || this.ctx.state !== 'running') return;
+    var ctx = this.ctx;
+    var t0 = ctx.currentTime;
+    var attack = Math.max(0.001, p.attack || ATTACK);
+    var decay = Math.max(0.02, p.decay);
+    var tEnd = t0 + attack + decay;
+
+    var osc = ctx.createOscillator();
+    osc.type = p.wave;
+    osc.frequency.setValueAtTime(p.freq, t0);
+
+    var nodes = [osc];
+    var head = osc;
+
+    // One lowpass: the lower of the ball-hardness cutoff and the
+    // saw/pulse softening cutoff (6 x fundamental, max 8 kHz).
+    var cutoff = p.cutoff > 0 ? p.cutoff : Infinity;
+    if (p.wave === 'sawtooth' || p.wave === 'square') {
+      cutoff = Math.min(cutoff, 8000, p.freq * 6);
+    }
+    if (isFinite(cutoff)) {
+      var lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.frequency.value = Math.max(40, Math.min(cutoff, ctx.sampleRate * 0.45));
+      lp.Q.value = 0.5;
+      head.connect(lp);
+      head = lp;
+      nodes.push(lp);
+    }
+
+    var env = ctx.createGain();
+    var peak = PEAK * (LEVEL[p.wave] || 1);
+    env.gain.setValueAtTime(0, t0);
+    env.gain.linearRampToValueAtTime(peak, t0 + attack);
+    env.gain.exponentialRampToValueAtTime(FLOOR, tEnd);
+    head.connect(env);
+    head = env;
+    nodes.push(env);
+
+    if (ctx.createStereoPanner) {
+      var pan = ctx.createStereoPanner();
+      pan.pan.value = Math.max(-1, Math.min(1, p.pan || 0));
+      head.connect(pan);
+      head = pan;
+      nodes.push(pan);
+    }
+
+    // dry
+    head.connect(this.master);
+
+    // sends
+    if (p.reverb > 0) {
+      var rs = ctx.createGain();
+      rs.gain.value = p.reverb;
+      head.connect(rs);
+      rs.connect(this.reverbIn);
+      nodes.push(rs);
+    }
+    if (p.delay > 0) {
+      var ds = ctx.createGain();
+      ds.gain.value = p.delay;
+      head.connect(ds);
+      ds.connect(this.delayIn);
+      nodes.push(ds);
+    }
+
+    osc.onended = function () {
+      for (var i = 0; i < nodes.length; i++) {
+        try { nodes[i].disconnect(); } catch (e) { /* already disconnected */ }
+      }
+    };
+    osc.start(t0);
+    osc.stop(tEnd + 0.03);
+  };
+
+  global.OSCAudio = Audio;
+})(typeof window !== 'undefined' ? window : this);
+
+</script>
+  <script data-src="face.js">
+/*
+ * OSC Bounce - character table and character drawing
+ * Placeholder art following the OSC brothers line drawings (waveform line on top,
+ * two dot eyes, small mouth, single-weight rounded lines in the character color).
+ * The official artwork will replace this through `image` in the table.
+ *
+ * Drawing is a pure function of
+ *   (character type, time, last + previous hit time, hit count,
+ *    radius of the balls of the last two hits, per-instance seed)
+ * No per-frame state, no Math.random. Randomness is an integer hash of
+ * (seed, hit count). It only uses the 2D context passed in, so it also runs
+ * outside the browser (node canvas) and maps directly to Swift.
+ */
+(function (global) {
+  'use strict';
+
+  // ======================================================================
+  // CHARACTER TABLE - the single place where character looks are defined.
+  // To use artwork later, fill `image` with a path (e.g. 'img/sine.png').
+  // If the image fails to load, the Canvas drawing is used instead.
+  // Colors follow the OSC brothers "brother cable" names:
+  // SINE BLUE, TRI GREEN, SAW RED, PULSE YELLOW (placeholders; replace `rgb`
+  // with the official values when they arrive).
+  // `wave` is the Web Audio oscillator type (PULSE uses a square wave).
+  // Face proportions (measured from the OSC brothers card art), in units of
+  // the character radius:
+  //   cycles   waveform cycles across the head line
+  //   phase0   waveform phase at the left end in the still pose (matches the art)
+  //   amp      head line half height
+  //   faceDx   horizontal offset of eyes + mouth
+  //   mouthW   half width of the plain smile, mouthD depth of the plain smile
+  // ======================================================================
+  var CHARACTERS = [
+    { id: 'sine',  wave: 'sine',     label: 'SINE',  rgb: [58, 140, 240], image: null,
+      cycles: 1.25, phase0: 0.95, amp: 0.27, faceDx: 0.0,  mouthW: 0.22, mouthD: 0.09 },
+    { id: 'tri',   wave: 'triangle', label: 'TRI',   rgb: [52, 184, 92],  image: null,
+      cycles: 1.15, phase0: 0.10, amp: 0.22, faceDx: 0.10, mouthW: 0.17, mouthD: 0.12 },
+    { id: 'saw',   wave: 'sawtooth', label: 'SAW',   rgb: [238, 72, 64],  image: null,
+      cycles: 2.08, phase0: 0.0,  amp: 0.28, faceDx: 0.0,  mouthW: 0.19, mouthD: 0.10 },
+    { id: 'pulse', wave: 'square',   label: 'PULSE', rgb: [246, 206, 46], image: null,
+      cycles: 1.25, phase0: 0.92, amp: 0.26, faceDx: 0.08, mouthW: 0.15, mouthD: 0.13 }
+  ];
+
+  // ======================================================================
+  // EXPRESSION TABLE - shared by all four characters.
+  //   eyes   dot | big | arc (closed, happy) | line (sleepy) | wink | spiral
+  //   mouth  smile | open | o | flat | slant | tongue | wavy | small
+  //   blush  short slanted lines on the cheeks
+  //   blink  whether the periodic blink applies (only for round open eyes)
+  // Expression 0 is the original OSC brothers smile (start of every character).
+  // ======================================================================
+  var EXPRESSIONS = [
+    { id: 'smile',     eyes: 'dot',    mouth: 'smile',  blink: true },
+    { id: 'laugh',     eyes: 'dot',    mouth: 'open',   blink: true },
+    { id: 'surprised', eyes: 'big',    mouth: 'o',      blink: false },
+    { id: 'squint',    eyes: 'arc',    mouth: 'smile',  blink: false },
+    { id: 'sleepy',    eyes: 'line',   mouth: 'flat',   blink: false },
+    { id: 'wink',      eyes: 'wink',   mouth: 'smile',  blink: false },
+    { id: 'tongue',    eyes: 'dot',    mouth: 'tongue', blink: true },
+    { id: 'pouty',     eyes: 'dot',    mouth: 'slant',  blink: true },
+    { id: 'dizzy',     eyes: 'spiral', mouth: 'wavy',   blink: false },
+    { id: 'blush',     eyes: 'dot',    mouth: 'small',  blink: true, blush: true }
+  ];
+  // Odd hits pick from GROUP_ODD, even hits (and the start) from GROUP_EVEN.
+  // The groups share nothing, so two hits in a row never give the same face,
+  // and no history is needed to know that.
+  var GROUP_ODD  = [1, 3, 4, 5, 8];   // laugh squint sleepy wink dizzy
+  var GROUP_EVEN = [0, 2, 6, 7, 9];   // smile surprised tongue pouty blush
+  var BIG_BALL_R = 30;                // balls at least this big ...
+  var BIG_ODD = 8, BIG_EVEN = 2;      // ... favor dizzy / surprised
+  var BIG_BIAS = 0.5;                 // probability of the favored face on a big hit
+
+  // ---------- layout constants (x character radius) ----------
+  var WAVE_HALF_W = 0.62;     // head line spans -0.62 .. +0.62
+  var WAVE_BOTTOM = -0.10;    // lowest point of the head line
+  var EYE_Y = 0.10;
+  var EYE_DX = 0.21;          // eyes at faceDx +- this
+  var EYE_R = 0.065;
+  var MOUTH_Y = 0.33;         // smile corners
+  var FACE_CY = (EYE_Y + MOUTH_Y) / 2;   // scaling center of the features
+  var LINE_W = 0.072;         // stroke width
+  var BODY_ALPHA = 0.13;      // faint disc showing the bounce area
+
+  // ---------- motion constants ----------
+  var FLOW = 0.45;            // waveform scroll, cycles per second (never changes)
+  var BLINK_MIN = 3.2;        // blink period: BLINK_MIN + seed * BLINK_SPREAD seconds
+  var BLINK_SPREAD = 1.8;
+  var BLINK_LEN = 0.15;       // seconds the lids take to close and open
+  var GLANCE_PERIOD = 5.3;
+  var GLANCE_AMP = 0.035;
+  var SMILE_PERIOD = 2.9;
+  var SMILE_AMP = 0.08;       // +-8 % mouth size breathing
+  var BOB_PERIOD = 2.3;
+  var BOB_AMP = 0.02;
+  var SPIN = 4.0;             // dizzy eye rotation, rad per second
+  // hit pulse: quick rise, exponential fall
+  var PULSE_ATTACK = 0.04;
+  var PULSE_DECAY = 6;
+  var PULSE_LEN = 0.7;
+  var HIT_AMP = 0.25;         // head line height boost at the pulse peak
+  var HIT_FEATURE = 0.22;     // eyes + mouth enlargement at the pulse peak
+  var HIT_LIFT = 0.05;        // face lift (x radius) at the pulse peak
+  // expression change: old face shrinks, new face grows back (total 100 ms)
+  var SWAP_HALF = 0.05;
+  var SWAP_MIN = 0.3;
+
+  var TAU = Math.PI * 2;
+  function rgbStr(c, a) {
+    return a === undefined ? 'rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ')'
+                           : 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')';
+  }
+  function frac(v) { return v - Math.floor(v); }
+
+  CHARACTERS.forEach(function (def) {
+    def.color = rgbStr(def.rgb);
+  });
+
+  // ---------- deterministic hash (32-bit integer mix; Swift: &* and >>) ----------
+  function hash01(a, b, salt) {
+    var h = (a ^ Math.imul(b, 0x9E3779B1) ^ Math.imul(salt, 0x85EBCA77)) >>> 0;
+    h ^= h >>> 16; h = Math.imul(h, 0x7FEB352D);
+    h ^= h >>> 15; h = Math.imul(h, 0x846CA68B);
+    h ^= h >>> 16;
+    return (h >>> 0) / 4294967296;
+  }
+  function seedInt(seed) { return Math.floor(frac(seed) * 4294967296) >>> 0; }
+
+  // Expression index after `count` hits (count 0 = the original smile).
+  function expressionFor(seed, count, ballR) {
+    if (count <= 0) return 0;
+    var group = (count % 2 === 1) ? GROUP_ODD : GROUP_EVEN;
+    var favored = (count % 2 === 1) ? BIG_ODD : BIG_EVEN;
+    var s = seedInt(seed);
+    if (ballR >= BIG_BALL_R && hash01(s, count, 2) < BIG_BIAS) return favored;
+    var k = Math.floor(hash01(s, count, 1) * group.length);
+    return group[Math.min(k, group.length - 1)];
+  }
+
+  // Pulse envelope of one hit, 0..1 (0 before the hit).
+  function pulseEnv(age) {
+    if (age < 0 || age >= PULSE_LEN) return 0;
+    if (age < PULSE_ATTACK) return age / PULSE_ATTACK;
+    return Math.exp(-(age - PULSE_ATTACK) * PULSE_DECAY);
+  }
+
+  // ---------- waveforms (phase 0..1 -> -1..1, positive = up) ----------
+  function waveValue(wave, ph) {
+    ph = frac(ph);
+    if (wave === 'sine') return Math.sin(ph * TAU);
+    if (wave === 'triangle') return ph < 0.25 ? ph * 4 : (ph < 0.75 ? 2 - ph * 4 : ph * 4 - 4);
+    if (wave === 'sawtooth') return 2 * ph - 1;
+    return ph < 0.5 ? 1 : -1;
+  }
+  // Corner / jump phases inside one cycle, with values just before and after.
+  var BREAKS = {
+    triangle: [[0.25, 1, 1], [0.75, -1, -1]],
+    sawtooth: [[0, 1, -1]],
+    square:   [[0, -1, 1], [0.5, 1, -1]]
+  };
+
+  // Polyline of the head line for phase range p0 .. p0 + cycles, as [u, value]
+  // with u 0..1 across the width. Corners and vertical jumps are exact.
+  function headLine(wave, p0, cycles) {
+    var pts = [], i;
+    var p1 = p0 + cycles;
+    if (wave === 'sine') {
+      var n = Math.max(24, Math.ceil(cycles * 28));
+      for (i = 0; i <= n; i++) {
+        var p = p0 + cycles * i / n;
+        pts.push([i / n, waveValue(wave, p)]);
+      }
+      return pts;
+    }
+    var marks = [];
+    var br = BREAKS[wave];
+    for (var k = Math.floor(p0) - 1; k <= Math.ceil(p1) + 1; k++) {
+      for (i = 0; i < br.length; i++) {
+        var bp = k + br[i][0];
+        if (bp > p0 + 1e-9 && bp < p1 - 1e-9) marks.push({ p: bp, before: br[i][1], after: br[i][2] });
+      }
+    }
+    marks.sort(function (a, b) { return a.p - b.p; });
+    pts.push([0, waveValue(wave, p0)]);
+    for (i = 0; i < marks.length; i++) {
+      var u = (marks[i].p - p0) / cycles;
+      pts.push([u, marks[i].before]);
+      if (marks[i].after !== marks[i].before) pts.push([u, marks[i].after]);
+    }
+    pts.push([1, waveValue(wave, p1 - 1e-9)]);
+    return pts;
+  }
+
+  // ---------- features, drawn in face units (origin = feature center, 1 = radius) ----------
+  // lw: line width in face units; ey, my: eye and mouth rows relative to the center;
+  // lid: 0 open .. 1 closed; t: time (for the dizzy spin).
+  function eyeDot(g, ex, ey, er, lid, lw) {
+    g.beginPath();
+    if (lid > 0.75) {
+      g.moveTo(ex - er, ey);
+      g.lineTo(ex + er, ey);
+      g.lineWidth = lw * 0.8;
+      g.stroke();
+    } else {
+      g.ellipse(ex, ey, er, er * (1 - lid), 0, 0, TAU);
+      g.fill();
+    }
+  }
+  function eyeArc(g, ex, ey, lw) {
+    // closed happy eye: an upward arch
+    g.beginPath();
+    g.arc(ex, ey + 0.045, 0.085, Math.PI * 1.12, Math.PI * 1.88);
+    g.lineWidth = lw * 0.9;
+    g.stroke();
+  }
+  function eyeSpiral(g, ex, ey, lw, rot) {
+    g.beginPath();
+    var turns = 1.75, n = 28;
+    for (var i = 0; i <= n; i++) {
+      var a = turns * TAU * i / n;
+      var rr = 0.105 * i / n;
+      var px = ex + Math.cos(a + rot) * rr, py = ey + Math.sin(a + rot) * rr;
+      if (i === 0) g.moveTo(px, py); else g.lineTo(px, py);
+    }
+    g.lineWidth = lw * 0.6;
+    g.stroke();
+  }
+
+  function drawFeatures(g, def, ex, lw, lid, breathe, t, glanceX) {
+    var ey = EYE_Y - FACE_CY, my = MOUTH_Y - FACE_CY;
+    var lx = -EYE_DX + glanceX, rx = EYE_DX + glanceX;
+    var e = ex;
+    if (!e.blink) lid = 0;
+
+    // eyes
+    if (e.eyes === 'dot') {
+      eyeDot(g, lx, ey, EYE_R, lid, lw);
+      eyeDot(g, rx, ey, EYE_R, lid, lw);
+    } else if (e.eyes === 'big') {
+      eyeDot(g, lx, ey - 0.02, EYE_R * 1.45, 0, lw);
+      eyeDot(g, rx, ey - 0.02, EYE_R * 1.45, 0, lw);
+    } else if (e.eyes === 'arc') {
+      eyeArc(g, lx, ey, lw);
+      eyeArc(g, rx, ey, lw);
+    } else if (e.eyes === 'line') {
+      // sleeping eyes: downward arches (closed, relaxed)
+      g.beginPath();
+      g.arc(lx, ey - 0.03, 0.085, Math.PI * 0.12, Math.PI * 0.88);
+      g.moveTo(rx + 0.085 * Math.cos(Math.PI * 0.12), ey - 0.03 + 0.085 * Math.sin(Math.PI * 0.12));
+      g.arc(rx, ey - 0.03, 0.085, Math.PI * 0.12, Math.PI * 0.88);
+      g.lineWidth = lw * 0.9;
+      g.stroke();
+    } else if (e.eyes === 'wink') {
+      eyeDot(g, lx, ey, EYE_R, 0, lw);
+      eyeArc(g, rx, ey, lw);
+    } else if (e.eyes === 'spiral') {
+      eyeSpiral(g, lx, ey, lw, t * SPIN);
+      eyeSpiral(g, rx, ey, lw, -t * SPIN + 1.3);
+    }
+
+    // cheeks
+    if (e.blush) {
+      g.beginPath();
+      for (var side = -1; side <= 1; side += 2) {
+        var cx = side * 0.4 + glanceX * 0.5, cy = ey + 0.17;
+        for (var j = -1; j <= 1; j += 2) {
+          var ox = cx + j * 0.035;
+          g.moveTo(ox - 0.02, cy + 0.04);
+          g.lineTo(ox + 0.02, cy - 0.04);
+        }
+      }
+      g.lineWidth = lw * 0.6;
+      g.stroke();
+    }
+
+    // mouth
+    var mw, md;
+    g.lineWidth = lw;
+    g.beginPath();
+    if (e.mouth === 'smile') {
+      mw = def.mouthW * breathe; md = def.mouthD * breathe;
+      if (e.eyes === 'arc') { mw *= 1.1; md *= 1.25; }
+      g.moveTo(-mw, my);
+      g.quadraticCurveTo(0, my + md * 2, mw, my);
+      g.stroke();
+    } else if (e.mouth === 'small') {
+      mw = 0.13 * breathe; md = 0.075 * breathe;
+      g.moveTo(-mw, my + 0.02);
+      g.quadraticCurveTo(0, my + 0.02 + md * 2, mw, my + 0.02);
+      g.stroke();
+    } else if (e.mouth === 'open') {
+      mw = 0.2 * breathe; md = 0.17 * breathe;
+      g.moveTo(-mw, my - 0.01);
+      g.quadraticCurveTo(0, my - 0.01 + md * 2, mw, my - 0.01);
+      g.closePath();
+      g.fill();
+      g.stroke();
+    } else if (e.mouth === 'o') {
+      g.arc(0, my + 0.07, 0.085 * breathe, 0, TAU);
+      g.stroke();
+    } else if (e.mouth === 'flat') {
+      g.moveTo(-0.1, my + 0.06);
+      g.lineTo(0.1, my + 0.06);
+      g.stroke();
+    } else if (e.mouth === 'slant') {
+      g.moveTo(-0.13, my + 0.1);
+      g.lineTo(0.12, my + 0.03);
+      g.stroke();
+    } else if (e.mouth === 'tongue') {
+      mw = 0.2 * breathe; md = 0.07 * breathe;
+      g.moveTo(-mw, my);
+      g.quadraticCurveTo(0, my + md * 2, mw, my);
+      g.stroke();
+      // tongue: rounded lobe hanging from the smile, slightly right of center
+      g.beginPath();
+      g.arc(0.06, my + md - 0.01, 0.095, 0, Math.PI);
+      g.closePath();
+      g.fill();
+    } else if (e.mouth === 'wavy') {
+      var n = 14;
+      for (var i = 0; i <= n; i++) {
+        var u = i / n;
+        var px = -0.17 + 0.34 * u, py = my + 0.06 + 0.04 * Math.sin(u * Math.PI * 3);
+        if (i === 0) g.moveTo(px, py); else g.lineTo(px, py);
+      }
+      g.lineWidth = lw * 0.85;
+      g.stroke();
+    }
+  }
+
+  /*
+   * draw(g, def, x, y, r, anim)
+   *   g     2D context
+   *   def   entry of CHARACTERS
+   *   x, y  center, r radius (bounce radius)
+   *   anim  { t: seconds, lastHit, prevHit: seconds on the same clock as t,
+   *           hitCount: hits so far, hitR / prevHitR: ball radius of the
+   *           last / previous hit,
+   *           seed: 0..1 per instance }
+   *         omit for a still pose (original smile).
+   */
+  function draw(g, def, x, y, r, anim) {
+    if (def._img && !def._imgFailed) {
+      g.save();
+      g.beginPath();
+      g.arc(x, y, r, 0, TAU);
+      g.clip();
+      var iw = def._img.naturalWidth || def._img.width, ih = def._img.naturalHeight || def._img.height;
+      var sc = (2 * r) / Math.min(iw, ih);
+      g.drawImage(def._img, x - iw * sc / 2, y - ih * sc / 2, iw * sc, ih * sc);
+      g.restore();
+      return;
+    }
+
+    var t = anim ? anim.t : 0;
+    var seed = anim ? anim.seed : 0;
+    var count = anim && anim.hitCount ? anim.hitCount : 0;
+    var hitR = anim && anim.hitR ? anim.hitR : 0;
+    var prevHitR = anim && anim.prevHitR ? anim.prevHitR : 0;
+    var age = anim ? t - anim.lastHit : -1;
+    var agePrev = anim && anim.prevHit !== undefined ? t - anim.prevHit : -1;
+    // max of the last two pulses: continuous even when hits come 0.1 s apart
+    var pulse = Math.max(pulseEnv(age), pulseEnv(agePrev));
+
+    // expression and the short swap transition at the hit
+    var exprIndex = expressionFor(seed, count, hitR);
+    var swap = 1;
+    if (count > 0 && age >= 0 && age < 2 * SWAP_HALF) {
+      if (age < SWAP_HALF) {
+        // previous face shrinking
+        exprIndex = expressionFor(seed, count - 1, prevHitR);
+        swap = 1 - (1 - SWAP_MIN) * (age / SWAP_HALF);
+      } else {
+        swap = SWAP_MIN + (1 - SWAP_MIN) * ((age - SWAP_HALF) / SWAP_HALF);
+      }
+    }
+    var expr = EXPRESSIONS[exprIndex];
+
+    // faint body disc (the area the ball bounces off)
+    g.beginPath();
+    g.arc(x, y, r, 0, TAU);
+    g.fillStyle = rgbStr(def.rgb, BODY_ALPHA);
+    g.fill();
+
+    var lwPx = Math.max(1.6, r * LINE_W);
+    g.save();
+    g.strokeStyle = def.color;
+    g.fillStyle = def.color;
+    g.lineWidth = lwPx;
+    g.lineCap = 'round';
+    g.lineJoin = 'round';
+
+    // head line: the character's own waveform, scrolling at a constant rate
+    // (phase depends on time only, so it is always continuous); taller on a hit,
+    // with the bottom edge fixed so the line never reaches the eyes
+    var phase = def.phase0 + t * FLOW + seed;
+    var amp = def.amp * r * (1 + HIT_AMP * pulse);
+    var pts = headLine(def.wave, phase, def.cycles);
+    var x0 = x - WAVE_HALF_W * r, ww = 2 * WAVE_HALF_W * r;
+    var wy = y + WAVE_BOTTOM * r - amp;
+    g.beginPath();
+    for (var i = 0; i < pts.length; i++) {
+      var px = x0 + pts[i][0] * ww, py = wy - pts[i][1] * amp;
+      if (i === 0) g.moveTo(px, py); else g.lineTo(px, py);
+    }
+    g.stroke();
+
+    // face features in face units, scaled by the hit pulse and the swap transition
+    var bob = BOB_AMP * Math.sin(TAU * (t / BOB_PERIOD + seed)) - HIT_LIFT * pulse;
+    var glanceX = GLANCE_AMP * Math.sin(TAU * (t / GLANCE_PERIOD + seed * 1.37));
+    var period = BLINK_MIN + seed * BLINK_SPREAD;
+    var bph = ((t + seed * 7.3) % period + period) % period;
+    var lid = bph < BLINK_LEN ? Math.sin(Math.PI * bph / BLINK_LEN) : 0;   // 0 open .. 1 closed
+    if (pulse > 0) lid = 0;
+    var breathe = 1 + SMILE_AMP * Math.sin(TAU * (t / SMILE_PERIOD + seed * 2.1));
+    var s = swap * (1 + HIT_FEATURE * pulse);
+
+    g.translate(x + def.faceDx * r, y + (FACE_CY + bob) * r);
+    g.scale(r * s, r * s);
+    drawFeatures(g, def, expr, lwPx / (r * s), lid, breathe, t, glanceX);
+    g.restore();
+  }
+
+  // Per-instance seed from an integer id (golden-ratio spacing, deterministic).
+  function seedForId(id) { return frac(id * 0.6180339887498949); }
+
+  global.OSCFace = {
+    CHARACTERS: CHARACTERS,
+    EXPRESSIONS: EXPRESSIONS,
+    draw: draw,
+    seedForId: seedForId,
+    expressionFor: expressionFor,
+    headLine: headLine
+  };
+})(typeof window !== 'undefined' ? window : this);
+
+</script>
+  <script data-src="ui.js">
+/*
+ * OSC Bounce - UI layer
+ * Canvas drawing, pointer input, palette, per-character panel.
+ * Connects OSCSim (logic) and OSCAudio (sound).
+ */
+(function () {
+  'use strict';
+
+  // Character table and character drawing live in face.js (OSCFace).
+  var Face = window.OSCFace;
+  var CHARACTERS = Face.CHARACTERS;
+
+  // neutral palette (pure gray)
+  var COLOR = {
+    bgBase: '#161616',
+    bgArea: '#1d1d1d',
+    stroke: '#2c2c2c',
+    gridLine: 'rgba(255,255,255,0.05)',
+    gridLineC: 'rgba(255,255,255,0.11)',
+    fgPrimary: '#e8e8e8',
+    fgDim: '#707070',
+    ink: '#1a1a1a',
+    ball: '#f2f2f2',
+    reject: 'rgba(242,242,242,'   // neutral, so it is never confused with SAW red
+  };
+
+  var TAP_SLOP = 8;          // px; movement below this is a tap
+  var AREA_RADIUS = 12;
+
+  // ---------- helpers ----------
+  function rgbStr(c, a) {
+    return a === undefined ? 'rgb(' + c[0] + ',' + c[1] + ',' + c[2] + ')'
+                           : 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + a + ')';
+  }
+  function clamp(v, lo, hi) { return v < lo ? lo : (v > hi ? hi : v); }
+
+  CHARACTERS.forEach(function (def) {
+    def._img = null;
+    def._imgFailed = false;
+    if (def.image) {
+      var img = new Image();
+      img.onload = function () { def._img = img; drawPaletteIcons(); };
+      img.onerror = function () { def._imgFailed = true; };
+      img.src = def.image;
+    }
+  });
+
+  // ---------- character drawing ----------
+  // Pure function of (type, time, last hit, seed) - see face.js.
+  function drawCharacter(g, def, x, y, r, anim) {
+    Face.draw(g, def, x, y, r, anim);
+  }
+
+  // ---------- ball drawing ----------
+  // Ball data (radius, hardness, color, image) lives in OSCSim.BALLS; this is only the look.
+  var BALLS = window.OSCSim.BALLS;
+  BALLS.forEach(function (def) {
+    def._img = null;
+    def._imgFailed = false;
+    if (def.image) {
+      var img = new Image();
+      img.onload = function () { def._img = img; drawBallIcons(); };
+      img.onerror = function () { def._imgFailed = true; };
+      img.src = def.image;
+    }
+  });
+  var STONE_SHAPE = [1.0, 0.86, 0.97, 0.9, 1.05, 0.88, 0.99, 0.84, 0.95];
+  var SPONGE_HOLES = [[-0.35, -0.3, 0.13], [0.25, -0.4, 0.1], [0.4, 0.1, 0.14], [-0.1, 0.05, 0.09],
+                      [-0.45, 0.3, 0.1], [0.1, 0.45, 0.12], [0.0, -0.05, 0.0]];
+
+  function shade(rgb, f) {
+    return rgbStr(rgb.map(function (v) { return clamp(Math.round(v * f), 0, 255); }));
+  }
+
+  function drawBall(g, def, x, y, r) {
+    var col = def.color;
+    if (def._img && !def._imgFailed) {
+      g.save();
+      g.beginPath();
+      g.arc(x, y, r, 0, Math.PI * 2);
+      g.clip();
+      var iw = def._img.naturalWidth, ih = def._img.naturalHeight;
+      var sc = (2 * r) / Math.min(iw, ih);
+      g.drawImage(def._img, x - iw * sc / 2, y - ih * sc / 2, iw * sc, ih * sc);
+      g.restore();
+      return;
+    }
+    var i, a, grad;
+    g.save();
+    g.lineCap = 'round';
+    g.lineJoin = 'round';
+
+    if (def.id === 'stone') {
+      // irregular outline (collision is still a circle)
+      g.beginPath();
+      for (i = 0; i < STONE_SHAPE.length; i++) {
+        a = (i / STONE_SHAPE.length) * Math.PI * 2 + 0.3;
+        var rr = r * STONE_SHAPE[i];
+        if (i === 0) g.moveTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr);
+        else g.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr);
+      }
+      g.closePath();
+      g.fillStyle = rgbStr(col);
+      g.fill();
+      g.lineWidth = Math.max(1, r * 0.08);
+      g.strokeStyle = shade(col, 0.6);
+      g.stroke();
+      g.fillStyle = shade(col, 0.72);
+      g.beginPath(); g.arc(x - r * 0.3, y - r * 0.2, r * 0.12, 0, Math.PI * 2); g.fill();
+      g.beginPath(); g.arc(x + r * 0.28, y + r * 0.25, r * 0.09, 0, Math.PI * 2); g.fill();
+      g.beginPath(); g.arc(x + r * 0.1, y - r * 0.4, r * 0.07, 0, Math.PI * 2); g.fill();
+      g.restore();
+      return;
+    }
+
+    if (def.id === 'cotton') {
+      // scalloped fluffy outline
+      var n = 10, br = r * 0.34, ring = r - br;
+      g.fillStyle = rgbStr(col);
+      g.strokeStyle = 'rgba(160,160,160,0.9)';
+      g.lineWidth = Math.max(1, r * 0.05);
+      for (var pass = 0; pass < 2; pass++) {
+        for (i = 0; i < n; i++) {
+          a = (i / n) * Math.PI * 2;
+          g.beginPath();
+          g.arc(x + Math.cos(a) * ring, y + Math.sin(a) * ring, br, 0, Math.PI * 2);
+          if (pass === 0) g.stroke(); else g.fill();
+        }
+      }
+      g.beginPath();
+      g.arc(x, y, ring, 0, Math.PI * 2);
+      g.fill();
+      g.restore();
+      return;
+    }
+
+    // all other balls: circle base
+    g.beginPath();
+    g.arc(x, y, r, 0, Math.PI * 2);
+    if (def.id === 'steel') {
+      grad = g.createRadialGradient(x - r * 0.35, y - r * 0.35, r * 0.1, x, y, r);
+      grad.addColorStop(0, '#ffffff');
+      grad.addColorStop(0.45, rgbStr(col));
+      grad.addColorStop(1, shade(col, 0.45));
+      g.fillStyle = grad;
+    } else if (def.id === 'glass') {
+      g.fillStyle = rgbStr(col, 0.3);
+    } else {
+      g.fillStyle = rgbStr(col);
+    }
+    g.fill();
+    g.save();
+    g.clip();
+    g.lineWidth = Math.max(1, r * 0.12);
+
+    if (def.id === 'marble') {
+      g.strokeStyle = 'rgb(70,120,220)';
+      g.beginPath();
+      g.moveTo(x - r, y + r * 0.2);
+      g.bezierCurveTo(x - r * 0.3, y - r * 0.6, x + r * 0.2, y + r * 0.6, x + r, y - r * 0.2);
+      g.stroke();
+      g.strokeStyle = 'rgb(235,150,129)';
+      g.beginPath();
+      g.moveTo(x - r, y - r * 0.4);
+      g.bezierCurveTo(x - r * 0.2, y - r * 0.1, x + r * 0.3, y - r * 0.9, x + r, y - r * 0.6);
+      g.stroke();
+    } else if (def.id === 'wood') {
+      g.strokeStyle = shade(col, 0.68);
+      g.lineWidth = Math.max(1, r * 0.08);
+      for (i = -2; i <= 2; i++) {
+        g.beginPath();
+        g.moveTo(x - r, y + i * r * 0.36);
+        g.quadraticCurveTo(x, y + i * r * 0.36 - r * 0.25, x + r, y + i * r * 0.36 + r * 0.05);
+        g.stroke();
+      }
+    } else if (def.id === 'rubber') {
+      g.fillStyle = shade(col, 1.25);
+      g.fillRect(x - r, y - r * 0.18, r * 2, r * 0.36);
+    } else if (def.id === 'tennis') {
+      g.strokeStyle = '#ffffff';
+      g.lineWidth = Math.max(1, r * 0.1);
+      g.beginPath(); g.arc(x - r * 1.25, y, r * 0.95, -0.9, 0.9); g.stroke();
+      g.beginPath(); g.arc(x + r * 1.25, y, r * 0.95, Math.PI - 0.9, Math.PI + 0.9); g.stroke();
+    } else if (def.id === 'pingpong') {
+      g.strokeStyle = shade(col, 0.75);
+      g.lineWidth = Math.max(1, r * 0.08);
+      g.beginPath();
+      g.moveTo(x - r, y + r * 0.08);
+      g.quadraticCurveTo(x, y + r * 0.3, x + r, y + r * 0.08);
+      g.stroke();
+    } else if (def.id === 'sponge') {
+      g.fillStyle = shade(col, 0.7);
+      for (i = 0; i < SPONGE_HOLES.length; i++) {
+        var hdef = SPONGE_HOLES[i];
+        if (hdef[2] <= 0) continue;
+        g.beginPath();
+        g.arc(x + hdef[0] * r, y + hdef[1] * r, hdef[2] * r, 0, Math.PI * 2);
+        g.fill();
+      }
+    }
+    g.restore();
+
+    // outline + highlight
+    g.beginPath();
+    g.arc(x, y, r, 0, Math.PI * 2);
+    g.lineWidth = Math.max(1, r * 0.07);
+    g.strokeStyle = def.id === 'glass' ? 'rgba(235,250,255,0.9)' : shade(col, 0.6);
+    g.stroke();
+    if (def.id === 'glass' || def.id === 'marble' || def.id === 'steel' || def.id === 'pingpong') {
+      g.fillStyle = 'rgba(255,255,255,0.75)';
+      g.beginPath();
+      g.arc(x - r * 0.35, y - r * 0.38, Math.max(1, r * 0.18), 0, Math.PI * 2);
+      g.fill();
+    }
+    g.restore();
+  }
+
+  // ---------- DOM ----------
+  var canvas = document.getElementById('stage');
+  var ctx = canvas.getContext('2d');
+  var topbar = document.getElementById('topbar');
+  var palette = document.getElementById('palette');
+  var countEl = document.getElementById('count');
+  var clearBtn = document.getElementById('clear');
+  var panel = document.getElementById('panel');
+  var removeBtn = document.getElementById('remove');
+  var closeBtn = document.getElementById('close');
+  var picks = document.getElementById('picks');
+  var faders = Array.prototype.slice.call(panel.querySelectorAll('.fader'));
+  var langBtn = document.getElementById('lang');
+  var helpTop = document.getElementById('help-top');
+  var helpBottom = document.getElementById('help-bottom');
+
+  // ======================================================================
+  // STRINGS - one table, same keys for every language.
+  // Character names (SINE / TRI / SAW / PULSE), ball names and BALL stay English.
+  // ======================================================================
+  var LANGS = ['ja', 'en', 'zh'];
+  var STRINGS = {
+    ja: {
+      htmlLang: 'ja',
+      button: 'JP',
+      helpTop: 'ボールが当たると音が鳴り、高い位置ほど高い音に。枠を狭めるとボールが速くなります。',
+      helpBottom: 'キャラクターを選んでタップで配置、調整パネルが開きます。ドラッグで移動。BALL でボールを変更：大きいと何人も同時に鳴り、小さいと速く、やわらかいとまろやかな音に。',
+      clear: 'クリア',
+      decay: 'のびる',
+      reverb: 'ひびき',
+      delay: 'やまびこ',
+      remove: '削除',
+      close: '閉じる'
+    },
+    en: {
+      htmlLang: 'en',
+      button: 'EN',
+      helpTop: 'A hit makes a sound. Higher spot, higher note. A smaller frame makes the ball faster.',
+      helpBottom: 'Pick a character, tap to place it and its panel opens. Drag to move. BALL: big balls ring several characters at once, small ones are faster, soft ones sound mellow.',
+      clear: 'CLEAR',
+      decay: 'LENGTH',
+      reverb: 'SPACE',
+      delay: 'ECHO',
+      remove: 'REMOVE',
+      close: 'CLOSE'
+    },
+    zh: {
+      htmlLang: 'zh-Hant',
+      button: '中文',
+      helpTop: '球碰到角色就會發出聲音，位置越高音越高。把框縮小，球會變快。',
+      helpBottom: '選好角色後點一下放置，會開啟調整面板；拖曳可移動。BALL 換球：大球能一次碰到好幾個角色一起響，小球比較快，軟的球聲音比較柔和。',
+      clear: '清除',
+      decay: '長度',
+      reverb: '空間',
+      delay: '回音',
+      remove: '移除',
+      close: '關閉'
+    }
+  };
+  var LANG_KEY = 'oscbounce.lang';
+
+  function detectLang() {
+    var list = (navigator.languages && navigator.languages.length) ? navigator.languages : [navigator.language || ''];
+    var first = String(list[0] || '').toLowerCase();
+    if (first.indexOf('ja') === 0) return 'ja';
+    if (first.indexOf('zh') === 0) return 'zh';
+    return 'en';
+  }
+  function loadLang() {
+    try {
+      var v = window.localStorage.getItem(LANG_KEY);
+      if (v && STRINGS[v]) return v;
+    } catch (e) { /* storage unavailable (file://, private mode) */ }
+    return detectLang();
+  }
+  function saveLang(v) {
+    try { window.localStorage.setItem(LANG_KEY, v); } catch (e) { /* ignore */ }
+  }
+
+  var lang = loadLang();
+
+  function applyLang() {
+    var s = STRINGS[lang];
+    document.documentElement.lang = s.htmlLang;
+    langBtn.textContent = s.button;
+    helpTop.textContent = s.helpTop;
+    helpBottom.textContent = s.helpBottom;
+    clearBtn.textContent = s.clear;
+    removeBtn.textContent = s.remove;
+    closeBtn.textContent = s.close;
+    faders.forEach(function (f) {
+      var word = s[f.dataset.param];
+      Array.prototype.forEach.call(f.querySelectorAll('.word'), function (el) { el.textContent = word; });
+    });
+  }
+
+  var sim = new window.OSCSim();
+  var audio = new window.OSCAudio();
+
+  var selectedType = 0;
+  var panelCharId = null;
+  var area = { x: 0, y: 0, w: 1, h: 1 };
+  var dpr = 1;
+  var pointers = {};          // pointerId -> state
+  var rejects = [];           // { x, y, t }
+  var lastCount = -1;
+  var rejectTimer = null;
+
+  // ---------- palette ----------
+  var pickButtons = [];
+  CHARACTERS.forEach(function (def, index) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'pick';
+    btn.style.setProperty('--pick-color', def.color);
+    var icon = document.createElement('canvas');
+    var label = document.createElement('span');
+    label.textContent = def.label;
+    btn.appendChild(icon);
+    btn.appendChild(label);
+    btn.addEventListener('click', function () { selectType(index); });
+    picks.appendChild(btn);
+    pickButtons.push({ btn: btn, icon: icon });
+  });
+
+  // ---------- ball button + ball picker ----------
+  var ballBtn = document.createElement('button');
+  ballBtn.type = 'button';
+  ballBtn.className = 'pick ballbtn';
+  var ballBtnIcon = document.createElement('canvas');
+  var ballBtnLabel = document.createElement('span');
+  ballBtnLabel.textContent = 'BALL';
+  ballBtn.appendChild(ballBtnIcon);
+  ballBtn.appendChild(ballBtnLabel);
+  picks.appendChild(ballBtn);
+
+  var ballPanel = document.getElementById('ballpanel');
+  var ballItems = [];
+  BALLS.forEach(function (def, index) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'ballitem';
+    var icon = document.createElement('canvas');
+    var label = document.createElement('span');
+    label.textContent = def.label;
+    b.appendChild(icon);
+    b.appendChild(label);
+    b.addEventListener('click', function () {
+      sim.setBallType(index);
+      closeBallPanel();
+      drawBallIcons();
+    });
+    ballPanel.appendChild(b);
+    ballItems.push({ btn: b, icon: icon });
+  });
+
+  // Icon radius keeps the size order of the balls and always fits the cell.
+  // Square-root scale, so the smallest ball stays visible next to the largest.
+  function iconBallRadius(def, size) {
+    var maxR = size / 2 - 2;
+    return Math.max(3, maxR * Math.sqrt(def.radius / window.OSCSim.BALL_R_MAX));
+  }
+
+  function paintIcon(canvasEl, fallbackSize, paint) {
+    var size = canvasEl.clientWidth || fallbackSize;
+    canvasEl.width = Math.round(size * dpr);
+    canvasEl.height = Math.round(size * dpr);
+    var g = canvasEl.getContext('2d');
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    g.clearRect(0, 0, size, size);
+    paint(g, size);
+  }
+
+  function drawBallIcons() {
+    var cur = sim.ballDef();
+    paintIcon(ballBtnIcon, 40, function (g, size) {
+      drawBall(g, cur, size / 2, size / 2, iconBallRadius(cur, size));
+    });
+    ballItems.forEach(function (it, i) {
+      it.btn.classList.toggle('selected', i === sim.ballType);
+      if (ballPanel.hidden) return;
+      paintIcon(it.icon, 36, function (g, size) {
+        drawBall(g, BALLS[i], size / 2, size / 2, iconBallRadius(BALLS[i], size));
+      });
+    });
+  }
+
+  function openBallPanel() {
+    closePanel();
+    ballPanel.hidden = false;
+    drawBallIcons();
+    var vw = window.innerWidth;
+    var pw = ballPanel.offsetWidth, ph = ballPanel.offsetHeight;
+    var tcs = getComputedStyle(topbar);
+    var minY = (parseFloat(tcs.paddingTop) || 0) + 8;
+    var pb = palette.getBoundingClientRect();
+    var top = Math.max(minY, pb.top - ph - 8);
+    var left = clamp((vw - pw) / 2, 8, Math.max(8, vw - pw - 8));
+    ballPanel.style.left = Math.round(left) + 'px';
+    ballPanel.style.top = Math.round(top) + 'px';
+    ballBtn.classList.add('selected');
+  }
+
+  function closeBallPanel() {
+    ballPanel.hidden = true;
+    ballBtn.classList.remove('selected');
+  }
+
+  ballBtn.addEventListener('click', function () {
+    if (ballPanel.hidden) openBallPanel(); else closeBallPanel();
+  });
+
+  function selectType(index) {
+    selectedType = index;
+    pickButtons.forEach(function (p, i) { p.btn.classList.toggle('selected', i === index); });
+  }
+
+  // Palette icons are animated (same drawing as the field, never hit).
+  // Size is set here (on layout); paintPaletteIcons runs every frame.
+  function drawPaletteIcons() {
+    pickButtons.forEach(function (p) {
+      var size = p.icon.clientWidth || 40;
+      p.size = size;
+      p.icon.width = Math.round(size * dpr);
+      p.icon.height = Math.round(size * dpr);
+      p.g = p.icon.getContext('2d');
+    });
+    paintPaletteIcons();
+  }
+
+  function paintPaletteIcons() {
+    var t = sim.time;
+    pickButtons.forEach(function (p, i) {
+      if (!p.g) return;
+      var size = p.size;
+      p.g.setTransform(dpr, 0, 0, dpr, 0, 0);
+      p.g.clearRect(0, 0, size, size);
+      drawCharacter(p.g, CHARACTERS[i], size / 2, size / 2, size / 2 - 2,
+                    { t: t, lastHit: -1000, seed: Face.seedForId(i + 101) });
+    });
+  }
+
+  // ---------- layout ----------
+  function layout() {
+    dpr = window.devicePixelRatio || 1;
+    var vw = window.innerWidth, vh = window.innerHeight;
+    canvas.width = Math.round(vw * dpr);
+    canvas.height = Math.round(vh * dpr);
+
+    var tb = topbar.getBoundingClientRect();
+    var pb = palette.getBoundingClientRect();
+    var tcs = getComputedStyle(topbar);
+    var padL = parseFloat(tcs.paddingLeft) || 8;
+    var padR = parseFloat(tcs.paddingRight) || 8;
+
+    area.x = padL;
+    area.y = tb.bottom;
+    area.w = Math.max(1, vw - padL - padR);
+    area.h = Math.max(1, pb.top - tb.bottom);
+    sim.setBounds(area.w, area.h);
+
+    closePanel();
+    closeBallPanel();
+    drawPaletteIcons();
+    drawBallIcons();
+  }
+
+  function toArea(e) {
+    return { x: e.clientX - area.x, y: e.clientY - area.y };
+  }
+  function inArea(p) {
+    return p.x >= 0 && p.y >= 0 && p.x <= area.w && p.y <= area.h;
+  }
+
+  // ---------- panel ----------
+  function paramValue(c, name) {
+    if (name === 'decay') return c.decayNorm;
+    if (name === 'reverb') return c.reverb;
+    return c.delay;
+  }
+  function setParam(c, name, v) {
+    v = clamp(v, 0, 1);
+    if (name === 'decay') c.decayNorm = v;
+    else if (name === 'reverb') c.reverb = v;
+    else c.delay = v;
+  }
+  function refreshFaders() {
+    var c = sim.getCharacter(panelCharId);
+    if (!c) return;
+    faders.forEach(function (f) {
+      f.querySelector('.fill').style.width = (paramValue(c, f.dataset.param) * 100) + '%';
+    });
+  }
+
+  function openPanel(c) {
+    panelCharId = c.id;
+    var def = CHARACTERS[c.type];
+    panel.style.setProperty('--fader-color', def.color);
+    refreshFaders();
+    panel.hidden = false;
+
+    var pw = panel.offsetWidth, ph = panel.offsetHeight;
+    var vw = window.innerWidth, vh = window.innerHeight;
+    var tcs = getComputedStyle(topbar), pcs = getComputedStyle(palette);
+    var margin = 8;
+    var minX = (parseFloat(tcs.paddingLeft) || 0) + margin - 8;
+    var maxX = vw - (parseFloat(tcs.paddingRight) || 0) + 8 - margin - pw;
+    var minY = (parseFloat(tcs.paddingTop) || 0) + margin;
+    var maxY = vh - (parseFloat(pcs.paddingBottom) || 0) - margin - ph;
+
+    maxX = Math.max(minX, maxX);
+    maxY = Math.max(minY, maxY);
+
+    // Candidate sides in order: right, left, below, above.
+    // The first one that fits entirely on screen wins. If none fits, the clamped
+    // candidate that overlaps the character the least is used, so the panel
+    // never needlessly covers the character it edits.
+    var sx = area.x + c.x, sy = area.y + c.y;
+    var R = sim.charRadius;
+    var gap = R + 12;
+    var candidates = [
+      { left: sx + gap, top: sy - ph / 2 },
+      { left: sx - gap - pw, top: sy - ph / 2 },
+      { left: sx - pw / 2, top: sy + gap },
+      { left: sx - pw / 2, top: sy - gap - ph }
+    ];
+    var best = null, bestOverlap = Infinity;
+    for (var i = 0; i < candidates.length; i++) {
+      var cand = candidates[i];
+      // side placements (right/left) may slide vertically without covering the
+      // character, so only their horizontal fit matters; above/below may slide
+      // horizontally, so only their vertical fit matters.
+      var fitsX = cand.left >= minX && cand.left <= maxX;
+      var fitsY = cand.top >= minY && cand.top <= maxY;
+      var fits = i < 2 ? fitsX : fitsY;
+      var l = clamp(cand.left, minX, maxX);
+      var t = clamp(cand.top, minY, maxY);
+      if (fits) { best = { left: l, top: t }; break; }
+      var ox = Math.max(0, Math.min(l + pw, sx + R) - Math.max(l, sx - R));
+      var oy = Math.max(0, Math.min(t + ph, sy + R) - Math.max(t, sy - R));
+      var overlap = ox * oy;
+      if (overlap < bestOverlap) { bestOverlap = overlap; best = { left: l, top: t }; }
+    }
+    if (!best) best = { left: minX, top: minY };
+    panel.style.left = Math.round(best.left) + 'px';
+    panel.style.top = Math.round(best.top) + 'px';
+  }
+
+  function closePanel() {
+    panelCharId = null;
+    panel.hidden = true;
+  }
+
+  faders.forEach(function (f) {
+    var name = f.dataset.param;
+    function apply(e) {
+      var c = sim.getCharacter(panelCharId);
+      if (!c) return;
+      var rect = f.getBoundingClientRect();
+      setParam(c, name, (e.clientX - rect.left) / rect.width);
+      refreshFaders();
+    }
+    f.addEventListener('pointerdown', function (e) {
+      e.preventDefault();
+      f.setPointerCapture(e.pointerId);
+      apply(e);
+    });
+    f.addEventListener('pointermove', function (e) {
+      if (f.hasPointerCapture && f.hasPointerCapture(e.pointerId)) apply(e);
+    });
+  });
+
+  removeBtn.addEventListener('click', function () {
+    if (panelCharId !== null) sim.removeCharacter(panelCharId);
+    closePanel();
+  });
+
+  closeBtn.addEventListener('click', function () {
+    closePanel();
+  });
+
+  clearBtn.addEventListener('click', function () {
+    sim.clear();
+    closePanel();
+  });
+
+  langBtn.addEventListener('click', function () {
+    lang = LANGS[(LANGS.indexOf(lang) + 1) % LANGS.length];
+    saveLang(lang);
+    applyLang();
+    layout();   // help text height differs per language
+  });
+
+  // ---------- audio unlock + outside-click close ----------
+  function unlockAudio() { audio.ensure(); }
+
+  // Pressing anywhere outside the panel closes it. Presses on the stage canvas are
+  // handled by the canvas handler instead (it closes the panel itself and decides
+  // whether to place, switch, or just close).
+  // The ball picker closes on any press outside it (except the BALL button, which
+  // toggles it); a press on the stage that closes the picker does nothing else.
+  var swallowPointerId = null;
+  document.addEventListener('pointerdown', function (e) {
+    unlockAudio();
+    if (!panel.hidden && !panel.contains(e.target) && e.target !== canvas) {
+      closePanel();
+    }
+    if (!ballPanel.hidden && !ballPanel.contains(e.target) && !ballBtn.contains(e.target)) {
+      closeBallPanel();
+      if (e.target === canvas) swallowPointerId = e.pointerId;
+    }
+  }, true);
+  document.addEventListener('pointerup', unlockAudio, true);
+  document.addEventListener('touchend', unlockAudio, { capture: true, passive: true });
+  document.addEventListener('click', unlockAudio, true);
+
+  // block zoom / context menus
+  document.addEventListener('gesturestart', function (e) { e.preventDefault(); });
+  document.addEventListener('dblclick', function (e) { e.preventDefault(); });
+  document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+
+  // ---------- stage pointer handling ----------
+  function reject(p) {
+    rejects.push({ x: p.x, y: p.y, t: performance.now() / 1000 });
+    countEl.classList.add('reject');
+    if (rejectTimer) clearTimeout(rejectTimer);
+    rejectTimer = setTimeout(function () { countEl.classList.remove('reject'); }, 420);
+  }
+
+  // ---------- bounds handles ----------
+  var HANDLE_LEN = 44;        // drawn bar length
+  var HANDLE_THICK = 6;       // drawn bar thickness
+  var HANDLE_HIT_LEN = 72;    // touch zone along the edge
+  var HANDLE_HIT_THICK = 44;  // touch zone across the edge
+  var DOUBLE_TAP = 0.35;      // seconds
+  var lastHandleTap = -10;
+
+  // Touch zones in play-area coordinates, shifted inward so the full 44 px is
+  // inside the play area even when the bounds sit on the outer edge.
+  function handleZones() {
+    var bd = sim.bounds;
+    var cx = (bd.left + bd.right) / 2, cy = (bd.top + bd.bottom) / 2;
+    var t = HANDLE_HIT_THICK, L = HANDLE_HIT_LEN;
+    function fit(x, y, w, h) {
+      return { x: clamp(x, 0, area.w - w), y: clamp(y, 0, area.h - h), w: w, h: h };
+    }
+    return [
+      { side: 'top',    r: fit(cx - L / 2, bd.top - t / 2, L, t) },
+      { side: 'bottom', r: fit(cx - L / 2, bd.bottom - t / 2, L, t) },
+      { side: 'left',   r: fit(bd.left - t / 2, cy - L / 2, t, L) },
+      { side: 'right',  r: fit(bd.right - t / 2, cy - L / 2, t, L) }
+    ];
+  }
+
+  function handleAt(p) {
+    var zones = handleZones();
+    for (var i = 0; i < zones.length; i++) {
+      var r = zones[i].r;
+      if (p.x >= r.x && p.x <= r.x + r.w && p.y >= r.y && p.y <= r.y + r.h) return zones[i].side;
+    }
+    return null;
+  }
+
+  function edgeValue(side) {
+    var bd = sim.bounds;
+    return side === 'top' ? bd.top : side === 'bottom' ? bd.bottom : side === 'left' ? bd.left : bd.right;
+  }
+
+  canvas.addEventListener('pointerdown', function (e) {
+    e.preventDefault();
+    if (swallowPointerId === e.pointerId) { swallowPointerId = null; return; }
+    var openId = panelCharId;   // panel that was open before this press
+    closePanel();
+    var p = toArea(e);
+    if (!inArea(p)) return;
+
+    // bounds handles take priority over characters and placement
+    var side = handleAt(p);
+    if (side) {
+      var vertical = side === 'top' || side === 'bottom';
+      pointers[e.pointerId] = {
+        handle: side,
+        grab: edgeValue(side) - (vertical ? p.y : p.x),
+        startX: e.clientX,
+        startY: e.clientY,
+        moved: false
+      };
+      try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+      return;
+    }
+
+    var c = sim.hitTest(p.x, p.y, 4);
+    var isNew = false;
+    if (!c) {
+      // empty spot: place a new character (its panel opens on release)
+      if (!sim.canAdd()) { reject(p); return; }
+      c = sim.addCharacter(selectedType, p.x, p.y);
+      if (!c) { reject(p); return; }
+      isNew = true;
+    }
+    pointers[e.pointerId] = {
+      charId: c.id,
+      startX: e.clientX,
+      startY: e.clientY,
+      offX: c.x - p.x,
+      offY: c.y - p.y,
+      moved: false,
+      isNew: isNew,
+      wasOpen: c.id === openId  // pressing the character whose panel was open
+    };
+    try { canvas.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+  });
+
+  canvas.addEventListener('pointermove', function (e) {
+    var st = pointers[e.pointerId];
+    if (!st) return;
+    if (!st.moved) {
+      var dx = e.clientX - st.startX, dy = e.clientY - st.startY;
+      if (dx * dx + dy * dy < TAP_SLOP * TAP_SLOP) return;
+      st.moved = true;
+    }
+    var p = toArea(e);
+    if (st.handle) {
+      var vertical = st.handle === 'top' || st.handle === 'bottom';
+      sim.setEdge(st.handle, (vertical ? p.y : p.x) + st.grab);
+      return;
+    }
+    sim.moveCharacter(st.charId, p.x + st.offX, p.y + st.offY);
+  });
+
+  function endPointer(e, cancelled) {
+    var st = pointers[e.pointerId];
+    if (!st) return;
+    delete pointers[e.pointerId];
+    if (cancelled) return;
+    if (st.handle) {
+      // double tap on any handle resets all four edges
+      if (!st.moved) {
+        var now = performance.now() / 1000;
+        if (now - lastHandleTap <= DOUBLE_TAP) {
+          sim.resetBounds();
+          lastHandleTap = -10;
+        } else {
+          lastHandleTap = now;
+        }
+      }
+      return;
+    }
+    var c = sim.getCharacter(st.charId);
+    if (!c) return;
+    // Rules on release:
+    //  new character (tap or drag)         -> open its panel at the final position
+    //  tap on the character already open   -> stays closed (tap toggles it off)
+    //  tap on another character            -> open that character's panel
+    //  drag the character that was open    -> reopen at the final position
+    //  drag any other character            -> no panel
+    var open;
+    if (st.isNew) open = true;
+    else if (!st.moved) open = !st.wasOpen;
+    else open = st.wasOpen;
+    if (open) openPanel(c);
+  }
+  canvas.addEventListener('pointerup', function (e) { endPointer(e, false); });
+  canvas.addEventListener('pointercancel', function (e) { endPointer(e, true); });
+
+  // ---------- sound hookup ----------
+  sim.onHit = function (c, hit) {
+    var def = CHARACTERS[c.type];
+    audio.trigger({
+      wave: def.wave,
+      freq: sim.noteForY(c.y).freq,
+      decay: sim.decaySeconds(c),
+      reverb: c.reverb,
+      delay: c.delay,
+      pan: sim.panForX(c.x),
+      cutoff: hit.cutoff,
+      attack: hit.attack
+    });
+  };
+
+  // ---------- rendering ----------
+  function roundRectPath(g, x, y, w, h, r) {
+    g.beginPath();
+    g.moveTo(x + r, y);
+    g.lineTo(x + w - r, y);
+    g.arcTo(x + w, y, x + w, y + r, r);
+    g.lineTo(x + w, y + h - r);
+    g.arcTo(x + w, y + h, x + w - r, y + h, r);
+    g.lineTo(x + r, y + h);
+    g.arcTo(x, y + h, x, y + h - r, r);
+    g.lineTo(x, y + r);
+    g.arcTo(x, y, x + r, y, r);
+    g.closePath();
+  }
+
+  function draggedNotes() {
+    var map = {};
+    for (var id in pointers) {
+      var st = pointers[id];
+      if (!st.moved) continue;
+      var c = sim.getCharacter(st.charId);
+      if (c) map[c.id] = c;
+    }
+    return map;
+  }
+
+  function render() {
+    var vw = canvas.width / dpr, vh = canvas.height / dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.fillStyle = COLOR.bgBase;
+    ctx.fillRect(0, 0, vw, vh);
+
+    ctx.save();
+    roundRectPath(ctx, area.x, area.y, area.w, area.h, AREA_RADIUS);
+    ctx.fillStyle = COLOR.bgArea;
+    ctx.fill();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = COLOR.stroke;
+    ctx.stroke();
+    ctx.clip();
+    ctx.translate(area.x, area.y);
+
+    var dragged = draggedNotes();
+    var highlight = {};
+    for (var id in dragged) {
+      var dc = dragged[id];
+      highlight[sim.noteIndexForY(dc.y)] = CHARACTERS[dc.type];
+    }
+
+    // pitch grid (lines only, no note names)
+    var scale = window.OSCSim.SCALE;
+    for (var i = 0; i < scale.length; i++) {
+      var gy = Math.round(sim.yForNoteIndex(i)) + 0.5;
+      var isC = scale[i].name.charAt(0) === 'C';
+      ctx.beginPath();
+      ctx.moveTo(0, gy);
+      ctx.lineTo(area.w, gy);
+      if (highlight[i]) {
+        ctx.strokeStyle = rgbStr(highlight[i].rgb, 0.45);
+        ctx.lineWidth = 2;
+      } else {
+        ctx.strokeStyle = isC ? COLOR.gridLineC : COLOR.gridLine;
+        ctx.lineWidth = 1;
+      }
+      ctx.stroke();
+    }
+
+    // ball bounds: dim the outside, draw the boundary line
+    var bd = sim.bounds;
+    var full = sim.isFullBounds();
+    if (!full) {
+      ctx.beginPath();
+      ctx.rect(0, 0, area.w, area.h);
+      ctx.rect(bd.left, bd.top, bd.right - bd.left, bd.bottom - bd.top);
+      ctx.fillStyle = 'rgba(0,0,0,0.28)';
+      ctx.fill('evenodd');
+    }
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = 'rgba(232,232,232,0.4)';
+    ctx.strokeRect(bd.left + 0.75, bd.top + 0.75, bd.right - bd.left - 1.5, bd.bottom - bd.top - 1.5);
+
+    // characters (unreachable ones are drawn translucent)
+    var now = sim.time;
+    var R = sim.charRadius;
+    var chars = sim.characters;
+    for (var k = 0; k < chars.length; k++) {
+      var c = chars[k];
+      var def = CHARACTERS[c.type];
+      ctx.globalAlpha = sim.isReachable(c) ? 1 : 0.35;
+      var age = now - c.lastHit;
+      var s = 1;
+      if (age >= 0 && age < 0.35) {
+        s = 1 + 0.24 * Math.exp(-age * 14);
+        var ringA = (1 - age / 0.35) * 0.5;
+        ctx.beginPath();
+        ctx.arc(c.x, c.y, R * (1.05 + age * 1.6), 0, Math.PI * 2);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = rgbStr(def.rgb, ringA);
+        ctx.stroke();
+      }
+      if (c.id === panelCharId) {
+        ctx.beginPath();
+        ctx.arc(c.x, c.y, R + 6, 0, Math.PI * 2);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = COLOR.fgPrimary;
+        ctx.stroke();
+      }
+      drawCharacter(ctx, def, c.x, c.y, R * s, {
+        t: now, lastHit: c.lastHit, prevHit: c.prevHit, hitCount: c.hitCount,
+        hitR: c.hitR, prevHitR: c.prevHitR, seed: Face.seedForId(c.id)
+      });
+    }
+    ctx.globalAlpha = 1;
+
+    // ball
+    var b = sim.ball;
+    drawBall(ctx, sim.ballDef(), b.x, b.y, b.r);
+
+    // bounds handles: bar at the middle of each edge, kept fully visible
+    var activeHandles = {};
+    for (var pid in pointers) { if (pointers[pid].handle) activeHandles[pointers[pid].handle] = true; }
+    var hcx = (bd.left + bd.right) / 2, hcy = (bd.top + bd.bottom) / 2;
+    var inset = HANDLE_THICK / 2 + 3;
+    var bars = [
+      { side: 'top',    x: hcx, y: clamp(bd.top, inset, area.h - inset),    horiz: true },
+      { side: 'bottom', x: hcx, y: clamp(bd.bottom, inset, area.h - inset), horiz: true },
+      { side: 'left',   x: clamp(bd.left, inset, area.w - inset), y: hcy,  horiz: false },
+      { side: 'right',  x: clamp(bd.right, inset, area.w - inset), y: hcy, horiz: false }
+    ];
+    for (var hb = 0; hb < bars.length; hb++) {
+      var bar = bars[hb];
+      var bw = bar.horiz ? HANDLE_LEN : HANDLE_THICK;
+      var bh = bar.horiz ? HANDLE_THICK : HANDLE_LEN;
+      roundRectPath(ctx, bar.x - bw / 2, bar.y - bh / 2, bw, bh, HANDLE_THICK / 2);
+      ctx.fillStyle = activeHandles[bar.side] ? '#ffffff' : 'rgba(232,232,232,0.7)';
+      ctx.fill();
+    }
+
+    // rejection feedback (full)
+    var tNow = performance.now() / 1000;
+    for (var j = rejects.length - 1; j >= 0; j--) {
+      var rj = rejects[j];
+      var ra = tNow - rj.t;
+      if (ra > 0.4) { rejects.splice(j, 1); continue; }
+      var a = 1 - ra / 0.4;
+      var shake = Math.sin(ra * 60) * 6 * a;
+      var rr = R * 0.6;
+      ctx.save();
+      ctx.translate(rj.x + shake, rj.y);
+      ctx.strokeStyle = COLOR.reject + a + ')';
+      ctx.lineWidth = 2.5;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.arc(0, 0, rr, 0, Math.PI * 2);
+      ctx.moveTo(-rr * 0.707, rr * 0.707);
+      ctx.lineTo(rr * 0.707, -rr * 0.707);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    ctx.restore();
+
+    if (chars.length !== lastCount) {
+      lastCount = chars.length;
+      countEl.textContent = lastCount + ' / ' + window.OSCSim.MAX_CHARACTERS;
+    }
+  }
+
+  var lastFrame = null;
+  function frame(ts) {
+    if (lastFrame !== null) sim.update((ts - lastFrame) / 1000);
+    lastFrame = ts;
+    render();
+    paintPaletteIcons();
+    requestAnimationFrame(frame);
+  }
+
+  // ---------- boot ----------
+  selectType(0);
+  applyLang();
+  layout();
+  window.addEventListener('resize', layout);
+  window.addEventListener('orientationchange', function () { setTimeout(layout, 50); });
+  // help text height changes once fonts load (the Chinese font loads on first use)
+  if (document.fonts) {
+    if (document.fonts.ready) document.fonts.ready.then(layout);
+    if (document.fonts.addEventListener) {
+      document.fonts.addEventListener('loadingdone', function () {
+        // only when the bars actually changed height, so open panels stay open
+        var tb = topbar.getBoundingClientRect(), pb = palette.getBoundingClientRect();
+        if (Math.abs(tb.bottom - area.y) > 0.5 || Math.abs((pb.top - tb.bottom) - area.h) > 0.5) layout();
+      });
+    }
+  }
+  requestAnimationFrame(frame);
+})();
+
+</script>
+</body>
+</html>
