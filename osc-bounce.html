@@ -46,6 +46,7 @@
     --cv-handle-active: #1a1a1a;
     --cv-reject-rgb: 26, 26, 26;             /* rejection mark, alpha added in ui.js */
     --cv-ball-light: #ffffff;                /* ball material highlight (STEEL shine, TENNIS seam) */
+    --cv-fluff-rgb: 204, 204, 204;           /* COTTON fluff: light grey, a little darker than white */
     --sheet-backdrop: rgba(0, 0, 0, 0.28);
   }
   /* Black theme. All grays pure gray (r = g = b), contrast reversed.
@@ -70,6 +71,7 @@
     --cv-handle-active: #ededed;
     --cv-reject-rgb: 237, 237, 237;
     --cv-ball-light: #ffffff;
+    --cv-fluff-rgb: 232, 232, 232;
     --sheet-backdrop: rgba(0, 0, 0, 0.55);
   }
   /* official logo is black line art on transparent: white lines on the black theme */
@@ -621,16 +623,25 @@ window.OSC_ASSETS = {
     // (x 0.70) and outline (x 0.60) are darker shades of the same yellow (see ui.js).
     { id: 'sponge',   label: 'SPONGE',   radius: 46, hardness: 0.12, color: [245, 215, 93], image: null,
       names: { en: 'SPONGE', ja: 'スポンジ', zh: '海綿' } },
+    // COTTON: every collision (character or wall, counted like WATERMELON hits) shrinks
+    // it by `shrinkPerHit` of its current size, down to `shrinkMin` x its base radius,
+    // and leaves a puff record for the fluff particles (see _afterStep / puffs).
+    // Selecting a ball again restores the full size.
     { id: 'cotton',   label: 'COTTON',   radius: 54, hardness: 0.00, color: [244, 244, 244], image: null,
+      shrinkPerHit: 0.03, shrinkMin: 0.4,
       names: { en: 'COTTON', ja: 'わた', zh: '棉花' } },
-    { id: 'stone',    label: 'STONE',    radius: 66, hardness: 0.85, color: [128, 124, 120], image: null,
-      names: { en: 'STONE', ja: 'いし', zh: '石頭' } },
-    // WATERMELON: the largest ball. Breaks after `breakHits` collisions (characters or
+    // WATERMELON: same size as COTTON. Breaks after `breakHits` collisions (characters or
     // walls, one per step) within `breakWindow` seconds, then becomes the default ball
     // (see _afterStep). 12 in 4 s was tuned at radius 42 (open field with a few
     // characters lasted minutes; minimum bounds or a tight cluster broke it in 2-4 s).
-    { id: 'watermelon', label: 'WATERMELON', radius: 72, hardness: 0.60, color: [96, 172, 64], image: null,
-      breakHits: 12, breakWindow: 4.0, names: { en: 'WATERMELON', ja: 'スイカ', zh: '西瓜' } }
+    { id: 'watermelon', label: 'WATERMELON', radius: 54, hardness: 0.60, color: [96, 172, 64], image: null,
+      breakHits: 12, breakWindow: 4.0, names: { en: 'WATERMELON', ja: 'スイカ', zh: '西瓜' } },
+    // STONE: the largest ball. Hitting the same character `breakCharHits` times in a row
+    // breaks that character (removed, burst drawn from a charBreaks record). A hit on a
+    // different character restarts the count; walls do not interrupt it.
+    { id: 'stone',    label: 'STONE',    radius: 66, hardness: 0.85, color: [128, 124, 120], image: null,
+      breakCharHits: 3,
+      names: { en: 'STONE', ja: 'いし', zh: '石頭' } }
   ];
   // Default ball looked up by id, so removing or reordering balls cannot point it elsewhere.
   var DEFAULT_BALL = BALLS.map(function (b) { return b.id; }).indexOf('marble');
@@ -720,6 +731,8 @@ window.OSC_ASSETS = {
   // ball becomes BALLS[DEFAULT_BALL] at the same place, moving the same way.
   var BREAK_DEBOUNCE = 0.1;       // s
   var MELON_SHATTER_TIME = 0.8;   // s, length of the burst animation
+  var COTTON_PUFF_TIME = 1.0;     // s, life of the fluff particles of one collision
+  var CHAR_BREAK_TIME = 0.8;      // s, burst of a character broken by STONE
   var MELON_TILT = 0.5;           // rad, stem tilted toward the viewer in the rest pose
   // Ball orientation (rolling look): row-major 3x3 rotation, body -> screen
   // (x right, y down, z toward the viewer). Body z = stem axis.
@@ -813,6 +826,14 @@ window.OSC_ASSETS = {
     // breakable ball state (BALLS[ballType].breakHits > 0): sim times of recent collisions
     this.breakHitTimes = [];
     this.shatters = [];         // { t, x, y, r, vx, vy }, kept for MELON_SHATTER_TIME
+    this.lastCollision = -1000; // sim time of the last counted collision (debounce)
+    this.ballShrink = 1;        // shrinking ball (COTTON): current size / base size
+    this.puffs = [];            // { t, x, y, nx, ny, r }, kept for COTTON_PUFF_TIME
+    this._contactNx = 0; this._contactNy = 0;   // contact normal sum of the last step
+    this.breakCharId = -1;      // STONE: character hit in a row, and how many times
+    this.breakCharCount = 0;
+    this.charBreaks = [];       // { t, x, y, r, type }, kept for CHAR_BREAK_TIME
+    this.onCharBreak = null;    // function (character) {} after it was removed
     this.ball.rot = restOrientation();   // rolling orientation (drawing only)
   }
 
@@ -832,6 +853,8 @@ window.OSC_ASSETS = {
   Sim.STICK_ANIM_TAIL = STICK_ANIM_TAIL;
   Sim.DEFAULT_BALL = DEFAULT_BALL;
   Sim.MELON_SHATTER_TIME = MELON_SHATTER_TIME;
+  Sim.COTTON_PUFF_TIME = COTTON_PUFF_TIME;
+  Sim.CHAR_BREAK_TIME = CHAR_BREAK_TIME;
   Sim.restOrientation = restOrientation;
 
   Sim.prototype._clearStick = function () {
@@ -854,7 +877,7 @@ window.OSC_ASSETS = {
     var oldW = this.width, oldH = this.height;
     this.charRadius = clamp(Math.min(w, h) * 0.075, 26, 46);
     this.ballScale = ballScaleFor(w, h);
-    this.ball.r = scaledRadius(BALLS[this.ballType].radius, this.ballScale);
+    this.ball.r = scaledRadius(this.ballBaseRadius(), this.ballScale);
 
     if (!this._initialized) {
       this.width = w;
@@ -894,9 +917,13 @@ window.OSC_ASSETS = {
   Sim.prototype.setBallType = function (index) {
     index = clamp(Math.round(index), 0, BALLS.length - 1);
     this.ballType = index;
-    this.ball.r = scaledRadius(BALLS[index].radius, this.ballScale);
+    this.ballShrink = 1;     // a new ball starts at full size
+    this.ball.r = scaledRadius(this.ballBaseRadius(), this.ballScale);
     this._clearStick();      // a new ball is never held
     this.breakHitTimes.length = 0;   // a new ball starts undamaged
+    this.lastCollision = -1000;
+    this.breakCharId = -1;
+    this.breakCharCount = 0;
     this._enforceBounds();   // also refreshes speed, keeps direction
     this._separateBall();
   };
@@ -924,17 +951,57 @@ window.OSC_ASSETS = {
     for (i = this.shatters.length - 1; i >= 0; i--) {
       if (this.time - this.shatters[i].t > MELON_SHATTER_TIME) this.shatters.splice(i, 1);
     }
+    for (i = this.puffs.length - 1; i >= 0; i--) {
+      if (this.time - this.puffs[i].t > COTTON_PUFF_TIME) this.puffs.splice(i, 1);
+    }
+    for (i = this.charBreaks.length - 1; i >= 0; i--) {
+      if (this.time - this.charBreaks[i].t > CHAR_BREAK_TIME) this.charBreaks.splice(i, 1);
+    }
     var def = BALLS[this.ballType];
-    if (!(def.breakHits > 0)) return;
+    var breakable = def.breakHits > 0, shrinks = def.shrinkPerHit > 0;
     var times = this.breakHitTimes;
-    while (times.length && this.time - times[0] >= def.breakWindow) times.shift();
+    if (breakable) {
+      while (times.length && this.time - times[0] >= def.breakWindow) times.shift();
+    }
+    if (!breakable && !shrinks) return;
     // a collision reflects the travel direction (speed changes alone keep it)
     var sp0 = Math.sqrt(vx0 * vx0 + vy0 * vy0);
     if (sp0 < 1e-9 || sp < 1e-9) return;
     if ((vx0 * b.vx + vy0 * b.vy) / (sp0 * sp) > 1 - 1e-9) return;
-    if (times.length && this.time - times[times.length - 1] < BREAK_DEBOUNCE) return;
-    times.push(this.time);
-    if (times.length >= def.breakHits) this._shatter();
+    if (this.time - this.lastCollision < BREAK_DEBOUNCE) return;
+    this.lastCollision = this.time;
+    if (shrinks) this._shrinkHit(def);
+    if (breakable) {
+      times.push(this.time);
+      if (times.length >= def.breakHits) this._shatter();
+    }
+  };
+
+  // Shrinking ball (COTTON) collided: leave fluff at the contact point, then shrink a
+  // little. Speed follows the smaller base radius through the usual speed curve; one
+  // step of 3 % in radius changes the speed by about 1 %, so it never jumps.
+  Sim.prototype._shrinkHit = function (def) {
+    var b = this.ball;
+    var nx = this._contactNx, ny = this._contactNy, l = Math.sqrt(nx * nx + ny * ny);
+    if (l < 1e-6) {
+      var m = Math.sqrt(b.vx * b.vx + b.vy * b.vy) || 1;
+      nx = b.vx / m; ny = b.vy / m;   // leaving direction points away from the surface
+    } else { nx /= l; ny /= l; }
+    this.puffs.push({ t: this.time, x: b.x - nx * b.r, y: b.y - ny * b.r, nx: nx, ny: ny, r: b.r });
+    var next = Math.max(def.shrinkMin, this.ballShrink * (1 - def.shrinkPerHit));
+    if (next === this.ballShrink) return;
+    this.ballShrink = next;
+    b.r = scaledRadius(this.ballBaseRadius(), this.ballScale);
+    this._enforceBounds();   // bounds minimum, speed (keeps direction)
+  };
+
+  // STONE broke a character: remove it and leave a burst record.
+  Sim.prototype._breakCharacter = function (c) {
+    this.charBreaks.push({ t: this.time, x: c.x, y: c.y, r: this.charRadius, type: c.type, id: c.id });
+    this.removeCharacter(c.id);
+    this.breakCharId = -1;
+    this.breakCharCount = 0;
+    if (this.onCharBreak) this.onCharBreak(c);
   };
 
   // Break the current ball: leave a shatter record, become the default ball here.
@@ -947,7 +1014,8 @@ window.OSC_ASSETS = {
   Sim.prototype.ballDef = function () { return BALLS[this.ballType]; };
 
   // Base (unscaled) radius of the current ball: defines its character (speed, face).
-  Sim.prototype.ballBaseRadius = function () { return BALLS[this.ballType].radius; };
+  // A shrinking ball (COTTON) uses its current, shrunken size.
+  Sim.prototype.ballBaseRadius = function () { return BALLS[this.ballType].radius * this.ballShrink; };
 
   // Push the ball out of any character it overlaps (after a resize or a ball change),
   // keeping it inside the bounds. Velocity is not changed and no hit fires here.
@@ -1048,7 +1116,7 @@ window.OSC_ASSETS = {
     // speedMul (optional, e.g. GUM) makes a ball slower than a plain ball of its size
     var def = BALLS[this.ballType];
     var mul = def.speedMul > 0 ? def.speedMul : 1;
-    this.speed = speedForRadius(def.radius) * mul * this.ballScale *
+    this.speed = speedForRadius(this.ballBaseRadius()) * mul * this.ballScale *
                  this.boundsSpeedMultiplier();
     this._normalizeBallSpeed();
   };
@@ -1224,6 +1292,7 @@ window.OSC_ASSETS = {
     if (b.y < bd.top + b.r) { if (b.vy < 0) wny += 1; b.y = bd.top + b.r; b.vy = Math.abs(b.vy); }
     else if (b.y > bd.bottom - b.r) { if (b.vy > 0) wny -= 1; b.y = bd.bottom - b.r; b.vy = -Math.abs(b.vy); }
     var wallHit = wnx !== 0 || wny !== 0;
+    this._contactNx = wnx; this._contactNy = wny;
 
     // characters (circles), all contacts of this step resolved together:
     // 1. gather every character the ball overlaps (plus, if there is at least one
@@ -1290,17 +1359,25 @@ window.OSC_ASSETS = {
     }
     this._normalizeBallSpeed();
     if (wallHit || hits.length) this._beginStick(wnx + sx, wny + sy);
+    this._contactNx = wnx + sx; this._contactNy = wny + sy;
 
     // the retrigger guard keeps a ball resting against a character from re-firing
-    var hit = null;
+    var hit = null, breakN = BALLS[this.ballType].breakCharHits || 0;
     for (i = 0; i < hits.length; i++) {
       c = hits[i];
       if (this.time - c.lastHit < RETRIGGER_GUARD) continue;
+      if (breakN > 0) {
+        // STONE: count hits on the same character in a row; the last one breaks it
+        // (no note: the character is gone and its sound is stopped by the UI)
+        if (c.id === this.breakCharId) this.breakCharCount += 1;
+        else { this.breakCharId = c.id; this.breakCharCount = 1; }
+        if (this.breakCharCount >= breakN) { this._breakCharacter(c); continue; }
+      }
       c.prevHit = c.lastHit;
       c.lastHit = this.time;
       c.hitCount += 1;           // discrete hit counter (drives the face expression)
       c.prevHitR = c.hitR;
-      c.hitR = BALLS[this.ballType].radius;  // base radius of the ball that made this hit (face threshold)
+      c.hitR = this.ballBaseRadius();  // base radius of the ball that made this hit (face threshold)
       if (!hit) hit = this.currentHit();
       if (this.onHit) this.onHit(c, hit);
     }
@@ -1438,6 +1515,7 @@ window.OSC_ASSETS = {
    *   reverb 0..1, delay 0..1, pan -1..1,
    *   cutoff (Hz, optional)   ball-hardness lowpass,
    *   attack (s, optional)    default 5 ms
+   *   tag (optional)          e.g. character id; stopTag(tag) cuts its notes
    * }
    * One call = one note.
    */
@@ -1508,13 +1586,36 @@ window.OSC_ASSETS = {
       nodes.push(ds);
     }
 
+    var voices = this.voices || (this.voices = []);
+    var voice = { tag: p.tag, osc: osc, env: env };
+    if (p.tag !== undefined) voices.push(voice);
     osc.onended = function () {
       for (var i = 0; i < nodes.length; i++) {
         try { nodes[i].disconnect(); } catch (e) { /* already disconnected */ }
       }
+      var k = voices.indexOf(voice);
+      if (k >= 0) voices.splice(k, 1);
     };
     osc.start(t0);
     osc.stop(tEnd + 0.03);
+  };
+
+  // Stop every note of a tag with a short fade (STOP_FADE), e.g. a character that was
+  // broken. Reverb and delay tails already sent to the shared buses ring out.
+  var STOP_FADE = 0.03;
+  Audio.prototype.stopTag = function (tag) {
+    if (!this.ctx || !this.voices) return;
+    var t0 = this.ctx.currentTime;
+    for (var i = 0; i < this.voices.length; i++) {
+      var v = this.voices[i];
+      if (v.tag !== tag) continue;
+      try {
+        v.env.gain.cancelScheduledValues(t0);
+        v.env.gain.setValueAtTime(v.env.gain.value, t0);
+        v.env.gain.linearRampToValueAtTime(0, t0 + STOP_FADE);
+        v.osc.stop(t0 + STOP_FADE + 0.01);
+      } catch (e) { /* already stopped */ }
+    }
   };
 
   global.OSCAudio = Audio;
@@ -2101,6 +2202,7 @@ window.OSC_ASSETS = {
     handle: 'rgba(26,26,26,0.55)',       // --cv-handle: bounds handle bars
     handleActive: '#1a1a1a',             // --cv-handle-active
     ballLight: '#ffffff',                // --cv-ball-light: STEEL shine, TENNIS seam
+    fluff: [204, 204, 204],              // --cv-fluff-rgb: COTTON fluff particles
     ringAlpha: 0.75,                     // hit ripple peak opacity
     glassEdge: 'rgb(96,140,150)',        // GLASS outline (the ball itself is almost clear)
     cottonEdge: 'rgba(120,120,120,0.9)', // COTTON outline
@@ -2123,6 +2225,7 @@ window.OSC_ASSETS = {
     COLOR.handle = v('--cv-handle', COLOR.handle);
     COLOR.handleActive = v('--cv-handle-active', COLOR.handleActive);
     COLOR.ballLight = v('--cv-ball-light', COLOR.ballLight);
+    COLOR.fluff = v('--cv-fluff-rgb', '204, 204, 204').split(',').map(function (x) { return parseInt(x, 10) || 0; });
     COLOR.reject = 'rgba(' + v('--cv-reject-rgb', '26, 26, 26') + ',';
     COLOR.dark = document.documentElement.getAttribute('data-theme') === 'dark';
   }
@@ -2434,6 +2537,83 @@ window.OSC_ASSETS = {
   // Burst of a broken watermelon: pure function of the shatter record
   // s = { t, x, y, r, vx, vy } (OSCSim.shatters) and the sim time. Pieces fly out,
   // slow down, spin and fade; they never collide.
+  // Fluff of a COTTON collision: pure function of the puff record
+  // p = { t, x, y, nx, ny, r } (OSCSim.puffs) and the sim time. A few small tufts leave
+  // the contact point away from the surface, slow down, drift down and fade (~1 s).
+  // Drawing only; they never collide.
+  var PUFF_TUFTS = 5;
+  function drawCottonPuff(g, p, now) {
+    var dur = window.OSCSim.COTTON_PUFF_TIME;
+    var age = now - p.t;
+    if (age < 0 || age > dur) return;
+    var u = age / dur;
+    var seed = (Math.round(p.x * 8) * 73856093) ^ (Math.round(p.y * 8) * 19349663) ^ Math.round(p.t * 1000);
+    var base = Math.atan2(p.ny, p.nx);
+    var tau = 0.25, travel = tau * (1 - Math.exp(-age / tau));   // drag: fast out, then floats
+    var fall = 0.5 * p.r * 0.9 * age * age;                       // slow drift down
+    var alpha = 0.9 * Math.pow(1 - u, 1.5);
+    g.save();
+    for (var i = 0; i < PUFF_TUFTS; i++) {
+      var h1 = melonHash(seed, i * 3), h2 = melonHash(seed, i * 3 + 1), h3 = melonHash(seed, i * 3 + 2);
+      var ang = base + (h1 - 0.5) * 2.2;
+      var v0 = p.r * (0.8 + 1.2 * h2);                              // px/s
+      var x = p.x + Math.cos(ang) * v0 * travel + Math.sin(age * 5 + h3 * 6) * p.r * 0.04;
+      var y = p.y + Math.sin(ang) * v0 * travel + fall;
+      var size = Math.max(1.2, p.r * 0.05) * (0.8 + 0.5 * h3);
+      g.fillStyle = rgbStr(COLOR.fluff, alpha);
+      g.beginPath();
+      g.arc(x, y, size, 0, Math.PI * 2);
+      g.fill();
+    }
+    g.restore();
+  }
+
+  // Burst of a character broken by STONE: pure function of the record
+  // cb = { t, x, y, r, type } (OSCSim.charBreaks) and the sim time. Same motion as the
+  // watermelon burst (fast out, slow down, spin, fade), shards in the character colors.
+  var CHAR_SHARDS = 14;
+  function drawCharBreak(g, cb, now) {
+    var dur = window.OSCSim.CHAR_BREAK_TIME;
+    var age = now - cb.t;
+    if (age < 0 || age > dur) return;
+    var def = CHARACTERS[cb.type];
+    if (!def) return;
+    var u = age / dur;
+    var seed = (Math.round(cb.x * 8) * 73856093) ^ (Math.round(cb.y * 8) * 19349663) ^ Math.round(cb.t * 1000);
+    var ease = 1 - Math.pow(1 - u, 3);
+    var alpha = u < 0.6 ? 1 : 1 - (u - 0.6) / 0.4;
+    var r = cb.r, cols = [def.rgb, charLineRgb(def)];
+    g.save();
+    g.globalAlpha = alpha;
+    g.lineJoin = 'round';
+    g.strokeStyle = rgbStr(charLineRgb(def), 0.5 * (1 - u));
+    g.lineWidth = Math.max(1, r * 0.08);
+    g.beginPath();
+    g.arc(cb.x, cb.y, r * (0.6 + 1.2 * ease), 0, Math.PI * 2);
+    g.stroke();
+    for (var i = 0; i < CHAR_SHARDS; i++) {
+      var h1 = melonHash(seed, i * 4), h2 = melonHash(seed, i * 4 + 1);
+      var h3 = melonHash(seed, i * 4 + 2), h4 = melonHash(seed, i * 4 + 3);
+      var ang = (i / CHAR_SHARDS) * Math.PI * 2 + (h1 - 0.5) * 0.9;
+      var dist = r * (0.8 + 1.2 * h2);
+      var px = cb.x + Math.cos(ang) * (r * 0.3 + dist * ease);
+      var py = cb.y + Math.sin(ang) * (r * 0.3 + dist * ease);
+      var size = r * (0.2 + 0.18 * h3) * (1 - 0.35 * u);
+      g.save();
+      g.translate(px, py);
+      g.rotate(ang + (h4 - 0.5) * 6 * ease);
+      g.fillStyle = rgbStr(cols[i % 2]);
+      g.beginPath();
+      g.moveTo(size, 0);
+      g.lineTo(-size * 0.6, size * (0.7 + 0.3 * h2));
+      g.lineTo(-size * (0.7 + 0.3 * h1), -size * 0.6);
+      g.closePath();
+      g.fill();
+      g.restore();
+    }
+    g.restore();
+  }
+
   function drawMelonShatter(g, s, now) {
     var dur = window.OSCSim.MELON_SHATTER_TIME;
     var age = now - s.t;
@@ -3348,8 +3528,16 @@ window.OSC_ASSETS = {
       delay: c.delay,
       pan: sim.panForX(c.x),
       cutoff: hit.cutoff,
-      attack: hit.attack
+      attack: hit.attack,
+      tag: c.id
     });
+  };
+
+  // STONE broke a character (already removed from the sim): close its panel, stop its
+  // notes. A drag holding it simply finds no character any more.
+  sim.onCharBreak = function (c) {
+    if (panelCharId === c.id) closePanel();
+    audio.stopTag(c.id);
   };
 
   // ---------- rendering ----------
@@ -3461,6 +3649,8 @@ window.OSC_ASSETS = {
       });
     }
     ctx.globalAlpha = 1;
+    // characters broken by STONE
+    for (var cbi = 0; cbi < sim.charBreaks.length; cbi++) drawCharBreak(ctx, sim.charBreaks[cbi], now);
 
     // ball
     var b = sim.ball;
@@ -3472,6 +3662,8 @@ window.OSC_ASSETS = {
     });
     // pieces of a ball that just broke (WATERMELON), drawn over the new ball
     for (var si = 0; si < sim.shatters.length; si++) drawMelonShatter(ctx, sim.shatters[si], sim.time);
+    // fluff of COTTON collisions
+    for (var pi = 0; pi < sim.puffs.length; pi++) drawCottonPuff(ctx, sim.puffs[pi], sim.time);
 
     // bounds handles: bar at the middle of each edge, kept fully visible
     var activeHandles = {};
