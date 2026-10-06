@@ -52,7 +52,7 @@ const I18N = {
           platform: 'macOS, Windows',
           manual: '使用手冊',
           appstore: '前往 App Store',
-          intro: 'Vision MOD 是一款即時視覺合成器，把模組合成器 Complex Oscillator 的概念帶進視覺領域：Modifier 素材提供動態，Carrier 素材是被這動態承載的影像，以一段素材去調變另一段素材，產生新的影音現象。去背只在素材源頭發生，之後每一站都維持去背狀態。<br><br>訊號流由主視窗的訊號流列表定義，Fundamental Vision 鎖在第一站作為素材源頭，其後可自由加入、排序、bypass、刪除模組：Stable Diffusion、Chromascope（八層，各層對應一條音訊輸入）、Minimalize、3D Object、3D Model（載入 OBJ 檔或使用內建幾何體）、Particle、Flow Warp、Feedback、Slow Motion，以及可載入 WGSL 外掛的 Plugin 模組（內建 12 個外掛）。同一種模組可加入多份並各自獨立串接，每個模組有自己的筆刷遮罩。<br><br>程式分析畫面輪廓與顏色、加上八軌音訊輸入與內建 LFO，產生調變訊號驅動內部參數，並可透過 CV Output 送出音訊介面與 MIDI 裝置，控制外部硬體。支援 MIDI 的推桿可用 MIDI Learn 綁定硬體控制器。專案檔包含全部參數、MIDI 對應、筆刷遮罩與視窗位置。macOS 使用 Stable Diffusion 1.5 + ControlNet + Hyper-SD15 1-step LoRA，Windows 使用 Stream Diffusion + CUDA／TensorRT。Mac App Store 版與 Windows 版（Microsoft Store）同源碼。',
+          intro: 'Vision MOD 是一款即時視覺合成器，把模組合成器 Complex Oscillator 的概念帶進視覺領域：Modifier 素材提供動態，Carrier 素材是被這動態承載的影像，以一段素材去調變另一段素材，產生新的影音現象。去背只在素材源頭發生，之後每一站都維持去背狀態。<br><br>訊號流由主視窗的訊號流列表定義，Fundamental Vision 鎖在第一站作為素材源頭，其後可自由加入、排序、bypass、刪除模組：Stable Diffusion、Chromascope（八層，各層對應一條音訊輸入）、Minimalize、3D Object、3D Model（載入 OBJ 檔或使用內建幾何體）、Particle、Flow Warp、Feedback、Slow Motion，以及可載入 WGSL 外掛的 Plugin 模組（內建 12 個外掛）。同一種模組可加入多份並各自獨立串接，每個模組有自己的筆刷遮罩。<br><br>程式分析畫面輪廓與顏色、加上八軌音訊輸入與內建 LFO，產生調變訊號驅動內部參數，並可透過 CV Output 送出音訊介面與 MIDI 裝置，控制外部硬體。支援 MIDI 的推桿可用 MIDI Learn 綁定硬體控制器。專案檔包含全部參數、MIDI 對應、筆刷遮罩與視窗位置。macOS 使用 Stable Diffusion 1.5 + ControlNet + Hyper-SD15 1-step LoRA，Windows 使用 Stream Diffusion + CUDA／TensorRT。Mac App Store 版與 Windows 版同源碼。',
           features: {
             pipeline: '模組化訊號流，自由排序、bypass，同種模組可加入多份',
             modulation: '畫面、八軌音訊與內建 LFO 驅動的調變系統，MIDI Learn 對應硬體控制器',
@@ -60,7 +60,7 @@ const I18N = {
             effects: 'Chromascope、Minimalize、3D Object、3D Model、Particle、Flow Warp、Feedback、Slow Motion',
             plugin: 'WGSL 外掛模組，內建 12 個外掛，可自行撰寫',
             cvmidi: 'CV／MIDI 輸出控制外部設備',
-            crossplatform: 'Mac App Store 與 Microsoft Store 上架，Rust + wgpu 同源碼'
+            crossplatform: 'Mac App Store 上架，macOS 與 Windows 共用 Rust + wgpu 同一份程式碼'
           }
         },
         decapyramid: {
@@ -504,7 +504,7 @@ const I18N = {
           platform: 'macOS, Windows',
           manual: 'User Manual',
           appstore: 'View on the App Store',
-          intro: 'Vision MOD is a real-time visual synthesizer that brings the Complex Oscillator idea from modular synthesis into the visual domain: a Modifier source provides the dynamics, a Carrier source provides the image those dynamics ride, and one footage modulates another to produce a new audio-visual phenomenon. Background removal happens only at the source, and every station after it keeps the subject cut out.<br><br>The signal flow is defined by the Signal Flow list in the main window. Fundamental Vision is pinned to slot 1 as the source anchor; downstream the user freely adds, reorders, bypasses, or removes modules: Stable Diffusion, Chromascope (eight layers, one per audio input), Minimalize, 3D Object, 3D Model (OBJ file or built-in shapes), Particle, Flow Warp, Feedback, Slow Motion, and a Plugin module that runs WGSL plugins (12 built in). The same module kind can be added multiple times, each wired into the chain independently, and every module has its own brush mask.<br><br>The program analyzes contour and color from the live image together with eight audio inputs and built-in LFOs to generate modulation signals that drive internal parameters; the same signals can be sent through CV Output to the audio interface and to a MIDI device for external hardware. Faders that support MIDI can be bound to a hardware controller with MIDI Learn. A project file holds all parameters, MIDI mappings, brush masks, and window positions. macOS runs Stable Diffusion 1.5 with ControlNet and a Hyper-SD15 1-step LoRA; Windows runs Stream Diffusion on CUDA / TensorRT. The Mac App Store version and the Windows version (Microsoft Store) share a single codebase.',
+          intro: 'Vision MOD is a real-time visual synthesizer that brings the Complex Oscillator idea from modular synthesis into the visual domain: a Modifier source provides the dynamics, a Carrier source provides the image those dynamics ride, and one footage modulates another to produce a new audio-visual phenomenon. Background removal happens only at the source, and every station after it keeps the subject cut out.<br><br>The signal flow is defined by the Signal Flow list in the main window. Fundamental Vision is pinned to slot 1 as the source anchor; downstream the user freely adds, reorders, bypasses, or removes modules: Stable Diffusion, Chromascope (eight layers, one per audio input), Minimalize, 3D Object, 3D Model (OBJ file or built-in shapes), Particle, Flow Warp, Feedback, Slow Motion, and a Plugin module that runs WGSL plugins (12 built in). The same module kind can be added multiple times, each wired into the chain independently, and every module has its own brush mask.<br><br>The program analyzes contour and color from the live image together with eight audio inputs and built-in LFOs to generate modulation signals that drive internal parameters; the same signals can be sent through CV Output to the audio interface and to a MIDI device for external hardware. Faders that support MIDI can be bound to a hardware controller with MIDI Learn. A project file holds all parameters, MIDI mappings, brush masks, and window positions. macOS runs Stable Diffusion 1.5 with ControlNet and a Hyper-SD15 1-step LoRA; Windows runs Stream Diffusion on CUDA / TensorRT. The Mac App Store version and the Windows version share a single codebase.',
           features: {
             pipeline: 'Modular signal flow with free reordering, bypass, and multiple instances per module',
             modulation: 'Modulation driven by image analysis, eight audio inputs, and built-in LFOs; MIDI Learn for hardware controllers',
@@ -512,7 +512,7 @@ const I18N = {
             effects: 'Chromascope, Minimalize, 3D Object, 3D Model, Particle, Flow Warp, Feedback, Slow Motion',
             plugin: 'WGSL plugin module with 12 built-in plugins; write your own',
             cvmidi: 'CV / MIDI output for external hardware',
-            crossplatform: 'On the Mac App Store and Microsoft Store, single Rust + wgpu codebase'
+            crossplatform: 'On the Mac App Store; macOS and Windows share a single Rust + wgpu codebase'
           }
         },
         decapyramid: {
@@ -956,7 +956,7 @@ const I18N = {
           platform: 'macOS, Windows',
           manual: 'ユーザーマニュアル',
           appstore: 'App Store で見る',
-          intro: 'Vision MOD はモジュラーシンセサイザーの Complex Oscillator——一方のオシレーターでもう一方を整形する仕組み——を映像領域に持ち込んだリアルタイム映像シンセサイザーです。Modifier の素材が動きを与え、Carrier の素材はその動きに乗る映像。ある素材が別の素材を変調し、新しい視聴覚現象が生まれます。背景除去は素材の起点でのみ行い、それ以降の各 station でも切り抜きが維持されます。<br><br>シグナルフローはメインウィンドウのシグナルフロー一覧で定義します。Fundamental Vision は素材の起点としてスロット 1 に固定、それ以降はモジュールを自由に追加・並べ替え・bypass・削除できます：Stable Diffusion、Chromascope（8 層、各層が 1 つの音声入力に対応）、Minimalize、3D Object、3D Model（OBJ ファイルまたは内蔵形状）、Particle、Flow Warp、Feedback、Slow Motion、そして WGSL プラグインを実行する Plugin モジュール（12 個内蔵）。同じ種類のモジュールを複数追加でき、各モジュールは独立して直列接続され、それぞれ独自のブラシマスクを持ちます。<br><br>映像から輪郭と色を解析し、8 トラックの音声入力と内蔵 LFO と合わせてモジュレーション信号を生成、本体のパラメータを駆動するほか、同じ信号を CV Output で音声インターフェースと MIDI 装置に送出して外部機器の制御にも使えます。MIDI 対応フェーダーは MIDI Learn でハードウェアコントローラーにバインドできます。プロジェクトファイルには全パラメータ、MIDI 割り当て、ブラシマスク、ウィンドウ位置が含まれます。macOS は Stable Diffusion 1.5 + ControlNet + Hyper-SD15 1-step LoRA、Windows は Stream Diffusion + CUDA／TensorRT で実行。Mac App Store 版と Windows 版（Microsoft Store）は同一ソースです。',
+          intro: 'Vision MOD はモジュラーシンセサイザーの Complex Oscillator——一方のオシレーターでもう一方を整形する仕組み——を映像領域に持ち込んだリアルタイム映像シンセサイザーです。Modifier の素材が動きを与え、Carrier の素材はその動きに乗る映像。ある素材が別の素材を変調し、新しい視聴覚現象が生まれます。背景除去は素材の起点でのみ行い、それ以降の各 station でも切り抜きが維持されます。<br><br>シグナルフローはメインウィンドウのシグナルフロー一覧で定義します。Fundamental Vision は素材の起点としてスロット 1 に固定、それ以降はモジュールを自由に追加・並べ替え・bypass・削除できます：Stable Diffusion、Chromascope（8 層、各層が 1 つの音声入力に対応）、Minimalize、3D Object、3D Model（OBJ ファイルまたは内蔵形状）、Particle、Flow Warp、Feedback、Slow Motion、そして WGSL プラグインを実行する Plugin モジュール（12 個内蔵）。同じ種類のモジュールを複数追加でき、各モジュールは独立して直列接続され、それぞれ独自のブラシマスクを持ちます。<br><br>映像から輪郭と色を解析し、8 トラックの音声入力と内蔵 LFO と合わせてモジュレーション信号を生成、本体のパラメータを駆動するほか、同じ信号を CV Output で音声インターフェースと MIDI 装置に送出して外部機器の制御にも使えます。MIDI 対応フェーダーは MIDI Learn でハードウェアコントローラーにバインドできます。プロジェクトファイルには全パラメータ、MIDI 割り当て、ブラシマスク、ウィンドウ位置が含まれます。macOS は Stable Diffusion 1.5 + ControlNet + Hyper-SD15 1-step LoRA、Windows は Stream Diffusion + CUDA／TensorRT で実行。Mac App Store 版と Windows 版は同一ソースです。',
           features: {
             pipeline: 'モジュール式シグナルフロー、並べ替え・bypass 自由、同種モジュールの複数追加',
             modulation: '映像解析、8 トラック音声入力、内蔵 LFO で駆動するモジュレーション、MIDI Learn でハードウェアに対応',
@@ -964,7 +964,7 @@ const I18N = {
             effects: 'Chromascope、Minimalize、3D Object、3D Model、Particle、Flow Warp、Feedback、Slow Motion',
             plugin: 'WGSL プラグインモジュール、12 個内蔵、自作も可能',
             cvmidi: 'CV／MIDI 出力で外部機器を制御',
-            crossplatform: 'Mac App Store と Microsoft Store で配信、Rust + wgpu の同一ソース'
+            crossplatform: 'Mac App Store で配信、macOS と Windows は Rust + wgpu の同一ソース'
           }
         },
         decapyramid: {
