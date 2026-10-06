@@ -1,5 +1,17 @@
 # MADZINE Website 開發紀錄
 
+## 2026-10-06
+
+### VisionMod 頁：0.9.4 更新與 App Store 購買按鈕
+
+- 新增「前往 App Store」按鈕（連到 `https://apps.apple.com/app/id6815474193`），放在縮圖列下方，位置與 HONKI 頁相同
+- 按鈕初次推上去顯示為一般文字連結：`.launch-btn` 的 CSS 在每頁都是行內定義，VisionMod 頁沒有這段。修法為從 honki.html 複製同一段樣式；之後各頁若再加此按鈕，要記得連樣式一起帶
+- `js/i18n.js` `apps.visionmod` 三語敘述改為 0.9.4（新增 Chromascope 八層、12 個內建 WGSL 外掛、8 軌音訊、大視窗格線）；新增 `appstore` 鍵
+- 移除所有「Microsoft Store」字樣（Windows 版尚未上架，不寫無事實的內容）；crossplatform 改為「Mac App Store 上架，macOS 與 Windows 共用同一份程式碼」
+- 縮圖換 0.9.4 新截圖，新增 chromascope 與 plugin 兩張；signal / modulation 仍為舊圖，待補
+- 手冊換 `assets/manuals/visionmod/VisionMOD_Manual_0.9.4_{en,zh-Hant,ja}.html`，舊 0.9.2 檔刪除
+- 線上 `madzine.work` 已驗證更新；使用者端看不到時為瀏覽器快取，強制重新整理即可
+
 ## 2026-08-31
 
 ### Artist Talk Translator v3.0
