@@ -346,6 +346,9 @@
     z-index: 6;
   }
   #ballpanel[hidden] { display: none; }
+  /* SLIP fader under the 3 x 3 grid: full grid width, same filled style as the
+     character panel faders; the label width is set to the track width by ui.js */
+  #ballpanel .fader.slip { grid-column: 1 / -1; width: auto; }
   .ballitem {
     min-width: 0;
     height: 68px;
@@ -624,11 +627,13 @@ window.OSC_ASSETS = {
     { id: 'sponge',   label: 'SPONGE',   radius: 46, hardness: 0.12, color: [245, 215, 93], image: null,
       names: { en: 'SPONGE', ja: 'スポンジ', zh: '海綿' } },
     // COTTON: every collision (character or wall, counted like WATERMELON hits) shrinks
-    // it by `shrinkPerHit` of its current size, down to `shrinkMin` x its base radius,
-    // and leaves a puff record for the fluff particles (see _afterStep / puffs).
-    // Selecting a ball again restores the full size.
+    // it by `shrinkPerHit` of its current size and leaves a puff record for the fluff
+    // particles (see _afterStep / puffs). When its base radius would drop below
+    // `vanishBelow` px it is used up: a big last puff, no ball for RESPAWN_DELAY, then a
+    // full-size one appears at the spawn point (54 -> 3 px at 5.5 % per hit = 51 hits).
+    // Selecting a ball again also restores the full size.
     { id: 'cotton',   label: 'COTTON',   radius: 54, hardness: 0.00, color: [244, 244, 244], image: null,
-      shrinkPerHit: 0.03, shrinkMin: 0.4,
+      shrinkPerHit: 0.055, vanishBelow: 3,
       names: { en: 'COTTON', ja: 'わた', zh: '棉花' } },
     // WATERMELON: same size as COTTON. Breaks after `breakHits` collisions (characters or
     // walls, one per step) within `breakWindow` seconds, then becomes the default ball
@@ -732,6 +737,16 @@ window.OSC_ASSETS = {
   var BREAK_DEBOUNCE = 0.1;       // s
   var MELON_SHATTER_TIME = 0.8;   // s, length of the burst animation
   var COTTON_PUFF_TIME = 1.0;     // s, life of the fluff particles of one collision
+  var PUFF_TUFTS = 5;             // fluff particles per collision
+  var PUFF_TUFTS_LAST = 16;       // ... on the collision that uses the ball up
+  var RESPAWN_DELAY = 0.8;        // s without a ball after it was used up
+  var SPAWN_ANGLE = 0.62;         // rad, launch direction of a new / respawned ball
+  // SLIP: global multiplier on every ball's base speed (BALL menu fader).
+  // norm 0..1 -> SLIP_MIN * (SLIP_MAX / SLIP_MIN)^norm, so 1x sits at the middle.
+  var SLIP_MIN = 0.5, SLIP_MAX = 2;
+  var SLIP_TAU = 0.12;            // s, smoothing of slip changes (no sudden speed jump)
+  function slipFromNorm(n) { return SLIP_MIN * Math.pow(SLIP_MAX / SLIP_MIN, clamp(n, 0, 1)); }
+  function normFromSlip(v) { return clamp(Math.log(v / SLIP_MIN) / Math.log(SLIP_MAX / SLIP_MIN), 0, 1); }
   var CHAR_BREAK_TIME = 0.8;      // s, burst of a character broken by STONE
   var MELON_TILT = 0.5;           // rad, stem tilted toward the viewer in the rest pose
   // Ball orientation (rolling look): row-major 3x3 rotation, body -> screen
@@ -833,6 +848,10 @@ window.OSC_ASSETS = {
     this.breakCharId = -1;      // STONE: character hit in a row, and how many times
     this.breakCharCount = 0;
     this.charBreaks = [];       // { t, x, y, r, type }, kept for CHAR_BREAK_TIME
+    this.ballGone = false;      // shrinking ball used up: no ball until respawnAt
+    this.respawnAt = 0;
+    this.slip = 1;              // current (smoothed) SLIP multiplier
+    this.slipTarget = 1;
     this.onCharBreak = null;    // function (character) {} after it was removed
     this.ball.rot = restOrientation();   // rolling orientation (drawing only)
   }
@@ -854,6 +873,11 @@ window.OSC_ASSETS = {
   Sim.DEFAULT_BALL = DEFAULT_BALL;
   Sim.MELON_SHATTER_TIME = MELON_SHATTER_TIME;
   Sim.COTTON_PUFF_TIME = COTTON_PUFF_TIME;
+  Sim.PUFF_TUFTS = PUFF_TUFTS;
+  Sim.slipFromNorm = slipFromNorm;
+  Sim.normFromSlip = normFromSlip;
+  Sim.SLIP_MIN = SLIP_MIN;
+  Sim.SLIP_MAX = SLIP_MAX;
   Sim.CHAR_BREAK_TIME = CHAR_BREAK_TIME;
   Sim.restOrientation = restOrientation;
 
@@ -885,7 +909,7 @@ window.OSC_ASSETS = {
       this.bounds = { left: 0, top: 0, right: w, bottom: h };
       this.ball.x = w * 0.5;
       this.ball.y = h * 0.5;
-      var a = 0.62; // fixed launch angle (radians)
+      var a = SPAWN_ANGLE; // fixed launch angle (radians)
       this.ball.vx = Math.cos(a);
       this.ball.vy = -Math.sin(a);
       this._initialized = true;
@@ -917,6 +941,16 @@ window.OSC_ASSETS = {
   Sim.prototype.setBallType = function (index) {
     index = clamp(Math.round(index), 0, BALLS.length - 1);
     this.ballType = index;
+    if (this.ballGone) {
+      // no ball right now (used-up COTTON): the new one starts at the spawn point
+      this.ballGone = false;
+      this.ball.x = this.width * 0.5;
+      this.ball.y = this.height * 0.5;
+      this.ball.vx = Math.cos(SPAWN_ANGLE);
+      this.ball.vy = -Math.sin(SPAWN_ANGLE);
+      this.ball.rot = restOrientation();
+      this._skipCollision = true;   // the new launch direction is not a bounce
+    }
     this.ballShrink = 1;     // a new ball starts at full size
     this.ball.r = scaledRadius(this.ballBaseRadius(), this.ballScale);
     this._clearStick();      // a new ball is never held
@@ -957,6 +991,7 @@ window.OSC_ASSETS = {
     for (i = this.charBreaks.length - 1; i >= 0; i--) {
       if (this.time - this.charBreaks[i].t > CHAR_BREAK_TIME) this.charBreaks.splice(i, 1);
     }
+    if (this._skipCollision || this.ballGone) { this._skipCollision = false; return; }
     var def = BALLS[this.ballType];
     var breakable = def.breakHits > 0, shrinks = def.shrinkPerHit > 0;
     var times = this.breakHitTimes;
@@ -987,12 +1022,38 @@ window.OSC_ASSETS = {
       var m = Math.sqrt(b.vx * b.vx + b.vy * b.vy) || 1;
       nx = b.vx / m; ny = b.vy / m;   // leaving direction points away from the surface
     } else { nx /= l; ny /= l; }
+    var next = this.ballShrink * (1 - def.shrinkPerHit);
+    if (def.vanishBelow > 0 && def.radius * next < def.vanishBelow) {
+      // used up: the last tufts burst all around from the center, spread like a
+      // half-size ball, and there is no ball until the respawn
+      this.puffs.push({ t: this.time, x: b.x, y: b.y, nx: nx, ny: ny,
+                        r: scaledRadius(def.radius * 0.5, this.ballScale),
+                        n: PUFF_TUFTS_LAST, spread: Math.PI * 2 });
+      this.ballGone = true;
+      this.respawnAt = this.time + RESPAWN_DELAY;
+      return;
+    }
     this.puffs.push({ t: this.time, x: b.x - nx * b.r, y: b.y - ny * b.r, nx: nx, ny: ny, r: b.r });
-    var next = Math.max(def.shrinkMin, this.ballShrink * (1 - def.shrinkPerHit));
-    if (next === this.ballShrink) return;
     this.ballShrink = next;
     b.r = scaledRadius(this.ballBaseRadius(), this.ballScale);
     this._enforceBounds();   // bounds minimum, speed (keeps direction)
+  };
+
+  // Is there a ball on the field? (false while a used-up COTTON waits to respawn)
+  Sim.prototype.hasBall = function () { return !this.ballGone; };
+
+  // SLIP (global speed multiplier). value in SLIP_MIN..SLIP_MAX. The speed glides to
+  // the new value (SLIP_TAU) unless `immediate` (startup from a saved value).
+  Sim.prototype.setSlip = function (value, immediate) {
+    this.slipTarget = clamp(value, SLIP_MIN, SLIP_MAX);
+    if (immediate) { this.slip = this.slipTarget; this._updateSpeed(); }
+  };
+  Sim.prototype._glideSlip = function (h) {
+    if (this.slip === this.slipTarget) return;
+    var d = this.slipTarget - this.slip;
+    if (Math.abs(d) < 1e-4) this.slip = this.slipTarget;
+    else this.slip += d * (1 - Math.exp(-h / SLIP_TAU));
+    this._updateSpeed();
   };
 
   // STONE broke a character: remove it and leave a burst record.
@@ -1116,7 +1177,7 @@ window.OSC_ASSETS = {
     // speedMul (optional, e.g. GUM) makes a ball slower than a plain ball of its size
     var def = BALLS[this.ballType];
     var mul = def.speedMul > 0 ? def.speedMul : 1;
-    this.speed = speedForRadius(this.ballBaseRadius()) * mul * this.ballScale *
+    this.speed = speedForRadius(this.ballBaseRadius()) * mul * this.slip * this.ballScale *
                  this.boundsSpeedMultiplier();
     this._normalizeBallSpeed();
   };
@@ -1240,6 +1301,7 @@ window.OSC_ASSETS = {
     if (!(dt > 0)) return;
     this.accumulator += Math.min(dt, MAX_FRAME_DT);
     while (this.accumulator >= STEP) {
+      this._glideSlip(STEP);
       var vx0 = this.ball.vx, vy0 = this.ball.vy;
       this._step(STEP);
       this._afterStep(STEP, vx0, vy0);
@@ -1271,6 +1333,12 @@ window.OSC_ASSETS = {
   Sim.prototype._step = function (h) {
     this.time += h;
     var b = this.ball, bd = this.bounds;
+
+    if (this.ballGone) {
+      // no ball: no motion, no collision, no sound; a full-size one returns after the delay
+      if (this.time >= this.respawnAt) this.setBallType(this.ballType);
+      return;
+    }
 
     if (this.time < b.stuckUntil) {
       // held by a surface: no motion, no collision, no sound. Characters dragged onto
@@ -2538,7 +2606,8 @@ window.OSC_ASSETS = {
   // s = { t, x, y, r, vx, vy } (OSCSim.shatters) and the sim time. Pieces fly out,
   // slow down, spin and fade; they never collide.
   // Fluff of a COTTON collision: pure function of the puff record
-  // p = { t, x, y, nx, ny, r } (OSCSim.puffs) and the sim time. A few small tufts leave
+  // p = { t, x, y, nx, ny, r, n?, spread? } (OSCSim.puffs) and the sim time
+  // (n / spread: more tufts all around for the hit that uses the ball up). A few small tufts leave
   // the contact point away from the surface, slow down, drift down and fade (~1 s).
   // Drawing only; they never collide.
   var PUFF_TUFTS = 5;
@@ -2553,9 +2622,11 @@ window.OSC_ASSETS = {
     var fall = 0.5 * p.r * 0.9 * age * age;                       // slow drift down
     var alpha = 0.9 * Math.pow(1 - u, 1.5);
     g.save();
-    for (var i = 0; i < PUFF_TUFTS; i++) {
+    var n = p.n || PUFF_TUFTS, spread = p.spread || 2.2;
+    for (var i = 0; i < n; i++) {
       var h1 = melonHash(seed, i * 3), h2 = melonHash(seed, i * 3 + 1), h3 = melonHash(seed, i * 3 + 2);
-      var ang = base + (h1 - 0.5) * 2.2;
+      var ang = spread >= Math.PI * 2 ? (i / n) * Math.PI * 2 + (h1 - 0.5) * 0.6
+                                      : base + (h1 - 0.5) * spread;
       var v0 = p.r * (0.8 + 1.2 * h2);                              // px/s
       var x = p.x + Math.cos(ang) * v0 * travel + Math.sin(age * 5 + h3 * 6) * p.r * 0.04;
       var y = p.y + Math.sin(ang) * v0 * travel + fall;
@@ -2853,6 +2924,7 @@ window.OSC_ASSETS = {
       decay: 'のびる',
       reverb: 'ひびき',
       delay: 'やまびこ',
+      slip: 'すべり',
       remove: '削除',
       close: '閉じる',
       sheetTitle: 'あそびかた',
@@ -2873,6 +2945,7 @@ window.OSC_ASSETS = {
       decay: 'LENGTH',
       reverb: 'SPACE',
       delay: 'ECHO',
+      slip: 'SLIP',
       remove: 'REMOVE',
       close: 'CLOSE',
       sheetTitle: 'HOW TO PLAY',
@@ -2893,6 +2966,7 @@ window.OSC_ASSETS = {
       decay: '長度',
       reverb: '空間',
       delay: '回音',
+      slip: '滑度',
       remove: '移除',
       close: '關閉',
       sheetTitle: '玩法說明',
@@ -2971,6 +3045,10 @@ window.OSC_ASSETS = {
       Array.prototype.forEach.call(f.querySelectorAll('.word'), function (el) { el.textContent = word; });
     });
     ballItems.forEach(function (it, i) { it.label.textContent = ballName(BALLS[i]); });
+    if (slipFader) setFaderWord(slipFader, s.slip);
+  }
+  function setFaderWord(f, word) {
+    Array.prototype.forEach.call(f.querySelectorAll('.word'), function (el) { el.textContent = word; });
   }
 
   // ---------- background theme (white / black) ----------
@@ -3106,6 +3184,53 @@ window.OSC_ASSETS = {
     ballItems.push({ btn: b, icon: icon, label: label });
   });
 
+  // ---------- SLIP: global ball speed multiplier (fader under the ball grid) ----------
+  // Same filled fader as the character panel (text over the track, dark text inside
+  // the fill). 0.5x .. 2x on a log scale, 1x in the middle (OSCSim.slipFromNorm).
+  // Kept when the ball changes; saved like the language and theme.
+  var SLIP_KEY = 'oscbounce.slip';
+  var SLIP_ICON = '<svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="13.5" cy="10" r="4.2" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M2 7 H7 M1 10 H7 M2 13 H7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
+  var slipFader = document.createElement('div');
+  slipFader.className = 'fader slip';
+  slipFader.innerHTML = '<div class="label">' + SLIP_ICON + '<span class="word"></span></div>' +
+    '<div class="fill"><div class="label">' + SLIP_ICON + '<span class="word"></span></div></div>';
+  ballPanel.appendChild(slipFader);
+  setFaderWord(slipFader, (STRINGS[lang] || STRINGS.en).slip);
+  function loadSlip() {
+    try {
+      var v = parseFloat(window.localStorage.getItem(SLIP_KEY));
+      if (v >= window.OSCSim.SLIP_MIN && v <= window.OSCSim.SLIP_MAX) return v;
+    } catch (e) { /* storage unavailable */ }
+    return 1;
+  }
+  function saveSlip(v) {
+    try { window.localStorage.setItem(SLIP_KEY, String(v)); } catch (e) { /* ignore */ }
+  }
+  function refreshSlip() {
+    // the label inside the fill spans the whole track, so its text lines up with the outer one
+    var w = slipFader.clientWidth;
+    if (w > 0) {
+      Array.prototype.forEach.call(slipFader.querySelectorAll('.label'), function (el) { el.style.width = w + 'px'; });
+    }
+    slipFader.querySelector('.fill').style.width = (window.OSCSim.normFromSlip(sim.slipTarget) * 100) + '%';
+  }
+  function applySlipPointer(e) {
+    var rect = slipFader.getBoundingClientRect();
+    var v = window.OSCSim.slipFromNorm((e.clientX - rect.left) / rect.width);
+    sim.setSlip(v);
+    saveSlip(v);
+    refreshSlip();
+  }
+  slipFader.addEventListener('pointerdown', function (e) {
+    e.preventDefault();
+    slipFader.setPointerCapture(e.pointerId);
+    applySlipPointer(e);
+  });
+  slipFader.addEventListener('pointermove', function (e) {
+    if (slipFader.hasPointerCapture && slipFader.hasPointerCapture(e.pointerId)) applySlipPointer(e);
+  });
+  sim.setSlip(loadSlip(), true);
+
   // Ball label in the current language: BALLS[].names[lang] when the ball has
   // per-language names (GUM), otherwise the English label.
   function ballName(def) {
@@ -3147,6 +3272,7 @@ window.OSC_ASSETS = {
     closePanel();
     ballPanel.hidden = false;
     drawBallIcons();
+    refreshSlip();
     var vw = window.innerWidth;
     var pw = ballPanel.offsetWidth, ph = ballPanel.offsetHeight;
     var tcs = getComputedStyle(topbar);
@@ -3655,11 +3781,13 @@ window.OSC_ASSETS = {
     // ball
     var b = sim.ball;
     var bdef = sim.ballDef();
-    drawBall(ctx, bdef, b.x, b.y, b.r, {
-      t: sim.time, stuckAt: b.stuckAt, stick: bdef.stick || 0,
-      nx: b.stuckNx, ny: b.stuckNy, cx: b.stuckCx, cy: b.stuckCy,
-      rot: b.rot, damage: sim.breakDamage()
-    });
+    if (sim.hasBall()) {   // a used-up COTTON leaves no ball until it respawns
+      drawBall(ctx, bdef, b.x, b.y, b.r, {
+        t: sim.time, stuckAt: b.stuckAt, stick: bdef.stick || 0,
+        nx: b.stuckNx, ny: b.stuckNy, cx: b.stuckCx, cy: b.stuckCy,
+        rot: b.rot, damage: sim.breakDamage()
+      });
+    }
     // pieces of a ball that just broke (WATERMELON), drawn over the new ball
     for (var si = 0; si < sim.shatters.length; si++) drawMelonShatter(ctx, sim.shatters[si], sim.time);
     // fluff of COTTON collisions
