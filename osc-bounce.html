@@ -214,13 +214,17 @@
     justify-content: center;
     gap: var(--gap);
   }
-  /* Character palette at 70 % of the first design (palette 76 -> 53, cell 132 x 64 ->
-     92 x 45, icon 40 -> 28; narrow: 70 -> 49, icon 32 -> 22). Text stays 16 px, cells
-     stay >= 44 px tall. Row layout needs 90.7 px for the widest label (PULSE, Barlow
-     Condensed Light 16 px + 0.06em = 38.7 px): 5 cells of 92 + gaps fit from 516 px
-     wide, so below 520 px the cells switch to icon-above-label. */
+  /* Bottom row = five equal buttons: SINE, TRI, SAW, PULSE, BALL. All five share one
+     rule (same flex basis, same shrink), the ball button has no extra margin, and the
+     row uses one gap (8 px) and is centred, so the five are always the same size and
+     evenly spaced. Full size 112 x 45 px (icon 28) when the bar is >= 592 px wide
+     (5 x 112 + 4 x 8); narrower, all five shrink together. Row layout needs 90.7 px for
+     the widest label (PULSE, Barlow Condensed Light 16 px + 0.06em = 38.7 px), which
+     holds down to 520 px viewport ((520 - 16 - 32) / 5 = 94.4); below 520 px the cells
+     switch to icon-above-label (390 px viewport: (390 - 16 - 32) / 5 = 68.4 px each).
+     Text stays 16 px, cells stay >= 44 px tall. */
   .pick {
-    flex: 0 1 92px;
+    flex: 0 1 112px;
     min-width: 0;
     height: 45px;
     padding: 0 8px;
@@ -319,19 +323,19 @@
   /* icons use currentColor, so they turn dark inside the filled part with the text */
   .fader .label svg { width: 15px; height: 15px; flex: 0 0 15px; display: block; overflow: visible; }
   /* ---------- ball picker ---------- */
-  .ballbtn { --pick-color: var(--fg-primary); margin-left: 8px; }
-  /* 12 balls. Each cell: icon above label, fixed 104 x 68 px, so switching language
+  .ballbtn { --pick-color: var(--fg-primary); }
+  /* 9 balls. Each cell: icon above label, fixed 104 x 68 px, so switching language
      never changes the panel size. Widest label (WATERMELON, Barlow Condensed Light 16px
      + 0.06em spacing) measures 82 px; the label area is 98 px wide (102 px at 375 px,
      84 px at 320 px viewport width).
-     Columns: 6 x 2 rows (>= 720 px wide), 4 x 3 rows (>= 500 px), 3 x 4 rows (phones). */
+     Columns: 3 x 3 at every width (no half-empty last row). */
   #ballpanel {
     position: fixed;
     left: 0;
     top: 0;
     padding: 12px;
     display: grid;
-    grid-template-columns: repeat(6, 104px);
+    grid-template-columns: repeat(3, 104px);
     gap: 8px;
     background: var(--bg-elevated);
     border: 1px solid var(--stroke);
@@ -362,9 +366,6 @@
   .ballitem canvas { width: 36px; height: 36px; flex: 0 0 36px; display: block; }
   .ballitem span { display: block; max-width: 100%; height: 20px; overflow: hidden; text-overflow: ellipsis; }
   .ballitem.selected { background: var(--bg-track); border-color: var(--fg-primary); color: var(--fg-primary); }
-  @media (max-width: 719px) {
-    #ballpanel { grid-template-columns: repeat(4, 104px); }
-  }
   @media (max-width: 499px) {
     #ballpanel { padding: 8px; grid-template-columns: repeat(3, minmax(0, 1fr)); width: min(360px, calc(100vw - 16px)); }
   }
@@ -608,34 +609,31 @@ window.OSC_ASSETS = {
       names: { en: 'STEEL', ja: 'スチール', zh: '鋼珠' } },
     { id: 'glass',    label: 'GLASS',    radius: 8,  hardness: 0.90, color: [170, 220, 230], image: null,
       names: { en: 'GLASS', ja: 'ガラス', zh: '玻璃珠' } },
-    { id: 'pingpong', label: 'PINGPONG', radius: 11, hardness: 0.75, color: [243, 154, 58],  image: null,
-      names: { en: 'PINGPONG', ja: 'ピンポン', zh: '乒乓球' } },
     { id: 'marble',   label: 'MARBLE',   radius: 15, hardness: 0.95, color: [236, 236, 240], image: null,
       names: { en: 'MARBLE', ja: 'ビーだま', zh: '彈珠' } },
-    { id: 'wood',     label: 'WOOD',     radius: 20, hardness: 0.65, color: [190, 138, 84],  image: null,
-      names: { en: 'WOOD', ja: 'もくだま', zh: '木球' } },
     // GUM: sticks to whatever it touches for `stick` seconds, then leaves at `speedMul`
     // x the speed of a plain ball of the same size. names: per-language label (UI).
     { id: 'gum',      label: 'GUM',      radius: 24, hardness: 0.06, color: [255, 112, 178], image: null,
       stick: 0.16, speedMul: 0.8, names: { en: 'GUM', ja: 'ガム', zh: '口香糖' } },
-    { id: 'rubber',   label: 'RUBBER',   radius: 26, hardness: 0.45, color: [142, 91, 214],  image: null,
-      names: { en: 'RUBBER', ja: 'ゴムボール', zh: '橡皮球' } },
     { id: 'tennis',   label: 'TENNIS',   radius: 34, hardness: 0.32, color: [200, 224, 74],  image: null,
       names: { en: 'TENNIS', ja: 'テニス', zh: '網球' } },
-    // WATERMELON: breaks after `breakHits` collisions (characters or walls, one per step)
-    // within `breakWindow` seconds, then becomes the default ball (see _afterStep).
-    // 12 in 4 s: open field with a few characters lasts minutes; minimum bounds or a
-    // tight cluster of characters breaks it in about 2-4 s.
-    { id: 'watermelon', label: 'WATERMELON', radius: 42, hardness: 0.60, color: [96, 172, 64], image: null,
-      breakHits: 12, breakWindow: 4.0, names: { en: 'WATERMELON', ja: 'スイカ', zh: '西瓜' } },
-    { id: 'sponge',   label: 'SPONGE',   radius: 46, hardness: 0.12, color: [222, 178, 104], image: null,
+    // SPONGE: yellow kitchen sponge, rgb(245,215,93) = HSB 48, 0.62, 0.96. Holes
+    // (x 0.70) and outline (x 0.60) are darker shades of the same yellow (see ui.js).
+    { id: 'sponge',   label: 'SPONGE',   radius: 46, hardness: 0.12, color: [245, 215, 93], image: null,
       names: { en: 'SPONGE', ja: 'スポンジ', zh: '海綿' } },
     { id: 'cotton',   label: 'COTTON',   radius: 54, hardness: 0.00, color: [244, 244, 244], image: null,
       names: { en: 'COTTON', ja: 'わた', zh: '棉花' } },
     { id: 'stone',    label: 'STONE',    radius: 66, hardness: 0.85, color: [128, 124, 120], image: null,
-      names: { en: 'STONE', ja: 'いし', zh: '石頭' } }
+      names: { en: 'STONE', ja: 'いし', zh: '石頭' } },
+    // WATERMELON: the largest ball. Breaks after `breakHits` collisions (characters or
+    // walls, one per step) within `breakWindow` seconds, then becomes the default ball
+    // (see _afterStep). 12 in 4 s was tuned at radius 42 (open field with a few
+    // characters lasted minutes; minimum bounds or a tight cluster broke it in 2-4 s).
+    { id: 'watermelon', label: 'WATERMELON', radius: 72, hardness: 0.60, color: [96, 172, 64], image: null,
+      breakHits: 12, breakWindow: 4.0, names: { en: 'WATERMELON', ja: 'スイカ', zh: '西瓜' } }
   ];
-  var DEFAULT_BALL = 3; // MARBLE
+  // Default ball looked up by id, so removing or reordering balls cannot point it elsewhere.
+  var DEFAULT_BALL = BALLS.map(function (b) { return b.id; }).indexOf('marble');
 
   // ---------- ball conversions ----------
   var BALL_R_MIN = Math.min.apply(null, BALLS.map(function (b) { return b.radius; }));
@@ -2598,30 +2596,11 @@ window.OSC_ASSETS = {
       g.moveTo(x - r, y - r * 0.4);
       g.bezierCurveTo(x - r * 0.2, y - r * 0.1, x + r * 0.3, y - r * 0.9, x + r, y - r * 0.6);
       g.stroke();
-    } else if (def.id === 'wood') {
-      g.strokeStyle = shade(col, 0.68);
-      g.lineWidth = Math.max(1, r * 0.08);
-      for (i = -2; i <= 2; i++) {
-        g.beginPath();
-        g.moveTo(x - r, y + i * r * 0.36);
-        g.quadraticCurveTo(x, y + i * r * 0.36 - r * 0.25, x + r, y + i * r * 0.36 + r * 0.05);
-        g.stroke();
-      }
-    } else if (def.id === 'rubber') {
-      g.fillStyle = shade(col, 1.25);
-      g.fillRect(x - r, y - r * 0.18, r * 2, r * 0.36);
     } else if (def.id === 'tennis') {
       g.strokeStyle = COLOR.ballLight;
       g.lineWidth = Math.max(1, r * 0.1);
       g.beginPath(); g.arc(x - r * 1.25, y, r * 0.95, -0.9, 0.9); g.stroke();
       g.beginPath(); g.arc(x + r * 1.25, y, r * 0.95, Math.PI - 0.9, Math.PI + 0.9); g.stroke();
-    } else if (def.id === 'pingpong') {
-      g.strokeStyle = shade(col, 0.75);
-      g.lineWidth = Math.max(1, r * 0.08);
-      g.beginPath();
-      g.moveTo(x - r, y + r * 0.08);
-      g.quadraticCurveTo(x, y + r * 0.3, x + r, y + r * 0.08);
-      g.stroke();
     } else if (def.id === 'sponge') {
       g.fillStyle = shade(col, 0.7);
       for (i = 0; i < SPONGE_HOLES.length; i++) {
@@ -2640,7 +2619,7 @@ window.OSC_ASSETS = {
     g.lineWidth = Math.max(1, r * 0.07);
     g.strokeStyle = def.id === 'glass' ? COLOR.glassEdge : shade(col, 0.6);
     g.stroke();
-    if (def.id === 'glass' || def.id === 'marble' || def.id === 'steel' || def.id === 'pingpong') {
+    if (def.id === 'glass' || def.id === 'marble' || def.id === 'steel') {
       g.fillStyle = 'rgba(255,255,255,0.75)';
       g.beginPath();
       g.arc(x - r * 0.35, y - r * 0.38, Math.max(1, r * 0.18), 0, Math.PI * 2);
