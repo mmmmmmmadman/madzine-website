@@ -349,7 +349,7 @@
   var PAN_RANGE = 0.7;
 
   // ---------- ball table (single place; looks are drawn by the UI from `id`) ----------
-  // radius: px. hardness: 0 (softest) .. 1 (hardest). color: base color for drawing.
+  // radius: base px (at ball scale 1; actual radius = scaledRadius(radius, ballScale)). hardness: 0 (softest) .. 1 (hardest). color: base color for drawing.
   // image: optional artwork path; UI falls back to Canvas drawing if missing/failed.
   // Sorted small -> large. Large balls can touch several characters at once.
   var BALLS = [
@@ -377,6 +377,23 @@
   // radius -> base speed (px/s). Smaller = faster.
   function speedForRadius(r) {
     return REF_SPEED * Math.pow(REF_RADIUS / r, SPEED_EXP);
+  }
+
+  // ---------- ball scale (play-area size -> drawn/collision radius) ----------
+  // BALLS[].radius is the base radius at a play area whose short side is at least
+  // BALL_SCALE_REF. Smaller play areas shrink every ball by the same factor
+  // (size order and ratios kept), down to BALL_R_FLOOR px so the smallest stays visible.
+  // Speed is scaled by the same factor, so a ball crosses the same number of its own
+  // diameters per second on any screen. Ball character (speed curve, face threshold)
+  // is always derived from the base radius.
+  var BALL_SCALE_REF = 640;       // px, short side of the play area at scale 1
+  var BALL_SCALE_MIN = 0.35;      // never shrink below this factor
+  var BALL_R_FLOOR = 3;           // px, minimum actual radius
+  function ballScaleFor(w, h) {
+    return clamp(Math.min(w, h) / BALL_SCALE_REF, BALL_SCALE_MIN, 1);
+  }
+  function scaledRadius(baseR, scale) {
+    return Math.max(BALL_R_FLOOR, baseR * scale);
   }
 
   // Contact skin: once the ball touches a character, every other character within
@@ -439,9 +456,11 @@
     this.nextId = 1;
     this.characters = [];       // { id, type, x, y, decayNorm, reverb, delay, lastHit }
     this.ballType = DEFAULT_BALL;
+    this.ballScale = 1;         // play-area size factor applied to ball radius and speed
+    // r: actual (scaled) radius used for collision and drawing
     this.ball = { x: 0.5, y: 0.5, vx: 0, vy: 0, r: BALLS[DEFAULT_BALL].radius };
     this.bounds = { left: 0, top: 0, right: 1, bottom: 1 };   // ball area inside the play area
-    this.speed = speedForRadius(this.ball.r);
+    this.speed = speedForRadius(BALLS[DEFAULT_BALL].radius);
     this.charRadius = 32;
     this.onHit = null;          // function (character, hit) {}  hit = { cutoff, attack }
     this._initialized = false;
@@ -454,6 +473,9 @@
   Sim.decayFromNorm = decayFromNorm;
   Sim.speedForRadius = speedForRadius;
   Sim.BALL_R_MAX = BALL_R_MAX;
+  Sim.BALL_SCALE_REF = BALL_SCALE_REF;
+  Sim.ballScaleFor = ballScaleFor;
+  Sim.scaledRadius = scaledRadius;
   Sim.cutoffForHardness = cutoffForHardness;
   Sim.attackForHardness = attackForHardness;
 
@@ -463,6 +485,8 @@
     h = Math.max(1, h);
     var oldW = this.width, oldH = this.height;
     this.charRadius = clamp(Math.min(w, h) * 0.075, 26, 46);
+    this.ballScale = ballScaleFor(w, h);
+    this.ball.r = scaledRadius(BALLS[this.ballType].radius, this.ballScale);
 
     if (!this._initialized) {
       this.width = w;
@@ -493,17 +517,43 @@
     this.ball.x *= sx;
     this.ball.y *= sy;
     this._enforceBounds();
+    this._separateBall();
   };
 
   // ---------- ball type ----------
   Sim.prototype.setBallType = function (index) {
     index = clamp(Math.round(index), 0, BALLS.length - 1);
     this.ballType = index;
-    this.ball.r = BALLS[index].radius;
+    this.ball.r = scaledRadius(BALLS[index].radius, this.ballScale);
     this._enforceBounds();   // also refreshes speed, keeps direction
+    this._separateBall();
   };
 
   Sim.prototype.ballDef = function () { return BALLS[this.ballType]; };
+
+  // Base (unscaled) radius of the current ball: defines its character (speed, face).
+  Sim.prototype.ballBaseRadius = function () { return BALLS[this.ballType].radius; };
+
+  // Push the ball out of any character it overlaps (after a resize or a ball change),
+  // keeping it inside the bounds. Velocity is not changed and no hit fires here.
+  Sim.prototype._separateBall = function () {
+    var b = this.ball, minDist = this.charRadius + b.r;
+    for (var it = 0; it < SEPARATION_ITERATIONS * 2; it++) {
+      var moved = false;
+      for (var i = 0; i < this.characters.length; i++) {
+        var c = this.characters[i];
+        var dx = b.x - c.x, dy = b.y - c.y;
+        var d2 = dx * dx + dy * dy;
+        if (d2 >= minDist * minDist) continue;
+        var d = Math.sqrt(d2);
+        if (d < 1e-6) { b.y = c.y - minDist; }
+        else { b.x = c.x + dx / d * minDist; b.y = c.y + dy / d * minDist; }
+        moved = true;
+      }
+      this._clampBall();
+      if (!moved) break;
+    }
+  };
 
   // Sound color of the current ball (one note per character per hit).
   Sim.prototype.currentHit = function () {
@@ -579,7 +629,9 @@
   };
 
   Sim.prototype._updateSpeed = function () {
-    this.speed = speedForRadius(this.ball.r) * this.boundsSpeedMultiplier();
+    // speed curve from the base radius (ball character), scaled with the play area
+    this.speed = speedForRadius(BALLS[this.ballType].radius) * this.ballScale *
+                 this.boundsSpeedMultiplier();
     this._normalizeBallSpeed();
   };
 
@@ -792,7 +844,7 @@
       c.lastHit = this.time;
       c.hitCount += 1;           // discrete hit counter (drives the face expression)
       c.prevHitR = c.hitR;
-      c.hitR = this.ball.r;      // radius of the ball that made this hit
+      c.hitR = BALLS[this.ballType].radius;  // base radius of the ball that made this hit (face threshold)
       if (!hit) hit = this.currentHit();
       if (this.onHit) this.onHit(c, hit);
     }
@@ -833,6 +885,12 @@
     if (!this.ctx) {
       var Ctor = global.AudioContext || global.webkitAudioContext;
       if (!Ctor) return;
+      // iOS Safari: play even when the ring/silent switch is on.
+      try {
+        if (global.navigator && global.navigator.audioSession) {
+          global.navigator.audioSession.type = 'playback';
+        }
+      } catch (e) { /* not supported */ }
       this.ctx = new Ctor();
       this._build();
       this._unlock();
