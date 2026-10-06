@@ -65,7 +65,8 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
   /* very tall UI shots get more height so they stay legible */
   .fig img[src$="catalog_panel.png"], .fig img[src$="chromascope.png"],
   .fig img[src$="fundamental_3_drag_drop.png"], .fig img[src$="triposr_panel.png"],
-  .fig img[src$="triposr_preset_dropdown.png"], .fig img[src$="triposr_obj_loaded.png"] { max-height:172mm; }
+  .fig img[src$="triposr_preset_dropdown.png"], .fig img[src$="triposr_obj_loaded.png"],
+  .fig img[src$="diffusion.png"], .fig img[src$="feedback.png"], .fig img[src$="triposr_model_panel.png"] { max-height:172mm; }
   .fig img[src$="main_window.png"], .fig img[src$="particle.png"],
   .fig img[src$="minimalize.png"] { max-height:152mm; }
   .cap { font-size:9pt; margin:4px 0 9px; break-before:avoid; break-inside:avoid;
@@ -100,7 +101,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <li><a href="#chromascope">6. Chromascope</a></li>
 <li><a href="#minimalize">7. Minimalize</a></li>
 <li><a href="#object3d">8. 3D Object</a></li>
-<li><a href="#triposr">9. Triposr 3D</a></li>
+<li><a href="#triposr">9. 3D Model</a></li>
 <li><a href="#particle">10. Particle</a></li>
 <li><a href="#flowwarp">11. Flow Warp</a></li>
 <li><a href="#feedback">12. Feedback</a></li>
@@ -117,8 +118,8 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <h2 id="overview">1. Overview</h2>
 <p>Vision MOD is a real-time visual synthesizer for macOS and Windows. It borrows the Complex Oscillator idea from modular synthesis, where one oscillator shapes the other: the Modifier material provides the dynamics, and the Carrier material is the image carried by those dynamics. One footage modulates another footage, producing a new audio-visual phenomenon.</p>
 <p>Every station downstream of the source operates on the resulting Carrier stream. Background removal only happens at the very source (Fundamental Vision). Areas with no content carry alpha 0 from that point on, and every downstream station discards those pixels, so the subject stays cut out through the whole chain.</p>
-<div class="fig"><img src="img/main_window.png" alt="The main control window: top bar, the parameter panel of the selected module, the Contour Scanner and CV Generator block, and the Signal Flow list on the right."></div>
-<div class="cap">The main control window: top bar, the parameter panel of the selected module, the Contour Scanner and CV Generator block, and the Signal Flow list on the right.</div>
+<div class="fig"><img src="img/main_window.png" alt="The main control window at a large window size: the top bar, the module panels laid out side by side in a grid, the global action rows and the Contour Scanner and CV Generator block under Fundamental Vision, and the preview fixed at the bottom right."></div>
+<div class="cap">The main control window at a large window size: the top bar, the module panels laid out side by side in a grid, the global action rows and the Contour Scanner and CV Generator block under Fundamental Vision, and the preview fixed at the bottom right.</div>
 <h3>Top bar</h3>
 <table>
 <tr><td class="k">HUE</td><td>Toggle the HUE colour-wheel panel to adjust the interface accent colour</td></tr>
@@ -136,9 +137,9 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 
 <!-- ============================================================ -->
 <h2 id="flow">2. Signal Flow</h2>
-<p>The pipeline is defined by the Signal Flow list on the right side of the main window. Fundamental Vision is pinned to slot 1 as the source anchor; every other module is added, reordered, bypassed, or removed by the user. Drag the grip icon to reorder, click the X icon (two-click confirmation) to remove, toggle the checkbox to bypass an instance. The same module kind can be added multiple times; each instance keeps its own parameters and is wired in series, top to bottom.</p>
-<div class="fig"><img src="img/catalog_panel.png" alt="The Signal Flow list. Click a row to show that module's parameters in the panel on the left. Each row has a grip icon, an X icon, and an enable checkbox."></div>
-<div class="cap">The Signal Flow list. Click a row to show that module's parameters in the panel on the left. Each row has a grip icon, an X icon, and an enable checkbox.</div>
+<p>The pipeline is defined by the Signal Flow list on the left side of the main window. Fundamental Vision is pinned to slot 1 as the source anchor; every other module is added, reordered, bypassed, or removed by the user. Drag the grip icon to reorder, click the X icon (two-click confirmation) to remove, toggle the checkbox to bypass an instance. The same module kind can be added multiple times; each instance keeps its own parameters and is wired in series, top to bottom.</p>
+<div class="fig"><img src="img/catalog_panel.png" alt="The Signal Flow list. Click a row to show that module's parameters in the module panel. Each row has a grip icon, an X icon, an enable checkbox, and the shared mix, bright, and Position controls."></div>
+<div class="cap">The Signal Flow list. Click a row to show that module's parameters in the module panel. Each row has a grip icon, an X icon, an enable checkbox, and the shared mix, bright, and Position controls.</div>
 <table>
 <tr><td class="k">Signal Flow</td><td>Signal Flow: the module list, executed top to bottom; the same module kind can be instantiated multiple times with independent parameters</td></tr>
 <tr><td class="k">Drag to reorder</td><td>Drag to reorder: hold the grip icon and drag vertically to change the instance position in the signal flow (Fundamental Vision is pinned to the first slot)</td></tr>
@@ -149,14 +150,14 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">Preview</td><td>Preview: click to switch between the current module's effect and the final output; while the mask panel is open, this area paints the mask instead</td></tr>
 </table>
 <h3>+ Module</h3>
-<p>The + Module button opens the module library popup. Available modules: Stable Diffusion, Minimalize, Chromascope, 3D Object, Particle, Flow Warp, Feedback, Triposr 3D, Slow Motion, Plugin. Stable Diffusion is a single-instance module: once it is in the chain, its entry is greyed out. Fundamental Vision is the fixed anchor and cannot be added or removed.</p>
+<p>The + Module button opens the module library popup. Available modules: Stable Diffusion (Stream Diffusion on Windows), Minimalize, Chromascope, 3D Object, Particle, Flow Warp, Feedback, 3D Model, Slow Motion, Plugin. Stable Diffusion is a single-instance module: once it is in the chain, its entry is greyed out. Fundamental Vision is the fixed anchor and cannot be added or removed.</p>
 <table>
 <tr><td class="k">Module item</td><td>Click to append this module to the end of the signal flow, enabled; greyed out means only one is allowed and it already exists</td></tr>
 </table>
 <h3>Common station controls</h3>
 <p>Every station after Fundamental Vision shares the same header controls: an enable checkbox, Mix, Brightness, and a Position / Scale pad. Mix is the station dry/wet and is the only mix control; modules have no mix fader of their own. A newly added instance starts with Mix at 0, so adding a module does not change the picture until you raise Mix.</p>
-<div class="fig"><img src="img/triposr_panel.png" alt="A station panel (Triposr 3D shown). The header row holds the enable checkbox and RESET; Mix, Brightness, and the Position / Scale pad are shared by all stations."></div>
-<div class="cap">A station panel (Triposr 3D shown). The header row holds the enable checkbox and RESET; Mix, Brightness, and the Position / Scale pad are shared by all stations.</div>
+<div class="fig"><img src="img/triposr_panel.png" alt="A station panel (3D Model shown). The header row holds the enable checkbox and RESET; Mix, Brightness, and the Position / Scale pad are shared by all stations."></div>
+<div class="cap">A station panel (3D Model shown). The header row holds the enable checkbox and RESET; Mix, Brightness, and the Position / Scale pad are shared by all stations.</div>
 <table>
 <tr><td class="k">Mix</td><td>Station dry/wet mix: 0 passes the previous station's output through, 1 is fully wet</td></tr>
 <tr><td class="k">Brightness</td><td>Output brightness gain of this station (0–4, double-click resets to 1)</td></tr>
@@ -164,20 +165,23 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">Mask icon</td><td>Click to open this module's brush-mask panel: painted areas can be removed or kept</td></tr>
 </table>
 <h3>Brush mask</h3>
+<p>Each module instance keeps its own mask, painted on the preview while the mask panel is open. The mask follows the visible picture: after the output aspect ratio is changed, the strokes stay at the same relative position in the picture. The strokes, the mode, and the brush settings are saved with the settings and in project files.</p>
 <table>
-<tr><td class="k">Mode</td><td>Mask mode (click to cycle): Off / Erase (painted areas are removed) / Keep (only painted areas remain). Drag on the preview to paint; the mask is not saved and is empty after relaunch</td></tr>
+<tr><td class="k">Off / Erase / Keep</td><td>Mask mode (click to cycle): Off / Erase (painted areas are removed) / Keep (only painted areas remain). Drag on the preview to paint; the strokes, mode, and brush settings are saved and restored after relaunch or when a project file is loaded</td></tr>
 <tr><td class="k">Size</td><td>Brush size (0.01–0.30); affects strokes painted afterwards only</td></tr>
 <tr><td class="k">Softness</td><td>Brush edge softness (0–1); affects strokes painted afterwards only</td></tr>
 <tr><td class="k">Noise</td><td>Brush noise amount (0–1); affects strokes painted afterwards only</td></tr>
 <tr><td class="k">Opacity</td><td>Brush opacity (0.05–1); affects strokes painted afterwards only</td></tr>
 <tr><td class="k">Clear</td><td>Clear the painted mask and return to the unmasked state; the mode and brush settings are kept</td></tr>
 </table>
+<div class="fig"><img src="img/brush_mask.png" alt="The Brush Mask panel: Mode, Size, Softness, Noise, Opacity, and Clear."></div>
+<div class="cap">The Brush Mask panel: Mode, Size, Softness, Noise, Opacity, and Clear.</div>
 
 <!-- ============================================================ -->
 <h2 id="fundamental">3. Fundamental Vision</h2>
 <p>The source station. Two slots sit side by side: Modifier on the left, Carrier on the right. Each slot takes a camera, a video file, or a photo. The Modifier supplies the Color signals, the Displace controls of the modules, and the Flow Warp flow field; the Carrier is the image fed into the chain.</p>
-<div class="fig"><img src="img/fundamental_1.png" alt="Fundamental Vision: Modifier (left) and Carrier (right) with the Mix fader between them."></div>
-<div class="cap">Fundamental Vision: Modifier (left) and Carrier (right) with the Mix fader between them.</div>
+<div class="fig"><img src="img/fundamental_1.png" alt="Fundamental Vision: Modifier (left) and Carrier (right), with Remove Background, Mix, Speed, and Brightness below."></div>
+<div class="cap">Fundamental Vision: Modifier (left) and Carrier (right), with Remove Background, Mix, Speed, and Brightness below.</div>
 <table>
 <tr><td class="k">Module</td><td>Source input module: Modifier (left) modulates Carrier (right); Mix blends between them</td></tr>
 <tr><td class="k">Modifier</td><td>Modifier slot: the modulating material; source for Color CV, particle Displace, and the Flow Warp flow field</td></tr>
@@ -188,7 +192,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">Remove background</td><td>Background removal (three states: off / keep the person / inverted, keep the background): MediaPipe computes the foreground mask, applied to the image after Modifier and Carrier are mixed</td></tr>
 <tr><td class="k">Flip H</td><td>Horizontal flip (left-right mirror) of the source image; applied at the producer stage, affecting the whole chain</td></tr>
 <tr><td class="k">Flip V</td><td>Vertical flip (top-bottom mirror) of the source image; applied at the producer stage, affecting the whole chain</td></tr>
-<tr><td class="k">Video speed</td><td>Playback speed of the loaded video (0 pause, 1 normal, 5 fivefold)</td></tr>
+<tr><td class="k">Speed</td><td>Playback speed of the loaded video (0 pause, 1 normal, 5 fivefold)</td></tr>
 </table>
 <h3>Camera menu and settings</h3>
 <div class="fig"><img src="img/fundamental_2_camera_manu.png" alt="Camera selection dropdown and the camera settings icon."></div>
@@ -206,10 +210,15 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <table>
 <tr><td class="k">File path</td><td>Path of the loaded file; drop a file onto the window to load (left half = Modifier, right half = Carrier)</td></tr>
 </table>
+<p>If the video or photo file cannot be found or read (for example the file was moved, or the project comes from another computer), the control window shows a message naming the slot. Drop the file onto the window again; the message disappears once the file can be read.</p>
+<div class="fig"><img src="img/source_missing.png" alt="The message shown when the Modifier video file cannot be found or read; Clear removes the file from the slot."></div>
+<div class="cap">The message shown when the Modifier video file cannot be found or read; Clear removes the file from the slot.</div>
 
 <!-- ============================================================ -->
 <h2 id="contour">4. Contour Scanner and CV Generator</h2>
 <p>Below the module panel, the main window always shows the Contour Scanner module and the CV Generator. The scanner detects contours from the image; the CV Generator turns the scan, motion, and colour into modulation signals. The global action rows (PRESET, PLUGINS, OUTPUT, View Panic, MANUAL, Help) sit at the top of the Contour Scanner module.</p>
+<div class="fig"><img src="img/contour_cv.png" alt="The Contour Scanner and CV Generator block below the module panel."></div>
+<div class="cap">The Contour Scanner and CV Generator block below the module panel.</div>
 <h3>Contour Scanner</h3>
 <table>
 <tr><td class="k">Module</td><td>Contour Scanner module: detects contours from the image for the SEQ signals and the contour overlay</td></tr>
@@ -217,8 +226,8 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">Scan ROI</td><td>Scan ROI circle: drag the centre to move the scan anchor, drag the edge to resize the scan range</td></tr>
 <tr><td class="k">Threshold</td><td>Contour edge detection threshold: higher keeps only stronger edges</td></tr>
 <tr><td class="k">Smoothing</td><td>Contour temporal smoothing: the value is the weight of the new frame; lower is slower and steadier, 100 disables smoothing</td></tr>
-<tr><td class="k">Scene Threshold</td><td>Contour update gate (not the edge detection threshold): the image must change by more than this percent before contours are detected again. Higher holds the contour stiller and costs less CPU/GPU, lower reacts faster, 0 recomputes almost every frame</td></tr>
-<tr><td class="k">Lock</td><td>Lock the current contour: detection stops and the scan keeps running along the locked contour</td></tr>
+<tr><td class="k">Stillness</td><td>Stillness: contour update gate (not the edge detection threshold):the image must change by more than this percent before contours are detected again. Higher holds the contour stiller and costs less CPU/GPU, lower reacts faster, 0 recomputes almost every frame</td></tr>
+<tr><td class="k">Contour Lock</td><td>Lock the current contour: detection stops and the scan keeps running along the locked contour; while locked, Threshold, Smoothing and Stillness are greyed out</td></tr>
 <tr><td class="k">Mix</td><td>Blend ratio of the contour overlay onto the image</td></tr>
 </table>
 <h3>CV Generator</h3>
@@ -236,18 +245,20 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <div class="fig"><img src="img/diffusion.png" alt="Stable Diffusion panel: Enable, Grayscale, Likeness, Preset, Prompt, LoRA."></div>
 <div class="cap">Stable Diffusion panel: Enable, Grayscale, Likeness, Preset, Prompt, LoRA.</div>
 <table>
-<tr><td class="k">Enable</td><td>Enable Stable Diffusion: loads the model and turns the previous module's output into AI visuals in real time; unchecking releases it. Each time it is checked the prompt is cleared and Mix starts at 0, so raise Mix to see the result</td></tr>
+<tr><td class="k">Enable</td><td>Enable Stable Diffusion: loads the model and turns the previous module's output into AI visuals in real time; unchecking releases it. Each time it is checked Mix starts at 0, so raise Mix to see the result; the prompt is kept</td></tr>
 <tr><td class="k">Grayscale</td><td>Force the AI output to grayscale</td></tr>
-<tr><td class="k">Likeness</td><td>How closely the AI output follows the camera structure (high = like camera)</td></tr>
+<tr><td class="k">Likeness</td><td>How closely the AI output follows the structure of the previous module's output (high = closer to the input image)</td></tr>
 <tr><td class="k">Preset</td><td>Switch built-in style prompts (29 styles/materials)</td></tr>
 <tr><td class="k">Prompt</td><td>Text prompt for AI generation (describes the desired style)</td></tr>
-<tr><td class="k">LoRA</td><td>Choose a LoRA file (.safetensors) for Stable Diffusion; clear to disable LoRA. The row shows No LoRA when none is set.</td></tr>
+<tr><td class="k">LoRA</td><td>Choose a LoRA file (.safetensors) to apply to Stable Diffusion (Stream Diffusion on Windows)</td></tr>
+<tr><td class="k">LoRA X</td><td>Clear the selected LoRA file and use no LoRA</td></tr>
 <tr><td class="k">Status</td><td>SD service status: shows SD Loading while starting, then the active acceleration backend</td></tr>
 </table>
+<p>The prompt is kept when Enable is switched off and on again, after a relaunch, and after LOAD. Stable Diffusion is always switched off after a relaunch or LOAD, and Mix starts from 0 when it is enabled. If the LoRA file cannot be found or read, the LoRA row shows a message and images are generated without the LoRA; the message disappears after the file is chosen again.</p>
 
 <!-- ============================================================ -->
 <h2 id="chromascope">6. Chromascope</h2>
-<p>Eight layers are laid over the image, one per audio input. Base Hue sets the starting hue and Hue Spread distributes the layers around it. Curve and Angle set the first layer; each Spread adds that amount per layer. Level 1 to 8 set each layer's brightness; a layer at 0 is removed. The dry/wet balance is the station Mix.</p>
+<p>Eight layers are laid over the image, one per audio input. Base Hue sets the starting hue and Hue Spread distributes the layers around it. Curve and Angle set the first layer; each Spread adds that amount per layer. The layers are split by the brightness of the previous module's output, not by equal areas of the image. Level 1 to 8 set each layer's brightness; a layer at 0 is removed. The dry/wet balance is the station Mix.</p>
 <div class="fig"><img src="img/chromascope.png" alt="Chromascope panel: Audio, Base Hue, Hue Spread, Curve and Angle with their Spread, and Level 1 to 8 faders."></div>
 <div class="cap">Chromascope panel: Audio, Base Hue, Hue Spread, Curve and Angle with their Spread, and Level 1 to 8 faders.</div>
 <table>
@@ -259,22 +270,22 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">Curve Spread</td><td>Chromascope bend change per layer (positive or negative): layer k = curve + k × this value</td></tr>
 <tr><td class="k">Angle</td><td>Chromascope waveform direction angle of the first layer (0 to 360 degrees)</td></tr>
 <tr><td class="k">Angle Spread</td><td>Chromascope angle increase per layer: layer k = angle + k × this value</td></tr>
-<tr><td class="k">Level 1 to 8</td><td>Chromascope brightness of this layer, driven by the audio input of the same number; at 0 the layer is removed and the remaining layers share the image equally</td></tr>
+<tr><td class="k">Level 1 to 8</td><td>Chromascope brightness of this layer, driven by the audio input of the same number; layers are split by the brightness of the previous module's output, not by equal areas of the image; at 0 the layer is removed and the remaining layers re-divide the brightness range</td></tr>
 </table>
 
 <!-- ============================================================ -->
 <h2 id="minimalize">7. Minimalize</h2>
-<p>Rebuilds the image as polygons from tracked seed points. Topology picks Triangle (Delaunay mesh), Cell (Voronoi), or Square (Quadtree rectangles); Fill toggles between filled polygons and edge-only wireframe. Polygon colour is sampled from the chain input; the Modifier only displaces the seed points.</p>
-<div class="fig"><img src="img/minimalize.png" alt="Minimalize panel: Density, Topology, Fill, Displace, Smooth, Line Color, Line Width, Line Sat, Fill Sat."></div>
-<div class="cap">Minimalize panel: Density, Topology, Fill, Displace, Smooth, Line Color, Line Width, Line Sat, Fill Sat.</div>
+<p>Rebuilds the image as polygons from tracked seed points. Mode picks Triangle (Delaunay mesh), Cell (Voronoi), or Square (Quadtree rectangles); Fill toggles between filled polygons and edge-only wireframe. Polygon colour is sampled from the chain input; the Modifier only displaces the seed points.</p>
+<div class="fig"><img src="img/minimalize.png" alt="Minimalize panel: Density, Mode, Fill, Displace, Smooth, Line Color, Line Width, Line Sat, Fill Sat."></div>
+<div class="cap">Minimalize panel: Density, Mode, Fill, Displace, Smooth, Line Color, Line Width, Line Sat, Fill Sat.</div>
 <table>
 <tr><td class="k">Enable</td><td>Enable Minimalize: re-partition the previous module's output into polygons (Voronoi / Delaunay / Quadtree) using seed points</td></tr>
-<tr><td class="k">Density</td><td>Upper bound of seed point count (2-1500); higher values yield finer polygons</td></tr>
-<tr><td class="k">Topology</td><td>Minimalize topology: Triangle (Delaunay mesh) / Cell (Voronoi) / Square (Quadtree rectangles)</td></tr>
+<tr><td class="k">Density</td><td>Upper bound of seed point count (0-500); higher values yield finer polygons</td></tr>
+<tr><td class="k">Mode</td><td>Minimalize topology: Triangle (Delaunay mesh) / Cell (Voronoi) / Square (Quadtree rectangles)</td></tr>
 <tr><td class="k">Fill</td><td>Toggle polygon fill: when on, polygons are filled with Fill Sat saturation; when off, only edges are drawn (wireframe)</td></tr>
 <tr><td class="k">Displace</td><td>Seed points are displaced as 2D vectors by the Modifier image R/G channels (Image Displace exception: Modifier acts as a displacement vector source here, not as colour sampling); 0 = off, higher values yield stronger polygon jitter</td></tr>
 <tr><td class="k">Smooth</td><td>Temporal smoothing of seed points: higher values reduce LK tracking jitter but slow the response to image change</td></tr>
-<tr><td class="k">Line Color</td><td>Polygon edge colour: 0 is black, 1 is white, values between follow the hue wheel</td></tr>
+<tr><td class="k">Line Color</td><td>Polygon edge colour: with Line Sat at 0 (the default), 0 to 0.5 goes from black to white and anything above 0.5 is white; with Line Sat above 0, 0 is black, 0.5 is the hue and 1 is white</td></tr>
 <tr><td class="k">Line Width</td><td>Polygon edge line width (0–5, 0 draws no line)</td></tr>
 <tr><td class="k">Line Sat</td><td>Edge line saturation (0 = black/grey, 1 = fully saturated hue)</td></tr>
 <tr><td class="k">Fill Sat</td><td>Fill saturation (no visible effect when the Fill toggle is off)</td></tr>
@@ -283,14 +294,16 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <!-- ============================================================ -->
 <h2 id="object3d">8. 3D Object</h2>
 <p>A ray-marched 3D object skinned with the chain input. Shape morphs between five primitives; Distort, Repeat, Spacing, Jitter, and Smooth shape the field; Zoom, Pan, and Tilt move the camera. Displace pushes the surface by Modifier luma.</p>
+<div class="fig"><img src="img/object_3d_panel.png" alt="3D Object panel."></div>
+<div class="cap">3D Object panel.</div>
 <table>
 <tr><td class="k">Enable</td><td>Enable 3D Object: SDF raymarch solid object rendering</td></tr>
-<tr><td class="k">RESET</td><td>Reset all 3D Object parameters to their defaults</td></tr>
+<tr><td class="k">RESET</td><td>Reset all 3D Object parameters to their defaults and disconnect modulation</td></tr>
 <tr><td class="k">Shape</td><td>3D object shape: morph between 5 primitives (sphere/box/torus/octahedron/gyroid)</td></tr>
 <tr><td class="k">Size</td><td>Overall size of the 3D object</td></tr>
-<tr><td class="k">Distort</td><td>Domain warp (sine-domain distortion) strength</td></tr>
+<tr><td class="k">Distort</td><td>Domain warp (sine-domain distortion) strength; the default is 0 (off) and the fader's lower limit is 0.01</td></tr>
 <tr><td class="k">Displace</td><td>Displaces the 3D object surface by Modifier image luma (0 = off; higher = deeper relief)</td></tr>
-<tr><td class="k">Repeat</td><td>Domain repeat: amount of spatial array replication</td></tr>
+<tr><td class="k">Repeat</td><td>Domain repeat: amount of spatial array replication; the default is 0 (off) and the fader's lower limit is 0.01</td></tr>
 <tr><td class="k">Spacing</td><td>Spacing of the repeated array</td></tr>
 <tr><td class="k">Jitter</td><td>Jitter of the array arrangement</td></tr>
 <tr><td class="k">Smooth</td><td>Blend smoothness (0–5): 0 is a single shape; above 0 a second small sphere appears and blends into the main shape, higher is smoother</td></tr>
@@ -300,40 +313,44 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 </table>
 
 <!-- ============================================================ -->
-<h2 id="triposr">9. Triposr 3D</h2>
-<p>Renders a 3D mesh skinned with the chain input. The mesh comes from an OBJ file you choose or from one of 100 built-in preset shapes; there is no camera snapshot reconstruction in this version. Several Triposr 3D instances can be in the chain, each with its own mesh. Rotate X / Y / Z, Scale, Displace, and Wireframe are modulatable.</p>
+<h2 id="triposr">9. 3D Model</h2>
+<p>Renders a 3D mesh skinned with the chain input. The mesh comes from an OBJ file you choose or from one of 100 built-in preset shapes. Several 3D Model instances can be in the chain, each with its own mesh. Rotate Y and Rotate X orbit the camera around the model, Rotate Z rolls the picture, and Scale sets the camera distance. Rotate X / Y / Z, Scale, Displace, and Wireframe are modulatable.</p>
+<div class="fig"><img src="img/triposr_model_panel.png" alt="3D Model panel with the preview below: Rotate Y / X / Z, Scale, Displace, Wireframe, the OBJ File row, and the Preset row."></div>
+<div class="cap">3D Model panel with the preview below: Rotate Y / X / Z, Scale, Displace, Wireframe, the OBJ File row, and the Preset row.</div>
 <div class="fig"><img src="img/triposr_preset_dropdown.png" alt="The Preset dropdown lists the 100 built-in shapes with thumbnails."></div>
 <div class="cap">The Preset dropdown lists the 100 built-in shapes with thumbnails.</div>
 <div class="fig"><img src="img/triposr_obj_loaded.png" alt="An OBJ file loaded through the OBJ File row."></div>
 <div class="cap">An OBJ file loaded through the OBJ File row.</div>
 <table>
-<tr><td class="k">Enable</td><td>Enable Triposr 3D: renders the 3D model from the loaded OBJ file or a built-in shape</td></tr>
-<tr><td class="k">RESET</td><td>Reset all Triposr 3D parameters to their defaults</td></tr>
-<tr><td class="k">Rotate Y</td><td>Rotation of the 3D mesh around the Y axis (0–360°)</td></tr>
-<tr><td class="k">Rotate X</td><td>Rotation of the 3D mesh around the X axis (0–360°)</td></tr>
-<tr><td class="k">Rotate Z</td><td>Rotation of the 3D mesh around the Z axis (0–360°)</td></tr>
-<tr><td class="k">Scale</td><td>Overall scale of the 3D mesh (0.1–5)</td></tr>
+<tr><td class="k">Enable</td><td>Enable 3D Model: renders the 3D model from the loaded OBJ file or a built-in shape</td></tr>
+<tr><td class="k">RESET</td><td>Reset all 3D Model parameters to their defaults, remove the loaded model (OBJ file and built-in shape) and disconnect modulation</td></tr>
+<tr><td class="k">Rotate Y</td><td>Angle of the camera orbiting horizontally around the model (0–360°)</td></tr>
+<tr><td class="k">Rotate X</td><td>Angle of the camera orbiting vertically around the model (0–360°)</td></tr>
+<tr><td class="k">Rotate Z</td><td>In-picture rotation (roll) angle (0–360°)</td></tr>
+<tr><td class="k">Scale</td><td>Size of the model on screen (0.1–5): this actually sets the camera distance (1.2 ÷ this value); higher moves the camera closer and the model looks larger</td></tr>
 <tr><td class="k">Displace</td><td>Displaces mesh vertices along their normals by Modifier image luma (0 = off; higher = deeper relief)</td></tr>
 <tr><td class="k">Wireframe</td><td>Wireframe blend: 0 solid, 1 pure wireframe, values between mix both</td></tr>
 <tr><td class="k">OBJ File</td><td>Choose an OBJ file (.obj) to load a 3D model; clear to remove it</td></tr>
 <tr><td class="k">Preset</td><td>Choose a built-in shape (100 total) as the 3D model; pick No Preset to deselect</td></tr>
+<tr><td class="k">Preset: No Preset</td><td>No Preset: deselect the built-in shape</td></tr>
+<tr><td class="k">Preset: shape</td><td>Use this built-in shape as the model; a loaded OBJ file is replaced</td></tr>
 </table>
 
 <!-- ============================================================ -->
 <h2 id="particle">10. Particle</h2>
-<p>Samples the chain input into a 3D particle field. Density, Size, Jitter, and Shape define the particles; Depth Mix and Displace move them along the z-axis; Zoom and Scale X / Y / Z transform the whole field.</p>
+<p>Samples the chain input into a 3D particle field. Density, Size, Jitter, and Shape define the particles; Depth Mix and Displace move them along the z-axis; Zoom moves the whole field forward and back along the z-axis (no visible effect while Depth Mix is 0), and Scale X / Y / Z scale the field.</p>
 <div class="fig"><img src="img/particle.png" alt="Particle panel."></div>
 <div class="cap">Particle panel.</div>
 <table>
 <tr><td class="k">Enable</td><td>Enable Particle rendering</td></tr>
-<tr><td class="k">RESET</td><td>Reset all Particle parameters and the view angle to their defaults</td></tr>
+<tr><td class="k">RESET</td><td>Reset the Particle parameters and the view angle to their defaults and disconnect modulation; Displace, Mix, Brightness and the position are left unchanged</td></tr>
 <tr><td class="k">Density</td><td>Particle density (number of sampled particles)</td></tr>
 <tr><td class="k">Size</td><td>Particle size</td></tr>
 <tr><td class="k">Jitter</td><td>Amount of particle position jitter</td></tr>
-<tr><td class="k">Shape</td><td>Particle shape</td></tr>
+<tr><td class="k">Shape</td><td>Particle shape: morphs across 7 shapes (circle / square / triangle / hexagon / diamond / star / ring); at 1 each particle takes one of them at random</td></tr>
 <tr><td class="k">Depth Mix</td><td>How much depth affects particle distribution along the z-axis</td></tr>
 <tr><td class="k">Displace</td><td>Strength of Modifier luma displacing particles along the z-axis</td></tr>
-<tr><td class="k">Zoom</td><td>Viewport zoom of the particle field</td></tr>
+<tr><td class="k">Zoom</td><td>Moves the particle field forward and back along the Z axis (-1 to 1): positive values bring it closer to the camera, negative values move it away; with Depth Mix at 0 there is no visible effect</td></tr>
 <tr><td class="k">Scale X</td><td>Particle field scale along X (negative mirrors)</td></tr>
 <tr><td class="k">Scale Y</td><td>Particle field scale along Y (negative mirrors)</td></tr>
 <tr><td class="k">Scale Z</td><td>Particle field scale along Z (negative mirrors)</td></tr>
@@ -348,8 +365,14 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">Enable</td><td>Enable the Flow Warp effect (flow field is computed from the Modifier source)</td></tr>
 <tr><td class="k">Strength</td><td>Strength of the optical-flow displacement effect</td></tr>
 <tr><td class="k">Direction</td><td>Displacement direction (forward / reverse / bidirectional)</td></tr>
+<tr><td class="k">Direction: Forward</td><td>Forward: the image is pushed along the detected motion</td></tr>
+<tr><td class="k">Direction: Reverse</td><td>Reverse: the image is pushed against the detected motion</td></tr>
+<tr><td class="k">Direction: Bidirectional</td><td>Bidirectional: the forward and reverse results are mixed half and half</td></tr>
 <tr><td class="k">Accumulate</td><td>Accumulate (0–0.95): how much of the previous frame's result is mixed in; higher gives longer trails</td></tr>
 <tr><td class="k">Preset</td><td>Optical-flow computation preset (Ultrafast / Fast / Medium): Ultrafast is the fastest and coarsest. With several Flow Warp modules, the setting of the first one in the signal flow is used</td></tr>
+<tr><td class="k">Preset: Ultrafast</td><td>Ultrafast: the fastest and coarsest optical-flow estimate</td></tr>
+<tr><td class="k">Preset: Fast</td><td>Fast: a middle setting between speed and detail for the optical-flow estimate</td></tr>
+<tr><td class="k">Preset: Medium</td><td>Medium: the slowest and most detailed optical-flow estimate</td></tr>
 </table>
 
 <!-- ============================================================ -->
@@ -359,29 +382,35 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <div class="cap">Feedback panel.</div>
 <table>
 <tr><td class="k">Enable</td><td>Enable the Feedback effect</td></tr>
-<tr><td class="k">Smooth</td><td>Smooth: how much of the previous frame is mixed in; higher gives longer trails, 0 gives none</td></tr>
+<tr><td class="k">Smooth</td><td>Smooth: how much of the previous frame is mixed in; higher gives longer trails; 0 gives no trails only when Bright is also 0</td></tr>
 <tr><td class="k">Bright</td><td>Bright gain (0–1): 0 adds no brightening; below 0.5 the bright trails stay bounded, at 0.5 and above bright areas grow frame by frame until white</td></tr>
-<tr><td class="k">Chroma</td><td>Chromatic aberration (0–0.005): how far the red channel shifts right and the blue channel shifts left; 0 is off</td></tr>
+<tr><td class="k">Chroma</td><td>Chromatic aberration (0–0.005): how far the red channel shifts left and the blue channel shifts right; 0 is off</td></tr>
 <tr><td class="k">Diffuse</td><td>Diffuse (0–1): blur applied to the fed-back image; 0 is no blur, higher values spread the trails more</td></tr>
 </table>
 
 <!-- ============================================================ -->
 <h2 id="slowmotion">13. Slow Motion</h2>
-<p>Records the incoming image continuously at 30 fps, keeps the most recent Buffer seconds, and loops them at a slower speed. Drag the Buffer fader or toggle the station off and on to clear the recording and start again.</p>
+<p>Records the incoming image continuously at 30 fps, keeps the most recent Buffer seconds, and loops them at a slower speed. The recording is cleared and starts again when Buffer converts to a different frame count, or when the station is toggled off and on. The recorded frames are not saved in the settings or in project files.</p>
+<div class="fig"><img src="img/slow_motion.png" alt="Slow Motion panel."></div>
+<div class="cap">Slow Motion panel.</div>
 <table>
 <tr><td class="k">Enable</td><td>Enable Slow Motion: records the previous module's output and loops it slowed down; turning it off and on clears the recording and starts again</td></tr>
-<tr><td class="k">RESET</td><td>Reset all Slow Motion parameters to their defaults</td></tr>
+<tr><td class="k">RESET</td><td>Reset all Slow Motion parameters to their defaults and disconnect modulation; the recording is cleared only when Buffer converts to a different frame count than before</td></tr>
 <tr><td class="k">Speed</td><td>Playback speed (0.05–1, 1 = original speed): the image is recorded at a fixed 30 fps and played back at 30 x this value. 0.25 = 4x slow motion. Playback loops within the most recently recorded segment</td></tr>
-<tr><td class="k">Buffer</td><td>Segment length (0.5-15 s): recording runs continuously at 30 fps, keeping the most recent N seconds and looping them. Drag this fader, or toggle the module off and on, to clear and record again. Larger values use more VRAM</td></tr>
+<tr><td class="k">Buffer</td><td>Segment length (0.5-15 s): recording runs continuously at 30 fps, keeping the most recent N seconds and looping them. The recording is cleared and starts again when this value converts to a different frame count, or when the module is toggled off and on. Larger values use more VRAM</td></tr>
 <tr><td class="k">Blend</td><td>Frame blending: interpolates between two adjacent recorded frames so slow motion stays smooth. Off plays discrete frames with visible stutter</td></tr>
 </table>
 
 <!-- ============================================================ -->
 <h2 id="plugin">14. Plugin</h2>
 <p>Runs a third-party fragment shader as a station. Plugins are single .wgsl files read from the plugin folder (default ~/.visionmod/plugins/, top level only). The folder is chosen with the PLUGINS row in the main window and is rescanned automatically when it changes. The Plugin panel has a dropdown for choosing the plugin; Automatic uses the first plugin in the list that runs correctly, and plugins that fail to compile are listed with their status but cannot be selected. Below it are a built-in Displace fader (displaces the input image using the Modifier image; 0 turns it off) and the faders declared by the selected plugin. When no plugin is available the station passes the image through.</p>
+<div class="fig"><img src="img/plugin_panel.png" alt="Plugin panel: the plugin dropdown (Automatic shown, with the running plugin named), the built-in Displace fader, and the faders declared by the plugin."></div>
+<div class="cap">Plugin panel: the plugin dropdown (Automatic shown, with the running plugin named), the built-in Displace fader, and the faders declared by the plugin.</div>
 <table>
 <tr><td class="k">Enable</td><td>Enable the Plugin module: the selected plugin processes the previous module's output; if the plugin is unavailable the image passes through unchanged</td></tr>
 <tr><td class="k">RESET</td><td>Reset the plugin parameters to their defaults and disconnect all modulation; the plugin selection is kept</td></tr>
+<tr><td class="k">Automatic (First Available)</td><td>Automatically use the first plugin in the list that runs correctly</td></tr>
+<tr><td class="k">Displace</td><td>Displaces the input image using the Modifier image; 0 turns it off</td></tr>
 </table>
 <h3>Plugin file header</h3>
 <p>Metadata lives in a block of //! comment lines at the top of the file. api and name.en are required; name.zh, name.ja, author, description, url, and param lines are optional. Parsing stops at the first line that is not a //! comment. The plugin id is the file name in lower case, so renaming the file makes it a different plugin.</p>
@@ -394,21 +423,33 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <!-- ============================================================ -->
 <h2 id="global">15. Global Actions</h2>
 <p>The action rows at the top of the Contour Scanner module apply to the whole program.</p>
+<div class="fig"><img src="img/global_actions.png" alt="The global action rows: PRESET (SAVE / SAVE AS / LOAD) with the current project file name, PLUGINS (FOLDER / DEFAULT / RESCAN) with the plugin folder, IMPORT OLD SETTINGS, OUTPUT + WINDOW, View Panic, MANUAL, and Help. In the Mac App Store build the purchase row sits above PRESET."></div>
+<div class="cap">The global action rows: PRESET (SAVE / SAVE AS / LOAD) with the current project file name, PLUGINS (FOLDER / DEFAULT / RESCAN) with the plugin folder, IMPORT OLD SETTINGS, OUTPUT + WINDOW, View Panic, MANUAL, and Help. In the Mac App Store build the purchase row sits above PRESET.</div>
+<div class="fig"><img src="img/load_confirm.png" alt="The OVERWRITE / CANCEL confirmation shown before LOAD applies a project file."></div>
+<div class="cap">The OVERWRITE / CANCEL confirmation shown before LOAD applies a project file.</div>
+<div class="fig"><img src="img/output_window.png" alt="The main output window with a second output window added by OUTPUT + WINDOW floating on top of it."></div>
+<div class="cap">The main output window with a second output window added by OUTPUT + WINDOW floating on top of it.</div>
 <table>
-<tr><td class="k">PRESET</td><td>SAVE AS writes all current parameters to a file. LOAD reads a file; because loading overwrites every current parameter and cannot be undone, an inline OVERWRITE / CANCEL confirmation appears first.</td></tr>
+<tr><td class="k">PRESET</td><td>SAVE writes all current parameters and MIDI mappings back to the current project file; if there is no project file yet, or the file was moved or cannot be written, the Save As window opens instead. SAVE AS writes them to a .json file you name. LOAD reads a .json file; because loading overwrites all current parameters and MIDI mappings, an inline OVERWRITE / CANCEL confirmation appears first (Esc also cancels). The row below shows the name of the current project file, or No project file yet; the file saved or loaded last becomes the current project file.</td></tr>
 <tr><td class="k">PLUGINS</td><td>FOLDER opens a folder picker for the plugin folder; DEFAULT returns to the default folder; RESCAN reloads the plugin folder after adding or editing plugin files. The second row shows the folder in use, or No folder available.</td></tr>
 <tr><td class="k">OUTPUT + WINDOW</td><td>Add an output window. Inside the output window: drag the window border to change the crop, drag on the image to pan, pinch or Ctrl+scroll to zoom, double-click to toggle fullscreen, Shift+double-click to reset to the full image</td></tr>
-<tr><td class="k">View Panic</td><td>View Panic: click when the main visual freezes; rebuilds the rendering resources and restarts the camera</td></tr>
+<tr><td class="k">Main output window</td><td>Main output window: drag anywhere to move the window, drag the bottom-right corner to resize, double-click to toggle full screen</td></tr>
+<tr><td class="k">View Panic</td><td>View Panic: click when the main visual freezes; rebuilds the rendering resources, restarts the camera and resets the internal state of Minimalize</td></tr>
 <tr><td class="k">MANUAL</td><td>Open the online manual on the official website (madzine.work) in the default browser</td></tr>
 <tr><td class="k">Help (i)</td><td>Toggle Help mode: when on, hovering a control shows its description in the current language next to the cursor; when off, nothing is shown</td></tr>
-<tr><td class="k">Message X</td><td>Dismiss this message</td></tr>
+<tr><td class="k">DISMISS</td><td>Dismiss this message</td></tr>
 </table>
+<h3>Project files</h3>
+<p>A project file holds all parameters of every module, the MIDI mappings, the brush masks (strokes, mode, and brush settings), the position, size, and full-screen state of the windows, the selected module, the preview switch, and the Help mode switch. LOAD applies everything in the file, including language, colour, audio devices, MIDI output, cameras, output windows, and the plugin folder. A window position that is not on a connected display falls back to the default position. A project file saved before MIDI mappings were included leaves the current mappings unchanged.</p>
+<p>Not saved: the frames recorded by Slow Motion. After a relaunch or LOAD, the SIGNAL window is closed and Stable Diffusion is switched off.</p>
+<p>Before LOAD applies a file, the current settings are backed up automatically to the settings folder (~/.visionmod) as app_state.backup-&lt;number&gt;.json. The 5 most recent backups are kept, and a backup can be opened with LOAD. A file saved by a newer version of Vision MOD is not opened: a message asks you to update the app, and the current settings stay as they are. After a successful save, the project file row briefly shows Saved: and the file name; if saving or loading fails, a message with the reason appears below the row.</p>
 
 <!-- ============================================================ -->
 <h2 id="signal">16. SIGNAL Window</h2>
 <p>The SIGNAL toggle in the top bar opens a floating window. The left column shows a preview and the seven CV meters (Sequence 1 / 2, Movement, Color R / G / B / Saturation). The right column holds Audio Inputs, CV Output, and LFO.</p>
 <div class="fig"><img src="img/signal_window.png" alt="SIGNAL window: CV meters on the left; Audio Inputs, CV Output routes, and LFO on the right."></div>
 <div class="cap">SIGNAL window: CV meters on the left; Audio Inputs, CV Output routes, and LFO on the right.</div>
+<p>The SIGNAL window is always closed when the program starts; its position and size are remembered. Choosing None for the audio input or the output is kept after a relaunch.</p>
 <h3>CV meters</h3>
 <table>
 <tr><td class="k">Module</td><td>CV Meter: shows the seven modulation signals derived from the image (contour SEQ 1 / 2, Movement, Color R / G / B / Sat)</td></tr>
@@ -431,8 +472,9 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <p>The Output dropdown selects the audio output device and the MIDI output port together. Each route then picks a source signal, an audio output channel, and a MIDI CC number.</p>
 <table>
 <tr><td class="k">Module</td><td>CV Output: sends modulation signals to audio output channels (ch 3+) and a MIDI device</td></tr>
+<tr><td class="k">Output</td><td>Destination of the CV signals: pick an audio output device under Audio Output and a MIDI output device under MIDI Output; both can be used at once, and None sends nothing on that side</td></tr>
 <tr><td class="k">Source</td><td>Source of a modulation signal; sent to both an audio output channel and a MIDI device (per-route CC#, 14-bit)</td></tr>
-<tr><td class="k">Ch</td><td>Which audio output channel this CV signal is sent to (the MIDI side uses the CC# field on the right)</td></tr>
+<tr><td class="k">Ch</td><td>Which audio output channel this CV signal is sent to (the MIDI side uses the CC# field on the right). Usable channels run from 3 up to the device channel count; a route set below 3 or above the device channel count outputs nothing</td></tr>
 <tr><td class="k">CC</td><td>MIDI CC number for this route (0-127); sent as 14-bit (MSB=CC, LSB=CC+32), falling back to 7-bit when CC&gt;95</td></tr>
 <tr><td class="k">No output device</td><td>With no output device, CV is not sent to audio output channels; the scan and meters keep running</td></tr>
 </table>
@@ -457,14 +499,16 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 </table>
 <h3>Sources</h3>
 <table>
-<tr><td class="k">Sequence 1 / 2</td><td>Contour scan signals; Smooth Sequence 1 / 2 are the smoothed versions.</td></tr>
+<tr><td class="k">Sequence 1 / 2</td><td>Contour scan signals.</td></tr>
 <tr><td class="k">Audio Input 1 to 8 RMS</td><td>Level of the eight audio input tracks.</td></tr>
-<tr><td class="k">Movement</td><td>Motion energy of the final output image; Movement Smooth is the smoothed version.</td></tr>
+<tr><td class="k">Movement</td><td>Motion energy of the final output image.</td></tr>
 <tr><td class="k">Color Red / Green / Blue / Saturation</td><td>Average colour of the Modifier frame.</td></tr>
 <tr><td class="k">LFO 1 to 4</td><td>Built-in LFOs set in the SIGNAL window.</td></tr>
 </table>
 <h3>MIDI Learn</h3>
-<p>Faders that support MIDI have a binding dot on the right of the value. Right-click it and choose MIDI Learn, then move a control on your MIDI device; the dot turns to the accent colour when bound. The same menu shows the bound channel and CC and offers Clear Binding. Only 7-bit Control Change messages are learned.</p>
+<p>Faders that support MIDI have a binding dot on the right of the value. Right-click it and choose MIDI Learn, then move a control on your MIDI device; the dot turns to the accent colour when bound. The same menu shows the bound channel and CC and offers Clear Binding. While it is waiting for a control, the menu also offers Cancel MIDI Learn. Only 7-bit Control Change messages are learned. Removing a module removes its bindings. MIDI mappings are saved in project files, and LOAD replaces the current mappings with those in the file.</p>
+<div class="fig"><img src="img/midi_learn.png" alt="Right-click the binding dot to the right of a fader value to open the MIDI Learn menu."></div>
+<div class="cap">Right-click the binding dot to the right of a fader value to open the MIDI Learn menu.</div>
 <table>
 <tr><td class="k">MIDI Learn</td><td>MIDI Learn: click, then move a knob or fader on the MIDI controller; the next CC received is bound to this parameter</td></tr>
 <tr><td class="k">Clear Binding</td><td>Clear Binding: remove the MIDI binding of this parameter</td></tr>
@@ -472,11 +516,13 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 
 <!-- ============================================================ -->
 <h2 id="appstore">18. Mac App Store Version</h2>
-<p>The Mac App Store build draws a semi-transparent VISION MOD watermark in the bottom-right corner of the output until the one-time purchase is made. The purchase row sits above PRESET.</p>
+<p>The Mac App Store build draws a semi-transparent VISION MOD watermark in the centre of the output until the one-time purchase is made. The purchase row sits above PRESET.</p>
+<div class="fig"><img src="img/global_actions.png" alt="After the purchase, the row above PRESET reads Purchased: Watermark Removed."></div>
+<div class="cap">After the purchase, the row above PRESET reads Purchased: Watermark Removed.</div>
 <table>
 <tr><td class="k">Remove Watermark</td><td>One-time purchase that permanently removes the watermark from the output. The App Store shows the price for your region. Once bought, the row reads Purchased: Watermark Removed. If the purchase is waiting for approval, the watermark is removed automatically once it is approved.</td></tr>
 <tr><td class="k">Restore Purchases</td><td>Already purchased (reinstall or another Mac)? Restore with the same Apple Account. You will not be charged again.</td></tr>
-<tr><td class="k">IMPORT</td><td>Imports settings saved by the earlier DMG version (from ~/.visionmod or ~/.config/visionmod) through a folder picker; the imported settings are applied immediately.</td></tr>
+<tr><td class="k">IMPORT OLD SETTINGS</td><td>Imports parameters, modules, MIDI mappings, plugins, and colour saved by the earlier DMG version (in ~/.visionmod and ~/.config/visionmod). Choose your home folder, or one of those two folders, in the window that opens. Because importing overwrites all current parameters and MIDI mappings, an OVERWRITE / CANCEL confirmation appears first (Esc also cancels); the current settings are backed up before the import. The imported settings apply right away without a relaunch. Settings saved by a newer version of Vision MOD are not imported.</td></tr>
 </table>
 
 <footer>MADZINE — Vision MOD v0.9.3</footer>

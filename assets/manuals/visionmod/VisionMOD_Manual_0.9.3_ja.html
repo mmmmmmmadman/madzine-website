@@ -65,7 +65,8 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
   /* very tall UI shots get more height so they stay legible */
   .fig img[src$="catalog_panel.png"], .fig img[src$="chromascope.png"],
   .fig img[src$="fundamental_3_drag_drop.png"], .fig img[src$="triposr_panel.png"],
-  .fig img[src$="triposr_preset_dropdown.png"], .fig img[src$="triposr_obj_loaded.png"] { max-height:172mm; }
+  .fig img[src$="triposr_preset_dropdown.png"], .fig img[src$="triposr_obj_loaded.png"],
+  .fig img[src$="diffusion.png"], .fig img[src$="feedback.png"], .fig img[src$="triposr_model_panel.png"] { max-height:172mm; }
   .fig img[src$="main_window.png"], .fig img[src$="particle.png"],
   .fig img[src$="minimalize.png"] { max-height:152mm; }
   .cap { font-size:9pt; margin:4px 0 9px; break-before:avoid; break-inside:avoid;
@@ -100,7 +101,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <li><a href="#chromascope">6. Chromascope</a></li>
 <li><a href="#minimalize">7. Minimalize</a></li>
 <li><a href="#object3d">8. 3D Object（3D オブジェクト）</a></li>
-<li><a href="#triposr">9. Triposr 3D（立体再構成）</a></li>
+<li><a href="#triposr">9. 3D モデル</a></li>
 <li><a href="#particle">10. Particle（パーティクル）</a></li>
 <li><a href="#flowwarp">11. Flow Warp</a></li>
 <li><a href="#feedback">12. Feedback</a></li>
@@ -117,8 +118,8 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <h2 id="overview">1. 概要</h2>
 <p>Vision MOD は macOS と Windows で動作するリアルタイム映像シンセサイザーです。モジュラーシンセサイザーの Complex Oscillator——一方のオシレーターでもう一方を整形する仕組み——を映像領域に持ち込みます。Modifier の素材がダイナミクスを与え、Carrier の素材はそのダイナミクスに乗る映像。ある映像素材が別の映像素材を変調し、新しい視聴覚現象が生まれます。</p>
 <p>ソース以降の各 station はこの合成された Carrier 映像流に対して動作します。背景除去は素材の起点（Fundamental Vision）でのみ行い、それ以降、内容のない領域は alpha 0 を保持し、下流の各 station はそのピクセルを破棄するため、チェーン全体で被写体の切り抜きが維持されます。</p>
-<div class="fig"><img src="img/main_window.png" alt="メインコントロールウィンドウ：トップバー、選択中モジュールのパラメータパネル、Contour Scanner と CV Generator ブロック、右側のシグナルフロー一覧。"></div>
-<div class="cap">メインコントロールウィンドウ：トップバー、選択中モジュールのパラメータパネル、Contour Scanner と CV Generator ブロック、右側のシグナルフロー一覧。</div>
+<div class="fig"><img src="img/main_window.png" alt="大きなウィンドウサイズでのメインコントロールウィンドウ：トップバー、グリッド状に並んだ各モジュールパネル、Fundamental Vision の下のグローバル操作行と Contour Scanner・CV Generator ブロック、右下に固定されたプレビュー。"></div>
+<div class="cap">大きなウィンドウサイズでのメインコントロールウィンドウ：トップバー、グリッド状に並んだ各モジュールパネル、Fundamental Vision の下のグローバル操作行と Contour Scanner・CV Generator ブロック、右下に固定されたプレビュー。</div>
 <h3>トップバー</h3>
 <table>
 <tr><td class="k">HUE</td><td>HUE カラーホイールパネルを開閉し、UI のアクセントカラーを調整</td></tr>
@@ -136,12 +137,12 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 
 <!-- ============================================================ -->
 <h2 id="flow">2. シグナルフロー</h2>
-<p>パイプラインはメインウィンドウ右側のシグナルフロー一覧で定義します。Fundamental Vision はソースアンカーとしてスロット 1 に固定、それ以外のモジュールはユーザーが追加・並べ替え・bypass・削除を行います。grip アイコンをドラッグして並べ替え、X アイコン（2 クリック確認）で削除、チェックボックスで個別 bypass。同種のモジュールを複数 instance 化でき、各 instance は独立したパラメータで上から下へ直列接続されます。</p>
-<div class="fig"><img src="img/catalog_panel.png" alt="シグナルフロー一覧。行をクリックすると左側のパネルにそのモジュールのパラメータが表示されます。各行に grip アイコン、X アイコン、有効チェックボックスがあります。"></div>
-<div class="cap">シグナルフロー一覧。行をクリックすると左側のパネルにそのモジュールのパラメータが表示されます。各行に grip アイコン、X アイコン、有効チェックボックスがあります。</div>
+<p>パイプラインはメインウィンドウ左側のシグナルフロー一覧で定義します。Fundamental Vision はソースアンカーとしてスロット 1 に固定、それ以外のモジュールはユーザーが追加・並べ替え・bypass・削除を行います。grip アイコンをドラッグして並べ替え、X アイコン（2 クリック確認）で削除、チェックボックスで個別 bypass。同種のモジュールを複数 instance 化でき、各 instance は独立したパラメータで上から下へ直列接続されます。</p>
+<div class="fig"><img src="img/catalog_panel.png" alt="シグナルフロー一覧。行をクリックするとモジュールパネルにそのモジュールのパラメータが表示されます。各行に grip アイコン、X アイコン、有効チェックボックス、共通の mix・bright・Position コントロールがあります。"></div>
+<div class="cap">シグナルフロー一覧。行をクリックするとモジュールパネルにそのモジュールのパラメータが表示されます。各行に grip アイコン、X アイコン、有効チェックボックス、共通の mix・bright・Position コントロールがあります。</div>
 <table>
 <tr><td class="k">Signal Flow</td><td>シグナルフロー（Signal Flow）：モジュール一覧、上から順に実行。同種のモジュールを複数 instance 化でき、各 instance のパラメータは独立</td></tr>
-<tr><td class="k">Drag to reorder</td><td>ドラッグ並べ替え：grip アイコンを掴んで上下にドラッグし instance の位置を変更（Fundamental Vision は第一スロット固定）</td></tr>
+<tr><td class="k">Drag to reorder</td><td>ドラッグ並べ替え：grip アイコンを掴んで上下にドラッグし instance の位置を変更（基礎ビジョンは第一スロット固定）</td></tr>
 <tr><td class="k">Remove</td><td>モジュールを削除：1 回目のクリックで行に「確認?」を表示、同じ X をもう一度クリックで削除。他の場所をクリックまたは Esc で取消</td></tr>
 <tr><td class="k">Enable</td><td>この instance を有効化：チェックを外すと bypass（信号は次の station へ素通し）。パラメータと順序は維持。例外：Stable Diffusion は解除でモデルを解放、Slow Motion は再チェックで録画をクリアして録り直し</td></tr>
 <tr><td class="k">Previous module</td><td>シグナルフローの前のモジュールパネルへ切替（先頭では末尾へ移動）</td></tr>
@@ -149,14 +150,14 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">Preview</td><td>プレビュー：クリックで「現在のモジュールの効果」と「最終出力」を切替。マスクパネルを開いている間はここでマスクを描画</td></tr>
 </table>
 <h3>+ Module</h3>
-<p>+ Module ボタンでモジュールライブラリを開きます。追加できるモジュール：Stable Diffusion、Minimalize、Chromascope、3D Object、Particle、Flow Warp、Feedback、Triposr 3D、Slow Motion、Plugin。Stable Diffusion は単一 instance で、チェーンに存在する間は項目がグレー表示になります。Fundamental Vision は固定アンカーで、追加も削除もできません。</p>
+<p>+ Module ボタンでモジュールライブラリを開きます。追加できるモジュール：Stable Diffusion（Windows 版は Stream Diffusion）、Minimalize、Chromascope、3D オブジェクト、パーティクル、Flow Warp、Feedback、3D モデル、スローモーション、プラグイン。Stable Diffusion は単一 instance で、チェーンに存在する間は項目がグレー表示になります。基礎ビジョンは固定アンカーで、追加も削除もできません。</p>
 <table>
 <tr><td class="k">Module item</td><td>クリックでこのモジュールをシグナルフローの末尾に追加して有効化。グレー表示は 1 つまでのモジュールが既に存在することを示す</td></tr>
 </table>
 <h3>各 station 共通コントロール</h3>
 <p>Fundamental Vision 以降の各 station は同じヘッダーコントロールを共有します：有効チェックボックス、Mix、Brightness、Position / Scale パッド。Mix はその station の dry/wet で、唯一のミックスコントロールです。モジュール内に独自の mix フェーダーはありません。新規追加した instance の Mix は 0 から始まるため、追加した時点では画面は変わらず、Mix を上げると効果が現れます。</p>
-<div class="fig"><img src="img/triposr_panel.png" alt="station パネル（図は Triposr 3D）。ヘッダー行に有効チェックボックスと RESET。Mix、Brightness、Position / Scale パッドは全 station 共通です。"></div>
-<div class="cap">station パネル（図は Triposr 3D）。ヘッダー行に有効チェックボックスと RESET。Mix、Brightness、Position / Scale パッドは全 station 共通です。</div>
+<div class="fig"><img src="img/triposr_panel.png" alt="station パネル（図は 3D Model）。ヘッダー行に有効チェックボックスと RESET。Mix、Brightness、Position / Scale パッドは全 station 共通です。"></div>
+<div class="cap">station パネル（図は 3D Model）。ヘッダー行に有効チェックボックスと RESET。Mix、Brightness、Position / Scale パッドは全 station 共通です。</div>
 <table>
 <tr><td class="k">Mix</td><td>ステーションの dry/wet 混合：0 で前段出力を素通し、1 で全効果</td></tr>
 <tr><td class="k">Brightness</td><td>このステーションの出力輝度ゲイン（0–4、ダブルクリックで 1 に戻る）</td></tr>
@@ -164,20 +165,23 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">Mask icon</td><td>クリックでこのモジュールのブラシマスクパネルを開く：塗った範囲を除去または保持に設定できます</td></tr>
 </table>
 <h3>ブラシマスク</h3>
+<p>各モジュール instance は個別のマスクを持ち、マスクパネルを開いている間にプレビュー上で描画します。マスクは表示されている画面に追従し、出力のアスペクト比を変えても、描いた内容は画面内の同じ相対位置に残ります。描いた内容、モード、ブラシ設定は設定およびプロジェクトファイルに保存されます。</p>
 <table>
-<tr><td class="k">Mode</td><td>マスクモード（クリックで順に切替）：オフ／削除（塗った範囲を除去）／保持（塗った範囲のみ残す）。プレビュー上をドラッグして描画。マスクは保存されず、再起動後は空になります</td></tr>
-<tr><td class="k">Size</td><td>ブラシの太さ（0.01–0.30）。以降に描くストロークにのみ反映</td></tr>
-<tr><td class="k">Softness</td><td>ブラシ縁のぼかし（0–1）。以降に描くストロークにのみ反映</td></tr>
-<tr><td class="k">Noise</td><td>ブラシのノイズ量（0–1）。以降に描くストロークにのみ反映</td></tr>
-<tr><td class="k">Opacity</td><td>ブラシの不透明度（0.05–1）。以降に描くストロークにのみ反映</td></tr>
-<tr><td class="k">Clear</td><td>描いたマスクを消去して未マスク状態に戻す。モードとブラシ設定は維持</td></tr>
+<tr><td class="k">オフ／削除／保持</td><td>マスクモード（クリックで順に切替）：オフ／削除（塗った範囲を除去）／保持（塗った範囲のみ残す）。プレビュー上をドラッグして描画。描いた内容、モード、ブラシ設定は保存され、再起動後やプロジェクトファイルの読み込み後に復元されます</td></tr>
+<tr><td class="k">太さ</td><td>ブラシの太さ（0.01–0.30）。以降に描くストロークにのみ反映</td></tr>
+<tr><td class="k">ぼかし</td><td>ブラシ縁のぼかし（0–1）。以降に描くストロークにのみ反映</td></tr>
+<tr><td class="k">ノイズ</td><td>ブラシのノイズ量（0–1）。以降に描くストロークにのみ反映</td></tr>
+<tr><td class="k">不透明度</td><td>ブラシの不透明度（0.05–1）。以降に描くストロークにのみ反映</td></tr>
+<tr><td class="k">クリア</td><td>描いたマスクを消去して未マスク状態に戻す。モードとブラシ設定は維持</td></tr>
 </table>
+<div class="fig"><img src="img/brush_mask.png" alt="ブラシマスクパネル：モード、太さ、ぼかし、ノイズ、不透明度、クリア。"></div>
+<div class="cap">ブラシマスクパネル：モード、太さ、ぼかし、ノイズ、不透明度、クリア。</div>
 
 <!-- ============================================================ -->
 <h2 id="fundamental">3. Fundamental Vision（基礎ビジョン）</h2>
 <p>ソース station。左に Modifier、右に Carrier の 2 スロットが並びます。各スロットにはカメラ、動画ファイル、写真を割り当てられます。Modifier は Color 信号、各モジュールの Displace、Flow Warp の流れ場の元になり、Carrier がチェーンに送られる映像本体です。</p>
-<div class="fig"><img src="img/fundamental_1.png" alt="Fundamental Vision：Modifier（左）と Carrier（右）、その間に Mix フェーダー。"></div>
-<div class="cap">Fundamental Vision：Modifier（左）と Carrier（右）、その間に Mix フェーダー。</div>
+<div class="fig"><img src="img/fundamental_1.png" alt="Fundamental Vision：Modifier（左）と Carrier（右）、その下に Remove Background、Mix、Speed、Brightness。"></div>
+<div class="cap">Fundamental Vision：Modifier（左）と Carrier（右）、その下に Remove Background、Mix、Speed、Brightness。</div>
 <table>
 <tr><td class="k">Module</td><td>素材入力モジュール：Modifier（左）が Carrier（右）を変調、Mix で両者を合成</td></tr>
 <tr><td class="k">Modifier</td><td>Modifier スロット：変調素材。Color CV、粒子 Displace、Flow Warp フロー場のソース</td></tr>
@@ -188,7 +192,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">Remove background</td><td>背景除去（3 段階：オフ／人物を残す／反転して背景を残す）：MediaPipe が前景マスクを計算し、Modifier と Carrier を合成した後の映像に適用</td></tr>
 <tr><td class="k">Flip H</td><td>ソース映像を水平反転（左右ミラー）；producer 段階で適用、チェーン全体に反映</td></tr>
 <tr><td class="k">Flip V</td><td>ソース映像を垂直反転（上下ミラー）；producer 段階で適用、チェーン全体に反映</td></tr>
-<tr><td class="k">Video speed</td><td>読み込んだ動画の再生速度（0 停止、1 等速、5 五倍速）</td></tr>
+<tr><td class="k">Speed</td><td>読み込んだ動画の再生速度（0 停止、1 等速、5 五倍速）</td></tr>
 </table>
 <h3>カメラメニューと設定</h3>
 <div class="fig"><img src="img/fundamental_2_camera_manu.png" alt="カメラ選択ドロップダウンとカメラ設定アイコン。"></div>
@@ -196,9 +200,9 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <table>
 <tr><td class="k">Camera</td><td>カメラ入力デバイスを選択</td></tr>
 <tr><td class="k">Settings icon</td><td>クリックでカラー設定パネルを開く（Brightness／Contrast／Saturation、ソフトウェア補正）。Carrier と Modifier は独立設定を保持</td></tr>
-<tr><td class="k">Brightness</td><td>明るさ（ソフトウェア補正、0–1、0.5 で変化なし）</td></tr>
-<tr><td class="k">Contrast</td><td>コントラスト（ソフトウェア補正、0–1、0.5 で変化なし）</td></tr>
-<tr><td class="k">Saturation</td><td>彩度（ソフトウェア補正、0–1、0.5 で変化なし）</td></tr>
+<tr><td class="k">明るさ</td><td>明るさ（ソフトウェア補正、0–1、0.5 で変化なし）</td></tr>
+<tr><td class="k">コントラスト</td><td>コントラスト（ソフトウェア補正、0–1、0.5 で変化なし）</td></tr>
+<tr><td class="k">彩度</td><td>彩度（ソフトウェア補正、0–1、0.5 で変化なし）</td></tr>
 </table>
 <h3>動画・写真の読み込み</h3>
 <div class="fig"><img src="img/fundamental_3_drag_drop.png" alt="ファイルをウィンドウにドロップ：左半分で Modifier、右半分で Carrier に読み込まれます。"></div>
@@ -206,10 +210,15 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <table>
 <tr><td class="k">File path</td><td>読み込み中のファイルパス。ウィンドウへドロップで読み込み（左半分＝Modifier、右半分＝Carrier）</td></tr>
 </table>
+<p>動画または写真ファイルが見つからない、または読み取り権限がない場合（ファイルが移動された、別のコンピュータのプロジェクトを開いた等）、コントロールウィンドウにスロット名付きのメッセージが表示されます。ファイルをウィンドウにドロップし直してください。読み取れるようになるとメッセージは消えます。</p>
+<div class="fig"><img src="img/source_missing.png" alt="Modifier の動画ファイルが見つからない、または読み取れないときに表示されるメッセージ。Clear でそのファイルをスロットから外します。"></div>
+<div class="cap">Modifier の動画ファイルが見つからない、または読み取れないときに表示されるメッセージ。Clear でそのファイルをスロットから外します。</div>
 
 <!-- ============================================================ -->
 <h2 id="contour">4. Contour Scanner と CV Generator</h2>
 <p>メインウィンドウのモジュールパネルの下には常に Contour Scanner と CV Generator が表示されます。スキャナーは映像から輪郭を検出し、CV Generator はスキャン・動き・色をモジュレーション信号に変換します。グローバル操作行（PRESET、PLUGINS、OUTPUT、ビジュアル再起動、説明書、ヘルプ）は Contour Scanner パネルの上部にあります。</p>
+<div class="fig"><img src="img/contour_cv.png" alt="モジュールパネルの下にある Contour Scanner と CV Generator ブロック。"></div>
+<div class="cap">モジュールパネルの下にある Contour Scanner と CV Generator ブロック。</div>
 <h3>Contour Scanner</h3>
 <table>
 <tr><td class="k">Module</td><td>輪郭スキャナーモジュール：映像から輪郭を検出し、SEQ 信号と輪郭オーバーレイを生成</td></tr>
@@ -217,8 +226,8 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">Scan ROI</td><td>走査範囲円：中心をドラッグで走査アンカー移動、縁をドラッグで走査範囲を調整</td></tr>
 <tr><td class="k">Threshold</td><td>輪郭エッジ検出の閾値：高いほど強いエッジのみ残します</td></tr>
 <tr><td class="k">Smoothing</td><td>輪郭の時間方向スムージング：値は新しいフレームの比重。低いほど変化が遅く安定し、100 でスムージングなし</td></tr>
-<tr><td class="k">Scene Threshold</td><td>輪郭の更新ゲート（エッジ検出の閾値ではありません）：画面がこの値（％）を超えて変化したときだけ輪郭を再検出します。高いほど輪郭は静止したまま保たれ CPU／GPU の負荷も下がり、低いほど反応が速くなり、0 ではほぼ毎フレーム再計算します</td></tr>
-<tr><td class="k">Lock</td><td>現在の輪郭を固定：再検出を停止し、固定した輪郭に沿って走査を続けます</td></tr>
+<tr><td class="k">Stillness</td><td>Stillness：輪郭の更新ゲート（エッジ検出の閾値ではありません）：画面がこの値（％）を超えて変化したときだけ輪郭を再検出します。高いほど輪郭は静止したまま保たれ CPU／GPU の負荷も下がり、低いほど反応が速くなり、0 ではほぼ毎フレーム再計算します</td></tr>
+<tr><td class="k">Contour Lock</td><td>現在の輪郭を固定：再検出を停止し、固定した輪郭に沿って走査を続けます。固定中は Threshold、Smoothing、Stillness がグレー表示になり操作できません</td></tr>
 <tr><td class="k">Mix</td><td>輪郭オーバーレイの合成比率</td></tr>
 </table>
 <h3>CV Generator</h3>
@@ -236,18 +245,20 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <div class="fig"><img src="img/diffusion.png" alt="Stable Diffusion パネル：Enable、Grayscale、Likeness、Preset、Prompt、LoRA。"></div>
 <div class="cap">Stable Diffusion パネル：Enable、Grayscale、Likeness、Preset、Prompt、LoRA。</div>
 <table>
-<tr><td class="k">Enable</td><td>Stable Diffusion を有効化：モデルを読み込み、前のモジュールの出力をリアルタイムで AI 生成映像に変換。解除で解放。チェックするたびに prompt が消去され、Mix は 0 から始まるため、効果を見るには Mix を上げてください</td></tr>
+<tr><td class="k">Enable</td><td>Stable Diffusion を有効化：モデルを読み込み、前のモジュールの出力をリアルタイムで AI 生成映像に変換。解除で解放。チェックするたびに Mix は 0 から始まるため、効果を見るには Mix を上げてください。prompt は保持されます</td></tr>
 <tr><td class="k">Grayscale</td><td>AI 出力をグレースケールに強制します</td></tr>
-<tr><td class="k">Likeness</td><td>AI 出力がカメラ構造に沿う度合い（高い＝カメラに近い）</td></tr>
+<tr><td class="k">Likeness</td><td>AI 出力が前のモジュールの出力映像の構造に沿う度合い（高い＝入力映像に近い）</td></tr>
 <tr><td class="k">Preset</td><td>内蔵スタイルプロンプトを切替（29 種の画風／質感）</td></tr>
 <tr><td class="k">Prompt</td><td>AI 生成のテキストプロンプト（望む画風を記述）</td></tr>
-<tr><td class="k">LoRA</td><td>Stable Diffusion 用の LoRA ファイル（.safetensors）を選択。クリアで LoRA を無効化。未設定時は No LoRA と表示されます。</td></tr>
+<tr><td class="k">LoRA</td><td>LoRA ファイル（.safetensors）を選択して Stable Diffusion（Windows 版は Stream Diffusion）に適用</td></tr>
+<tr><td class="k">LoRA X</td><td>選択中の LoRA ファイルを解除し、LoRA を使用しない</td></tr>
 <tr><td class="k">Status</td><td>SD サービス状態：起動中は SD Loading、完了後は使用中のアクセラレーションを表示</td></tr>
 </table>
+<p>Enable をオフにして再度オンにしたとき、再起動後、LOAD 後のいずれもプロンプトは保持されます。再起動後と LOAD 後、Stable Diffusion は常にオフになり、オンにしたとき Mix は 0 から始まります。LoRA ファイルが見つからない、または読み取り権限がない場合、LoRA 行にメッセージが表示され、その LoRA なしで生成されます。ファイルを選び直すとメッセージは消えます。</p>
 
 <!-- ============================================================ -->
 <h2 id="chromascope">6. Chromascope</h2>
-<p>映像に 8 層を重ね、各層が 1 つの音声入力に対応します。Base Hue が開始色相、Hue Spread が各層の色相分布を決めます。Curve と Angle は第一層を設定し、それぞれの Spread が層ごとの増減量です。Level 1 から 8 は各層の明るさで、0 の層は外れます。dry/wet は station の Mix で制御します。</p>
+<p>映像に 8 層を重ね、各層が 1 つの音声入力に対応します。Base Hue が開始色相、Hue Spread が各層の色相分布を決めます。Curve と Angle は第一層を設定し、それぞれの Spread が層ごとの増減量です。層は前のモジュールの出力の明るさで分けられ、画面を等分するものではありません。Level 1 から 8 は各層の明るさで、0 の層は外れます。dry/wet は station の Mix で制御します。</p>
 <div class="fig"><img src="img/chromascope.png" alt="Chromascope パネル：Audio、Base Hue、Hue Spread、Curve と Angle とそれぞれの Spread、Level 1 から 8 のフェーダー。"></div>
 <div class="cap">Chromascope パネル：Audio、Base Hue、Hue Spread、Curve と Angle とそれぞれの Spread、Level 1 から 8 のフェーダー。</div>
 <table>
@@ -259,22 +270,22 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">Curve Spread</td><td>Chromascope 層ごとの曲がり具合の増減（正負）：第 k 層 = カーブ + k × この値</td></tr>
 <tr><td class="k">Angle</td><td>Chromascope 第一層の波形の向きの角度（0 から 360 度）</td></tr>
 <tr><td class="k">Angle Spread</td><td>Chromascope 層ごとの角度の増加量：第 k 層 = 角度 + k × この値</td></tr>
-<tr><td class="k">Level 1 to 8</td><td>Chromascope この層の明るさ（同じ番号の音声入力に対応）；0 でこの層を外し、残りの層で画面を等分します</td></tr>
+<tr><td class="k">Level 1 to 8</td><td>Chromascope この層の明るさ（同じ番号の音声入力に対応）。層は前のモジュールの出力の明るさで分けられ、画面を等分するものではありません。0 でこの層を外し、残りの層で明るさの範囲を分け直します</td></tr>
 </table>
 
 <!-- ============================================================ -->
 <h2 id="minimalize">7. Minimalize</h2>
-<p>追跡したシード点から映像をポリゴンに再構成します。Topology で Triangle（Delaunay メッシュ）、Cell（Voronoi）、Square（Quadtree 矩形）を選択。Fill でポリゴン塗りつぶしとエッジのみのワイヤーフレームを切り替えます。ポリゴンの色はチェーン入力からサンプリングし、Modifier はシード点の変位にのみ使われます。</p>
-<div class="fig"><img src="img/minimalize.png" alt="Minimalize パネル：Density、Topology、Fill、Displace、Smooth、Line Color、Line Width、Line Sat、Fill Sat。"></div>
-<div class="cap">Minimalize パネル：Density、Topology、Fill、Displace、Smooth、Line Color、Line Width、Line Sat、Fill Sat。</div>
+<p>追跡したシード点から映像をポリゴンに再構成します。Mode で Triangle（Delaunay メッシュ）、Cell（Voronoi）、Square（Quadtree 矩形）を選択。Fill でポリゴン塗りつぶしとエッジのみのワイヤーフレームを切り替えます。ポリゴンの色はチェーン入力からサンプリングし、Modifier はシード点の変位にのみ使われます。</p>
+<div class="fig"><img src="img/minimalize.png" alt="Minimalize パネル：Density、Mode、Fill、Displace、Smooth、Line Color、Line Width、Line Sat、Fill Sat。"></div>
+<div class="cap">Minimalize パネル：Density、Mode、Fill、Displace、Smooth、Line Color、Line Width、Line Sat、Fill Sat。</div>
 <table>
 <tr><td class="k">Enable</td><td>Minimalize を有効化：前のモジュールの出力を seed 点で多角形（Voronoi／Delaunay／Quadtree）に再分割</td></tr>
-<tr><td class="k">Density</td><td>seed 点の上限数（2-1500）。数値が大きいほど多角形が細かくなる</td></tr>
-<tr><td class="k">Topology</td><td>分割トポロジー：Triangle（Delaunay 三角網）／Cell（Voronoi 細胞）／Square（Quadtree 矩形）</td></tr>
+<tr><td class="k">Density</td><td>seed 点の上限数（0-500）。数値が大きいほど多角形が細かくなる</td></tr>
+<tr><td class="k">Mode</td><td>分割トポロジー：Triangle（Delaunay 三角網）／Cell（Voronoi 細胞）／Square（Quadtree 矩形）</td></tr>
 <tr><td class="k">Fill</td><td>塗りつぶし切替：オンで Fill Sat の彩度で多角形を塗りつぶし、オフでは輪郭線のみ（ワイヤフレーム）</td></tr>
 <tr><td class="k">Displace</td><td>seed 点を Modifier 映像の R/G チャンネルで 2D 変位（Image Displace 例外経路：Modifier は変位ベクトル源として作用、テクスチャ採色はしない）。0 で無効、大きいほど多角形の揺らぎが強くなる</td></tr>
 <tr><td class="k">Smooth</td><td>seed 点の時間平滑：高い値は LK 追跡のジッターを抑えるが、映像変化への応答が遅くなります</td></tr>
-<tr><td class="k">Line Color</td><td>多角形の輪郭線の色：0 で黒、1 で白、中間は色相環に沿って変化</td></tr>
+<tr><td class="k">Line Color</td><td>多角形の輪郭線の色：Line Sat が 0（デフォルト）のときは 0 から 0.5 で黒から白へ変化し、0.5 以上はすべて白。Line Sat が 0 より大きいときは 0 で黒、0.5 でその色相、1 で白</td></tr>
 <tr><td class="k">Line Width</td><td>多角形の輪郭線の太さ（0–5、0 で線を描かない）</td></tr>
 <tr><td class="k">Line Sat</td><td>輪郭線の彩度（0 で黒／グレー、1 で純色相）</td></tr>
 <tr><td class="k">Fill Sat</td><td>塗りつぶしの彩度（Fill オフ時は視覚的に無効）</td></tr>
@@ -283,14 +294,16 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <!-- ============================================================ -->
 <h2 id="object3d">8. 3D Object（3D オブジェクト）</h2>
 <p>レイマーチングで描画し、チェーン入力をテクスチャとして貼る 3D オブジェクト。Shape は 5 つのプリミティブ間をモーフィング。Distort、Repeat、Spacing、Jitter、Smooth で形状を整え、Zoom、Pan、Tilt でカメラを動かします。Displace は Modifier の輝度で表面を押し出します。</p>
+<div class="fig"><img src="img/object_3d_panel.png" alt="3D Object パネル。"></div>
+<div class="cap">3D Object パネル。</div>
 <table>
 <tr><td class="k">Enable</td><td>3D Object を有効化：SDF レイマーチによる立体オブジェクト描画</td></tr>
-<tr><td class="k">RESET</td><td>3D Object の全パラメータをデフォルトに戻します</td></tr>
+<tr><td class="k">RESET</td><td>3D Object の全パラメータをデフォルトに戻し、変調を切断します</td></tr>
 <tr><td class="k">Shape</td><td>3D オブジェクト形状：5 種のプリミティブ（球／箱／トーラス／八面体／ジャイロイド）間でモーフ</td></tr>
 <tr><td class="k">Size</td><td>3D オブジェクトの全体サイズ</td></tr>
-<tr><td class="k">Distort</td><td>ドメインワープ（sin ドメイン変形）の強さ</td></tr>
+<tr><td class="k">Distort</td><td>ドメインワープ（sin ドメイン変形）の強さ。デフォルトは 0（オフ）、フェーダーの下限は 0.01</td></tr>
 <tr><td class="k">Displace</td><td>Modifier 映像の輝度で 3D オブジェクト表面を変位（0 で無効、大きいほど凹凸が深い）</td></tr>
-<tr><td class="k">Repeat</td><td>ドメインリピート：空間内で配列複製する量</td></tr>
+<tr><td class="k">Repeat</td><td>ドメインリピート：空間内で配列複製する量。デフォルトは 0（オフ）、フェーダーの下限は 0.01</td></tr>
 <tr><td class="k">Spacing</td><td>複製配列の間隔</td></tr>
 <tr><td class="k">Jitter</td><td>配列のジッター量</td></tr>
 <tr><td class="k">Smooth</td><td>融合の滑らかさ（0–5）：0 は単一形状。0 より大きいと第二の小球が加わり主形状と融合、大きいほど滑らか</td></tr>
@@ -300,40 +313,44 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 </table>
 
 <!-- ============================================================ -->
-<h2 id="triposr">9. Triposr 3D（立体再構成）</h2>
-<p>チェーン入力をテクスチャとして貼った 3D メッシュを描画します。メッシュは選択した OBJ ファイル、または 100 種の内蔵プリセット形状から読み込みます。このバージョンにはカメラスナップショットからの再構成機能はありません。チェーン内に複数の Triposr 3D を置き、それぞれ別のメッシュを持てます。Rotate X / Y / Z、Scale、Displace、Wireframe はモジュレーション可能です。</p>
+<h2 id="triposr">9. 3D モデル</h2>
+<p>チェーン入力をテクスチャとして貼った 3D メッシュを描画します。メッシュは選択した OBJ ファイル、または 100 種の内蔵プリセット形状から読み込みます。チェーン内に複数の 3D モデルを置き、それぞれ別のメッシュを持てます。Rotate Y と Rotate X はカメラがモデルの周りを周回し、Rotate Z は画面内で回転、Scale はカメラ距離を設定します。Rotate X / Y / Z、Scale、Displace、Wireframe はモジュレーション可能です。</p>
+<div class="fig"><img src="img/triposr_model_panel.png" alt="3D Model パネルとその下のプレビュー：Rotate Y / X / Z、Scale、Displace、Wireframe、OBJ File 行、Preset 行。"></div>
+<div class="cap">3D Model パネルとその下のプレビュー：Rotate Y / X / Z、Scale、Displace、Wireframe、OBJ File 行、Preset 行。</div>
 <div class="fig"><img src="img/triposr_preset_dropdown.png" alt="Preset ドロップダウンに 100 種の内蔵形状がサムネイル付きで並びます。"></div>
 <div class="cap">Preset ドロップダウンに 100 種の内蔵形状がサムネイル付きで並びます。</div>
 <div class="fig"><img src="img/triposr_obj_loaded.png" alt="OBJ File 行から読み込んだ OBJ ファイル。"></div>
 <div class="cap">OBJ File 行から読み込んだ OBJ ファイル。</div>
 <table>
-<tr><td class="k">Enable</td><td>立体再構成を有効化：読み込んだ OBJ ファイルまたは内蔵形状の 3D モデルを表示</td></tr>
-<tr><td class="k">RESET</td><td>立体再構成の全パラメータをデフォルトに戻します</td></tr>
-<tr><td class="k">Rotate Y</td><td>3D メッシュの Y 軸回転角（0–360°）</td></tr>
-<tr><td class="k">Rotate X</td><td>3D メッシュの X 軸回転角（0–360°）</td></tr>
-<tr><td class="k">Rotate Z</td><td>3D メッシュの Z 軸回転角（0–360°）</td></tr>
-<tr><td class="k">Scale</td><td>3D メッシュの全体スケール（0.1–5）</td></tr>
+<tr><td class="k">Enable</td><td>3D モデルを有効化：読み込んだ OBJ ファイルまたは内蔵形状の 3D モデルを表示</td></tr>
+<tr><td class="k">RESET</td><td>3D モデルの全パラメータをデフォルトに戻し、読み込んだモデル（OBJ ファイルと内蔵形状）を外して変調を切断します</td></tr>
+<tr><td class="k">Rotate Y</td><td>カメラがモデルの周りを水平に周回する角度（0–360°）</td></tr>
+<tr><td class="k">Rotate X</td><td>カメラがモデルの周りを垂直に周回する角度（0–360°）</td></tr>
+<tr><td class="k">Rotate Z</td><td>画面内での回転（ロール）の角度（0–360°）</td></tr>
+<tr><td class="k">Scale</td><td>画面上のモデルの大きさ（0.1–5）：実際にはカメラ距離（1.2 ÷ この値）を設定。大きいほどカメラが近づき、モデルが大きく見える</td></tr>
 <tr><td class="k">Displace</td><td>Modifier 映像の輝度でメッシュ頂点を法線方向に変位（0 で無効、大きいほど凹凸が深い）</td></tr>
 <tr><td class="k">Wireframe</td><td>ワイヤフレーム混合：0 でソリッド、1 で純ワイヤフレーム、中間値は両者の混合</td></tr>
 <tr><td class="k">OBJ File</td><td>OBJ ファイル（.obj）を選択して 3D モデルを読み込み。クリアで削除</td></tr>
 <tr><td class="k">Preset</td><td>内蔵形状（100 種）を 3D モデルとして選択。No Preset で選択解除</td></tr>
+<tr><td class="k">Preset: No Preset</td><td>No Preset：内蔵形状の選択を解除</td></tr>
+<tr><td class="k">Preset: shape</td><td>この内蔵形状をモデルとして使用。読み込み済みの OBJ ファイルは置き換えられます</td></tr>
 </table>
 
 <!-- ============================================================ -->
 <h2 id="particle">10. Particle（パーティクル）</h2>
-<p>チェーン入力をサンプリングして 3D パーティクル場にします。Density、Size、Jitter、Shape がパーティクルを定義し、Depth Mix と Displace が z 軸方向に動かし、Zoom と Scale X / Y / Z で場全体を変換します。</p>
+<p>チェーン入力をサンプリングして 3D パーティクル場にします。Density、Size、Jitter、Shape がパーティクルを定義し、Depth Mix と Displace が z 軸方向に動かし、Zoom は場全体を z 軸方向に前後移動（Depth Mix が 0 のときは見た目に変化なし）、Scale X / Y / Z は場を拡大縮小します。</p>
 <div class="fig"><img src="img/particle.png" alt="Particle パネル。"></div>
 <div class="cap">Particle パネル。</div>
 <table>
 <tr><td class="k">Enable</td><td>Particle 粒子レンダリングを有効化</td></tr>
-<tr><td class="k">RESET</td><td>Particle の全パラメータと視点をデフォルトに戻します</td></tr>
+<tr><td class="k">RESET</td><td>Particle のパラメータと視点をデフォルトに戻し、変調を切断。Displace、Mix、Brightness と位置は変わりません</td></tr>
 <tr><td class="k">Density</td><td>粒子の密度（サンプリングされる粒子数）</td></tr>
 <tr><td class="k">Size</td><td>粒子のサイズ</td></tr>
 <tr><td class="k">Jitter</td><td>粒子位置のジッター量</td></tr>
-<tr><td class="k">Shape</td><td>粒子の形状</td></tr>
+<tr><td class="k">Shape</td><td>粒子の形状：7 種の形（円／四角／三角／六角形／ひし形／星／リング）の間でモーフ。1 にすると粒子ごとにランダムな形になる</td></tr>
 <tr><td class="k">Depth Mix</td><td>深度が粒子の z 軸分布に与える影響度</td></tr>
 <tr><td class="k">Displace</td><td>Modifier 素材の輝度で粒子を z 軸方向に変位させる強さ</td></tr>
-<tr><td class="k">Zoom</td><td>粒子フィールドのビューズーム</td></tr>
+<tr><td class="k">Zoom</td><td>粒子フィールドを Z 軸方向に前後移動（-1〜1）：正の値でカメラに近づき、負の値で遠ざかる。Depth Mix が 0 のときは見た目に変化なし</td></tr>
 <tr><td class="k">Scale X</td><td>粒子フィールドの X 軸スケール（負値で反転）</td></tr>
 <tr><td class="k">Scale Y</td><td>粒子フィールドの Y 軸スケール（負値で反転）</td></tr>
 <tr><td class="k">Scale Z</td><td>粒子フィールドの Z 軸スケール（負値で反転）</td></tr>
@@ -348,8 +365,14 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">Enable</td><td>Flow Warp オプティカルフロー効果を有効化（フロー場は Modifier 素材から計算）</td></tr>
 <tr><td class="k">Strength</td><td>オプティカルフロー変位効果の強さ</td></tr>
 <tr><td class="k">Direction</td><td>変位方向（順方向／逆方向／双方向）</td></tr>
+<tr><td class="k">Direction: Forward</td><td>Forward：検出した動きの方向に沿って映像を押し流す</td></tr>
+<tr><td class="k">Direction: Reverse</td><td>Reverse：検出した動きと逆方向に映像を押し流す</td></tr>
+<tr><td class="k">Direction: Bidirectional</td><td>Bidirectional：順方向と逆方向の結果を半分ずつ混ぜる</td></tr>
 <tr><td class="k">Accumulate</td><td>蓄積量（0–0.95）：前フレームの結果と混ぜる割合。大きいほど残像が長くなります</td></tr>
 <tr><td class="k">Preset</td><td>オプティカルフロー演算プリセット（Ultrafast／Fast／Medium）：Ultrafast が最速で最も粗い。Flow Warp が複数ある場合は、シグナルフローで最初のものの設定を使用</td></tr>
+<tr><td class="k">Preset: Ultrafast</td><td>Ultrafast：オプティカルフローの計算が最も速く、最も粗い</td></tr>
+<tr><td class="k">Preset: Fast</td><td>Fast：オプティカルフロー計算の速度と精度が中間</td></tr>
+<tr><td class="k">Preset: Medium</td><td>Medium：オプティカルフローの計算が最も遅く、最も精細</td></tr>
 </table>
 
 <!-- ============================================================ -->
@@ -359,29 +382,35 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <div class="cap">Feedback パネル。</div>
 <table>
 <tr><td class="k">Enable</td><td>Feedback 映像フィードバック効果を有効化</td></tr>
-<tr><td class="k">Smooth</td><td>スムーズ量：前フレームと混ぜる割合。大きいほど残像が長く、0 で残像なし</td></tr>
+<tr><td class="k">Smooth</td><td>スムーズ量：前フレームと混ぜる割合。大きいほど残像が長い。Bright も 0 のときに限り、0 で残像なし</td></tr>
 <tr><td class="k">Bright</td><td>明部ゲイン（0–1）：0 で増光なし。0.5 未満は残像の明るさに上限あり、0.5 以上は明部がフレームごとに明るくなり白に達する</td></tr>
-<tr><td class="k">Chroma</td><td>色収差量（0–0.005）：赤チャンネルを右、青チャンネルを左へずらす距離。0 でオフ</td></tr>
+<tr><td class="k">Chroma</td><td>色収差量（0–0.005）：赤チャンネルを左、青チャンネルを右へずらす距離。0 でオフ</td></tr>
 <tr><td class="k">Diffuse</td><td>拡散（0–1）：フィードバック映像のぼかし量。0 でぼかしなし、大きいほど残像がにじむ</td></tr>
 </table>
 
 <!-- ============================================================ -->
 <h2 id="slowmotion">13. Slow Motion（スローモーション）</h2>
-<p>入力映像を 30 fps で録画し続け、直近の Buffer 秒数分を保持して遅い速度でループ再生します。Buffer フェーダーをドラッグするか、station をオフ・オンすると録画をクリアして録り直します。</p>
+<p>入力映像を 30 fps で録画し続け、直近の Buffer 秒数分を保持して遅い速度でループ再生します。Buffer から換算したフレーム数が変わったとき、または station をオフ・オンしたときに録画をクリアして録り直します。録画済みのフレームは設定にもプロジェクトファイルにも保存されません。</p>
+<div class="fig"><img src="img/slow_motion.png" alt="Slow Motion パネル。"></div>
+<div class="cap">Slow Motion パネル。</div>
 <table>
 <tr><td class="k">Enable</td><td>スローモーションを有効化：前のモジュールの出力を録画し、減速してループ再生。オフ→オンで録画をクリアして録り直し</td></tr>
-<tr><td class="k">RESET</td><td>スローモーションの全パラメータをデフォルトに戻します</td></tr>
+<tr><td class="k">RESET</td><td>スローモーションの全パラメータをデフォルトに戻し、変調を切断。Buffer から換算したフレーム数が変わる場合のみ録画内容をクリアします</td></tr>
 <tr><td class="k">Speed</td><td>再生速度（0.05–1、1 = 原速）：映像は固定 30fps で録画し、30 × この値の速度で再生。0.25 = 4 倍スローモーション。直近に録画したセグメント内をループ再生</td></tr>
-<tr><td class="k">Buffer</td><td>セグメント長（0.5–15 秒）：30fps で録画を続け、直近 N 秒を保持してループ再生。このフェーダーを操作するか、本モジュールをオフ→オンでクリアして録り直し。大きいほど VRAM 使用量が増加</td></tr>
+<tr><td class="k">Buffer</td><td>セグメント長（0.5–15 秒）：30fps で録画を続け、直近 N 秒を保持してループ再生。この値から換算したフレーム数が変わったとき、または本モジュールをオフ→オンしたときにクリアして録り直し。大きいほど VRAM 使用量が増加</td></tr>
 <tr><td class="k">Blend</td><td>フレーム補間：隣接する 2 枚の録画フレーム間を補間し、スローモーションを滑らかに保つ。オフではコマ飛び再生になる</td></tr>
 </table>
 
 <!-- ============================================================ -->
 <h2 id="plugin">14. Plugin（プラグイン）</h2>
 <p>サードパーティの fragment shader を station として実行します。プラグインは単一の .wgsl ファイルで、プラグインフォルダ（既定 ~/.visionmod/plugins/、最上位のみ）から読み込みます。フォルダはメインウィンドウの PLUGINS 行で選択し、変更時に自動で再スキャンされます。Plugin パネルにはプラグインを選ぶドロップダウンがあります。「自動」はリスト内で最初に正常に動作するプラグインを使い、コンパイルに失敗したプラグインは状態付きで表示されますが選択できません。その下に内蔵の Displace フェーダー（Modifier 映像で入力映像を変位、0 でオフ）と、選択したプラグインが宣言したパラメータのフェーダーが並びます。使えるプラグインがない場合、station は映像をそのまま通過させます。</p>
+<div class="fig"><img src="img/plugin_panel.png" alt="Plugin パネル：プラグインのドロップダウン（図は「自動」、実行中のプラグイン名を表示）、内蔵 Displace フェーダー、プラグインが宣言したフェーダー。"></div>
+<div class="cap">Plugin パネル：プラグインのドロップダウン（図は「自動」、実行中のプラグイン名を表示）、内蔵 Displace フェーダー、プラグインが宣言したフェーダー。</div>
 <table>
 <tr><td class="k">Enable</td><td>プラグインモジュールを有効化：選択したプラグインが前のモジュールの出力を処理。プラグインが使えない場合は映像をそのまま通過</td></tr>
 <tr><td class="k">RESET</td><td>プラグインのパラメータをデフォルトに戻し、すべての変調を切断。プラグインの選択は維持</td></tr>
+<tr><td class="k">自動（最初の利用可能なプラグイン）</td><td>リスト内で最初に正常に動作するプラグインを自動で使用</td></tr>
+<tr><td class="k">Displace</td><td>Modifier 映像で入力映像を変位させる（0 でオフ）</td></tr>
 </table>
 <h3>プラグインファイルのヘッダー</h3>
 <p>メタデータはファイル先頭の //! コメント行ブロックに記述します。api と name.en は必須。name.zh、name.ja、author、description、url、param 行は任意です。解析は //! コメントでない最初の行で停止します。プラグイン id はファイル名の小文字なので、ファイル名を変えると別のプラグインとして扱われます。</p>
@@ -394,21 +423,33 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <!-- ============================================================ -->
 <h2 id="global">15. グローバル操作</h2>
 <p>Contour Scanner パネル上部の操作行はプログラム全体に作用します。</p>
+<div class="fig"><img src="img/global_actions.png" alt="グローバル操作行：PRESET（SAVE / SAVE AS / LOAD）と現在のプロジェクトファイル名、PLUGINS（FOLDER / DEFAULT / RESCAN）とプラグインフォルダ、旧設定をインポート、OUTPUT + WINDOW、ビジュアル再起動、説明書、ヘルプ。Mac App Store 版では購入行が PRESET の上にあります。"></div>
+<div class="cap">グローバル操作行：PRESET（SAVE / SAVE AS / LOAD）と現在のプロジェクトファイル名、PLUGINS（FOLDER / DEFAULT / RESCAN）とプラグインフォルダ、旧設定をインポート、OUTPUT + WINDOW、ビジュアル再起動、説明書、ヘルプ。Mac App Store 版では購入行が PRESET の上にあります。</div>
+<div class="fig"><img src="img/load_confirm.png" alt="LOAD がプロジェクトファイルを適用する前に表示される「上書き読込 / キャンセル」の確認。"></div>
+<div class="cap">LOAD がプロジェクトファイルを適用する前に表示される「上書き読込 / キャンセル」の確認。</div>
+<div class="fig"><img src="img/output_window.png" alt="メイン出力ウィンドウと、OUTPUT + WINDOW で追加されその上に浮かぶ 2 つ目の出力ウィンドウ。"></div>
+<div class="cap">メイン出力ウィンドウと、OUTPUT + WINDOW で追加されその上に浮かぶ 2 つ目の出力ウィンドウ。</div>
 <table>
-<tr><td class="k">PRESET</td><td>SAVE AS で現在の全パラメータをファイルに保存。LOAD でファイルを読み込みます。読み込みは現在の全パラメータを上書きし取り消せないため、先に「上書き読込 / キャンセル」の確認が表示されます。</td></tr>
+<tr><td class="k">PRESET</td><td>SAVE は現在の全パラメータと MIDI 割り当てを現在のプロジェクトファイルに上書き保存します。プロジェクトファイルがまだない場合、またはファイルが移動された・書き込めない場合は、別名保存の画面が開きます。SAVE AS は名前を付けた .json ファイルに保存します。LOAD は .json ファイルを読み込みます。読み込みは現在の全パラメータと MIDI 割り当てを上書きするため、先に「上書き読込 / キャンセル」の確認が表示されます（Esc でもキャンセル可）。下の行には現在のプロジェクトファイル名、ない場合は「プロジェクトファイル未保存」が表示されます。最後に保存または読み込んだファイルが現在のプロジェクトファイルになります。</td></tr>
 <tr><td class="k">PLUGINS</td><td>FOLDER でフォルダピッカーを開きプラグインフォルダを指定。DEFAULT で既定フォルダに戻ります。RESCAN はプラグインの追加・編集後に再スキャンします。2 行目に使用中のフォルダ、ない場合は「利用できるフォルダなし」と表示されます。</td></tr>
 <tr><td class="k">OUTPUT + WINDOW</td><td>出力ウィンドウを追加。出力ウィンドウ内：ウィンドウ枠をドラッグで切り抜き範囲を変更、映像上をドラッグで移動、ピンチまたは Ctrl+スクロールで拡大縮小、ダブルクリックでフルスクリーン切替、Shift+ダブルクリックで全体表示に戻す</td></tr>
-<tr><td class="k">View Panic</td><td>ビジュアル再起動：メイン映像が固まったときにクリック。描画リソースを再構築しカメラを再起動します</td></tr>
-<tr><td class="k">MANUAL</td><td>公式サイトのオンライン説明書（madzine.work）を既定のブラウザで開く</td></tr>
+<tr><td class="k">メイン出力ウィンドウ</td><td>メイン出力ウィンドウ：画面をドラッグでウィンドウを移動、右下隅をドラッグでサイズ変更、ダブルクリックでフルスクリーン切替</td></tr>
+<tr><td class="k">ビジュアル再起動</td><td>ビジュアル再起動：メイン映像が固まったときにクリック。描画リソースを再構築し、カメラを再起動し、Minimalize の内部状態をリセットします</td></tr>
+<tr><td class="k">説明書</td><td>公式サイトのオンライン説明書（madzine.work）を既定のブラウザで開く</td></tr>
 <tr><td class="k">Help (i)</td><td>Help モード切替：オンにすると、コントロールにカーソルを合わせたとき現在の言語の説明をカーソル横に表示。オフでは表示しません</td></tr>
-<tr><td class="k">Message X</td><td>このメッセージを閉じる</td></tr>
+<tr><td class="k">閉じる</td><td>このメッセージを閉じる</td></tr>
 </table>
+<h3>プロジェクトファイル</h3>
+<p>プロジェクトファイルには、全モジュールの全パラメータ、MIDI 割り当て、ブラシマスク（描いた内容、モード、ブラシ設定）、各ウィンドウの位置・サイズ・フルスクリーン状態、選択中のモジュール、プレビュー切替、ヘルプモードのオン／オフが含まれます。LOAD はファイル内のすべてを適用します（言語、配色、オーディオデバイス、MIDI 出力、カメラ、出力ウィンドウ、プラグインフォルダを含む）。ウィンドウ位置が接続中のディスプレイ内にない場合は既定の位置に戻ります。MIDI 割り当てを含まない旧プロジェクトファイルを読み込んだ場合、現在の割り当ては変更されません。</p>
+<p>保存されないもの：Slow Motion の録画済みフレーム。再起動後と LOAD 後、SIGNAL ウィンドウは常に閉じ、Stable Diffusion は常にオフになります。</p>
+<p>LOAD がファイルを適用する前に、現在の設定が設定フォルダ（~/.visionmod）に app_state.backup-&lt;数字&gt;.json として自動でバックアップされます。直近 5 件のバックアップが保持され、バックアップは LOAD でそのまま開けます。新しいバージョンの Vision MOD で保存されたファイルは開けません。アプリの更新を促すメッセージが表示され、現在の設定はそのまま残ります。保存に成功すると、プロジェクトファイル名の行に「保存しました：」とファイル名が短時間表示されます。保存または読み込みに失敗した場合は、その行の下に理由付きのメッセージが表示されます。</p>
 
 <!-- ============================================================ -->
 <h2 id="signal">16. SIGNAL ウィンドウ</h2>
 <p>トップバーの SIGNAL トグルでフローティングウィンドウを開きます。左列にプレビューと 7 本の CV メーター（Sequence 1 / 2、Movement、Color R / G / B / Saturation）。右列に Audio Inputs、CV Output、LFO があります。</p>
 <div class="fig"><img src="img/signal_window.png" alt="SIGNAL ウィンドウ：左に CV メーター、右に Audio Inputs、CV Output ルート、LFO。"></div>
 <div class="cap">SIGNAL ウィンドウ：左に CV メーター、右に Audio Inputs、CV Output ルート、LFO。</div>
+<p>プログラム起動時、SIGNAL ウィンドウは常に閉じた状態です。ウィンドウの位置とサイズは記憶されます。オーディオ入力または出力で None を選んだ場合、再起動後も None のままです。</p>
 <h3>CV メーター</h3>
 <table>
 <tr><td class="k">Module</td><td>CV Meter：映像から生成した 7 本のモジュレーション信号を表示（輪郭 SEQ 1／2、Movement、Color R／G／B／Sat）</td></tr>
@@ -431,8 +472,9 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <p>Output ドロップダウンでオーディオ出力デバイスと MIDI 出力ポートをまとめて選択します。各ルートでソース信号、オーディオ出力チャンネル、MIDI CC 番号を選びます。</p>
 <table>
 <tr><td class="k">Module</td><td>CV Output：モジュレーション信号をオーディオ出力チャンネル（ch3 以降）と MIDI デバイスへ送出</td></tr>
+<tr><td class="k">Output</td><td>CV 信号の出力先：Audio Output でオーディオ出力デバイス、MIDI Output で MIDI 出力デバイスを選択。両方同時に使用可能。None を選ぶとその側には送出しません</td></tr>
 <tr><td class="k">Source</td><td>モジュレーション信号のルート元；オーディオ出力チャンネルと MIDI デバイス（ルートごとの CC#、14bit）へ同時に出力</td></tr>
-<tr><td class="k">Ch</td><td>この CV 信号を音声出力デバイスのどのチャンネルへ送るか（MIDI 側は右の CC# で指定）</td></tr>
+<tr><td class="k">Ch</td><td>この CV 信号を音声出力デバイスのどのチャンネルへ送るか（MIDI 側は右の CC# で指定）。使用できるチャンネルは 3 からデバイスのチャンネル数まで。3 未満またはデバイスのチャンネル数を超えるルートは出力されません</td></tr>
 <tr><td class="k">CC</td><td>このルートの MIDI CC 番号（0-127）。14bit で送出（MSB=CC、LSB=CC+32）、CC&gt;95 は 7bit に降格</td></tr>
 <tr><td class="k">No output device</td><td>出力デバイス未選択時、CV は音声出力チャンネルへ送出されません。走査とメーターは動作を続けます</td></tr>
 </table>
@@ -457,14 +499,16 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 </table>
 <h3>ソース</h3>
 <table>
-<tr><td class="k">Sequence 1 / 2</td><td>輪郭スキャン信号。Smooth Sequence 1 / 2 は平滑化版。</td></tr>
+<tr><td class="k">Sequence 1 / 2</td><td>輪郭スキャン信号。</td></tr>
 <tr><td class="k">Audio Input 1 to 8 RMS</td><td>8 トラックの音声入力レベル。</td></tr>
-<tr><td class="k">Movement</td><td>最終出力映像の動きエネルギー。Movement Smooth は平滑化版。</td></tr>
+<tr><td class="k">Movement</td><td>最終出力映像の動きエネルギー。</td></tr>
 <tr><td class="k">Color Red / Green / Blue / Saturation</td><td>Modifier フレームの平均色。</td></tr>
 <tr><td class="k">LFO 1 to 4</td><td>SIGNAL ウィンドウで設定する内蔵 LFO。</td></tr>
 </table>
 <h3>MIDI Learn</h3>
-<p>MIDI 対応フェーダーは値の右にバインディング点があります。右クリックして MIDI Learn を選び、MIDI 機器のコントロールを動かすとバインドされ、点がアクセント色になります。同じメニューにバインド済みのチャンネルと CC が表示され、Clear Binding も選べます。学習対象は 7-bit Control Change のみです。</p>
+<p>MIDI 対応フェーダーは値の右にバインディング点があります。右クリックして MIDI Learn を選び、MIDI 機器のコントロールを動かすとバインドされ、点がアクセント色になります。同じメニューにバインド済みのチャンネルと CC が表示され、Clear Binding も選べます。コントロール待ちの間は、メニューに「MIDI Learn をキャンセル」も表示されます。学習対象は 7-bit Control Change のみです。モジュールを削除すると、そのモジュールのバインドも削除されます。MIDI 割り当てはプロジェクトファイルに保存され、LOAD は現在の割り当てをファイル内の割り当てに置き換えます。</p>
+<div class="fig"><img src="img/midi_learn.png" alt="フェーダー値の右にあるバインディング点を右クリックして MIDI Learn メニューを開きます。"></div>
+<div class="cap">フェーダー値の右にあるバインディング点を右クリックして MIDI Learn メニューを開きます。</div>
 <table>
 <tr><td class="k">MIDI Learn</td><td>MIDI Learn：クリック後に MIDI コントローラーのノブやフェーダーを動かすと、次に受信した CC がこのパラメータに割り当てられる</td></tr>
 <tr><td class="k">Clear Binding</td><td>Clear Binding：このパラメータの MIDI 割り当てを解除</td></tr>
@@ -472,11 +516,13 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 
 <!-- ============================================================ -->
 <h2 id="appstore">18. Mac App Store 版</h2>
-<p>Mac App Store 版は、1 回限りの購入が完了するまで出力画面の右下に半透明の VISION MOD 透かしを表示します。購入行は PRESET の上にあります。</p>
+<p>Mac App Store 版は、1 回限りの購入が完了するまで出力画面の中央に半透明の VISION MOD 透かしを表示します。購入行は PRESET の上にあります。</p>
+<div class="fig"><img src="img/global_actions.png" alt="購入後、PRESET の上の行に「購入済み：透かしは表示されません」と表示されます。"></div>
+<div class="cap">購入後、PRESET の上の行に「購入済み：透かしは表示されません」と表示されます。</div>
 <table>
-<tr><td class="k">Remove Watermark</td><td>一度の購入で出力画面の透かしを恒久的に削除します。価格は地域に応じて App Store が表示します。購入後は「購入済み：透かしは表示されません」と表示されます。購入が承認待ちの場合、承認されると自動的に透かしが消えます。</td></tr>
-<tr><td class="k">Restore Purchases</td><td>購入済みの場合（再インストールや別の Mac など）、同じ Apple アカウントで購入を復元します。再度課金されません。</td></tr>
-<tr><td class="k">IMPORT</td><td>フォルダピッカーで旧 DMG 版の設定（~/.visionmod または ~/.config/visionmod）を読み込み、直ちに適用します。</td></tr>
+<tr><td class="k">透かしを削除</td><td>一度の購入で出力画面の透かしを恒久的に削除します。価格は地域に応じて App Store が表示します。購入後は「購入済み：透かしは表示されません」と表示されます。購入が承認待ちの場合、承認されると自動的に透かしが消えます。</td></tr>
+<tr><td class="k">購入を復元</td><td>購入済みの場合（再インストールや別の Mac など）、同じ Apple アカウントで購入を復元します。再度課金されません。</td></tr>
+<tr><td class="k">旧設定をインポート</td><td>旧 DMG 版で保存されたパラメータ、モジュール、MIDI 割り当て、プラグイン、配色（~/.visionmod と ~/.config/visionmod）をインポートします。開いたウィンドウでホームフォルダ、またはこの 2 つのフォルダのいずれかを選択します。インポートは現在の全パラメータと MIDI 割り当てを上書きするため、先に「上書きインポート / キャンセル」の確認が表示されます（Esc でもキャンセル可）。インポート前に現在の設定がバックアップされます。インポート後すぐに適用され、再起動は不要です。新しいバージョンの Vision MOD で保存された設定はインポートされません。</td></tr>
 </table>
 
 <footer>MADZINE — Vision MOD v0.9.3</footer>
