@@ -4,26 +4,32 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="theme-color" content="#161616">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#ffffff">
 <meta name="robots" content="noindex, nofollow">
 <title>OSC BOUNCE</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300&family=Noto+Sans+JP:wght@300&family=Noto+Sans+TC:wght@300&display=swap" rel="stylesheet">
 <style>
+  /* White theme (OSC brothers: background white). All grays are pure gray (r = g = b).
+     Contrast on white: fg-primary 17.4:1, fg-secondary 7.5:1, fg-dim 4.5:1,
+     accent-text 4.9:1, stroke 3.5:1 (3.1:1 on bg-elevated; UI component boundary). */
   :root {
-    --bg-base: #161616;
-    --bg-area: #1d1d1d;
-    --bg-elevated: #262626;
-    --bg-track: #333333;
-    --stroke: #3a3a3a;
-    --fg-primary: #e8e8e8;
-    --fg-secondary: #a6a6a6;
-    --fg-dim: #707070;
-    --accent: rgb(235, 150, 129);      /* HSB 12, 0.45, 0.92 */
+    --bg-base: #ffffff;
+    --bg-area: #ffffff;
+    --bg-elevated: #f2f2f2;
+    --bg-track: #e2e2e2;
+    --stroke: #8a8a8a;
+    --fg-primary: #1a1a1a;
+    --fg-secondary: #555555;
+    --fg-dim: #767676;
+    --accent: rgb(235, 150, 129);      /* HSB 12, 0.45, 0.92 (fills only) */
     --accent-dim: rgb(153, 121, 113);  /* HSB 12, 0.26, 0.60 */
+    --accent-text: rgb(179, 86, 62);   /* HSB 12, 0.65, 0.70 - text on white, 4.9:1 */
     --ink: #1a1a1a;
+    --shadow: rgba(0, 0, 0, 0.16);
+    --fill-edge: rgba(0, 0, 0, 0.45);
     --font: 'Barlow Condensed', 'Noto Sans JP', 'Noto Sans TC', system-ui, sans-serif;
     --font-help: 'Noto Sans JP', 'Noto Sans TC', 'Barlow Condensed', system-ui, sans-serif;
     --top-h: 56px;
@@ -106,7 +112,7 @@
   #title {
     font-size: 20px;
     letter-spacing: 0.12em;
-    color: var(--accent);
+    color: var(--accent-text);
     line-height: 24px;
   }
   #count {
@@ -116,7 +122,7 @@
     line-height: 20px;
     transition: color 0.15s;
   }
-  #count.reject { color: #ffffff; }
+  #count.reject { color: var(--fg-primary); }
   #topbar .spacer { flex: 1 1 auto; }
   .textbtn {
     min-width: 88px;
@@ -172,7 +178,7 @@
   }
   .pick canvas { width: 40px; height: 40px; flex: 0 0 40px; display: block; }
   .pick.selected {
-    background: var(--bg-elevated);
+    background: var(--bg-track);
     border-color: var(--pick-color, var(--accent));
     color: var(--fg-primary);
   }
@@ -198,7 +204,7 @@
     background: var(--bg-elevated);
     border: 1px solid var(--stroke);
     border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    box-shadow: 0 8px 24px var(--shadow);
     z-index: 5;
   }
   #panel[hidden] { display: none; }
@@ -208,6 +214,8 @@
     height: 44px;
     border-radius: 8px;
     background: var(--bg-track);
+    outline: 1px solid var(--stroke);   /* track edge on the light panel; drawn above the fill */
+    outline-offset: -1px;
     overflow: hidden;
     cursor: pointer;
     touch-action: none;
@@ -220,6 +228,7 @@
     width: 0;
     overflow: hidden;
     background: var(--fader-color, var(--accent));
+    box-shadow: inset -2px 0 0 var(--fill-edge);   /* value edge stays visible for light colors (PULSE yellow) */
   }
   .fader .label {
     position: absolute;
@@ -254,7 +263,7 @@
     background: var(--bg-elevated);
     border: 1px solid var(--stroke);
     border-radius: 12px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    box-shadow: 0 8px 24px var(--shadow);
     z-index: 6;
   }
   #ballpanel[hidden] { display: none; }
@@ -1090,6 +1099,8 @@
   // SINE BLUE, TRI GREEN, SAW RED, PULSE YELLOW (placeholders; replace `rgb`
   // with the official values when they arrive).
   // `wave` is the Web Audio oscillator type (PULSE uses a square wave).
+  // `edge` (optional): darker thin outline around the lines, for colors that are
+  // too light on the white background (PULSE yellow). The fill color is unchanged.
   // Face proportions (measured from the OSC brothers card art), in units of
   // the character radius:
   //   cycles   waveform cycles across the head line
@@ -1105,7 +1116,7 @@
       cycles: 1.15, phase0: 0.10, amp: 0.22, faceDx: 0.10, mouthW: 0.17, mouthD: 0.12 },
     { id: 'saw',   wave: 'sawtooth', label: 'SAW',   rgb: [238, 72, 64],  image: null,
       cycles: 2.08, phase0: 0.0,  amp: 0.28, faceDx: 0.0,  mouthW: 0.19, mouthD: 0.10 },
-    { id: 'pulse', wave: 'square',   label: 'PULSE', rgb: [246, 206, 46], image: null,
+    { id: 'pulse', wave: 'square',   label: 'PULSE', rgb: [246, 206, 46], image: null, edge: [148, 124, 28],
       cycles: 1.25, phase0: 0.92, amp: 0.26, faceDx: 0.08, mouthW: 0.15, mouthD: 0.13 }
   ];
 
@@ -1150,7 +1161,11 @@
   var BODY_ALPHA = 0.13;      // faint disc showing the bounce area
 
   // ---------- motion constants ----------
-  var FLOW = 0.45;            // waveform scroll, cycles per second (never changes)
+  // waveform flow: still at rest; each hit pushes the line FLOW_CYCLES whole
+  // cycles over FLOW_TIME seconds with a cubic ease-out, so the rest shape is
+  // always the original art (phase0) and the line never jumps when it stops
+  var FLOW_CYCLES = 1;        // whole cycles per hit (integer keeps the rest pose)
+  var FLOW_TIME = 1.0;        // seconds from the hit until the line stops
   var BLINK_MIN = 3.2;        // blink period: BLINK_MIN + seed * BLINK_SPREAD seconds
   var BLINK_SPREAD = 1.8;
   var BLINK_LEN = 0.15;       // seconds the lids take to close and open
@@ -1181,7 +1196,36 @@
 
   CHARACTERS.forEach(function (def) {
     def.color = rgbStr(def.rgb);
+    if (def.edge) def.edgeColor = rgbStr(def.edge);
   });
+
+  // ---------- edge (outline) pass ----------
+  var EDGE_W = 0.2;           // outline width on each side, x line width
+  var EDGE_MIN = 0.6;         // px (palette icons)
+  // Wraps a 2D context for the outline pass of drawFeatures: every line gets
+  // 2 * e wider, every fill also gets a 2 * e stroke around it. Drawing the
+  // features once through this and once normally leaves an e wide outline.
+  function edgeCtx(g, e) {
+    return {
+      beginPath: function () { g.beginPath(); },
+      closePath: function () { g.closePath(); },
+      moveTo: function (x, y) { g.moveTo(x, y); },
+      lineTo: function (x, y) { g.lineTo(x, y); },
+      arc: function (x, y, r, a0, a1, ccw) { g.arc(x, y, r, a0, a1, ccw); },
+      ellipse: function (x, y, rx, ry, rot, a0, a1, ccw) { g.ellipse(x, y, rx, ry, rot, a0, a1, ccw); },
+      quadraticCurveTo: function (cx, cy, x, y) { g.quadraticCurveTo(cx, cy, x, y); },
+      stroke: function () { g.stroke(); },
+      fill: function () {
+        g.fill();
+        var w = g.lineWidth;
+        g.lineWidth = 2 * e;
+        g.stroke();
+        g.lineWidth = w;
+      },
+      set lineWidth(v) { g.lineWidth = v + 2 * e; },
+      get lineWidth() { return g.lineWidth - 2 * e; }
+    };
+  }
 
   // ---------- deterministic hash (32-bit integer mix; Swift: &* and >>) ----------
   function hash01(a, b, salt) {
@@ -1209,6 +1253,27 @@
     if (age < 0 || age >= PULSE_LEN) return 0;
     if (age < PULSE_ATTACK) return age / PULSE_ATTACK;
     return Math.exp(-(age - PULSE_ATTACK) * PULSE_DECAY);
+  }
+
+  // Flow of one hit, 0..1 (0 before the hit, 1 once it has stopped).
+  // Cubic ease-out: fastest at the hit, speed falls to 0 at FLOW_TIME.
+  function flowEase(age) {
+    if (!(age > 0)) return 0;
+    if (age >= FLOW_TIME) return 1;
+    var u = 1 - age / FLOW_TIME;
+    return 1 - u * u * u;
+  }
+
+  // Head line phase offset from the last two hits (cycles, 0..1).
+  // Each hit adds FLOW_CYCLES whole cycles, so finished hits leave no trace
+  // and only the flow still in progress shows. The last two hits are summed,
+  // so a new hit during a flow keeps the line where it is (no jump) and the
+  // two flows add up. Never-hit characters (hit times far in the past) are
+  // still at phase0.
+  function flowPhase(t, lastHit, prevHit) {
+    var a = lastHit === undefined ? 1 : flowEase(t - lastHit);
+    var b = prevHit === undefined ? 1 : flowEase(t - prevHit);
+    return frac(FLOW_CYCLES * (a + b));
   }
 
   // ---------- waveforms (phase 0..1 -> -1..1, positive = up) ----------
@@ -1457,10 +1522,10 @@
     g.lineCap = 'round';
     g.lineJoin = 'round';
 
-    // head line: the character's own waveform, scrolling at a constant rate
-    // (phase depends on time only, so it is always continuous); taller on a hit,
+    // head line: the character's own waveform, still at rest (original art),
+    // flowing only after a hit (see flowPhase); taller on a hit,
     // with the bottom edge fixed so the line never reaches the eyes
-    var phase = def.phase0 + t * FLOW + seed;
+    var phase = def.phase0 + (anim ? flowPhase(t, anim.lastHit, anim.prevHit) : 0);
     var amp = def.amp * r * (1 + HIT_AMP * pulse);
     var pts = headLine(def.wave, phase, def.cycles);
     var x0 = x - WAVE_HALF_W * r, ww = 2 * WAVE_HALF_W * r;
@@ -1469,6 +1534,14 @@
     for (var i = 0; i < pts.length; i++) {
       var px = x0 + pts[i][0] * ww, py = wy - pts[i][1] * amp;
       if (i === 0) g.moveTo(px, py); else g.lineTo(px, py);
+    }
+    var edgePx = def.edgeColor ? Math.max(EDGE_MIN, lwPx * EDGE_W) : 0;
+    if (edgePx > 0) {
+      g.strokeStyle = def.edgeColor;
+      g.lineWidth = lwPx + 2 * edgePx;
+      g.stroke();
+      g.strokeStyle = def.color;
+      g.lineWidth = lwPx;
     }
     g.stroke();
 
@@ -1484,6 +1557,13 @@
 
     g.translate(x + def.faceDx * r, y + (FACE_CY + bob) * r);
     g.scale(r * s, r * s);
+    if (edgePx > 0) {
+      g.strokeStyle = def.edgeColor;
+      g.fillStyle = def.edgeColor;
+      drawFeatures(edgeCtx(g, edgePx / (r * s)), def, expr, lwPx / (r * s), lid, breathe, t, glanceX);
+      g.strokeStyle = def.color;
+      g.fillStyle = def.color;
+    }
     drawFeatures(g, def, expr, lwPx / (r * s), lid, breathe, t, glanceX);
     g.restore();
   }
@@ -1497,7 +1577,8 @@
     draw: draw,
     seedForId: seedForId,
     expressionFor: expressionFor,
-    headLine: headLine
+    headLine: headLine,
+    flowPhase: flowPhase
   };
 })(typeof window !== 'undefined' ? window : this);
 
@@ -1515,18 +1596,24 @@
   var Face = window.OSCFace;
   var CHARACTERS = Face.CHARACTERS;
 
-  // neutral palette (pure gray)
+  // neutral palette (pure gray), white theme - matches the CSS variables in index.html
   var COLOR = {
-    bgBase: '#161616',
-    bgArea: '#1d1d1d',
-    stroke: '#2c2c2c',
-    gridLine: 'rgba(255,255,255,0.05)',
-    gridLineC: 'rgba(255,255,255,0.11)',
-    fgPrimary: '#e8e8e8',
-    fgDim: '#707070',
+    bgBase: '#ffffff',
+    bgArea: '#ffffff',
+    stroke: '#b4b4b4',                   // play area frame
+    gridLine: 'rgba(0,0,0,0.06)',
+    gridLineC: 'rgba(0,0,0,0.13)',
+    fgPrimary: '#1a1a1a',
+    fgDim: '#767676',
     ink: '#1a1a1a',
-    ball: '#f2f2f2',
-    reject: 'rgba(242,242,242,'   // neutral, so it is never confused with SAW red
+    outsideDim: 'rgba(0,0,0,0.06)',      // area outside the ball bounds
+    boundsLine: 'rgba(26,26,26,0.45)',
+    handle: 'rgba(26,26,26,0.55)',       // bounds handle bars (3.9:1 on white)
+    handleActive: '#1a1a1a',
+    ringAlpha: 0.75,                     // hit ripple peak opacity
+    glassEdge: 'rgb(96,140,150)',        // GLASS outline (the ball itself is almost clear)
+    cottonEdge: 'rgba(120,120,120,0.9)', // COTTON outline
+    reject: 'rgba(26,26,26,'   // neutral, so it is never confused with SAW red
   };
 
   var TAP_SLOP = 8;          // px; movement below this is a tap
@@ -1622,7 +1709,7 @@
       // scalloped fluffy outline
       var n = 10, br = r * 0.34, ring = r - br;
       g.fillStyle = rgbStr(col);
-      g.strokeStyle = 'rgba(160,160,160,0.9)';
+      g.strokeStyle = COLOR.cottonEdge;
       g.lineWidth = Math.max(1, r * 0.05);
       for (var pass = 0; pass < 2; pass++) {
         for (i = 0; i < n; i++) {
@@ -1709,7 +1796,7 @@
     g.beginPath();
     g.arc(x, y, r, 0, Math.PI * 2);
     g.lineWidth = Math.max(1, r * 0.07);
-    g.strokeStyle = def.id === 'glass' ? 'rgba(235,250,255,0.9)' : shade(col, 0.6);
+    g.strokeStyle = def.id === 'glass' ? COLOR.glassEdge : shade(col, 0.6);
     g.stroke();
     if (def.id === 'glass' || def.id === 'marble' || def.id === 'steel' || def.id === 'pingpong') {
       g.fillStyle = 'rgba(255,255,255,0.75)';
@@ -2374,11 +2461,11 @@
       ctx.beginPath();
       ctx.rect(0, 0, area.w, area.h);
       ctx.rect(bd.left, bd.top, bd.right - bd.left, bd.bottom - bd.top);
-      ctx.fillStyle = 'rgba(0,0,0,0.28)';
+      ctx.fillStyle = COLOR.outsideDim;
       ctx.fill('evenodd');
     }
     ctx.lineWidth = 1.5;
-    ctx.strokeStyle = 'rgba(232,232,232,0.4)';
+    ctx.strokeStyle = COLOR.boundsLine;
     ctx.strokeRect(bd.left + 0.75, bd.top + 0.75, bd.right - bd.left - 1.5, bd.bottom - bd.top - 1.5);
 
     // characters (unreachable ones are drawn translucent)
@@ -2393,11 +2480,12 @@
       var s = 1;
       if (age >= 0 && age < 0.35) {
         s = 1 + 0.24 * Math.exp(-age * 14);
-        var ringA = (1 - age / 0.35) * 0.5;
+        var ringA = (1 - age / 0.35) * COLOR.ringAlpha;
         ctx.beginPath();
         ctx.arc(c.x, c.y, R * (1.05 + age * 1.6), 0, Math.PI * 2);
         ctx.lineWidth = 2;
-        ctx.strokeStyle = rgbStr(def.rgb, ringA);
+        // light characters (PULSE yellow) ripple in their darker edge color
+        ctx.strokeStyle = rgbStr(def.edge || def.rgb, ringA);
         ctx.stroke();
       }
       if (c.id === panelCharId) {
@@ -2434,7 +2522,7 @@
       var bw = bar.horiz ? HANDLE_LEN : HANDLE_THICK;
       var bh = bar.horiz ? HANDLE_THICK : HANDLE_LEN;
       roundRectPath(ctx, bar.x - bw / 2, bar.y - bh / 2, bw, bh, HANDLE_THICK / 2);
-      ctx.fillStyle = activeHandles[bar.side] ? '#ffffff' : 'rgba(232,232,232,0.7)';
+      ctx.fillStyle = activeHandles[bar.side] ? COLOR.handleActive : COLOR.handle;
       ctx.fill();
     }
 
