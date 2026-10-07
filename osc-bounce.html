@@ -154,8 +154,11 @@
   }
   /* Every short label in the bar stays on one line. */
   #title, #count { white-space: nowrap; }
+  /* BOUNCE does not shrink while the logo can still give way (any shrink share, even a
+     fraction of a pixel, shows the ellipsis). Below 349 px the logo (30 px) is not
+     enough, so the title may shrink too. Budget: see #logo. */
   #title {
-    flex: 0 1 auto;
+    flex: 0 0 auto;
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -165,12 +168,16 @@
     line-height: 24px;
   }
   /* OSC brothers logo at the left of the bar, title BOUNCE to its right (not interactive).
-     Bar from measured widths (Barlow Condensed Light: BOUNCE 68.6 px, count box 28 px,
-     RANDOM 96 / 104 px, palm 44 px, "?" 44 px; no spacer item, RANDOM takes the free
-     space with margin-left auto, so 6 items = 5 gaps):
-       <= 420 px (gap 10): 36 + 68.6 + 28 + 96 + 44 + 44 + 50 = 366.6 px; at 390 px
-         the bar has 374 px (padding 8 + 8), 7.4 px to spare.
-       421 px (gap 16): 32 + 68.6 + 28 + 104 + 44 + 44 + 80 = 400.6 px of 405 px.
+     Bar from measured widths (BOUNCE 68.6 px, count box 28 / 24 px, RANDOM 72 px,
+     CLEAR 54 px, palm 44 px, "?" 44 px; no spacer item, RANDOM takes the free space
+     with margin-left auto, so 7 items = 6 gaps; logo counted with its negative margin):
+       > 460 px (gap 16): 32 + 68.6 + 28 + 72 + 54 + 44 + 44 + 96 = 438.6 px;
+         at 461 px the bar has 445 px (padding 8 + 8), 6.4 px to spare.
+       390-460 px (gap 6, logo 30, count 24): 30 + 68.6 + 24 + 72 + 54 + 44 + 44 + 36
+         = 372.6 px; at 390 px the bar has 374 px, 1.4 px to spare.
+       <= 389 px (gap 4): 32 + 68.6 + 24 + 72 + 54 + 44 + 44 + 24 = 362.6 px; at 375 px
+         (359 px) the logo shrinks to 26.4 px; at 320 px (304 px) the logo is gone and
+         BOUNCE is cut to about 40 px with an ellipsis (it was 42 px before CLEAR moved here).
      flex-shrink 100: if the bar is short anyway, the logo gives way before the title. */
   #logo {
     flex: 0 100 auto;
@@ -182,7 +189,8 @@
     pointer-events: none;
     -webkit-user-drag: none;
   }
-  @media (max-width: 420px) { #logo { margin-right: -4px; } }   /* 6 px to the title (bar gap 10) */
+  @media (max-width: 460px) { #logo { width: 30px; margin-right: 0; } }   /* 6 px to the title (bar gap 6) */
+  @media (max-width: 389px) { #logo { margin-right: 2px; } }               /* 6 px to the title (bar gap 4) */
   /* Character count: number only, tabular digits in a fixed 28 x 24 px box ("00" is
      16.1 px wide, so two digits never change the bar width). At the limit (16) the
      box turns red. */
@@ -264,7 +272,7 @@
     white-space: nowrap;
     cursor: pointer;
     overflow: hidden;           /* safety: nothing is ever drawn outside the cell */
-    --text-h: 11.2px;           /* hand-drawn name box height (row layout), 56 % of 20 px */
+    --text-h: 20px;             /* hand-drawn name box height (row layout): SINE 56.2 px wide */
   }
   .pick canvas { width: 28px; height: 28px; flex: 0 0 28px; display: block; }
   /* Hand-drawn name. The box (span) has explicit sizes, so the size never depends on
@@ -292,14 +300,22 @@
   }
   @media (max-width: 588px) {
     :root { --palette-h: 49px; }
-    /* 45 px cell, 43 inside: 22 icon + 1 gap + 10.1 name = 33.1 (name 56 % of 18 px) */
-    .pick { flex-direction: column; gap: 1px; padding: 0 2px; --text-h: 10.1px; }
+    /* 45 px cell, 43 inside: 22 icon + 1 gap + 19 name = 42 (0.5 px spare top and bottom).
+       Name width at 19 px: SINE 53.4, PULSE 46.7, SAW 45.1, TRI 40.2; 390 px viewport
+       gives 62.4 px inside each cell, so all fit uncapped (SINE is capped below 345 px). */
+    .pick { flex-direction: column; gap: 1px; padding: 0 2px; --text-h: 19px; }
     .pick canvas { width: 22px; height: 22px; flex: 0 0 22px; }
   }
   @media (max-width: 420px) {
     :root { --top-h: 52px; }
-    #topbar .bar { gap: 10px; }
   }
+  /* top bar gaps: see the bar budget at #logo */
+  @media (max-width: 460px) {
+    #topbar .bar { gap: 6px; }
+    #count { flex-basis: 24px; width: 24px; }
+  }
+  @media (max-width: 389px) { #topbar .bar { gap: 4px; } }
+  @media (max-width: 348px) { #title { flex-shrink: 1; } }
 
   /* ---------- character panel ---------- */
   /* At 70 % of the first design: panel 232 -> 162 wide, padding 12 -> 8, gaps 8 -> 6,
@@ -419,7 +435,7 @@
   #panel .row .textbtn { flex: 1 1 0; min-width: 0; height: 31px; padding: 0; border-radius: 6px; font-size: 16px; }
 
   /* ---------- help button + help sheet ---------- */
-  /* Round "?" button at the right end of the top bar (where CLEAR used to be).
+  /* Round "?" button at the right end of the top bar.
      While the sheet is open the top bar is lifted above the backdrop
      (#topbar.above-sheet), so the button stays visible and closes the sheet. */
   #helpbtn, #tiltbtn {
@@ -463,12 +479,24 @@
     pointer-events: none;
   }
   #topbar.above-sheet { z-index: 9; }
-  /* RANDOM: top bar text button left of "?". Fixed width = widest label (ランダム,
-     Noto Sans JP Light 18 px + 0.12em = 80.6 px) + padding + border (82 px inside),
-     so switching language never moves the bar. Widths: see the bar budget at #logo.
-     margin-left auto pushes RANDOM, palm and "?" to the right end. */
-  #randombtn { flex: 0 0 auto; min-width: 0; width: 104px; padding: 0 10px; margin-left: auto; }
-  @media (max-width: 420px) { #randombtn { width: 96px; padding: 0 6px; } }
+  /* RANDOM and CLEAR: top bar text buttons left of the palm button, same style
+     (44 px tall, 1 px border, 16 px, letter-spacing 0.06em). Fixed widths = widest
+     label of the three languages + border, so switching language never moves the bar:
+       RANDOM 72 px (70 inside): ランダム 67.8, RANDOM 49.9, 隨機 33.9 px
+       CLEAR  54 px (52 inside): クリア 50.9, CLEAR 38.5, 清除 33.9 px
+     (Noto Sans JP / TC Light, Barlow Condensed Light, measured in Chrome).
+     Widths: see the bar budget at #logo. margin-left auto pushes RANDOM, CLEAR,
+     palm and "?" to the right end. */
+  #randombtn, #clear {
+    flex: 0 0 auto;
+    min-width: 0;
+    padding: 0;
+    font-size: 16px;
+    letter-spacing: 0.06em;
+    text-align: center;
+  }
+  #randombtn { width: 72px; margin-left: auto; }
+  #clear { width: 54px; }
   /* Full-screen backdrop; a press on it (outside the card) closes the sheet.
      Top padding keeps the card below the top bar (and its "?" button). */
   #helpsheet {
@@ -539,7 +567,6 @@
   .seg { display: flex; gap: 8px; flex: 0 0 auto; }
   .seg .textbtn { flex: 1 1 0; min-width: 0; padding: 0 8px; text-align: center; }
   .seg .textbtn.selected { background: var(--bg-track); border-color: var(--fg-primary); }
-  #clear { flex: 0 0 auto; width: 100%; min-width: 0; padding: 0; text-align: center; margin-top: 4px; }
   /* credits + copyright at the bottom of the sheet (not interactive) */
   .sheet-credits {
     margin-top: 4px;
@@ -581,6 +608,7 @@
       <div id="title">BOUNCE</div>
       <div id="count" aria-label="0 / 16">0</div>
       <button id="randombtn" class="textbtn" type="button">RANDOM</button>
+      <button id="clear" class="textbtn" type="button">CLEAR</button>
       <button id="tiltbtn" type="button" aria-pressed="false" aria-label="TILT MODE"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.2 13V6.4a1.3 1.3 0 0 1 2.6 0V11.2M9.8 11.2V4.6a1.3 1.3 0 0 1 2.6 0V11M12.4 11V5.6a1.3 1.3 0 0 1 2.6 0V11.4M15 11.4V8a1.3 1.3 0 0 1 2.6 0V14.6C17.6 18.8 15.4 21.4 12 21.4C9.9 21.4 8.6 20.6 7.4 19.2L4.2 15.4a1.25 1.25 0 0 1 1.9 -1.6L7.2 15.1V13" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <button id="helpbtn" type="button" aria-haspopup="dialog" aria-controls="helpsheet" aria-expanded="false">?</button>
     </div>
@@ -608,7 +636,6 @@
         <button id="theme-light" class="textbtn" type="button" data-theme-value="light">WHITE</button>
         <button id="theme-dark" class="textbtn" type="button" data-theme-value="dark">BLACK</button>
       </div>
-      <button id="clear" class="textbtn" type="button">CLEAR</button>
       <div class="sheet-credits">
         <p id="credit-art">Character art: OSC兄弟</p>
         <p id="credit-code">Programming: MADZINE</p>
@@ -3144,7 +3171,7 @@ window.OSC_ASSETS = {
   var topbar = document.getElementById('topbar');
   var palette = document.getElementById('palette');
   var countEl = document.getElementById('count');
-  var clearBtn = document.getElementById('clear');      // inside the help sheet
+  var clearBtn = document.getElementById('clear');      // top bar, right of RANDOM
   var creditArt = document.getElementById('credit-art');
   var creditCode = document.getElementById('credit-code');
   var creditCopy = document.getElementById('credit-copy');
@@ -3189,7 +3216,7 @@ window.OSC_ASSETS = {
       delay: 'やまびこ',
       slip: 'すべり',
       random: 'ランダム',
-      helpButtons: '「ランダム」ボタン：キャラクター、その設定、ボールをランダムに作り直します。手のひらボタン：オンにするとボールは自分では跳ねず、スマホを傾けて転がします。すべりが大きいほど速く転がります。もう一度押すと元に戻ります。',
+      helpButtons: '「ランダム」ボタン：キャラクター、その設定、ボールをランダムに作り直します。「クリア」ボタン：置いたキャラクターをすべて消します。手のひらボタン：オンにするとボールは自分では跳ねず、スマホを傾けて転がします。すべりが大きいほど速く転がります。もう一度押すと元に戻ります。',
       tiltLabel: '傾きモード',
       tiltNone: 'この端末にはジャイロセンサーがないため、傾きモードは使えません。',
       tiltDenied: 'モーションセンサーの許可が得られなかったため、元のモードのままです。',
@@ -3216,7 +3243,7 @@ window.OSC_ASSETS = {
       delay: 'ECHO',
       slip: 'SLIP',
       random: 'RANDOM',
-      helpButtons: 'RANDOM makes a new random set of characters, their settings and the ball. Palm button: the ball stops bouncing on its own and rolls as you tilt the phone; a higher SLIP rolls faster. Press it again to go back.',
+      helpButtons: 'RANDOM makes a new random set of characters, their settings and the ball. CLEAR removes all characters. Palm button: the ball stops bouncing on its own and rolls as you tilt the phone; a higher SLIP rolls faster. Press it again to go back.',
       tiltLabel: 'TILT MODE',
       tiltNone: 'This device has no gyroscope, so tilt mode is not available.',
       tiltDenied: 'Motion sensor access was not allowed, so the normal mode stays on.',
@@ -3243,7 +3270,7 @@ window.OSC_ASSETS = {
       delay: '回音',
       slip: '滑度',
       random: '隨機',
-      helpButtons: '「隨機」按鈕：重新隨機產生角色、角色設定與球。手掌按鈕：開啟後球不再自己彈跳，改成傾斜手機讓球滾動，滑度越高滾得越快；再按一次恢復自動彈跳。',
+      helpButtons: '「隨機」按鈕：重新隨機產生角色、角色設定與球。「清除」按鈕：移除所有角色。手掌按鈕：開啟後球不再自己彈跳，改成傾斜手機讓球滾動，滑度越高滾得越快；再按一次恢復自動彈跳。',
       tiltLabel: '傾斜模式',
       tiltNone: '這台裝置沒有陀螺儀，無法使用傾斜模式。',
       tiltDenied: '沒有取得動作感測權限，維持原本模式。',
@@ -3846,8 +3873,9 @@ window.OSC_ASSETS = {
     closePanel();
   });
 
-  // CLEAR lives in the help sheet: clears the field and closes the sheet so the
-  // result is visible right away
+  // CLEAR (top bar): clears the field. The top bar stays above the help sheet while
+  // it is open, so CLEAR can be pressed then too; the sheet closes so the result is
+  // visible right away.
   clearBtn.addEventListener('click', function () {
     sim.clear();
     closePanel();
