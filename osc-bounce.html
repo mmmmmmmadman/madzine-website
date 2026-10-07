@@ -111,7 +111,12 @@
     -webkit-tap-highlight-color: transparent;
     overscroll-behavior: none;
   }
-  * { box-sizing: border-box; }
+  /* No page zoom (pinch / double tap). touch-action is set on every element, not only
+     html / body, so it does not depend on how the browser combines an element's value
+     with its ancestors. All game gestures use pointer events. The help card keeps
+     pan-y for its own scrolling (pan-y also excludes double-tap and pinch zoom). */
+  *, *::before, *::after { box-sizing: border-box; touch-action: none; }
+  .sheet-card, .sheet-card * { touch-action: pan-y; }
   button {
     font-family: var(--font);
     font-weight: 300;
@@ -3812,9 +3817,37 @@ window.OSC_ASSETS = {
   document.addEventListener('touchend', unlockAudio, { capture: true, passive: true });
   document.addEventListener('click', unlockAudio, true);
 
-  // block zoom / context menus
-  document.addEventListener('gesturestart', function (e) { e.preventDefault(); });
-  document.addEventListener('dblclick', function (e) { e.preventDefault(); });
+  // block zoom / context menus.
+  // iOS Safari ignores user-scalable=no for pinch: cancel its gesture events.
+  ['gesturestart', 'gesturechange', 'gestureend'].forEach(function (type) {
+    document.addEventListener(type, function (e) { e.preventDefault(); }, { passive: false });
+  });
+  // Double tap guard (backup for touch-action): a single-finger touchend less than
+  // DOUBLE_TAP_MS after the previous one is cancelled, which also cancels that tap's
+  // synthesized click, so a tap on a button is clicked here instead (fast repeated taps
+  // on a button still work). Pointer events (stage drags, faders) are not affected:
+  // they are dispatched before touchend and do not depend on it.
+  var DOUBLE_TAP_MS = 300, TAP_SLOP = 10;
+  var lastTouchEnd = 0, tapStartX = 0, tapStartY = 0;
+  document.addEventListener('touchstart', function (e) {
+    if (e.touches.length === 1) { tapStartX = e.touches[0].clientX; tapStartY = e.touches[0].clientY; }
+  }, { capture: true, passive: true });
+  document.addEventListener('touchend', function (e) {
+    var now = Date.now();
+    var single = e.touches.length === 0 && e.changedTouches.length === 1;
+    if (single && now - lastTouchEnd < DOUBLE_TAP_MS && e.cancelable) {
+      e.preventDefault();
+      var t = e.changedTouches[0];
+      var btn = e.target && e.target.closest ? e.target.closest('button') : null;
+      var still = Math.abs(t.clientX - tapStartX) <= TAP_SLOP && Math.abs(t.clientY - tapStartY) <= TAP_SLOP;
+      if (btn && still && !btn.disabled) {
+        var under = document.elementFromPoint(t.clientX, t.clientY);
+        if (under && btn.contains(under)) btn.click();
+      }
+    }
+    if (e.touches.length === 0) lastTouchEnd = now;
+  }, { capture: true, passive: false });
+  document.addEventListener('dblclick', function (e) { e.preventDefault(); }, { passive: false });
   document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
 
   // ---------- stage pointer handling ----------
