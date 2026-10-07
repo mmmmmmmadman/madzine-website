@@ -259,7 +259,7 @@
     white-space: nowrap;
     cursor: pointer;
     overflow: hidden;           /* safety: nothing is ever drawn outside the cell */
-    --text-h: 14px;             /* hand-drawn name box height (row layout), 70 % of 20 px */
+    --text-h: 11.2px;           /* hand-drawn name box height (row layout), 56 % of 20 px */
   }
   .pick canvas { width: 28px; height: 28px; flex: 0 0 28px; display: block; }
   /* Hand-drawn name. The box (span) has explicit sizes, so the size never depends on
@@ -287,8 +287,8 @@
   }
   @media (max-width: 588px) {
     :root { --palette-h: 49px; }
-    /* 45 px cell, 43 inside: 22 icon + 1 gap + 12.6 name = 35.6 (name 70 % of 18 px) */
-    .pick { flex-direction: column; gap: 1px; padding: 0 2px; --text-h: 12.6px; }
+    /* 45 px cell, 43 inside: 22 icon + 1 gap + 10.1 name = 33.1 (name 56 % of 18 px) */
+    .pick { flex-direction: column; gap: 1px; padding: 0 2px; --text-h: 10.1px; }
     .pick canvas { width: 22px; height: 22px; flex: 0 0 22px; }
   }
   @media (max-width: 420px) {
