@@ -118,7 +118,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <header>
   <div class="brand"><a href="https://madzine.work" style="color:inherit;text-decoration:none">MADZINE</a></div>
   <h1>HONKI</h1>
-  <div class="sub">取扱説明書 — v1.4.8 — 日本語</div>
+  <div class="sub">取扱説明書 — v1.4.9 — 日本語</div>
   <div class="langs"><a href="HONKI_Manual_en.html">English</a> <a href="HONKI_Manual_ja.html" class="cur">日本語</a> <a href="HONKI_Manual_zh-Hant.html">繁體中文</a></div>
 </header>
 
@@ -179,9 +179,10 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <h3>プロジェクトスロット</h3>
 <table>
 <tr><td class="k">スロット数</td><td>26 バンク（A から Z）、各バンクに 10 パターン（00 から 09）。スロット ID の形式は A-00 です。</td></tr>
-<tr><td class="k">スロットごとの保存内容</td><td>バンク、programs、modulation、PERFORM レイアウト、MASTER FX、各トラックの AU。</td></tr>
-<tr><td class="k">アプリ全体で共通（スロットに依存しない）</td><td>INPUT COMP、HUE、CV デバイスの割り当て、EXTERNAL INPUT のルーティング。</td></tr>
+<tr><td class="k">スロットごとの保存内容</td><td>バンク、programs、modulation、PERFORM レイアウト、MASTER FX、各トラックの AU、MIXER のバス選択、MIDI の割り当て。</td></tr>
+<tr><td class="k">アプリ全体で共通（スロットに依存しない）</td><td>INPUT COMP、HUE、CV デバイスの割り当て、EXTERNAL INPUT のルーティング。MIDI 入力デバイスのチェックと CV デバイスの割り当ては、引き続きアプリ全体で共通です。</td></tr>
 <tr><td class="k">起動時</td><td>最後に使用したスロットを復元します。</td></tr>
+<tr><td class="k">旧バージョンからの更新</td><td>更新後の初回起動時に、以前のアプリ全体の MIDI の割り当てをスロット A-00 から A-09 にコピーします。それ以外のスロットは割り当てなしの状態から始まります。</td></tr>
 </table>
 
 <h3>Undo</h3>
@@ -206,7 +207,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 </table>
 
 <h3>.honki ファイル</h3>
-<p>現行のファイル形式には、バンク、programs、各トラックの AU、MASTER FX、modulation、PERFORM レイアウトが含まれます。旧バージョンの .honki ファイルとバンクのみのファイルも読み込めます。</p>
+<p>現行のファイル形式には、バンク、programs、各トラックの AU、MASTER FX、modulation、PERFORM レイアウト、MIDI の割り当てが含まれます。LOAD すると、ファイル内の MIDI の割り当てが現在のスロットの割り当てを丸ごと置き換えます。ファイル内の割り当てが空の場合も空になります。この項目を持たない旧バージョンの .honki ファイルでは、現在の割り当てがそのまま残ります。旧バージョンの .honki ファイルとバンクのみのファイルも読み込めます。</p>
 
 <!-- ============================================================ -->
 <h2 id="transport">3. トランスポート</h2>
@@ -572,11 +573,11 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">FILTER</td><td>中央が OFF、左へ動かすとローパス（20 kHz から 80 Hz へ）、右へ動かすとハイパス（20 Hz から 8 kHz へ）です。中央から 0.04 以内で吸着し、ダブルタップで 0 に戻ります。</td></tr>
 <tr><td class="k">LOCK / DECAY / DENSITY</td><td>MAIN の同名パラメータと同じです。</td></tr>
 <tr><td class="k">DELAY / REVERB / FX CHAIN</td><td>3 つのエフェクトセンド量。各 0 から 1 で、ダブルタップで 0.5 に戻ります。MOD ROUTE でモジュレーションできます。</td></tr>
-<tr><td class="k">BUS 選択</td><td>6 つのノブの下にある MASTER / A1 / A2 / A3 の 4 つのボタンで、LEVEL フェーダーが編集するバスを選びます。選択中のボタンはトラックの色で塗りつぶされます。選択は保存されず、アプリを再起動すると MASTER に戻ります。A1 から A3 を選ぶと、LEVEL フェーダーはその AUX バスへの送り量（0 から 2、初期値 0）になり、PAN と MIX は無効になります。M / S は影響を受けません。AUX の信号はモノラルで、取り出し点は COMPRESSOR とサイドチェインコンプレッサーの後、フェーダーと PAN の前です。エフェクトリターンとマスター出力の処理は通りません。TRACK 5 から 8 は左右の平均を使います。</td></tr>
+<tr><td class="k">BUS 選択</td><td>6 つのノブの下にある MASTER / A1 / A2 / A3 の 4 つのボタンで、LEVEL フェーダーが編集するバスを選びます。選択中のボタンはトラックの色で塗りつぶされます。この選択はプロジェクトに属し、プロジェクトスロットと .honki ファイルに保存されます。再度開くと最後に選んだバスに戻ります。4 つのバスボタンは MIDI Learn と PERFORM に割り当てでき、トリガーするとそのバスを選択します。MIDI Learn モードでは MASTER ボタンが短くなり、右側に FOLLOW の枠が表示されます。FOLLOW をタップしてからコントローラーを動かすと LEVEL FOLLOW が割り当てられ、以後そのコントローラーは、このトラックで現在選択中のバスの LEVEL（MASTER の音量、または A1 から A3 への送り量）を常に操作します。バスを切り替えると操作対象も切り替わります。FOLLOW は MIDI Learn モードのときだけ表示されます。A1 から A3 を選ぶと、LEVEL フェーダーはその AUX バスへの送り量（0 から 2、初期値 0）になり、PAN と MIX は無効になります。M / S は影響を受けません。AUX の信号はモノラルで、取り出し点は COMPRESSOR とサイドチェインコンプレッサーの後、フェーダーと PAN の前です。エフェクトリターンとマスター出力の処理は通りません。TRACK 5 から 8 は左右の平均を使います。</td></tr>
 <tr><td class="k">A1 から A3 の出力</td><td>3 つの AUX バスの物理チャンネルは、SETUP の AUDIO タブの AUX BUS で指定します。未指定は OFF で、他の用途で使用中のチャンネルには IN USE と表示されます。</td></tr>
 <tr><td class="k">PAN</td><td>TRACK 1 から 4 は等パワーのパン、5 から 8 は左右のバランスです。中央で吸着し、ダブルタップで 0 に戻ります。MOTION、MOD ROUTE、MIDI Learn に対応しています。</td></tr>
 <tr><td class="k">MIX</td><td>EXT / INT 間のクロスフェードで、0 が INT です。</td></tr>
-<tr><td class="k">LEVEL</td><td>0 から 2、初期値 1。横の 2 本のメーターはフェーダー前とフェーダー後で、ソースはオーディオではなくトリガーエンベロープです。BUS で A1 から A3 を選ぶと、その AUX バスへの送り量になります。</td></tr>
+<tr><td class="k">LEVEL</td><td>0 から 2、初期値 1。横の 2 本のメーターはフェーダー前とフェーダー後で、ソースはオーディオではなくトリガーエンベロープです。BUS で A1 から A3 を選ぶと、その AUX バスへの送り量になります。MIDI Learn と PERFORM では、固定の LEVEL / A1 から A3 LEVEL のほか、LEVEL FOLLOW も割り当てできます。</td></tr>
 <tr><td class="k">M / S</td><td>M は赤でミュート、S は黄でソロ。0.4 秒長押しで排他ソロになります。</td></tr>
 </table>
 <p>信号の順序：ミュート、EQ、FILTER、COMPRESSOR、サイドチェインコンプレッサー、エフェクトセンドポイント、AUX の取り出し点、フェーダー、PAN、マスター出力。DELAY、REVERB、FX CHAIN のセンドポイントはそれぞれ PRE または POST を選べます。マスター出力：エフェクトリターン（FX CHAIN を含む）、マスター FILTER、MASTER VOLUME、ソフトクリップ。</p>
@@ -728,7 +729,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <h2 id="perform">8. PERFORM</h2>
 
 <div class="fig"><img src="img/perform_full.png" alt="PERFORM ページ全体"></div>
-<div class="cap">PERFORM ページ全体。上部のツールバー：PERFORM（選択中）/ EDIT、SEQ と LFO 1 から 3 のレベルバー、MASTER スペクトラム、CONTROLS 14 / MAPPINGS 5。キャンバスには名前を付けた 5 つのノブ（Lead decay、Filter、Bass decay、Kick decay、HH decay）、XY PAD 1、FADER 1 から 4、4 つの BUTTON があります。サイドパネルのタブは MIXER、UTILITY、EFFECT、FX CHAIN で、図では MIXER ページが開いており、T1 から T8 の VOL、M、S、レベルメーター、セグメントバーが表示されています。</div>
+<div class="cap">PERFORM ページ全体。上部のツールバー：PERFORM（選択中）/ EDIT、SEQ と LFO 1 から 3 のレベルバー、MASTER スペクトラム、CONTROLS / MAPPINGS の数。キャンバスには現在のレイアウトのコントロールが並びます。サイドパネルのタブは GRID、EFFECT、FX CHAIN で、図では GRID ページが開いており、8 × 8 のセグメントグリッド、最上段のトラック番号 1 から 8、右端の全トラック用の三角形の列が表示されています。</div>
 
 <h3>ツールバー</h3>
 <div class="fig"><img src="img/perform_toolbar.png" alt="PERFORM ツールバー"></div>
@@ -760,20 +761,16 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">PAD（FOUR WAY）</td><td>4 方向モードです。全体がタッチ面で、- / + とロックはなく、中央に十字線があり、4 辺に各方向のターゲット名が表示されます。指が中心にあるときは 4 方向とも 0、ある方向へ端まで押すと 1 になります。斜めに押したときは水平と垂直が別々に計算されます。ボタン系のターゲットは半分を超えて押したときにトリガーされます。戻りは SPRING TO CENTER の 1 つのスイッチだけです。</td></tr>
 <tr><td class="k">インジケーターの点</td><td>各コントロールの下の小さな点の数は、そのコントロールのマッピング数で、最大 8 です。</td></tr>
 </table>
-<p>新しいプロジェクトのキャンバスは空で、初期のコントロールはありません。コントロールがないときは、空の案内と ENTER EDIT MODE ボタンが表示されます。図の 30 個のコントロールは、スクリーンショット撮影時のレイアウトです。</p>
+<p>新しいプロジェクトのキャンバスには、初期状態で MIXER テンプレートが適用されます（8 トラックそれぞれに INT/EXT、BUS、LEVEL、MUTE、SOLO）。EDIT モードの CLEAR でキャンバスを空にできます。コントロールがないときは、空の案内と ENTER EDIT MODE ボタンが表示されます。図はスクリーンショット撮影時のレイアウトです。</p>
 
 <h3>サイドパネル</h3>
 <div class="fig"><img src="img/perform_sidebar.png" alt="PERFORM サイドパネル"></div>
-<div class="cap">サイドパネル：上部のタブは MIXER、UTILITY、EFFECT、FX CHAIN で、図では MIXER ページが開いています。T1 から T8 の各行に VOL の横バー、M、S、縦のレベルメーター、8 マスのセグメントバーがあります。</div>
+<div class="cap">サイドパネル：上部のタブは GRID、EFFECT、FX CHAIN で、図では GRID ページが開いています。縦の列がトラック 1 から 8、横の行がセグメント 1 から 8 で、4 行目と 5 行目の間に白い線があります。右端の列は全トラック用の三角形ボタンです。</div>
 <table>
-<tr><td class="k">MIXER</td><td>T1 から T8 にそれぞれレベルメーター、VOL（0 から 2）、M、S（長押しで排他ソロ）、再生位置付きの 8 マスのセグメントバーがあります。マスをタップするとそのセグメントを選択し、トラックをそのセグメントに固定します。もう一度タップすると解除します。このページの VOL、M、S は MIDI Learn に割り当てできますが、MOD ROUTE には対応していません。</td></tr>
-<tr><td class="k">UTILITY</td><td>1 行目は CROSSFADE の横バー、LOOP、TRIG です。カーブの領域は A グループだけを編集し、B グループは薄い線で表示されます。LFO 1 から 6 は各 1 行で、SPEED の横バー（SYNC オフのときは Hz、オンのときは音価）、SYNC、UNI / BI があります。SHAPE と MORPH はこのページでは表示のみです。SPEED は MIDI Learn、MOTION、MOD ROUTE に対応しています。</td></tr>
+<tr><td class="k">GRID</td><td>縦の列がトラック 1 から 8、横の行がセグメント 1 から 8 です。トラック番号は最上段にだけ表示され、4 行目と 5 行目の間に白い線があります。マスをタップすると、そのトラックのそのセグメントを選択します。固定（ロック）はありません。右端の列には行ごとに左向きの三角形があり、タップすると 8 トラックすべてでそのセグメントを選択します。マスと三角形の状態は、選択中と未選択の 2 つだけです。各トラックの再生位置はその列に表示されます。すべてのマスと三角形は MIDI Learn に割り当てできます。</td></tr>
 <tr><td class="k">EFFECT</td><td>DELAY の TIME LEFT、TIME RIGHT、FEEDBACK、LEVEL。REVERB の SIZE、DAMP、DECAY、LEVEL。</td></tr>
 <tr><td class="k">FX CHAIN</td><td>3 つのポジションそれぞれに POSITION n とエフェクト名、DRY WET、そのエフェクトのパラメータが表示されます。GRANULAR には FREEZE、GLITCH には HOLD もあります。このページではエフェクトの種類を変更できず、RETURN もありません。エフェクトの変更は MIXER の FX CHAIN パネルで行います。</td></tr>
 </table>
-
-<div class="fig"><img src="img/perform_side_utility.png" alt="サイドパネル UTILITY"></div>
-<div class="cap">サイドパネルの UTILITY タブ。CROSSFADE / LOOP / TRIG、8 段エンベロープのカーブ、LFO 1 から 6 のレートバーと SYNC、UNI。</div>
 
 <div class="fig"><img src="img/perform_effect.png" alt="サイドパネル EFFECT"></div>
 <div class="cap">サイドパネルの EFFECT タブ。DELAY の TIME LEFT、TIME RIGHT、FEEDBACK、LEVEL と、REVERB の SIZE、DAMP、DECAY、LEVEL。</div>
@@ -787,7 +784,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">MAPPING</td><td>マッピングパネルを開きます。コントロールを 1 つだけ選択しているときに使用できます。キャンバス上でコントロールをダブルタップしても開きます。</td></tr>
 <tr><td class="k">DELETE</td><td>2 段階式です。1 回押すと「DELETE?」に変わり、2 秒以内にもう一度押すと選択中のコントロールを削除します。</td></tr>
 <tr><td class="k">UNDO / REDO</td><td>レイアウト編集専用、32 ステップ。</td></tr>
-<tr><td class="k">TEMPLATE</td><td>内蔵レイアウトは 3 つ：SEGMENT VOICE、LEVEL AND TRIGGER、SENDS。「SAVE CURRENT LAYOUT」で現在のレイアウトを保存します。「MANAGE USER TEMPLATES」でユーザーレイアウトの名前変更と削除ができ、削除には確認が必要です。</td></tr>
+<tr><td class="k">TEMPLATE</td><td>内蔵レイアウトは 3 つ：SEGMENT VOICE、SENDS、MIXER。MIXER テンプレートは各トラックに下から順に、SOLO、MUTE、LEVEL フェーダー（LEVEL FOLLOW に割り当て済みで、MIXER ページで現在選択中のバスを操作）、4 段の BUS ノブ（MASTER / A1 / A2 / A3。回すと段に吸着し、ダブルタップで MASTER に戻り、MIXER ページと同期）、INT/EXT ノブが並びます。「SAVE CURRENT LAYOUT」は、まず USER n があらかじめ入った名前入力パネルを開きます。名前は変更でき（前後の空白を除き、英字は大文字に変換。空のままなら初期の名前を使用）、SAVE で保存、CANCEL またはパネル外のタップで取り消します。「MANAGE USER TEMPLATES」でユーザーレイアウトの名前変更と削除ができ、削除には確認が必要です。</td></tr>
 <tr><td class="k">SNAP GRID</td><td>グリッド吸着のスイッチです。</td></tr>
 <tr><td class="k">選択とドラッグ</td><td>コントロールをタップして選択に追加または解除します。複数選択できます。ドラッグで位置を移動し、複数選択のときはまとめて移動します。</td></tr>
 </table>
@@ -805,7 +802,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">DIRECTIONS</td><td>4 方向モードの PAD では UP、DOWN、LEFT、RIGHT の 4 行になり、方向ごとにマッピングは 1 つです。もう一度割り当てると前のものが置き換わり、未割り当ては EMPTY と表示されます。各行に CLEAR DIRECTION、REVERSE RANGE、範囲バーがあります。</td></tr>
 <tr><td class="k">TWO AXIS / FOUR WAY</td><td>PAD のモードを切り替えます。その PAD にマッピングがある場合、1 回目のタップで確認の表示になり、2 秒以内にもう一度タップすると切り替わります。切り替えるとその PAD のマッピングはすべて消去され、UNDO で戻せます。名前は保持されます。FOUR WAY に切り替えると値は中心に戻り、戻りがオンになります。TWO AXIS に戻すと戻りはオフになります。</td></tr>
 <tr><td class="k">ターゲットのグループ</td><td>MIXER、VOICE、SEGMENT、FX、GLOBAL、CHROMA、PARTICLE、MESH、FEEDBACK。グループの下に T1 から T8 のトラックボタンがあり、グローバルなグループではグレー表示になります。同じコントロールで使用済みのターゲットには印が付きます。</td></tr>
-<tr><td class="k">MIXER グループ</td><td>トラックごとに：MUTE、SOLO、A1 から A3 LEVEL、LEVEL、MIX、PAN、サイドチェイン量、3 つのエフェクトセンド、FILTER。</td></tr>
+<tr><td class="k">MIXER グループ</td><td>トラックごとに：MUTE、SOLO、A1 から A3 LEVEL、LEVEL、LEVEL FOLLOW、MIX、PAN、サイドチェイン量、3 つのエフェクトセンド、FILTER、BUS（連続値の 4 段。KNOB に割り当てるとノブが自動的に 4 段表示になります）、BUS MASTER / BUS A1 / BUS A2 / BUS A3（ボタン型。トリガーするとそのバスを選択し、BUTTON に割り当てたときの点灯は MIXER ページで現在選択中のバスを反映します）。</td></tr>
 <tr><td class="k">FX グループ</td><td>DELAY、REVERB、FX CHAIN（RETURN）、FX CHAIN 1、FX CHAIN 2、FX CHAIN 3、PRE / POST。各 FX CHAIN ポジションには 3 種類のエフェクトのパラメータ、MIX、および EFFECT、FREEZE、HOLD が含まれます。EFFECT はトリガーされるたびに次のエフェクトに切り替わり、順序は GRANULAR、KARPLUS、GLITCH です。HOLD は押している間だけ作用します。</td></tr>
 </table>
 <p>KNOB では SEQUENCER、RANDOM、PRE / POST スイッチを選べません。マッピングにモジュレーション量の欄はありません。モジュレーション量は MOD ROUTE で設定します。トランスポートの MOD をオンにしてコントロールをタップします。PERFORM コントロールの MOD ROUTE のソースは SEQ と LFO 1 から 6 の 7 つだけで、ENV は使用できません。2 軸と 4 方向の PAD は、2 つの軸それぞれにモジュレーション量の組を持ちます。どの種類のコントロールも MIDI Learn に割り当てでき、ラベルには CC 番号、N 番号、または PB が表示され、pickup 方式で引き継ぎます。MIDI Learn モードでは PAD に 2 つの角が表示され、左上の角が縦軸、右下の角が横軸です。</p>
@@ -840,7 +837,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <li>MIXER の各トラック：DELAY、REVERB、FX CHAIN のセンド、サイドチェイン量、PAN、MIX、LEVEL、および A1 から A3 の送り量。FILTER、LOCK、DENSITY、M、S、MIXER ページの DECAY は対応していません。</li>
 <li>MIXER の EFFECT 列：DELAY の LEFT、RIGHT、FEEDBACK、LEVEL。REVERB の SIZE、DAMP、DECAY、LEVEL。FX CHAIN の RETURN、各ポジションのパラメータと DRY WET。</li>
 <li>UTILITY の LFO スピードと XY pad。</li>
-<li>PERFORM キャンバスのすべてのコントロール。サイドパネルの EFFECT と FX CHAIN の各横バー、UTILITY タブの LFO SPEED。サイドパネル MIXER の VOL は対応していません。</li>
+<li>PERFORM キャンバスのすべてのコントロールと、サイドパネルの EFFECT と FX CHAIN の各横バー。サイドパネルの GRID ページは対応していません。</li>
 <li>VISUAL の MIX とパラメータバー。</li>
 </ul>
 
@@ -1027,7 +1024,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <table>
 <tr><td class="k">CURRENTLY LEARNING</td><td>待機中の MIDI Learn のターゲットを表示します。待機中は CANCEL ボタンがあります。</td></tr>
 <tr><td class="k">MIDI INPUT DEVICES</td><td>MIDI 入力デバイスの一覧で、複数選択できます。</td></tr>
-<tr><td class="k">MIDI BINDINGS</td><td>割り当て済みの一覧です。各項目で MODE（LATCH / MOMENTARY）、TAKEOVER（JUMP / PICKUP）、SCALE（LINEAR / EXP / LOG）、MIN と MAX（0 から 100%、10% 刻み）を設定でき、REMOVE で個別に削除、CLEAR ALL ですべて消去できます。</td></tr>
+<tr><td class="k">MIDI BINDINGS</td><td>割り当て済みの一覧です。各項目で MODE（LATCH / MOMENTARY）、TAKEOVER（JUMP / PICKUP）、SCALE（LINEAR / EXP / LOG）、MIN と MAX（0 から 100%、10% 刻み）を設定でき、REMOVE で個別に削除、CLEAR ALL ですべて消去できます。一覧に表示されるのは現在のプロジェクトスロットの割り当てです。</td></tr>
 </table>
 
 <h3>SYSTEM</h3>
@@ -1054,6 +1051,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <li>トランスポートの MIDI または Cmd+L で開始します。割り当てできるコントロールに破線の枠が表示されます。XY pad には 2 つの角が表示され、左上の角が Y 軸、右下の角が X 軸です。</li>
 <li>もう一度 MIDI または Cmd+L を押すと終了します。MOD を押しても終了します。ESC では MIDI Learn モードは終了しません。</li>
 <li>1.3.4 以降に追加された割り当て先：MIXER の PAN、FX CHAIN の各パラメータ、DRY WET、RETURN、エフェクトの種類（トリガーごとに次の種類へ切り替え）、FREEZE、HOLD（押している間だけ作用）。</li>
+<li>1.4.9 で追加された割り当て先：MIXER の MASTER / A1 / A2 / A3 バスボタン、LEVEL FOLLOW。</li>
 </ul>
 
 <h3>手順</h3>
@@ -1077,7 +1075,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">MIN / MAX</td><td>マッピング範囲です。</td></tr>
 <tr><td class="k">ページ切り替え</td><td>6 つのページにそれぞれ 1 つのメッセージを割り当てできます。</td></tr>
 </table>
-<p>割り当ては midi_mappings.json に保存され、同時に .bak バックアップが保持されます。各パラメータに持てる割り当ては 1 つだけです。</p>
+<p>割り当てはプロジェクトスロットごとに 1 組ずつ保持され、スロットの切り替えに追従し、.honki ファイルの書き出しと読み込みにも含まれます。各スロットのフォルダにそれぞれ割り当てファイルと .bak バックアップがあります。各パラメータに持てる割り当ては 1 つだけです。</p>
 
 <!-- ============================================================ -->
 <h2 id="motion">13. Motion</h2>
@@ -1152,7 +1150,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 </table>
 <p>タッチ：フレーズ編集オーバーレイを下へ 80pt を超えてスワイプすると閉じます。</p>
 
-<footer>MADZINE — HONKI v1.4.8</footer>
+<footer>MADZINE — HONKI v1.4.9</footer>
 </main>
 </div>
 <script>

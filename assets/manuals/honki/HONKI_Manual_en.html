@@ -118,7 +118,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <header>
   <div class="brand"><a href="https://madzine.work" style="color:inherit;text-decoration:none">MADZINE</a></div>
   <h1>HONKI</h1>
-  <div class="sub">User Manual — v1.4.8 — English</div>
+  <div class="sub">User Manual — v1.4.9 — English</div>
   <div class="langs"><a href="HONKI_Manual_en.html" class="cur">English</a> <a href="HONKI_Manual_ja.html">日本語</a> <a href="HONKI_Manual_zh-Hant.html">繁體中文</a></div>
 </header>
 
@@ -179,9 +179,10 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <h3>Project slots</h3>
 <table>
 <tr><td class="k">Slot count</td><td>26 banks (A to Z), 10 patterns per bank (00 to 09). Slot IDs use the format A-00.</td></tr>
-<tr><td class="k">Stored per slot</td><td>bank, programs, modulation, PERFORM layout, MASTER FX, per-track AU.</td></tr>
-<tr><td class="k">App-wide (not per slot)</td><td>INPUT COMP, HUE, CV device binding, EXTERNAL INPUT routing.</td></tr>
+<tr><td class="k">Stored per slot</td><td>bank, programs, modulation, PERFORM layout, MASTER FX, per-track AU, MIXER bus selection, MIDI bindings.</td></tr>
+<tr><td class="k">App-wide (not per slot)</td><td>INPUT COMP, HUE, CV device binding, EXTERNAL INPUT routing. The MIDI input device selection and the CV device binding remain shared by the whole app.</td></tr>
 <tr><td class="k">At launch</td><td>Restores the last used slot.</td></tr>
+<tr><td class="k">Update from an older version</td><td>On the first launch after updating, the previous app-wide MIDI bindings are copied to slots A-00 to A-09. All other slots start with no bindings.</td></tr>
 </table>
 
 <h3>Undo</h3>
@@ -206,7 +207,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 </table>
 
 <h3>.honki files</h3>
-<p>The current file format contains the bank, programs, per-track AU, MASTER FX, modulation and PERFORM layout. Older .honki files and plain bank files can be imported.</p>
+<p>The current file format contains the bank, programs, per-track AU, MASTER FX, modulation, PERFORM layout and MIDI bindings. On LOAD, the MIDI bindings in the file replace the bindings of the current slot as a whole; an empty set in the file also clears them. Older .honki files without this section leave the current bindings unchanged. Older .honki files and plain bank files can be imported.</p>
 
 <!-- ============================================================ -->
 <h2 id="transport">3. Transport</h2>
@@ -573,11 +574,11 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">FILTER</td><td>OFF at the centre; low-pass to the left (20 kHz down to 80 Hz), high-pass to the right (20 Hz up to 8 kHz). Snaps within 0.04 of the centre; double-tap to return to 0.</td></tr>
 <tr><td class="k">LOCK / DECAY / DENSITY</td><td>The same as the parameters of the same names in MAIN.</td></tr>
 <tr><td class="k">DELAY / REVERB / FX CHAIN</td><td>Three effect send amounts, each 0 to 1; double-tap to return to 0.5. Can be modulated with MOD ROUTE.</td></tr>
-<tr><td class="k">BUS select</td><td>Four buttons MASTER / A1 / A2 / A3 below the six-knob area, selecting the bus that the LEVEL fader currently edits. The selected button is shown filled in the track colour. This selection is not saved and returns to MASTER when the app restarts. With A1 to A3 selected, the LEVEL fader writes the send amount to that aux bus (0 to 2, default 0), and PAN and MIX are disabled; M / S are not affected. The aux signal is mono, tapped after COMPRESSOR and sidechain compression and before the fader and PAN, and does not pass through the effect returns or main output processing; TRACK 5 to 8 use the average of left and right.</td></tr>
+<tr><td class="k">BUS select</td><td>Four buttons MASTER / A1 / A2 / A3 below the six-knob area, selecting the bus that the LEVEL fader currently edits. The selected button is shown filled in the track colour. This selection belongs to the project: it is saved with the project slot and in .honki files, and reopening the project returns to the last selected bus. The four bus buttons can be assigned with MIDI Learn and PERFORM; a trigger selects that bus. In MIDI Learn mode the MASTER button is shortened and a FOLLOW box appears to its right. Tap FOLLOW and then move a controller to assign LEVEL FOLLOW: from then on that controller always drives the LEVEL of whichever bus is currently selected on this track (MASTER volume or the A1 to A3 send amount), and switching the bus switches the target. FOLLOW is shown only in MIDI Learn mode. With A1 to A3 selected, the LEVEL fader writes the send amount to that aux bus (0 to 2, default 0), and PAN and MIX are disabled; M / S are not affected. The aux signal is mono, tapped after COMPRESSOR and sidechain compression and before the fader and PAN, and does not pass through the effect returns or main output processing; TRACK 5 to 8 use the average of left and right.</td></tr>
 <tr><td class="k">A1 to A3 outputs</td><td>The physical channels of the three aux buses are assigned in the AUX BUS section of the AUDIO tab in SETUP. Unassigned is OFF; channels already used for other purposes are marked IN USE.</td></tr>
 <tr><td class="k">PAN</td><td>Equal-power pan on TRACK 1 to 4, left-right balance on 5 to 8. Snaps at the centre; double-tap to return to 0. Supports MOTION, MOD ROUTE and MIDI Learn.</td></tr>
 <tr><td class="k">MIX</td><td>Crossfade between EXT and INT; 0 is INT.</td></tr>
-<tr><td class="k">LEVEL</td><td>0 to 2, default 1. The two meters beside it are pre-fader and post-fader; their source is the trigger envelope, not the audio. With BUS set to A1 to A3, it becomes the send amount to that aux bus.</td></tr>
+<tr><td class="k">LEVEL</td><td>0 to 2, default 1. The two meters beside it are pre-fader and post-fader; their source is the trigger envelope, not the audio. With BUS set to A1 to A3, it becomes the send amount to that aux bus. MIDI Learn and PERFORM can assign the fixed LEVEL or A1 to A3 LEVEL, or LEVEL FOLLOW.</td></tr>
 <tr><td class="k">M / S</td><td>M in red is mute; S in yellow is solo, and a 0.4-second long press is exclusive solo.</td></tr>
 </table>
 <p>Signal order: mute, EQ, FILTER, COMPRESSOR, sidechain compression, effect send points, aux tap, fader, PAN, main output. The send points of DELAY, REVERB and FX CHAIN can each be set to PRE or POST. Main output: effect returns (including FX CHAIN), main FILTER, MASTER VOLUME, soft clip.</p>
@@ -728,7 +729,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <h2 id="perform">8. PERFORM</h2>
 
 <div class="fig"><img src="img/perform_full.png" alt="PERFORM full page"></div>
-<div class="cap">PERFORM full page. Toolbar at the top: PERFORM (selected) / EDIT, SEQ and LFO 1 to 3 level bars, MASTER spectrum, CONTROLS 14 / MAPPINGS 5. The canvas holds five named knobs (Lead decay, Filter, Bass decay, Kick decay, HH decay), XY PAD 1, FADER 1 to 4 and four BUTTONs. The side panel tabs are MIXER, UTILITY, EFFECT, FX CHAIN; the MIXER page is open here and shows VOL, M, S, meters and segment bars for T1 to T8.</div>
+<div class="cap">PERFORM full page. Toolbar at the top: PERFORM (selected) / EDIT, SEQ and LFO 1 to 3 level bars, MASTER spectrum, CONTROLS / MAPPINGS counts. The canvas holds the controls of the current layout. The side panel tabs are GRID, EFFECT, FX CHAIN; the GRID page is open here and shows the 8 by 8 segment grid with the track numbers 1 to 8 on the top row and the all-track triangle column at the right.</div>
 
 <h3>Toolbar</h3>
 <div class="fig"><img src="img/perform_toolbar.png" alt="PERFORM toolbar"></div>
@@ -760,20 +761,16 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">PAD (FOUR WAY)</td><td>Four-way mode. The whole pad is a touch surface with no - / + and no lock, a crosshair at the centre, and the target name of each direction shown on the four sides. With the finger at the centre all four directions are 0; pushing to the edge in a direction gives 1; on a diagonal, horizontal and vertical are calculated separately. Button-type targets trigger when pushed past halfway. The return spring has a single switch, SPRING TO CENTER.</td></tr>
 <tr><td class="k">Indicator dots</td><td>The number of small dots below each control is its number of mappings, up to 8.</td></tr>
 </table>
-<p>The canvas of a new project is empty, with no default controls. When there are no controls, an empty-state hint and an ENTER EDIT MODE button are shown. The 30 controls in the image are the layout at the time of the screenshot.</p>
+<p>The canvas of a new project uses the MIXER template by default (INT/EXT, BUS, LEVEL, MUTE and SOLO for each of the 8 tracks). CLEAR in EDIT mode empties the canvas; when there are no controls, an empty-state hint and an ENTER EDIT MODE button are shown. The image shows the layout at the time of the screenshot.</p>
 
 <h3>Side panel</h3>
 <div class="fig"><img src="img/perform_sidebar.png" alt="PERFORM side panel"></div>
-<div class="cap">Side panel: the tabs at the top are MIXER, UTILITY, EFFECT, FX CHAIN, with the MIXER page open; each row T1 to T8 has a VOL bar, M, S, a vertical meter and an 8-cell segment bar.</div>
+<div class="cap">Side panel: the tabs at the top are GRID, EFFECT, FX CHAIN, with the GRID page open. Columns are tracks 1 to 8 and rows are segments 1 to 8, with a white line between rows 4 and 5; the right column holds the all-track triangle buttons.</div>
 <table>
-<tr><td class="k">MIXER</td><td>T1 to T8 each have a meter, VOL (0 to 2), M, S (long press for exclusive solo) and an 8-cell segment bar with the play position. Tap a cell to select that segment and lock the track to it; tap again to release. VOL, M and S on this page can be assigned with MIDI Learn and do not support MOD ROUTE.</td></tr>
-<tr><td class="k">UTILITY</td><td>The first row has the CROSSFADE bar, LOOP and TRIG. The curve area edits group A only, with group B shown as a faded line. One row each for LFO 1 to 6: SPEED bar (Hz when SYNC is off, tempo divisions when on), SYNC, UNI / BI. SHAPE and MORPH are display only on this page. SPEED supports MIDI Learn, MOTION and MOD ROUTE.</td></tr>
+<tr><td class="k">GRID</td><td>Columns are tracks 1 to 8, rows are segments 1 to 8; the track number is written on the top row only, and a white line separates rows 4 and 5. Tap a cell to select that segment on that track; there is no locking. The right column has one left-pointing triangle per row that selects that segment on all 8 tracks at once. Cells and triangles have only two states, selected and not selected. The play position of each track is shown in its column. Every cell and triangle can be assigned with MIDI Learn.</td></tr>
 <tr><td class="k">EFFECT</td><td>DELAY TIME LEFT, TIME RIGHT, FEEDBACK, LEVEL; REVERB SIZE, DAMP, DECAY, LEVEL.</td></tr>
 <tr><td class="k">FX CHAIN</td><td>Each of the three positions shows POSITION n and the effect name, DRY WET and the parameters of that effect; GRANULAR also has FREEZE and GLITCH also has HOLD. The effect type cannot be changed on this page and there is no RETURN; effects are changed in the FX CHAIN panel of MIXER.</td></tr>
 </table>
-
-<div class="fig"><img src="img/perform_side_utility.png" alt="side panel UTILITY"></div>
-<div class="cap">The UTILITY tab of the side panel: CROSSFADE / LOOP / TRIG, the eight-stage envelope curve, and LFO 1 to 6 with their rate bars, SYNC and UNI.</div>
 
 <div class="fig"><img src="img/perform_effect.png" alt="side panel EFFECT"></div>
 <div class="cap">The EFFECT tab of the side panel: TIME LEFT, TIME RIGHT, FEEDBACK and LEVEL for DELAY, then SIZE, DAMP, DECAY and LEVEL for REVERB.</div>
@@ -787,7 +784,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">MAPPING</td><td>Opens the mapping panel. Available only when a single control is selected; double-tapping a control on the canvas also opens it.</td></tr>
 <tr><td class="k">DELETE</td><td>Two-stage: one press changes it to "DELETE?", and a second press within 2 seconds deletes the selected controls.</td></tr>
 <tr><td class="k">UNDO / REDO</td><td>For layout editing only, 32 steps.</td></tr>
-<tr><td class="k">TEMPLATE</td><td>Three built-in layouts: SEGMENT VOICE, LEVEL AND TRIGGER, SENDS. "SAVE CURRENT LAYOUT" saves the current layout; "MANAGE USER TEMPLATES" renames or deletes user layouts, and deletion asks for confirmation.</td></tr>
+<tr><td class="k">TEMPLATE</td><td>Three built-in layouts: SEGMENT VOICE, SENDS, MIXER. In the MIXER template each track has, from bottom to top: SOLO, MUTE, a LEVEL fader (bound to LEVEL FOLLOW, driving the bus currently selected on the MIXER page), a four-step BUS knob (MASTER / A1 / A2 / A3; turning snaps between the steps, double-tap returns to MASTER, kept in sync with the MIXER page) and an INT/EXT knob. "SAVE CURRENT LAYOUT" first opens a naming panel prefilled with USER n; the name can be changed (leading and trailing spaces are removed and letters are converted to upper case; an empty name uses the prefilled one). SAVE stores the layout; CANCEL or a tap outside the panel cancels. "MANAGE USER TEMPLATES" renames or deletes user layouts, and deletion asks for confirmation.</td></tr>
 <tr><td class="k">SNAP GRID</td><td>Grid snap switch.</td></tr>
 <tr><td class="k">Select and drag</td><td>Tap a control to add it to or remove it from the selection; multiple selection is possible. Drag to move; with multiple selection the whole group moves.</td></tr>
 </table>
@@ -805,7 +802,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">DIRECTIONS</td><td>On a four-way PAD the column becomes four rows, UP, DOWN, LEFT, RIGHT, with one mapping per direction; assigning again replaces the previous one, and an unassigned direction shows EMPTY. Each row has CLEAR DIRECTION, REVERSE RANGE and a range bar.</td></tr>
 <tr><td class="k">TWO AXIS / FOUR WAY</td><td>Switches the PAD mode. When the PAD already has mappings, the first tap shows a confirmation label and a second tap within 2 seconds switches. Switching clears all mappings of the PAD and can be reverted with UNDO; the name is kept. Switching to FOUR WAY returns the value to the centre and turns the spring on; switching back to TWO AXIS turns the spring off.</td></tr>
 <tr><td class="k">Target groups</td><td>MIXER, VOICE, SEGMENT, FX, GLOBAL, CHROMA, PARTICLE, MESH, FEEDBACK. Below the groups are the track buttons T1 to T8, which are dimmed for global groups. Targets already used on the same control are marked.</td></tr>
-<tr><td class="k">MIXER group</td><td>Per track: MUTE, SOLO, A1 to A3 LEVEL, LEVEL, MIX, PAN, sidechain amount, the three effect sends, FILTER.</td></tr>
+<tr><td class="k">MIXER group</td><td>Per track: MUTE, SOLO, A1 to A3 LEVEL, LEVEL, LEVEL FOLLOW, MIX, PAN, sidechain amount, the three effect sends, FILTER, BUS (continuous, four steps; a KNOB bound to it automatically shows four steps) and BUS MASTER / BUS A1 / BUS A2 / BUS A3 (button type; a trigger selects that bus, and on a BUTTON the lit state reflects the bus currently selected on the MIXER page).</td></tr>
 <tr><td class="k">FX group</td><td>DELAY, REVERB, FX CHAIN (RETURN), FX CHAIN 1, FX CHAIN 2, FX CHAIN 3 and PRE / POST. Each FX CHAIN position contains the parameters of the three effects, MIX, and EFFECT, FREEZE and HOLD. Each trigger of EFFECT changes to the next effect in the order GRANULAR, KARPLUS, GLITCH; HOLD is active while held.</td></tr>
 </table>
 <p>A KNOB cannot select SEQUENCER, RANDOM or the PRE / POST switches. Mappings have no modulation amount field; modulation amounts are set in MOD ROUTE: turn on MOD in the Transport, then tap the control. MOD ROUTE on PERFORM controls has only 7 sources, SEQ and LFO 1 to 6; ENV is unavailable. On two-axis and four-way PADs, each of the two axes has its own set of modulation amounts. All control kinds can be assigned with MIDI Learn; the label shows the CC number, N number or PB, and takeover uses pickup. In MIDI Learn mode a PAD shows two corners: the top-left corner is the vertical axis and the bottom-right corner is the horizontal axis.</p>
@@ -840,7 +837,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <li>MIXER per track: DELAY, REVERB and FX CHAIN sends, sidechain amount, PAN, MIX, LEVEL, and the A1 to A3 send amounts. FILTER, LOCK, DENSITY, M, S and DECAY on the MIXER page are not supported.</li>
 <li>MIXER EFFECT row: DELAY LEFT, RIGHT, FEEDBACK, LEVEL; REVERB SIZE, DAMP, DECAY, LEVEL; FX CHAIN RETURN, the parameters of each position and DRY WET.</li>
 <li>UTILITY LFO speed and the XY pad.</li>
-<li>All controls on the PERFORM canvas; the bars of the side panel EFFECT and FX CHAIN pages, and LFO SPEED on the UTILITY tab. VOL on the side panel MIXER page is not supported.</li>
+<li>All controls on the PERFORM canvas, and the bars of the side panel EFFECT and FX CHAIN pages. The side panel GRID page is not supported.</li>
 <li>VISUAL MIX and parameter bars.</li>
 </ul>
 
@@ -1027,7 +1024,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <table>
 <tr><td class="k">CURRENTLY LEARNING</td><td>Shows the MIDI Learn target that is waiting; a CANCEL button is shown while waiting.</td></tr>
 <tr><td class="k">MIDI INPUT DEVICES</td><td>List of MIDI input devices; more than one can be selected.</td></tr>
-<tr><td class="k">MIDI BINDINGS</td><td>List of bindings. Each item has MODE (LATCH / MOMENTARY), TAKEOVER (JUMP / PICKUP), SCALE (LINEAR / EXP / LOG), MIN and MAX (0 to 100% in 10% steps), and can be deleted singly with REMOVE or all at once with CLEAR ALL.</td></tr>
+<tr><td class="k">MIDI BINDINGS</td><td>List of bindings. Each item has MODE (LATCH / MOMENTARY), TAKEOVER (JUMP / PICKUP), SCALE (LINEAR / EXP / LOG), MIN and MAX (0 to 100% in 10% steps), and can be deleted singly with REMOVE or all at once with CLEAR ALL. The list shows the bindings of the current project slot.</td></tr>
 </table>
 
 <h3>SYSTEM</h3>
@@ -1054,6 +1051,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <li>Press MIDI in the Transport or Cmd+L to enter. Assignable controls show a dashed outline; the XY pad shows two corners, the top-left corner for the Y axis and the bottom-right corner for the X axis.</li>
 <li>Press MIDI or Cmd+L again to leave; pressing MOD also leaves. ESC does not leave MIDI Learn mode.</li>
 <li>Assignable targets added after 1.3.4: MIXER PAN, and for FX CHAIN the parameters, DRY WET, RETURN, the effect type (each trigger changes to the next), FREEZE and HOLD (active while held).</li>
+<li>Added in 1.4.9: the MIXER bus buttons MASTER / A1 / A2 / A3, and LEVEL FOLLOW.</li>
 </ul>
 
 <h3>Procedure</h3>
@@ -1077,7 +1075,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">MIN / MAX</td><td>Mapping range.</td></tr>
 <tr><td class="k">Page switching</td><td>Each of the six pages can bind one message.</td></tr>
 </table>
-<p>Bindings are stored in midi_mappings.json, with a .bak backup kept alongside. Each parameter can have only one binding.</p>
+<p>Bindings are kept per project slot: they follow slot switching and are exported and imported with .honki files. Each slot folder holds its own bindings file with a .bak backup. Each parameter can have only one binding.</p>
 
 <!-- ============================================================ -->
 <h2 id="motion">13. Motion</h2>
@@ -1152,7 +1150,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 </table>
 <p>Touch: swipe the phrase editor overlay down more than 80pt to close it.</p>
 
-<footer>MADZINE — HONKI v1.4.8</footer>
+<footer>MADZINE — HONKI v1.4.9</footer>
 </main>
 </div>
 <script>

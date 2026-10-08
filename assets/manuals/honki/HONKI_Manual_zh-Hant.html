@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>HONKI 使用手冊 v1.4.8</title>
+<title>HONKI 使用手冊 v1.4.9</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root { --accent: #F27455; }
@@ -118,7 +118,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <header>
   <div class="brand"><a href="https://madzine.work" style="color:inherit;text-decoration:none">MADZINE</a></div>
   <h1>HONKI</h1>
-  <div class="sub">使用手冊 — v1.4.8 — 繁體中文</div>
+  <div class="sub">使用手冊 — v1.4.9 — 繁體中文</div>
   <div class="langs"><a href="HONKI_Manual_en.html">English</a> <a href="HONKI_Manual_ja.html">日本語</a> <a href="HONKI_Manual_zh-Hant.html" class="cur">繁體中文</a></div>
 </header>
 
@@ -179,9 +179,10 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <h3>專案槽</h3>
 <table>
 <tr><td class="k">槽位數</td><td>26 個 bank（A 至 Z），每個 bank 10 個 pattern（00 至 09）。槽位 ID 格式為 A-00。</td></tr>
-<tr><td class="k">每槽儲存內容</td><td>bank、programs、modulation、PERFORM 版面、MASTER FX、各軌 AU。</td></tr>
-<tr><td class="k">全 app 共用（不隨槽位）</td><td>INPUT COMP、HUE、CV 裝置綁定、EXTERNAL INPUT 路由。</td></tr>
+<tr><td class="k">每槽儲存內容</td><td>bank、programs、modulation、PERFORM 版面、MASTER FX、各軌 AU、MIXER bus 選擇、MIDI 指派。</td></tr>
+<tr><td class="k">全 app 共用（不隨槽位）</td><td>INPUT COMP、HUE、CV 裝置綁定、EXTERNAL INPUT 路由。MIDI 輸入裝置勾選與 CV 裝置綁定仍為全 app 共用。</td></tr>
 <tr><td class="k">啟動時</td><td>回復上次使用的槽位。</td></tr>
+<tr><td class="k">從舊版更新</td><td>從舊版更新後首次啟動，舊的全域 MIDI 指派會複製到 A-00 至 A-09；其他槽從空指派開始。</td></tr>
 </table>
 
 <h3>Undo</h3>
@@ -206,7 +207,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 </table>
 
 <h3>.honki 檔案</h3>
-<p>目前檔案格式包含 bank、programs、各軌 AU、MASTER FX、modulation、PERFORM 版面。可匯入舊版本的 .honki 檔與純 bank 檔。</p>
+<p>目前檔案格式包含 bank、programs、各軌 AU、MASTER FX、modulation、PERFORM 版面、MIDI 指派。LOAD 時檔內的 MIDI 指派整份取代目前槽的指派；檔內為空也會清空。舊版 .honki 無此段則維持現有指派。可匯入舊版本的 .honki 檔與純 bank 檔。</p>
 
 <!-- ============================================================ -->
 <h2 id="transport">3. Transport</h2>
@@ -573,11 +574,11 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">FILTER</td><td>中央為 OFF，向左為低通（20 kHz 降至 80 Hz），向右為高通（20 Hz 升至 8 kHz）。接近中央 0.04 內吸附，點兩下回 0。</td></tr>
 <tr><td class="k">LOCK / DECAY / DENSITY</td><td>與 MAIN 的同名參數相同。</td></tr>
 <tr><td class="k">DELAY / REVERB / FX CHAIN</td><td>三個效果送出量，各 0 至 1，點兩下回 0.5。可用 MOD ROUTE 調變。</td></tr>
-<tr><td class="k">BUS 選擇</td><td>MASTER / A1 / A2 / A3 四個按鈕，位於六個旋鈕區下方，選擇 LEVEL fader 目前編輯的匯流排。選中鈕以 track 顏色實心顯示。此選擇不存檔，重開 app 回到 MASTER。選 A1 至 A3 時 LEVEL fader 改寫該 aux bus 的送出量（0 至 2，預設 0），PAN 與 MIX 停用；M / S 不受影響。aux 訊號為 mono，取點在 COMPRESSOR 與旁鏈壓縮之後、fader 與 PAN 之前，不經效果回送與主輸出處理；TRACK 5 至 8 取左右平均。</td></tr>
+<tr><td class="k">BUS 選擇</td><td>MASTER / A1 / A2 / A3 四個按鈕，位於六個旋鈕區下方，選擇 LEVEL fader 目前編輯的匯流排。選中鈕以 track 顏色實心顯示。此選擇屬於專案，隨專案槽與 .honki 檔存檔，重開會回到上次選的 bus。四顆 bus 鈕可用 MIDI Learn 與 PERFORM 指派，觸發即選該 bus。MIDI Learn 模式下 MASTER 鈕縮短，右側出現 FOLLOW 方塊；點 FOLLOW 再動控制器即指派 LEVEL FOLLOW，之後該控制器永遠控制這軌畫面上當下選中 bus 的 LEVEL（MASTER 音量或 A1 至 A3 送出量），切換 bus 就換對象。FOLLOW 只在 MIDI Learn 模式顯示。選 A1 至 A3 時 LEVEL fader 改寫該 aux bus 的送出量（0 至 2，預設 0），PAN 與 MIX 停用；M / S 不受影響。aux 訊號為 mono，取點在 COMPRESSOR 與旁鏈壓縮之後、fader 與 PAN 之前，不經效果回送與主輸出處理；TRACK 5 至 8 取左右平均。</td></tr>
 <tr><td class="k">A1 至 A3 輸出</td><td>三個 aux bus 的實體聲道在 SETUP 的 AUDIO 分頁 AUX BUS 區指定，未指定為 OFF，已被其他用途佔用的聲道會標示 IN USE。</td></tr>
 <tr><td class="k">PAN</td><td>TRACK 1 至 4 為等功率聲像，5 至 8 為左右平衡。中央吸附，點兩下回 0。支援 MOTION、MOD ROUTE 與 MIDI Learn。</td></tr>
 <tr><td class="k">MIX</td><td>EXT / INT 之間的交叉混合，0 為 INT。</td></tr>
-<tr><td class="k">LEVEL</td><td>0 至 2，預設 1。旁邊兩條電平表分別為 fader 前與 fader 後，來源為觸發包絡而非音訊。BUS 選 A1 至 A3 時改為該 aux bus 的送出量。</td></tr>
+<tr><td class="k">LEVEL</td><td>0 至 2，預設 1。旁邊兩條電平表分別為 fader 前與 fader 後，來源為觸發包絡而非音訊。BUS 選 A1 至 A3 時改為該 aux bus 的送出量。MIDI 與 PERFORM 可指派固定的 LEVEL / A1 至 A3 LEVEL，也可指派 LEVEL FOLLOW。</td></tr>
 <tr><td class="k">M / S</td><td>M 紅色為靜音；S 黃色為獨奏，長按 0.4 秒為排他獨奏。</td></tr>
 </table>
 <p>訊號順序：靜音、EQ、FILTER、COMPRESSOR、旁鏈壓縮、效果送出點、aux 取點、fader、PAN、主輸出。DELAY、REVERB、FX CHAIN 的送出點各自可選 PRE 或 POST。主輸出：效果回送（含 FX CHAIN）、主 FILTER、MASTER VOLUME、軟削波。</p>
@@ -728,7 +729,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <h2 id="perform">8. PERFORM</h2>
 
 <div class="fig"><img src="img/perform_full.png" alt="PERFORM 全頁"></div>
-<div class="cap">PERFORM 全頁。上方工具列：PERFORM（選中）/ EDIT、SEQ 與 LFO 1 至 3 電平條、MASTER 頻譜、CONTROLS 14 / MAPPINGS 5。畫布上有五個已命名的旋鈕（Lead decay、Filter、Bass decay、Kick decay、HH decay）、XY PAD 1、FADER 1 至 4 與四顆 BUTTON。右側面板分頁為 MIXER、UTILITY、EFFECT、FX CHAIN，圖中停在 MIXER 頁，顯示 T1 至 T8 的 VOL、M、S、電平表與 segment 條。</div>
+<div class="cap">PERFORM 全頁。上方工具列：PERFORM（選中）/ EDIT、SEQ 與 LFO 1 至 3 電平條、MASTER 頻譜、CONTROLS / MAPPINGS 數量。畫布上是目前版面的控件。右側面板分頁為 GRID、EFFECT、FX CHAIN，圖中停在 GRID 頁，顯示 8 乘 8 的 segment 格、最上列的軌號 1 至 8，以及最右欄的全軌三角形。</div>
 
 <h3>工具列</h3>
 <div class="fig"><img src="img/perform_toolbar.png" alt="PERFORM 工具列"></div>
@@ -760,20 +761,16 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">PAD（FOUR WAY）</td><td>四方向模式。整塊為觸控面，沒有 - / + 與鎖定，中央有十字線，四邊顯示各方向的目標名稱。手指在中心時四個方向皆為 0，往某方向推到邊緣為 1；斜推時水平與垂直各自計算。按鈕類目標在推過一半時觸發。回彈只有 SPRING TO CENTER 一個開關。</td></tr>
 <tr><td class="k">指示點</td><td>每個控件下方的小點數為該控件的對應數，最多 8。</td></tr>
 </table>
-<p>新專案的畫布是空的，沒有預設控件。沒有控件時顯示空白提示與 ENTER EDIT MODE 按鈕。圖中的 30 個控件為截圖當時的版面。</p>
+<p>新專案的畫布預設套用 MIXER 模板（8 軌各有 INT/EXT、BUS、LEVEL、MUTE、SOLO）。EDIT 模式的 CLEAR 可清空畫布；沒有控件時顯示空白提示與 ENTER EDIT MODE 按鈕。圖為截圖當時的版面。</p>
 
 <h3>側面板</h3>
 <div class="fig"><img src="img/perform_sidebar.png" alt="PERFORM 側面板"></div>
-<div class="cap">側面板：上方分頁為 MIXER、UTILITY、EFFECT、FX CHAIN，圖中停在 MIXER 頁；T1 至 T8 每列有 VOL 橫桿、M、S、直向電平表與 8 格 segment 條。</div>
+<div class="cap">側面板：上方分頁為 GRID、EFFECT、FX CHAIN，圖中停在 GRID 頁。直欄為軌 1 至 8，橫列為段 1 至 8，第 4、5 列之間有一條白線；最右欄是全軌三角形鈕。</div>
 <table>
-<tr><td class="k">MIXER</td><td>T1 至 T8 各有電平表、VOL（0 至 2）、M、S（長按為排他獨奏）與 8 格 segment 條，含播放位置。點某一格選取該 segment 並把該軌鎖定在該段，再點一次解除。VOL、M、S 在此頁可指定 MIDI Learn，不支援 MOD ROUTE。</td></tr>
-<tr><td class="k">UTILITY</td><td>第一列為 CROSSFADE 橫桿、LOOP 與 TRIG。曲線區只編輯 A 組，B 組以淡線顯示。LFO 1 至 6 各一列：SPEED 橫桿（SYNC 關閉時為 Hz，開啟時為節拍檔位）、SYNC、UNI / BI。SHAPE 與 MORPH 在此頁只顯示。SPEED 支援 MIDI Learn、MOTION 與 MOD ROUTE。</td></tr>
+<tr><td class="k">GRID</td><td>直欄為軌 1 至 8，橫列為段 1 至 8；軌號只寫在最上列，第 4、5 列之間有一條白線。點某一格即選取該軌的該段，沒有鎖定。最右欄每列一個向左的三角形，點了 8 軌同時選到該段。格子與三角形只有選中與未選中兩種狀態。各軌的播放位置顯示在該欄。所有格子與三角形都可指定 MIDI Learn。</td></tr>
 <tr><td class="k">EFFECT</td><td>DELAY 的 TIME LEFT、TIME RIGHT、FEEDBACK、LEVEL；REVERB 的 SIZE、DAMP、DECAY、LEVEL。</td></tr>
 <tr><td class="k">FX CHAIN</td><td>三個位置各顯示 POSITION n 與效果名稱、DRY WET 與該效果的參數，GRANULAR 另有 FREEZE，GLITCH 另有 HOLD。此頁不能更換效果種類，也沒有 RETURN；更換效果在 MIXER 的 FX CHAIN 面板。</td></tr>
 </table>
-
-<div class="fig"><img src="img/perform_side_utility.png" alt="側面板 UTILITY"></div>
-<div class="cap">側面板的 UTILITY 分頁：CROSSFADE / LOOP / TRIG，8 段包絡曲線，以及 LFO 1 至 6 的頻率條與 SYNC、UNI。</div>
 
 <div class="fig"><img src="img/perform_effect.png" alt="側面板 EFFECT"></div>
 <div class="cap">側面板的 EFFECT 分頁：DELAY 的 TIME LEFT、TIME RIGHT、FEEDBACK、LEVEL，以及 REVERB 的 SIZE、DAMP、DECAY、LEVEL。</div>
@@ -787,7 +784,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">MAPPING</td><td>開啟對應面板。只在選取單一控件時可用；在畫布上點兩下控件也可開啟。</td></tr>
 <tr><td class="k">DELETE</td><td>兩段式：按一下變為「DELETE?」，2 秒內再按一下才刪除選取的控件。</td></tr>
 <tr><td class="k">UNDO / REDO</td><td>版面編輯專用，32 步。</td></tr>
-<tr><td class="k">TEMPLATE</td><td>內建版面三個：SEGMENT VOICE、LEVEL AND TRIGGER、SENDS。「SAVE CURRENT LAYOUT」儲存目前版面；「MANAGE USER TEMPLATES」可重新命名或刪除使用者版面，刪除需再確認。</td></tr>
+<tr><td class="k">TEMPLATE</td><td>內建版面三個：SEGMENT VOICE、SENDS、MIXER。MIXER 模板每軌由下而上：SOLO、MUTE、LEVEL 推桿（綁 LEVEL FOLLOW，控制 MIXER 頁當下選的 bus）、BUS 四段旋鈕（MASTER / A1 / A2 / A3，轉動吸附、雙擊回 MASTER，與 MIXER 頁同步）、INT/EXT 旋鈕。「SAVE CURRENT LAYOUT」先彈出命名面板，預填 USER n，可改名（去頭尾空白、轉大寫，留空用預填名），SAVE 儲存，CANCEL 或點面板外取消。「MANAGE USER TEMPLATES」可重新命名或刪除使用者版面，刪除需再確認。</td></tr>
 <tr><td class="k">SNAP GRID</td><td>格線吸附開關。</td></tr>
 <tr><td class="k">選取與拖曳</td><td>點控件加入或取消選取，可多選；拖曳移動位置，多選時整組移動。</td></tr>
 </table>
@@ -805,7 +802,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">DIRECTIONS</td><td>四方向模式的 PAD 改為 UP、DOWN、LEFT、RIGHT 四列，每個方向一個對應，再指定一次會取代前一個，未指定顯示 EMPTY。每列有 CLEAR DIRECTION、REVERSE RANGE 與範圍條。</td></tr>
 <tr><td class="k">TWO AXIS / FOUR WAY</td><td>切換 PAD 模式。該 PAD 已有對應時，第一下顯示確認字樣，2 秒內再點一下才切換。切換會清除該 PAD 的全部對應，可用 UNDO 復原；名稱保留。切到 FOUR WAY 時值回到中心、回彈開啟；切回 TWO AXIS 時回彈關閉。</td></tr>
 <tr><td class="k">目標分組</td><td>MIXER、VOICE、SEGMENT、FX、GLOBAL、CHROMA、PARTICLE、MESH、FEEDBACK。分組下方為 T1 至 T8 軌道鈕，全域分組時軌道鈕灰顯。已在同一控件使用過的目標有標記。</td></tr>
-<tr><td class="k">MIXER 分組</td><td>每軌：MUTE、SOLO、A1 至 A3 LEVEL、LEVEL、MIX、PAN、旁鏈量、三個效果送出、FILTER。</td></tr>
+<tr><td class="k">MIXER 分組</td><td>每軌：MUTE、SOLO、A1 至 A3 LEVEL、LEVEL、LEVEL FOLLOW、MIX、PAN、旁鏈量、三個效果送出、FILTER、BUS（連續四段，綁到 KNOB 時旋鈕自動變四段顯示）、BUS MASTER / BUS A1 / BUS A2 / BUS A3（按鈕型，觸發即選該 bus；綁在 BUTTON 上時亮暗反映 MIXER 頁目前選的 bus）。</td></tr>
 <tr><td class="k">FX 分組</td><td>DELAY、REVERB、FX CHAIN（RETURN）、FX CHAIN 1、FX CHAIN 2、FX CHAIN 3 與 PRE / POST。每個 FX CHAIN 位置含三種效果的參數、MIX，以及 EFFECT、FREEZE、HOLD。EFFECT 每觸發一次換成下一種效果，順序為 GRANULAR、KARPLUS、GLITCH；HOLD 在按住時作用。</td></tr>
 </table>
 <p>KNOB 不能選擇 SEQUENCER、RANDOM 與 PRE / POST 開關。對應沒有調變量欄位，調變量在 MOD ROUTE 設定：開啟 Transport 的 MOD 後點控件。PERFORM 控件的 MOD ROUTE 只有 SEQ 與 LFO 1 至 6 共 7 個來源，ENV 不可用；兩軸與四方向 PAD 的兩軸各有一組調變量。各種控件都可指定 MIDI Learn，標籤顯示 CC 編號、N 編號或 PB，採 pickup 方式接手。PAD 在 MIDI Learn 模式時顯示兩個角：左上角為垂直軸，右下角為水平軸。</p>
@@ -840,7 +837,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <li>MIXER 每軌：DELAY、REVERB、FX CHAIN 送出、旁鏈量、PAN、MIX、LEVEL，以及 A1 至 A3 的送出量。FILTER、LOCK、DENSITY、M、S 與 MIXER 頁的 DECAY 不支援。</li>
 <li>MIXER 的 EFFECT 列：DELAY 的 LEFT、RIGHT、FEEDBACK、LEVEL；REVERB 的 SIZE、DAMP、DECAY、LEVEL；FX CHAIN 的 RETURN、各位置的參數與 DRY WET。</li>
 <li>UTILITY 的 LFO 速度與 XY pad。</li>
-<li>PERFORM 畫布的全部控件；側面板 EFFECT 與 FX CHAIN 的各橫桿、UTILITY 分頁的 LFO SPEED。側面板 MIXER 的 VOL 不支援。</li>
+<li>PERFORM 畫布的全部控件，以及側面板 EFFECT 與 FX CHAIN 的各橫桿。側面板 GRID 頁不支援。</li>
 <li>VISUAL 的 MIX 與參數條。</li>
 </ul>
 
@@ -1027,7 +1024,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <table>
 <tr><td class="k">CURRENTLY LEARNING</td><td>顯示等待中的 MIDI Learn 目標，等待中有 CANCEL 鈕。</td></tr>
 <tr><td class="k">MIDI INPUT DEVICES</td><td>MIDI 輸入裝置清單，可多選。</td></tr>
-<tr><td class="k">MIDI BINDINGS</td><td>已綁定清單。每項可設 MODE（LATCH / MOMENTARY）、TAKEOVER（JUMP / PICKUP）、SCALE（LINEAR / EXP / LOG）、MIN 與 MAX（0 至 100%，每步 10%），可用 REMOVE 單項刪除或用 CLEAR ALL 全部清除。</td></tr>
+<tr><td class="k">MIDI BINDINGS</td><td>已綁定清單。每項可設 MODE（LATCH / MOMENTARY）、TAKEOVER（JUMP / PICKUP）、SCALE（LINEAR / EXP / LOG）、MIN 與 MAX（0 至 100%，每步 10%），可用 REMOVE 單項刪除或用 CLEAR ALL 全部清除。清單顯示的是目前專案槽的指派。</td></tr>
 </table>
 
 <h3>SYSTEM</h3>
@@ -1054,6 +1051,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <li>按 Transport 的 MIDI 或 Cmd+L 進入。可指定的控件顯示虛線外框；XY pad 顯示兩個角，左上角為 Y 軸，右下角為 X 軸。</li>
 <li>再按 MIDI 或 Cmd+L 離開；按 MOD 也會離開。ESC 不會離開 MIDI Learn 模式。</li>
 <li>1.3.4 之後新增的可指定目標：MIXER 的 PAN，FX CHAIN 的各參數、DRY WET、RETURN、效果種類（每次觸發換下一種）、FREEZE 與 HOLD（按住時作用）。</li>
+<li>1.4.9 新增的可指定目標：MIXER 的 MASTER / A1 / A2 / A3 bus 鈕、LEVEL FOLLOW。</li>
 </ul>
 
 <h3>流程</h3>
@@ -1077,7 +1075,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">MIN / MAX</td><td>映射範圍。</td></tr>
 <tr><td class="k">分頁切換</td><td>六個分頁各可綁定一個訊息。</td></tr>
 </table>
-<p>綁定儲存於 midi_mappings.json，同時保留 .bak 備份。每個參數只能有一個綁定。</p>
+<p>指派每個專案槽各一份，隨槽切換、隨 .honki 匯出匯入；各槽資料夾內各有一份指派檔與 .bak 備份。每個參數只能有一個綁定。</p>
 
 <!-- ============================================================ -->
 <h2 id="motion">13. Motion</h2>
@@ -1152,7 +1150,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 </table>
 <p>觸控：樂句編輯覆蓋層向下滑超過 80pt 關閉。</p>
 
-<footer>MADZINE — HONKI v1.4.8</footer>
+<footer>MADZINE — HONKI v1.4.9</footer>
 </main>
 </div>
 <script>
