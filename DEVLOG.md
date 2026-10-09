@@ -11,6 +11,11 @@
 - `js/i18n.js` 三語新增 `apps.oscbounce`（name / desc / platform / launch / intro / copyright / features 十條）。desc 依使用者指示縮為一句；intro 維持四段完整版
 - 內容事實來源：OSC_Bounce 專案 DEVLOG 與遊戲內三語說明文字；角色插圖、手繪字、logo 為 OSC兄弟，程式為 MADZINE
 
+### OSC兄弟網站連結
+
+- oscbounce.html 技術資訊表新增一列「OSC兄弟 website」連到 https://oscbrothers.stores.jp/（target _blank，連結樣式同 artist-talk-translator 原始碼連結）
+- 遊戲本體 osc-bounce.html 重建：玩法說明底部署名區新增「OSC兄弟網站：」一行（三語標籤在 ui.js，連結底線、顏色 fg-primary），來源為 Commercial/OSC_Bounce 以 build_single.py 重新產出的 dist/OSC_Bounce.html
+
 ## 2026-10-06
 
 ### VisionMod 頁：0.9.4 更新與 App Store 購買按鈕

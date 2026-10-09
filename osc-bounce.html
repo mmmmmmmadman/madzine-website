@@ -617,6 +617,11 @@
     color: var(--fg-secondary);
     line-break: strict;
   }
+  .sheet-credits a {
+    color: var(--fg-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
 </style>
 <script>
   // Apply the saved background theme before the first paint (ui.js owns the toggle;
@@ -671,6 +676,7 @@
       </div>
       <div class="sheet-credits">
         <p id="credit-art">Character art: OSC兄弟</p>
+        <p id="credit-link"><span id="credit-link-label">OSC兄弟 website: </span><a href="https://oscbrothers.stores.jp/" target="_blank" rel="noopener">oscbrothers.stores.jp</a></p>
         <p id="credit-code">Programming: MADZINE</p>
         <p id="credit-copy"></p>
       </div>
@@ -3222,6 +3228,7 @@ window.OSC_ASSETS = {
   var countEl = document.getElementById('count');
   var clearBtn = document.getElementById('clear');      // top bar, right of RANDOM
   var creditArt = document.getElementById('credit-art');
+  var creditLinkLabel = document.getElementById('credit-link-label');
   var creditCode = document.getElementById('credit-code');
   var creditCopy = document.getElementById('credit-copy');
   var panel = document.getElementById('panel');
@@ -3292,6 +3299,7 @@ window.OSC_ASSETS = {
       themeLight: '白',
       themeDark: '黒',
       creditArt: '画像デザイン：OSC兄弟',
+      creditLink: 'OSC兄弟のサイト：',
       creditCode: 'プログラム：MADZINE',
       copyright: 'キャラクター画像とロゴの著作権は OSC兄弟、プログラムの著作権は MADZINE に帰属します。無断転載を禁じます。'
     },
@@ -3319,6 +3327,7 @@ window.OSC_ASSETS = {
       themeLight: 'WHITE',
       themeDark: 'BLACK',
       creditArt: 'Character art: OSC兄弟',
+      creditLink: 'OSC兄弟 website: ',
       creditCode: 'Programming: MADZINE',
       copyright: 'Copyright of the character art and logo belongs to OSC兄弟; copyright of the program belongs to MADZINE. Do not reproduce without permission.'
     },
@@ -3346,6 +3355,7 @@ window.OSC_ASSETS = {
       themeLight: '白底',
       themeDark: '黑底',
       creditArt: '圖像設計：OSC兄弟',
+      creditLink: 'OSC兄弟網站：',
       creditCode: '程式設計：MADZINE',
       copyright: '角色圖像與 logo 之著作權屬 OSC兄弟，程式著作權屬 MADZINE，未經許可請勿轉載。'
     }
@@ -3409,6 +3419,7 @@ window.OSC_ASSETS = {
     });
     // RANDOM / CLEAR labels are hand-drawn images, the same in every language (HTML)
     creditArt.textContent = s.creditArt;
+    creditLinkLabel.textContent = s.creditLink;
     creditCode.textContent = s.creditCode;
     creditCopy.textContent = s.copyright;
     removeBtn.textContent = s.remove;
