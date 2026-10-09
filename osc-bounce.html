@@ -1459,12 +1459,25 @@ window.OSC_ASSETS = {
   var CHAR_RANDOM_MARGIN = 6;     // px from the bound lines
   var CHAR_RANDOM_GAP = 8;        // px between characters / character and ball
   var CHAR_RANDOM_TRIES = 300;
+  var RANDOM_BOUNDS_MIN_AREA = 0.3;   // random walls keep at least 30 % of the field area
   Sim.prototype.randomize = function (typeCount, rnd) {
     rnd = rnd || Math.random;
     this.clear();
     var next = Math.floor(rnd() * (BALLS.length - 1));
     if (next >= this.ballType) next += 1;          // always a different ball
     this.setBallType(next);
+    // random ball walls: a random rectangle somewhere in the play area whose area is
+    // never below RANDOM_BOUNDS_MIN_AREA of the full field (width 30..100 %, height
+    // picked so the area stays >= 30 %), never below the usual minimum size either
+    var min = this.minBoundsSize();
+    var wf = Math.max(RANDOM_BOUNDS_MIN_AREA, min.w / this.width);
+    wf = wf + rnd() * (1 - wf);
+    var hf = Math.max(RANDOM_BOUNDS_MIN_AREA / wf, min.h / this.height);
+    hf = Math.min(1, hf + rnd() * (1 - hf));
+    var bw = wf * this.width, bh = hf * this.height;
+    var bl = rnd() * (this.width - bw), bt = rnd() * (this.height - bh);
+    this.bounds = { left: bl, top: bt, right: bl + bw, bottom: bt + bh };
+    this._enforceBounds();
     var R = this.charRadius, bd = this.bounds, b = this.ball, m = CHAR_RANDOM_MARGIN;
     var x0 = bd.left + R + m, x1 = bd.right - R - m, y0 = bd.top + R + m, y1 = bd.bottom - R - m;
     if (x1 < x0) { x0 = R; x1 = this.width - R; }
