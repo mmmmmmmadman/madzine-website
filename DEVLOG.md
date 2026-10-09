@@ -1,5 +1,16 @@
 # MADZINE Website 開發紀錄
 
+## 2026-10-09
+
+### 新增 OSC Bounce
+
+- software.html 在 MADO 下方新增 OSC Bounce 一列（平台 Web，`data-preview="oscbounce"`），預覽圖 `assets/images/software/OSC_Bounce_1.jpg`
+- 新增 oscbounce.html 介紹頁：結構複製 mado.html，下載鈕改為 VFM 式「開啟應用程式」連到遊戲本體 `osc-bounce.html`（target _blank；遊戲網址未改，先前已分享）
+- 影片：先放使用者提供的 iPhone 錄影轉成的本地 mp4，之後使用者上傳 YouTube Shorts（b0BiUNcxVzw），改回站內慣例的 YouTube iframe，mp4 已刪除；`.video-frame` 比例改為 960/1480 直式、最大寬 420px 置中
+- 截圖四張 `OSC_Bounce_1..4.jpg`（JPEG，與其他作品的 PNG 不同格式）；hero 背景用第 4 張（場地內有角色與球），第 1 張空場地在 10% 透明度下幾乎看不到
+- `js/i18n.js` 三語新增 `apps.oscbounce`（name / desc / platform / launch / intro / copyright / features 十條）。desc 依使用者指示縮為一句；intro 維持四段完整版
+- 內容事實來源：OSC_Bounce 專案 DEVLOG 與遊戲內三語說明文字；角色插圖、手繪字、logo 為 OSC兄弟，程式為 MADZINE
+
 ## 2026-10-06
 
 ### VisionMod 頁：0.9.4 更新與 App Store 購買按鈕
