@@ -215,7 +215,7 @@ const I18N = {
           desc: '瀏覽器互動音樂玩具，球碰到波形角色就發聲，位置越高音越高',
           platform: 'Web',
           launch: '開啟應用程式',
-          intro: 'OSC Bounce 是在瀏覽器執行的互動音樂玩具，以手機直向操作為主。球在場內彈跳，碰到角色就發出聲音，位置越高音越高；把四面牆往內拖曳縮小場地，球會變快。<br><br>角色有 SINE、TRI、SAW、PULSE 四種波形，選好角色後點一下放置，會開啟調整面板，拖曳可移動。每個角色各有 LENGTH、SPACE、ECHO 推桿與 SLIP。BALL 可換九種球：鋼珠、玻璃、彈珠、口香糖、網球、海綿、棉花、西瓜、石頭，各有不同的物理與音色，大球能一次碰到好幾個角色一起響，小球比較快，軟的球聲音比較柔和。<br><br>RANDOM 按鈕重新隨機產生角色、角色設定、球與球牆；CLEAR 按鈕移除所有角色並把牆放回全場。手掌按鈕開啟傾斜模式，球不再自己彈跳，改成傾斜手機讓球滾動，SLIP 越高滾得越快。右上角面板可切換黑底／白底與中、日、英三語。<br><br>角色插圖、手繪字與 logo 由 OSC兄弟繪製，程式由 MADZINE 開發。角色圖像與 logo 之著作權屬 OSC兄弟，程式著作權屬 MADZINE，未經許可請勿轉載。',
+          intro: 'OSC Bounce 是在瀏覽器執行的互動音樂玩具。球在場內彈跳，碰到 SINE、TRI、SAW、PULSE 四種波形角色就發出聲音，位置越高音越高；縮小場地球會變快，九種球各有不同的物理與音色。<br><br>手掌按鈕開啟傾斜模式，傾斜手機讓球滾動。角色插圖、手繪字與 logo 由 OSC兄弟繪製，程式由 MADZINE 開發。',
           copyright: '角色圖像與 logo 之著作權屬 OSC兄弟，程式著作權屬 MADZINE，未經許可請勿轉載。',
           features: {
             bounce: '球在場內彈跳，碰到角色就發聲，位置越高音越高',
@@ -687,7 +687,7 @@ const I18N = {
           desc: 'Browser-based interactive music toy: a bouncing ball plays waveform characters, higher spot, higher note',
           platform: 'Web',
           launch: 'Launch App',
-          intro: 'OSC Bounce is an interactive music toy that runs in the browser, designed mainly for phones in portrait. A ball bounces around the field; each hit on a character makes a sound, and a higher spot gives a higher note. Drag the four walls inward to shrink the field and the ball gets faster.<br><br>There are four waveform characters: SINE, TRI, SAW and PULSE. Pick one, tap to place it and its panel opens; drag to move. Each character has LENGTH, SPACE and ECHO faders plus SLIP. BALL switches between nine balls: steel, glass, marble, gum, tennis ball, sponge, cotton, watermelon and stone, each with its own physics and sound. Big balls ring several characters at once, small ones are faster, soft ones sound mellow.<br><br>RANDOM makes a new random set of characters, their settings, the ball and the walls; CLEAR removes all characters and puts the walls back to the full field. The palm button turns on tilt mode: the ball stops bouncing on its own and rolls as you tilt the phone; a higher SLIP rolls faster. The panel in the top-right switches between black and white backgrounds and Chinese, Japanese and English.<br><br>Character art, hand lettering and logo by OSC兄弟; programming by MADZINE. Copyright of the character art and logo belongs to OSC兄弟; copyright of the program belongs to MADZINE. Do not reproduce without permission.',
+          intro: 'OSC Bounce is an interactive music toy that runs in the browser. A ball bounces around the field and plays the four waveform characters SINE, TRI, SAW and PULSE; a higher spot gives a higher note, a smaller field a faster ball, and nine balls each have their own physics and sound.<br><br>The palm button turns on tilt mode, so the ball rolls as you tilt the phone. Character art, hand lettering and logo by OSC兄弟; programming by MADZINE.',
           copyright: 'Copyright of the character art and logo belongs to OSC兄弟; copyright of the program belongs to MADZINE. Do not reproduce without permission.',
           features: {
             bounce: 'A bouncing ball plays characters on hit; higher spot, higher note',
@@ -1159,7 +1159,7 @@ const I18N = {
           desc: 'ブラウザで遊ぶインタラクティブな音楽トイ。ボールが波形キャラクターに当たると音が鳴り、高い位置ほど高い音に',
           platform: 'Web',
           launch: 'アプリを開く',
-          intro: 'OSC Bounce はブラウザで動くインタラクティブな音楽トイで、スマホの縦向き操作を主にしています。ボールがフィールド内を跳ね回り、キャラクターに当たると音が鳴り、高い位置ほど高い音になります。四方の枠を内側にドラッグして狭めると、ボールが速くなります。<br><br>キャラクターは SINE、TRI、SAW、PULSE の 4 種類の波形。キャラクターを選んでタップで配置すると調整パネルが開き、ドラッグで移動できます。各キャラクターには LENGTH、SPACE、ECHO のフェーダーと SLIP があります。BALL で 9 種類のボール（スチール、ガラス、ビー玉、ガム、テニスボール、スポンジ、わた、スイカ、いし）に変更でき、それぞれ物理挙動と音色が異なります。大きいと何人も同時に鳴り、小さいと速く、やわらかいとまろやかな音になります。<br><br>RANDOM ボタンはキャラクター、その設定、ボール、枠をランダムに作り直します。CLEAR ボタンは置いたキャラクターをすべて消し、枠をフィールド全体に戻します。手のひらボタンで傾きモードをオンにすると、ボールは自分では跳ねず、スマホを傾けて転がします。SLIP が大きいほど速く転がります。右上のパネルで黒背景／白背景と中国語・日本語・英語を切り替えられます。<br><br>キャラクターのイラスト、手描き文字、ロゴは OSC兄弟、プログラムは MADZINE が制作。キャラクター画像とロゴの著作権は OSC兄弟、プログラムの著作権は MADZINE に帰属します。無断転載を禁じます。',
+          intro: 'OSC Bounce はブラウザで動くインタラクティブな音楽トイです。ボールがフィールド内で跳ね、SINE・TRI・SAW・PULSE の四つの波形キャラクターに当たると音が鳴り、高い位置ほど高い音に。枠を狭めるとボールが速くなり、九種類のボールはそれぞれ物理と音色が異なります。<br><br>手のひらボタンで傾きモードになり、スマホを傾けてボールを転がせます。キャラクターの絵、手描き文字、ロゴは OSC兄弟、プログラムは MADZINE。',
           copyright: 'キャラクター画像とロゴの著作権は OSC兄弟、プログラムの著作権は MADZINE に帰属します。無断転載を禁じます。',
           features: {
             bounce: 'ボールがキャラクターに当たると音が鳴り、高い位置ほど高い音に',
