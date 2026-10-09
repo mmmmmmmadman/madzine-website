@@ -210,6 +210,26 @@ const I18N = {
             multilang: '三語介面與說明書（EN / JP / TW）'
           }
         },
+        oscbounce: {
+          name: 'OSC Bounce',
+          desc: '瀏覽器互動音樂玩具，球碰到波形角色就發聲，位置越高音越高',
+          platform: 'Web',
+          launch: '開啟應用程式',
+          intro: 'OSC Bounce 是在瀏覽器執行的互動音樂玩具，以手機直向操作為主。球在場內彈跳，碰到角色就發出聲音，位置越高音越高；把四面牆往內拖曳縮小場地，球會變快。<br><br>角色有 SINE、TRI、SAW、PULSE 四種波形，選好角色後點一下放置，會開啟調整面板，拖曳可移動。每個角色各有 LENGTH、SPACE、ECHO 推桿與 SLIP。BALL 可換九種球：鋼珠、玻璃、彈珠、口香糖、網球、海綿、棉花、西瓜、石頭，各有不同的物理與音色，大球能一次碰到好幾個角色一起響，小球比較快，軟的球聲音比較柔和。<br><br>RANDOM 按鈕重新隨機產生角色、角色設定、球與球牆；CLEAR 按鈕移除所有角色並把牆放回全場。手掌按鈕開啟傾斜模式，球不再自己彈跳，改成傾斜手機讓球滾動，SLIP 越高滾得越快。右上角面板可切換黑底／白底與中、日、英三語。<br><br>角色插圖、手繪字與 logo 由 OSC兄弟繪製，程式由 MADZINE 開發。角色圖像與 logo 之著作權屬 OSC兄弟，程式著作權屬 MADZINE，未經許可請勿轉載。',
+          copyright: '角色圖像與 logo 之著作權屬 OSC兄弟，程式著作權屬 MADZINE，未經許可請勿轉載。',
+          features: {
+            bounce: '球在場內彈跳，碰到角色就發聲，位置越高音越高',
+            characters: '四種波形角色：SINE / TRI / SAW / PULSE，點一下放置、拖曳移動',
+            walls: '四面牆可拖曳縮小場地，框越小球越快',
+            balls: '九種球：鋼珠、玻璃、彈珠、口香糖、網球、海綿、棉花、西瓜、石頭，各有不同物理與音色',
+            panel: '角色各有 LENGTH / SPACE / ECHO 推桿與 SLIP',
+            random: 'RANDOM：隨機產生角色、角色設定、球與球牆',
+            clear: 'CLEAR：清除所有角色並把牆放回全場',
+            tilt: '手掌按鈕：傾斜模式，傾斜手機讓球滾動，SLIP 越高滾得越快',
+            theme: '黑底／白底切換',
+            multilang: '三語介面（中 / 日 / 英）'
+          }
+        },
         vfm: {
           name: 'Visual Feedback Machine',
           desc: '即時混沌音訊處理，Lorenz 吸引子與相機輪廓偵測',
@@ -662,6 +682,26 @@ const I18N = {
             multilang: 'Trilingual interface & manual (EN / JP / TW)'
           }
         },
+        oscbounce: {
+          name: 'OSC Bounce',
+          desc: 'Browser-based interactive music toy: a bouncing ball plays waveform characters, higher spot, higher note',
+          platform: 'Web',
+          launch: 'Launch App',
+          intro: 'OSC Bounce is an interactive music toy that runs in the browser, designed mainly for phones in portrait. A ball bounces around the field; each hit on a character makes a sound, and a higher spot gives a higher note. Drag the four walls inward to shrink the field and the ball gets faster.<br><br>There are four waveform characters: SINE, TRI, SAW and PULSE. Pick one, tap to place it and its panel opens; drag to move. Each character has LENGTH, SPACE and ECHO faders plus SLIP. BALL switches between nine balls: steel, glass, marble, gum, tennis ball, sponge, cotton, watermelon and stone, each with its own physics and sound. Big balls ring several characters at once, small ones are faster, soft ones sound mellow.<br><br>RANDOM makes a new random set of characters, their settings, the ball and the walls; CLEAR removes all characters and puts the walls back to the full field. The palm button turns on tilt mode: the ball stops bouncing on its own and rolls as you tilt the phone; a higher SLIP rolls faster. The panel in the top-right switches between black and white backgrounds and Chinese, Japanese and English.<br><br>Character art, hand lettering and logo by OSC兄弟; programming by MADZINE. Copyright of the character art and logo belongs to OSC兄弟; copyright of the program belongs to MADZINE. Do not reproduce without permission.',
+          copyright: 'Copyright of the character art and logo belongs to OSC兄弟; copyright of the program belongs to MADZINE. Do not reproduce without permission.',
+          features: {
+            bounce: 'A bouncing ball plays characters on hit; higher spot, higher note',
+            characters: 'Four waveform characters: SINE / TRI / SAW / PULSE, tap to place, drag to move',
+            walls: 'Drag the four walls to shrink the field; a smaller frame makes the ball faster',
+            balls: 'Nine balls: steel, glass, marble, gum, tennis ball, sponge, cotton, watermelon, stone, each with its own physics and sound',
+            panel: 'Each character has LENGTH / SPACE / ECHO faders and SLIP',
+            random: 'RANDOM: new random characters, settings, ball and walls',
+            clear: 'CLEAR: removes all characters and restores the full-field walls',
+            tilt: 'Palm button: tilt mode, roll the ball by tilting the phone; higher SLIP rolls faster',
+            theme: 'Black / white background toggle',
+            multilang: 'Trilingual interface (Chinese / Japanese / English)'
+          }
+        },
         vfm: {
           name: 'Visual Feedback Machine',
           desc: 'Real-time chaotic audio processing with Lorenz attractor and camera contour detection',
@@ -1112,6 +1152,26 @@ const I18N = {
             hue: 'HUE ホイール：Coral / Mint / Sky / Violet プリセット付きのリアルタイムアクセントカラー',
             keyboard: 'キーボード操作：ブラックアウト、一時停止／再開、先頭に戻る',
             multilang: '3 言語インターフェースと説明書（EN / JP / TW）'
+          }
+        },
+        oscbounce: {
+          name: 'OSC Bounce',
+          desc: 'ブラウザで遊ぶインタラクティブな音楽トイ。ボールが波形キャラクターに当たると音が鳴り、高い位置ほど高い音に',
+          platform: 'Web',
+          launch: 'アプリを開く',
+          intro: 'OSC Bounce はブラウザで動くインタラクティブな音楽トイで、スマホの縦向き操作を主にしています。ボールがフィールド内を跳ね回り、キャラクターに当たると音が鳴り、高い位置ほど高い音になります。四方の枠を内側にドラッグして狭めると、ボールが速くなります。<br><br>キャラクターは SINE、TRI、SAW、PULSE の 4 種類の波形。キャラクターを選んでタップで配置すると調整パネルが開き、ドラッグで移動できます。各キャラクターには LENGTH、SPACE、ECHO のフェーダーと SLIP があります。BALL で 9 種類のボール（スチール、ガラス、ビー玉、ガム、テニスボール、スポンジ、わた、スイカ、いし）に変更でき、それぞれ物理挙動と音色が異なります。大きいと何人も同時に鳴り、小さいと速く、やわらかいとまろやかな音になります。<br><br>RANDOM ボタンはキャラクター、その設定、ボール、枠をランダムに作り直します。CLEAR ボタンは置いたキャラクターをすべて消し、枠をフィールド全体に戻します。手のひらボタンで傾きモードをオンにすると、ボールは自分では跳ねず、スマホを傾けて転がします。SLIP が大きいほど速く転がります。右上のパネルで黒背景／白背景と中国語・日本語・英語を切り替えられます。<br><br>キャラクターのイラスト、手描き文字、ロゴは OSC兄弟、プログラムは MADZINE が制作。キャラクター画像とロゴの著作権は OSC兄弟、プログラムの著作権は MADZINE に帰属します。無断転載を禁じます。',
+          copyright: 'キャラクター画像とロゴの著作権は OSC兄弟、プログラムの著作権は MADZINE に帰属します。無断転載を禁じます。',
+          features: {
+            bounce: 'ボールがキャラクターに当たると音が鳴り、高い位置ほど高い音に',
+            characters: '4 種類の波形キャラクター：SINE / TRI / SAW / PULSE、タップで配置、ドラッグで移動',
+            walls: '四方の枠をドラッグしてフィールドを狭めると、ボールが速くなる',
+            balls: '9 種類のボール：スチール、ガラス、ビー玉、ガム、テニスボール、スポンジ、わた、スイカ、いし。それぞれ物理挙動と音色が異なる',
+            panel: '各キャラクターに LENGTH / SPACE / ECHO フェーダーと SLIP',
+            random: 'RANDOM：キャラクター、設定、ボール、枠をランダムに作り直す',
+            clear: 'CLEAR：キャラクターをすべて消し、枠をフィールド全体に戻す',
+            tilt: '手のひらボタン：傾きモード、スマホを傾けてボールを転がす。SLIP が大きいほど速い',
+            theme: '黒背景／白背景の切り替え',
+            multilang: '3 言語インターフェース（中国語 / 日本語 / 英語）'
           }
         },
         vfm: {

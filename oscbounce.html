@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MADZINE — OSC Bounce</title>
+  <meta name="description" content="OSC Bounce — 瀏覽器互動音樂玩具，球碰到波形角色就發聲">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .bg-hero {
+      position: relative;
+      height: 50vh;
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+    }
+    .bg-hero__img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.1;
+    }
+    .bg-hero__gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 30%, var(--surface-base) 100%);
+    }
+    .bg-hero__content {
+      position: relative;
+      z-index: 1;
+      padding: var(--space-16) var(--padding-page-x) var(--space-8);
+      max-width: var(--content-narrow);
+      margin: 0 auto;
+      width: 100%;
+    }
+    .bg-hero__content h1 {
+      font-size: var(--text-4xl);
+      margin-bottom: var(--space-3);
+    }
+    .bg-hero__content .card__tag {
+      margin-bottom: var(--space-4);
+    }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-12);
+      align-items: start;
+    }
+    .col-text {
+      position: sticky;
+      top: var(--space-16);
+    }
+    .col-right {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-8);
+    }
+    .col-right > img {
+      width: 100%;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-default);
+      transition: opacity var(--duration-slow) var(--ease-default);
+      cursor: pointer;
+    }
+    .thumb-strip {
+      display: flex;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+    .thumb-strip__item {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      flex-shrink: 0;
+      border-radius: var(--radius-sm);
+      border: 2px solid var(--border-default);
+      cursor: pointer;
+      opacity: 0.6;
+      transition:
+        opacity var(--duration-normal) var(--ease-default),
+        border-color var(--duration-normal) var(--ease-default);
+    }
+    .thumb-strip__item:hover {
+      opacity: 0.85;
+    }
+    .thumb-strip__item.active {
+      opacity: 1;
+      border-color: var(--color-primary);
+    }
+    .feature-list {
+      padding-left: var(--space-6);
+      margin-top: var(--space-4);
+    }
+    .feature-list li {
+      margin-bottom: var(--space-2);
+      font-size: var(--text-base);
+      color: var(--text-secondary);
+    }
+    .tech-table {
+      margin-top: var(--space-4);
+      font-size: var(--text-base);
+    }
+    .tech-table dt {
+      color: var(--text-tertiary);
+      margin-top: var(--space-3);
+    }
+    .tech-table dd {
+      margin-left: 0;
+      color: var(--text-primary);
+    }
+    .launch-btn {
+      display: inline-block;
+      margin-top: var(--space-6);
+      padding: var(--space-3) var(--space-8);
+      font-size: var(--text-base);
+      font-weight: 600;
+      color: white;
+      background: var(--color-primary);
+      border: none;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      transition: opacity var(--duration-normal) var(--ease-default);
+    }
+    .launch-btn:hover {
+      opacity: 0.85;
+    }
+    .video-frame {
+      position: relative;
+      width: 100%;
+      max-width: 420px;
+      margin: 0 auto;
+      aspect-ratio: 960 / 1480;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-default);
+      overflow: hidden;
+    }
+    .video-frame iframe,
+    .video-frame video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    @media (max-width: 768px) {
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+      .col-text {
+        position: static;
+      }
+      .thumb-strip {
+        flex-wrap: wrap;
+      }
+      .thumb-strip__item {
+        width: 80px;
+        height: 80px;
+      }
+    }
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      background: oklch(0.10 0.005 55 / 0.92);
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .lightbox.is-open {
+      display: flex;
+    }
+    .lightbox img {
+      max-width: 90vw;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: var(--radius-sm);
+    }
+    .bottom-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) var(--space-6);
+      border-top: 1px solid var(--border-default);
+      font-size: var(--text-sm);
+    }
+    .bottom-bar__copyright { color: var(--text-tertiary); }
+    .bottom-bar__nav { display: flex; align-items: center; gap: var(--space-6); }
+    .bottom-bar__nav a { color: var(--text-secondary); text-decoration: none; transition: color var(--duration-normal) var(--ease-default); }
+    .bottom-bar__nav a:hover { color: var(--color-primary); }
+    .bottom-bar__controls { display: flex; align-items: center; gap: var(--space-4); }
+  </style>
+</head>
+<body>
+
+  <!-- Hero background -->
+  <div class="bg-hero">
+    <img class="bg-hero__img" src="assets/images/software/OSC_Bounce_1.jpg" alt="OSC Bounce">
+    <div class="bg-hero__gradient"></div>
+    <div class="bg-hero__content">
+      <a href="software.html" class="section__back" style="color: var(--text-primary);">
+        <span data-i18n="common.back">返回</span>
+      </a>
+      <h1>OSC Bounce</h1>
+      <p style="color: var(--text-secondary); font-size: var(--text-lg); margin-bottom: var(--space-2);">Bouncing Ball Music Toy</p>
+      <p class="card__tag" data-i18n="apps.oscbounce.platform">Web</p>
+      <p data-i18n="apps.oscbounce.desc">瀏覽器互動音樂玩具，球碰到波形角色就發聲，位置越高音越高</p>
+    </div>
+  </div>
+
+  <!-- Two-column: text + selected large image -->
+  <main>
+    <section class="section">
+      <div class="container">
+        <div class="two-col">
+          <div class="col-text">
+            <h2 data-i18n="common.intro">功能介紹</h2>
+            <p class="intro-text" data-i18n-html="apps.oscbounce.intro">OSC Bounce 是在瀏覽器執行的互動音樂玩具，以手機直向操作為主。球在場內彈跳，碰到角色就發出聲音，位置越高音越高。</p>
+
+            <a href="osc-bounce.html" target="_blank" class="launch-btn" data-i18n="apps.oscbounce.launch">開啟應用程式</a>
+          </div>
+
+          <div class="col-right">
+            <div class="video-frame">
+              <video src="assets/videos/OSC_Bounce.mp4" controls playsinline preload="metadata" title="OSC Bounce"></video>
+            </div>
+
+            <img id="main-image" src="assets/images/software/OSC_Bounce_1.jpg" alt="OSC Bounce">
+            <div class="thumb-strip">
+              <img class="thumb-strip__item active"
+                   src="assets/images/software/OSC_Bounce_1.jpg"
+                   alt="OSC Bounce"
+                   data-full="assets/images/software/OSC_Bounce_1.jpg"
+                   onclick="switchImage(this)">
+              <img class="thumb-strip__item"
+                   src="assets/images/software/OSC_Bounce_2.jpg"
+                   alt="OSC Bounce"
+                   data-full="assets/images/software/OSC_Bounce_2.jpg"
+                   onclick="switchImage(this)">
+              <img class="thumb-strip__item"
+                   src="assets/images/software/OSC_Bounce_3.jpg"
+                   alt="OSC Bounce"
+                   data-full="assets/images/software/OSC_Bounce_3.jpg"
+                   onclick="switchImage(this)">
+              <img class="thumb-strip__item"
+                   src="assets/images/software/OSC_Bounce_4.jpg"
+                   alt="OSC Bounce"
+                   data-full="assets/images/software/OSC_Bounce_4.jpg"
+                   onclick="switchImage(this)">
+            </div>
+
+            <div>
+              <h2 data-i18n="common.features">特色一覽</h2>
+              <ul class="feature-list">
+                <li data-i18n="apps.oscbounce.features.bounce">球在場內彈跳，碰到角色就發聲，位置越高音越高</li>
+                <li data-i18n="apps.oscbounce.features.characters">四種波形角色：SINE / TRI / SAW / PULSE，點一下放置、拖曳移動</li>
+                <li data-i18n="apps.oscbounce.features.walls">四面牆可拖曳縮小場地，框越小球越快</li>
+                <li data-i18n="apps.oscbounce.features.balls">九種球：鋼珠、玻璃、彈珠、口香糖、網球、海綿、棉花、西瓜、石頭，各有不同物理與音色</li>
+                <li data-i18n="apps.oscbounce.features.panel">角色各有 LENGTH / SPACE / ECHO 推桿與 SLIP</li>
+                <li data-i18n="apps.oscbounce.features.random">RANDOM：隨機產生角色、角色設定、球與球牆</li>
+                <li data-i18n="apps.oscbounce.features.clear">CLEAR：清除所有角色並把牆放回全場</li>
+                <li data-i18n="apps.oscbounce.features.tilt">手掌按鈕：傾斜模式，傾斜手機讓球滾動，SLIP 越高滾得越快</li>
+                <li data-i18n="apps.oscbounce.features.theme">黑底／白底切換</li>
+                <li data-i18n="apps.oscbounce.features.multilang">三語介面（中 / 日 / 英）</li>
+              </ul>
+            </div>
+
+            <div>
+              <h2 data-i18n="common.tech">技術資訊</h2>
+              <dl class="tech-table">
+                <dt data-i18n="common.platform">平台</dt>
+                <dd>Web (mobile portrait)</dd>
+                <dt data-i18n="common.language">開發語言</dt>
+                <dd>HTML / CSS / JavaScript</dd>
+                <dt>Character art, hand lettering &amp; logo</dt>
+                <dd>OSC兄弟</dd>
+                <dt>Programming</dt>
+                <dd>MADZINE</dd>
+              </dl>
+              <p class="intro-text" style="margin-top: var(--space-4); color: var(--text-tertiary); font-size: var(--text-sm);" data-i18n="apps.oscbounce.copyright">角色圖像與 logo 之著作權屬 OSC兄弟，程式著作權屬 MADZINE，未經許可請勿轉載。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <img id="lightbox-img" src="" alt="">
+  </div>
+
+  <!-- Bottom Bar -->
+  <div class="bottom-bar">
+    <span class="bottom-bar__copyright" data-i18n="footer.copyright">&copy; 2025 MADZINE. 保留所有權利。</span>
+    <nav class="bottom-bar__nav">
+      <a href="index.html" data-i18n="nav.home">首頁</a>
+      <a href="software.html" data-i18n="nav.software">軟體</a>
+      <a href="works.html" data-i18n="nav.works">作品</a>
+      <a href="contact.html" data-i18n="nav.contact">聯絡</a>
+    </nav>
+    <div class="bottom-bar__controls">
+      <div class="lang-switcher">
+        <button class="lang-btn" data-lang="zh-TW" onclick="I18N.setLang('zh-TW')">中</button>
+        <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
+        <button class="lang-btn" data-lang="ja" onclick="I18N.setLang('ja')">JP</button>
+      </div>
+      <button id="mode-toggle" class="mode-toggle" aria-label="切換深色模式">☽</button>
+    </div>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    function switchImage(thumb) {
+      var mainImg = document.getElementById('main-image');
+      mainImg.src = thumb.dataset.full;
+      mainImg.alt = thumb.alt;
+      var allThumbs = document.querySelectorAll('.thumb-strip__item');
+      for (var i = 0; i < allThumbs.length; i++) {
+        allThumbs[i].classList.remove('active');
+      }
+      thumb.classList.add('active');
+    }
+
+    var mainImageEl = document.getElementById('main-image');
+    if (mainImageEl) mainImageEl.addEventListener('click', function() {
+      var lb = document.getElementById('lightbox');
+      document.getElementById('lightbox-img').src = this.src;
+      document.getElementById('lightbox-img').alt = this.alt;
+      lb.classList.add('is-open');
+    });
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('is-open');
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeLightbox();
+    });
+  </script>
+</body>
+</html>
