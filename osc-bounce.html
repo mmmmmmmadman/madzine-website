@@ -1459,7 +1459,7 @@ window.OSC_ASSETS = {
   var CHAR_RANDOM_MARGIN = 6;     // px from the bound lines
   var CHAR_RANDOM_GAP = 8;        // px between characters / character and ball
   var CHAR_RANDOM_TRIES = 300;
-  var RANDOM_BOUNDS_MIN_AREA = 0.3;   // random walls keep at least 30 % of the field area
+  var RANDOM_BOUNDS_MIN_AREA = 0.6;   // random walls keep at least 60 % of the field area
   Sim.prototype.randomize = function (typeCount, rnd) {
     rnd = rnd || Math.random;
     this.clear();
@@ -1467,8 +1467,8 @@ window.OSC_ASSETS = {
     if (next >= this.ballType) next += 1;          // always a different ball
     this.setBallType(next);
     // random ball walls: a random rectangle somewhere in the play area whose area is
-    // never below RANDOM_BOUNDS_MIN_AREA of the full field (width 30..100 %, height
-    // picked so the area stays >= 30 %), never below the usual minimum size either
+    // never below RANDOM_BOUNDS_MIN_AREA of the full field (width 60..100 %, height
+    // picked so the area stays >= 60 %), never below the usual minimum size either
     var min = this.minBoundsSize();
     var wf = Math.max(RANDOM_BOUNDS_MIN_AREA, min.w / this.width);
     wf = wf + rnd() * (1 - wf);
