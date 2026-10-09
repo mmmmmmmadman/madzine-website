@@ -3926,9 +3926,11 @@ window.OSC_ASSETS = {
 
   // CLEAR (top bar): clears the field. The top bar stays above the help sheet while
   // it is open, so CLEAR can be pressed then too; the sheet closes so the result is
-  // visible right away.
+  // visible right away. The ball walls go back to the full play area too (same as
+  // the double tap on a handle), so CLEAR restores the whole field.
   clearBtn.addEventListener('click', function () {
     sim.clear();
+    sim.resetBounds();
     closePanel();
     closeHelp();
   });
