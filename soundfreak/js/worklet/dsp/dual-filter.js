@@ -53,7 +53,12 @@ function respGain(r) {
   return RESP_GAIN[RESP_GAIN.length - 1];
 }
 const INPUT_SOFT_CLIP_V = 8;     // summed input soft-clipped: 8 * tanh(x / 8)
-const SAT_PER_KOSC = 2.35;         // feedback tanh normalisation = SAT_PER_KOSC * kOsc volts
+const SAT_PER_KOSC = 3.4;         // feedback tanh normalisation = SAT_PER_KOSC * kOsc volts
+// Asymmetric feedback limit: sat*(1+a) for positive sums, sat*(1-a) for negative, a = FB_ASYM * min(1, k/kOsc).
+// Fitted 2026-10-10 to the self-oscillation captures (even harmonics dominate: h2 -25 dB at knob 5). Scaled by the
+// loop gain so that at low Response the limiter stays symmetric (an asymmetric limiter makes a DC term that the
+// lowpass passes unattenuated, which spoiled the slope measurements at Response 0).
+const FB_ASYM = 0.5;
 const RES_MAKEUP = 0.6;          // output gain = 1 + RES_MAKEUP * k / kOsc
 const OUT_CLAMP_V = 5;
 const MAX_F_RATIO = 0.45;        // cutoff clamped to 0.45 * sample rate
@@ -147,7 +152,10 @@ class Section {
       // ---- feedback with nonlinear prediction ----
       const yEst = (p + q * x) / (1 + k * q);
       const sat = SAT_PER_KOSC * kOsc;
-      const u = sat * Math.tanh((x - k * yEst) / sat);
+      const v = x - k * yEst;
+      const a = FB_ASYM * (k < kOsc ? k / kOsc : 1);
+      const sv = v >= 0 ? sat * (1 + a) : sat * (1 - a);
+      const u = sv * Math.tanh(v / sv);
 
       // ---- commit ----
       let y = 0;
