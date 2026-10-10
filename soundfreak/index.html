@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Soundfreak Simulator</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<div id="toolbar">
+  <h1>Soundfreak</h1>
+  <select id="module-select"></select>
+  <button id="add-module">Add module</button>
+  <button id="save-patch">Save patch</button>
+  <button id="load-patch">Load patch</button>
+  <input id="load-file" type="file" accept="application/json,.json" hidden>
+  <button id="default-patch">Default patch</button>
+  <button id="clear-patch">Clear</button>
+  <span class="spacer"></span>
+  <span id="audio-status">Audio: click anywhere to start</span>
+</div>
+<div id="hint" hidden></div>
+<div id="rack"></div>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
