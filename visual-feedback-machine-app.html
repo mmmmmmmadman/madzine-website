@@ -189,6 +189,7 @@
         /* --- Hue Wheel --- */
         #hueWheelCanvas {
             cursor: crosshair;
+            touch-action: none;
             display: block;
             flex-shrink: 0;
         }
@@ -298,35 +299,58 @@
             gap: 12px;
         }
 
+        /* Input box is the hit area (32px tall); the visible track is drawn
+           by the track pseudo-element so the clickable height is not tied
+           to the 6px visual line. */
         .slider {
             flex: 1;
+            min-width: 0;
             -webkit-appearance: none;
             appearance: none;
-            height: 4px;
-            border-radius: 2px;
-            background: #3a3a3a;
+            height: 32px;
+            margin: 0;
+            padding: 0;
+            background: transparent;
             outline: none;
+            cursor: pointer;
+            touch-action: pan-y;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .slider::-webkit-slider-runnable-track {
+            height: 6px;
+            border-radius: 3px;
+            background: #3a3a3a;
         }
 
         .slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 18px;
-            height: 18px;
+            width: 28px;
+            height: 28px;
+            margin-top: -11px;
             border-radius: 50%;
             background: var(--accent-color);
             cursor: pointer;
+            border: none;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-            transition: all 0.2s ease;
+            transition: filter 0.2s ease;
         }
 
         .slider::-webkit-slider-thumb:hover {
             filter: brightness(0.9);
         }
 
+        .slider::-moz-range-track {
+            height: 6px;
+            border-radius: 3px;
+            background: #3a3a3a;
+            border: none;
+        }
+
         .slider::-moz-range-thumb {
-            width: 18px;
-            height: 18px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             background: var(--accent-color);
             cursor: pointer;
@@ -334,8 +358,13 @@
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
         }
 
+        /* Fixed width: a growing value box would shrink the flex slider
+           while it is being dragged and move the thumb away from the pointer. */
         .value-display {
-            min-width: 60px;
+            flex: 0 0 auto;
+            width: 88px;
+            white-space: nowrap;
+            font-variant-numeric: tabular-nums;
             text-align: center;
             font-size: 18px;
             font-weight: 300;
@@ -525,7 +554,7 @@
                 <div class="control-group" data-help="delayTime">
                     <label class="control-label" data-i18n="delayTime">延遲時間</label>
                     <div class="slider-container">
-                        <input type="range" id="delaySlider" class="slider" min="0.1" max="3" step="0.1" value="0.5">
+                        <input type="range" id="delaySlider" class="slider" min="0.1" max="3" step="0.01" value="0.5">
                         <div class="value-display" id="delayValue">0.5s</div>
                     </div>
                 </div>
@@ -533,7 +562,7 @@
                 <div class="control-group" data-help="feedback">
                     <label class="control-label" data-i18n="feedback">回饋強度</label>
                     <div class="slider-container">
-                        <input type="range" id="feedbackSlider" class="slider" min="0" max="0.95" step="0.05" value="0.3">
+                        <input type="range" id="feedbackSlider" class="slider" min="0" max="0.95" step="0.01" value="0.3">
                         <div class="value-display" id="feedbackValue">0.3</div>
                     </div>
                 </div>
@@ -541,7 +570,7 @@
                 <div class="control-group" data-help="chaosAmount">
                     <label class="control-label" data-i18n="chaosAmount">混沌量</label>
                     <div class="slider-container">
-                        <input type="range" id="chaosAmountSlider" class="slider" min="0" max="1" step="0.05" value="0.0">
+                        <input type="range" id="chaosAmountSlider" class="slider" min="0" max="1" step="0.01" value="0.0">
                         <div class="value-display" id="chaosAmountValue">0.0</div>
                     </div>
                 </div>
@@ -549,7 +578,7 @@
                 <div class="control-group" data-help="grainSize">
                     <label class="control-label" data-i18n="grainSize">碎片大小</label>
                     <div class="slider-container">
-                        <input type="range" id="grainSizeSlider" class="slider" min="10" max="200" step="5" value="50">
+                        <input type="range" id="grainSizeSlider" class="slider" min="10" max="200" step="1" value="50">
                         <div class="value-display" id="grainSizeValue">50ms</div>
                     </div>
                 </div>
@@ -557,7 +586,7 @@
                 <div class="control-group" data-help="gratchMix">
                     <label class="control-label" data-i18n="gratchMix">Gratch 混合</label>
                     <div class="slider-container">
-                        <input type="range" id="gratchMixSlider" class="slider" min="0" max="1" step="0.1" value="1.0">
+                        <input type="range" id="gratchMixSlider" class="slider" min="0" max="1" step="0.01" value="1.0">
                         <div class="value-display" id="gratchMixValue">1.0</div>
                     </div>
                 </div>
@@ -565,7 +594,7 @@
                 <div class="control-group" data-help="volume">
                     <label class="control-label" data-i18n="volume">音量</label>
                     <div class="slider-container">
-                        <input type="range" id="volumeSlider" class="slider" min="0" max="1" step="0.1" value="0.7">
+                        <input type="range" id="volumeSlider" class="slider" min="0" max="1" step="0.01" value="0.7">
                         <div class="value-display" id="volumeValue">0.7</div>
                     </div>
                 </div>
@@ -863,6 +892,7 @@
             canvas.addEventListener('touchstart', onStart, { passive: false });
             window.addEventListener('touchmove', onMove, { passive: false });
             window.addEventListener('touchend', onEnd);
+            window.addEventListener('touchcancel', onEnd);
 
             // Initial draw
             updateAccentColor(0);
@@ -1486,7 +1516,16 @@
             }
 
             async start() {
+                if (this.isRecording || this.audioContext) return;
                 try {
+                    // Create + resume the AudioContext synchronously inside the click
+                    // handler, BEFORE awaiting getUserMedia. After the await the user
+                    // gesture is gone and Safari leaves a newly created context
+                    // 'suspended' (no output at all).
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    // Not awaited: per spec resume() can stay pending if not allowed.
+                    this.audioContext.resume().catch(() => {});
+
                     this.mediaStream = await navigator.mediaDevices.getUserMedia({
                         audio: {
                             echoCancellation: false,
@@ -1494,8 +1533,6 @@
                             autoGainControl: false
                         }
                     });
-
-                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
                     this.source = this.audioContext.createMediaStreamSource(this.mediaStream);
                     this.delay = this.audioContext.createDelay(5.0);
@@ -1676,13 +1713,28 @@
                     this.bpfMix.connect(this.analyser);
 
                     this.analyser.fftSize = 256;
-                    this.startVolumeMonitoring();
+
+                    // Safety: if the context is still not running, try once more
+                    // (not awaited, see above).
+                    if (this.audioContext.state !== 'running') {
+                        this.audioContext.resume().catch(() => {});
+                    }
 
                     this.isRecording = true;
+                    this.startVolumeMonitoring();
                     this.updateUI();
 
                 } catch (error) {
                     console.error('Start failed:', error);
+                    // Release partially created resources so the next Start works.
+                    if (this.mediaStream) {
+                        this.mediaStream.getTracks().forEach(track => track.stop());
+                        this.mediaStream = null;
+                    }
+                    if (this.audioContext) {
+                        this.audioContext.close();
+                        this.audioContext = null;
+                    }
                     const micAlerts = {
                         zh: '無法存取麥克風。請檢查瀏覽器權限設定。',
                         en: 'Cannot access microphone. Please check browser permissions.',
