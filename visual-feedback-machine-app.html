@@ -1698,13 +1698,6 @@
                         console.warn('Output audio play() threw:', err);
                     }
 
-                    // Camera mode: stop() released the camera, so restart it
-                    // here, still inside the click gesture (not awaited; no-op
-                    // if it is already running from the mode switch).
-                    if (this.chaosMode === 'camera') {
-                        this.contourChaosGenerator.startCamera();
-                    }
-
                     this.mediaStream = await navigator.mediaDevices.getUserMedia({
                         audio: {
                             echoCancellation: true,
@@ -1903,6 +1896,16 @@
                     this.isRecording = true;
                     this.startVolumeMonitoring();
                     this.updateUI();
+
+                    // Camera mode: stop() released the camera. Restart it only
+                    // now, after the microphone capture is running. This is the
+                    // same order as the mode-switch path (Lorenz -> Camera while
+                    // running), which works on iPhone. Requesting camera and
+                    // microphone concurrently left the camera without frames on
+                    // iPhone Safari. No-op if already running.
+                    if (this.chaosMode === 'camera') {
+                        this.contourChaosGenerator.startCamera();
+                    }
 
                 } catch (error) {
                     console.error('Start failed:', error);
