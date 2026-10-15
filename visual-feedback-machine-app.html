@@ -1062,8 +1062,34 @@
                 this.previewCtx = null;
             }
 
+            // One persistent hidden <video>, reused across Start/Stop.
+            getVideoElement() {
+                if (!this.video) {
+                    const v = document.createElement('video');
+                    v.setAttribute('playsinline', '');
+                    v.playsInline = true;
+                    v.muted = true;
+                    v.autoplay = true;
+                    this.video = v;
+                }
+                return this.video;
+            }
+
             async startCamera() {
-                if (this.running) return;
+                // Already running or a start is still pending: do nothing
+                // (prevents a second getUserMedia stream from leaking).
+                if (this.running || this.startPending) return;
+                this.startPending = true;
+                // Bumped by stopCamera(); a start that resolves after a stop
+                // must not turn the camera back on.
+                const gen = this.cameraGen = (this.cameraGen || 0) + 1;
+                // Synchronous part, still inside the click/change gesture:
+                // call play() on the video element now (Safari gesture rule).
+                const video = this.getVideoElement();
+                try {
+                    const p0 = video.play();
+                    if (p0 && typeof p0.catch === 'function') p0.catch(() => {});
+                } catch (e) {}
                 try {
                     try {
                         this.videoStream = await navigator.mediaDevices.getUserMedia({
@@ -1079,11 +1105,24 @@
                         if (constraintErr && constraintErr.name === 'NotAllowedError') throw constraintErr;
                         this.videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
                     }
-                    this.video = document.createElement('video');
-                    this.video.srcObject = this.videoStream;
-                    this.video.setAttribute('playsinline', '');
-                    this.video.muted = true;
-                    await this.video.play();
+                    if (gen !== this.cameraGen) {
+                        // Stopped while getUserMedia was pending
+                        this.videoStream.getTracks().forEach(t => t.stop());
+                        this.videoStream = null;
+                        return;
+                    }
+                    video.srcObject = this.videoStream;
+                    // Not awaited: frameLoop() waits for videoWidth/readyState,
+                    // and a pending or rejected play() must not block or abort
+                    // the camera start.
+                    try {
+                        const p = video.play();
+                        if (p && typeof p.catch === 'function') {
+                            p.catch(err => console.warn('Camera video play() rejected:', err));
+                        }
+                    } catch (err) {
+                        console.warn('Camera video play() threw:', err);
+                    }
 
                     this.offscreenCanvas = document.createElement('canvas');
                     this.offscreenCanvas.width = this.width;
@@ -1100,10 +1139,18 @@
                     this.frameLoop();
                 } catch (err) {
                     console.error('Camera start failed:', err);
+                    if (this.videoStream && gen === this.cameraGen) {
+                        this.videoStream.getTracks().forEach(t => t.stop());
+                        this.videoStream = null;
+                    }
+                } finally {
+                    if (gen === this.cameraGen) this.startPending = false;
                 }
             }
 
             stopCamera() {
+                this.cameraGen = (this.cameraGen || 0) + 1;
+                this.startPending = false;
                 this.running = false;
                 if (this.animFrameId) {
                     cancelAnimationFrame(this.animFrameId);
@@ -1114,9 +1161,9 @@
                     this.videoStream = null;
                 }
                 if (this.video) {
+                    // Element is kept (reused by the next startCamera)
                     this.video.pause();
                     this.video.srcObject = null;
-                    this.video = null;
                 }
                 this.outA = 0; this.outB = 0; this.outC = 0;
                 this.contour = [];
@@ -1649,6 +1696,13 @@
                         }
                     } catch (err) {
                         console.warn('Output audio play() threw:', err);
+                    }
+
+                    // Camera mode: stop() released the camera, so restart it
+                    // here, still inside the click gesture (not awaited; no-op
+                    // if it is already running from the mode switch).
+                    if (this.chaosMode === 'camera') {
+                        this.contourChaosGenerator.startCamera();
                     }
 
                     this.mediaStream = await navigator.mediaDevices.getUserMedia({
