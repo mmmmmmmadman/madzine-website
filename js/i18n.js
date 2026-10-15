@@ -233,11 +233,11 @@ const I18N = {
         vfm: {
           name: 'Visual Feedback Machine',
           desc: '即時混沌音訊處理，Lorenz 吸引子與相機輪廓偵測',
-          intro: 'Visual Feedback Machine 是瀏覽器端的即時音訊處理工具，與 Liora 協作開發。<br><br>訊號鏈：麥克風 → 延遲迴路（含回饋）→ 顆粒引擎（混沌調變）→ 帶通濾波器 → 輸出。兩種混沌來源可切換：Lorenz 奇異吸引子（x/y/z 三軸）或網路攝影機即時輪廓偵測（X 軸距離、Y 軸距離、轉角角度）。<br><br>三個混沌通道獨立控制不同音訊參數：A → BPF 頻率 + 碎片位置、B → 延遲時間搖擺、C → 碎片大小 + 觸發密度。Chaos Amount 推桿統一控制三通道的調變深度。<br><br>無需安裝任何軟體，用瀏覽器開啟即可使用。需要麥克風權限，Camera 模式需要相機權限。',
+          intro: 'Visual Feedback Machine 是瀏覽器端的即時音訊處理工具，與 Liora 協作開發。<br><br>訊號鏈：麥克風 → 延遲迴路（含回饋）→ 粒子合成引擎（混沌調變）→ 帶通濾波器 → 輸出。兩種混沌來源可切換：Lorenz 奇異吸引子（x/y/z 三軸）或網路攝影機即時輪廓偵測（X 軸距離、Y 軸距離、轉角角度）。<br><br>三個混沌通道獨立控制不同音訊參數：A → BPF 頻率 + 碎片位置、B → 延遲時間搖擺、C → 碎片大小 + 觸發密度。Chaos Amount 推桿統一控制三通道的調變深度。<br><br>無需安裝任何軟體，用瀏覽器開啟即可使用。需要麥克風權限，Camera 模式需要相機權限。<br><br>回饋過強時的處理：先把「回饋強度」往下拉，迴路會在幾秒內衰減；若喇叭的聲音又被麥克風收進去而持續增強，把「音量」降低、讓麥克風遠離喇叭，或改用耳機；按「停止」會清空延遲迴路，再按「開始」重新來過。',
           features: {
             chaos: '雙 Chaos 來源：Lorenz 吸引子 + 相機輪廓偵測',
             threechannel: '三通道獨立混沌調變（BPF / 延遲時間 / 碎片參數）',
-            granular: '顆粒引擎：16 grain，隨機方向與 pitch shift（0.25x~4x）',
+            granular: '粒子合成引擎：16 grain，隨機方向與 pitch shift（0.25x~4x）',
             camera: '即時 Sobel 邊緣偵測 + Moore neighbor 輪郭追蹤',
             visual: 'Lorenz 相空間蝴蝶圖 / 輪廓掃描動態預覽',
             multilang: '三語介面（繁中 / EN / JP）'
@@ -705,7 +705,7 @@ const I18N = {
         vfm: {
           name: 'Visual Feedback Machine',
           desc: 'Real-time chaotic audio processing with Lorenz attractor and camera contour detection',
-          intro: 'Visual Feedback Machine is a browser-based real-time audio processing tool, developed in collaboration with Liora.<br><br>Signal chain: microphone → delay loop (with feedback) → granular engine (chaos-modulated) → bandpass filter → output. Two chaos sources switchable: Lorenz strange attractor (x/y/z axes) or webcam real-time contour detection (X-distance, Y-distance, turning angle).<br><br>Three chaos channels independently control different audio parameters: A → BPF frequency + grain position, B → delay time wobble, C → grain size + trigger density. The Chaos Amount fader controls the master modulation depth for all three channels.<br><br>No installation required — open in a browser to use. Requires microphone permission; Camera mode requires camera permission.',
+          intro: 'Visual Feedback Machine is a browser-based real-time audio processing tool, developed in collaboration with Liora.<br><br>Signal chain: microphone → delay loop (with feedback) → granular engine (chaos-modulated) → bandpass filter → output. Two chaos sources switchable: Lorenz strange attractor (x/y/z axes) or webcam real-time contour detection (X-distance, Y-distance, turning angle).<br><br>Three chaos channels independently control different audio parameters: A → BPF frequency + grain position, B → delay time wobble, C → grain size + trigger density. The Chaos Amount fader controls the master modulation depth for all three channels.<br><br>No installation required — open in a browser to use. Requires microphone permission; Camera mode requires camera permission.<br><br>If feedback gets out of control: lower the Feedback fader first and the loop decays within a few seconds; if the speaker output is re-entering the microphone and keeps building, lower the Volume, move the microphone away from the speaker, or use headphones; pressing Stop clears the delay loop, then press Start to begin again.',
           features: {
             chaos: 'Dual chaos sources: Lorenz attractor + camera contour detection',
             threechannel: 'Three independent chaos modulation channels (BPF / delay time / grain parameters)',
@@ -1177,7 +1177,7 @@ const I18N = {
         vfm: {
           name: 'Visual Feedback Machine',
           desc: 'ローレンツアトラクターとカメラ輪郭検出によるリアルタイムカオス音声処理',
-          intro: 'Visual Feedback Machine は、Liora とのコラボレーションで開発されたブラウザベースのリアルタイム音声処理ツールです。<br><br>信号経路：マイク → ディレイループ（フィードバック付き）→ グラニュラーエンジン（カオス変調）→ バンドパスフィルター → 出力。2つのカオスソースを切り替え可能：ローレンツストレンジアトラクター（x/y/z 3軸）またはWebカメラのリアルタイム輪郭検出（X距離・Y距離・転回角度）。<br><br>3つのカオスチャンネルが異なる音声パラメータを独立制御：A → BPF周波数+グレイン位置、B → ディレイタイム揺らぎ、C → グレインサイズ+トリガー密度。カオス量フェーダーで3チャンネルの変調深度を一括制御。<br><br>インストール不要 — ブラウザで開くだけで使用可能。マイク権限が必要、Cameraモードではカメラ権限が必要。',
+          intro: 'Visual Feedback Machine は、Liora とのコラボレーションで開発されたブラウザベースのリアルタイム音声処理ツールです。<br><br>信号経路：マイク → ディレイループ（フィードバック付き）→ グラニュラーエンジン（カオス変調）→ バンドパスフィルター → 出力。2つのカオスソースを切り替え可能：ローレンツストレンジアトラクター（x/y/z 3軸）またはWebカメラのリアルタイム輪郭検出（X距離・Y距離・転回角度）。<br><br>3つのカオスチャンネルが異なる音声パラメータを独立制御：A → BPF周波数+グレイン位置、B → ディレイタイム揺らぎ、C → グレインサイズ+トリガー密度。カオス量フェーダーで3チャンネルの変調深度を一括制御。<br><br>インストール不要 — ブラウザで開くだけで使用可能。マイク権限が必要、Cameraモードではカメラ権限が必要。<br><br>フィードバックが強すぎるとき：まず「フィードバック量」を下げると、ループは数秒で減衰します。スピーカーの音がマイクに戻って増幅し続ける場合は、「音量」を下げる、マイクをスピーカーから離す、またはヘッドフォンを使ってください。「停止」を押すとディレイループが消去され、「開始」で再開できます。',
           features: {
             chaos: 'デュアルカオスソース：ローレンツアトラクター + カメラ輪郭検出',
             threechannel: '3チャンネル独立カオス変調（BPF / ディレイタイム / グレインパラメータ）',
