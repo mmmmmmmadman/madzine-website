@@ -1,5 +1,18 @@
 # MADZINE Website 開發紀錄
 
+## 2026-10-16
+
+### Visual Feedback Machine：新增第三種 Chaos 來源 Movement
+
+- Chaos 來源切換由 Lorenz / Camera 兩段改為 Lorenz / Camera / Movement 三段（radio value `motion`）
+- Movement 模式與 Camera 模式共用同一個相機串流與 `ContourChaosGenerator` 實例，只切換分析方式（`setMode('contour' | 'motion')`）；Camera ↔ Movement 互切不重新要相機權限
+- 演算法：216×90 灰階後幀減前幀，像素差 > 24 視為移動。A = 移動像素加權重心的 X（左 -1 / 右 +1）、B = 重心 Y（上 -1 / 下 +1）、C = 移動像素占比 / 0.08 映射到 -1..+1（靜止 = -1）
+- 平滑：位置僅在有移動時追（時間常數 0.08 s），靜止時保留上一個位置；移動量上升 0.05 s、衰減 0.25 s，與幀率無關
+- 預覽：移動像素塗強調色、中央十字線、重心圓環（半徑隨移動量）、底部移動量橫條
+- 三語說明（app 內 hover 說明、`js/i18n.js` 的 vfm desc / intro / features、visual-feedback-machine.html 的 zh fallback 與 meta description）同步更新
+- 未實機測試瀏覽器與相機；演算法以 node 合成灰階幀驗證（左上/右下閃爍方塊、全幅閃爍、靜止衰減）結果正確
+
+
 ## 2026-10-09
 
 ### 新增 OSC Bounce

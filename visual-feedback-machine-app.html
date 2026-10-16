@@ -520,6 +520,8 @@
                             <label for="modeLorenz">Lorenz</label>
                             <input type="radio" id="modeCamera" name="chaosMode" value="camera">
                             <label for="modeCamera">Camera</label>
+                            <input type="radio" id="modeMotion" name="chaosMode" value="motion">
+                            <label for="modeMotion">Movement</label>
                         </div>
                     </div>
 
@@ -692,9 +694,9 @@
         // --- Help Content (trilingual) ---
         const helpContent = {
             chaosSource: {
-                en: "Chaos Source: Lorenz = mathematical strange attractor generating 3 independent chaotic signals (x/y/z). Camera = webcam contour detection, scan point generates 3 signals from X-distance, Y-distance, and turning angle along the contour.",
-                jp: "Chaosソース：Lorenz＝3つの独立したカオス信号（x/y/z）を生成する数学的ストレンジアトラクター。Camera＝Webカメラの輪郭検出、スキャン点がX距離・Y距離・転回角度から3信号を生成。",
-                zh: "Chaos 來源：Lorenz = 數學奇異吸引子，產生 3 個獨立混沌訊號（x/y/z）。Camera = 網路攝影機輪廓偵測，掃描點沿輪廓產生 X 軸距離、Y 軸距離、轉角角度 3 個訊號。"
+                en: "Chaos Source: Lorenz = mathematical strange attractor generating 3 independent chaotic signals (x/y/z). Camera = webcam contour detection, scan point generates 3 signals from X-distance, Y-distance, and turning angle along the contour. Movement = webcam frame difference; A = horizontal position of the motion (left -1 / right +1), B = vertical position (top -1 / bottom +1), C = amount of motion (still -1 / lots +1).",
+                jp: "Chaosソース：Lorenz＝3つの独立したカオス信号（x/y/z）を生成する数学的ストレンジアトラクター。Camera＝Webカメラの輪郭検出、スキャン点がX距離・Y距離・転回角度から3信号を生成。Movement＝Webカメラのフレーム差分。A＝動きの左右位置（左 -1／右 +1）、B＝上下位置（上 -1／下 +1）、C＝動きの量（静止 -1／多い +1）。",
+                zh: "Chaos 來源：Lorenz = 數學奇異吸引子，產生 3 個獨立混沌訊號（x/y/z）。Camera = 網路攝影機輪廓偵測，掃描點沿輪廓產生 X 軸距離、Y 軸距離、轉角角度 3 個訊號。Movement = 網路攝影機後幀減前幀。A = 移動的左右位置（左 -1 / 右 +1）、B = 上下位置（上 -1 / 下 +1）、C = 移動量（靜止 -1 / 大量 +1）。"
             },
             delayTime: {
                 en: "Delay Time: Base delay buffer length in seconds. Modulated by chaos channel B (Lorenz y / contour Y-distance). Longer = more spacious echo, chaos makes it wobble.",
@@ -1047,6 +1049,19 @@
                 this.visitedBuffer = new Uint8Array(this.width * this.height);
                 this.threshold = 80;
 
+                // Analysis mode: 'contour' (scan point along longest edge) or
+                // 'motion' (frame difference: where and how much the image moves)
+                this.mode = 'contour';
+                this.prevGrayBuffer = new Uint8Array(this.width * this.height);
+                this.hasPrevFrame = false;
+                this.motionMask = new Uint8Array(this.width * this.height);
+                this.motionThreshold = 24;      // per-pixel gray delta
+                this.motionFullScale = 0.08;    // fraction of moving pixels mapped to C = +1
+                this.motionCentroidX = 0;       // smoothed, -1..+1
+                this.motionCentroidY = 0;
+                this.motionAmount = 0;          // smoothed, 0..1
+                this.motionRaw = { x: 0, y: 0, amount: 0, count: 0 };
+
                 // Contour data
                 this.contour = []; // array of {x, y}
                 this.scanProgress = 0; // 0~1
@@ -1136,6 +1151,8 @@
                     this.lastFrameTime = performance.now();
                     this.scanProgress = 0;
                     this.trail = [];
+                    this.hasPrevFrame = false;
+                    this.motionCentroidX = 0; this.motionCentroidY = 0; this.motionAmount = 0;
                     this.frameLoop();
                 } catch (err) {
                     console.error('Camera start failed:', err);
@@ -1168,6 +1185,19 @@
                 this.outA = 0; this.outB = 0; this.outC = 0;
                 this.contour = [];
                 this.trail = [];
+                this.hasPrevFrame = false;
+                this.motionCentroidX = 0; this.motionCentroidY = 0; this.motionAmount = 0;
+            }
+
+            setMode(mode) {
+                if (mode === this.mode) return;
+                this.mode = mode;
+                // Reset per-mode state so the first frame of the new mode is clean
+                this.outA = 0; this.outB = 0; this.outC = 0;
+                this.contour = [];
+                this.trail = [];
+                this.hasPrevFrame = false;
+                this.motionCentroidX = 0; this.motionCentroidY = 0; this.motionAmount = 0;
             }
 
             frameLoop() {
@@ -1213,6 +1243,12 @@
                     this.grayBuffer[i] = 0.299 * pixels[idx] + 0.587 * pixels[idx + 1] + 0.114 * pixels[idx + 2];
                 }
 
+                if (this.mode === 'motion') {
+                    this.processMotion(dt);
+                    this.drawMotionPreview();
+                    return;
+                }
+
                 // Sobel edge detection
                 this.sobelEdgeDetect();
 
@@ -1252,6 +1288,141 @@
 
                 // Draw preview
                 this.drawPreview();
+            }
+
+            // Movement mode: |current gray - previous gray| per pixel.
+            // Pixels above threshold count as moving. Their weighted centroid
+            // gives where on screen the movement is (A = X, B = Y), their
+            // fraction of the frame gives how much is moving (C).
+            processMotion(dt) {
+                const w = this.width;
+                const h = this.height;
+                const n = w * h;
+                const gray = this.grayBuffer;
+                const prev = this.prevGrayBuffer;
+                const mask = this.motionMask;
+
+                if (!this.hasPrevFrame) {
+                    prev.set(gray);
+                    this.hasPrevFrame = true;
+                    mask.fill(0);
+                    this.motionRaw.count = 0;
+                    this.outA = this.motionCentroidX;
+                    this.outB = this.motionCentroidY;
+                    this.outC = this.motionAmount * 2 - 1;
+                    return;
+                }
+
+                let sumW = 0, sumX = 0, sumY = 0, count = 0;
+                const thr = this.motionThreshold;
+                for (let y = 0; y < h; y++) {
+                    const row = y * w;
+                    for (let x = 0; x < w; x++) {
+                        const i = row + x;
+                        const d = Math.abs(gray[i] - prev[i]);
+                        if (d > thr) {
+                            mask[i] = 1;
+                            const wgt = d;
+                            sumW += wgt;
+                            sumX += x * wgt;
+                            sumY += y * wgt;
+                            count++;
+                        } else {
+                            mask[i] = 0;
+                        }
+                    }
+                }
+                prev.set(gray);
+
+                // Raw values for this frame
+                const amountRaw = Math.min(1, (count / n) / this.motionFullScale);
+                let cxRaw = this.motionCentroidX;
+                let cyRaw = this.motionCentroidY;
+                if (count > 0) {
+                    cxRaw = (sumX / sumW) / (w / 2) - 1;   // -1 left .. +1 right
+                    cyRaw = (sumY / sumW) / (h / 2) - 1;   // -1 top  .. +1 bottom
+                }
+                this.motionRaw.x = cxRaw;
+                this.motionRaw.y = cyRaw;
+                this.motionRaw.amount = amountRaw;
+                this.motionRaw.count = count;
+
+                // Smoothing (time-based so frame rate does not change the feel).
+                // Position follows quickly when there is movement, holds when
+                // nothing moves. Amount rises fast and decays slower.
+                const clampDt = Math.min(Math.max(dt, 0), 0.1);
+                const posK = count > 0 ? 1 - Math.exp(-clampDt / 0.08) : 0;
+                this.motionCentroidX += (cxRaw - this.motionCentroidX) * posK;
+                this.motionCentroidY += (cyRaw - this.motionCentroidY) * posK;
+                const tau = amountRaw > this.motionAmount ? 0.05 : 0.25;
+                const amtK = 1 - Math.exp(-clampDt / tau);
+                this.motionAmount += (amountRaw - this.motionAmount) * amtK;
+
+                this.outA = Math.max(-1, Math.min(1, this.motionCentroidX));
+                this.outB = Math.max(-1, Math.min(1, this.motionCentroidY));
+                this.outC = Math.max(-1, Math.min(1, this.motionAmount * 2 - 1));
+            }
+
+            drawMotionPreview() {
+                const ctx = this.previewCtx;
+                const canvas = this.previewCanvas;
+                if (!ctx || !canvas) return;
+
+                const cw = canvas.width;
+                const ch = canvas.height;
+                ctx.fillStyle = '#000';
+                ctx.fillRect(0, 0, cw, ch);
+
+                const w = this.width;
+                const h = this.height;
+                const sx = cw / w;
+                const sy = ch / h;
+                const aHsl = hsvToHsl(accentHue, 0.30, 0.92);
+                const hue = aHsl.h, sat = aHsl.s.toFixed(1), lig = aHsl.l.toFixed(1);
+
+                // Moving pixels
+                if (this.motionRaw.count > 0) {
+                    const mask = this.motionMask;
+                    ctx.fillStyle = `hsla(${hue}, ${sat}%, ${lig}%, 0.55)`;
+                    for (let y = 0; y < h; y++) {
+                        const row = y * w;
+                        let runStart = -1;
+                        for (let x = 0; x <= w; x++) {
+                            const on = x < w && mask[row + x] === 1;
+                            if (on && runStart < 0) runStart = x;
+                            if (!on && runStart >= 0) {
+                                ctx.fillRect(runStart * sx, y * sy, (x - runStart) * sx, sy);
+                                runStart = -1;
+                            }
+                        }
+                    }
+                }
+
+                // Center cross (reference for the +/- position outputs)
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(cw / 2, 0); ctx.lineTo(cw / 2, ch);
+                ctx.moveTo(0, ch / 2); ctx.lineTo(cw, ch / 2);
+                ctx.stroke();
+
+                // Smoothed centroid: ring radius follows the motion amount
+                const px = (this.motionCentroidX + 1) * 0.5 * cw;
+                const py = (this.motionCentroidY + 1) * 0.5 * ch;
+                const r = 6 + this.motionAmount * 40;
+                ctx.strokeStyle = `hsl(${hue}, ${sat}%, ${lig}%)`;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(px, py, r, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.fillStyle = `hsl(${hue}, ${sat}%, ${lig}%)`;
+                ctx.beginPath();
+                ctx.arc(px, py, 4, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Amount bar along the bottom edge
+                ctx.fillStyle = `hsla(${hue}, ${sat}%, ${lig}%, 0.9)`;
+                ctx.fillRect(0, ch - 4, cw * this.motionAmount, 4);
             }
 
             sobelEdgeDetect() {
@@ -1578,7 +1749,7 @@
                 this.outputDest = null;
                 this.outputAudio = null;
                 this.isRecording = false;
-                this.chaosMode = 'lorenz'; // 'lorenz' or 'camera'
+                this.chaosMode = 'lorenz'; // 'lorenz', 'camera' or 'motion'
                 this.contourChaosGenerator = new ContourChaosGenerator();
 
                 // Lorenz phase space visualization
@@ -1659,7 +1830,9 @@
                 modeRadios.forEach(radio => {
                     radio.addEventListener('change', (e) => {
                         this.chaosMode = e.target.value;
-                        if (this.chaosMode === 'camera') {
+                        if (this.chaosMode === 'camera' || this.chaosMode === 'motion') {
+                            // Camera <-> Movement: same stream, only the analysis changes
+                            this.contourChaosGenerator.setMode(this.chaosMode === 'motion' ? 'motion' : 'contour');
                             this.contourChaosGenerator.startCamera();
                         } else {
                             this.contourChaosGenerator.stopCamera();
@@ -1747,7 +1920,7 @@
                             this.bpfWetGain.gain.value = gratchMix;
                             this.bpfDryGain.gain.value = 1.0 - gratchMix;
 
-                            const useCamera = this.chaosMode === 'camera';
+                            const useCamera = this.chaosMode === 'camera' || this.chaosMode === 'motion';
                             const src = useCamera ? this.contourChaosGenerator : this.chaosGenerator;
 
                             for (let i = 0; i < input.length; i++) {
@@ -1763,9 +1936,9 @@
 
                                 // Read three chaos channels, scaled by chaos amount
                                 const amt = parseFloat(document.getElementById('chaosAmountSlider').value) || 0;
-                                const chaosA = src.outA * amt; // Lorenz x / Camera X距離
-                                const chaosB = src.outB * amt; // Lorenz y / Camera Y距離
-                                const chaosC = src.outC * amt; // Lorenz z / Camera 轉角
+                                const chaosA = src.outA * amt; // Lorenz x / Camera X距離 / Movement 左右位置
+                                const chaosB = src.outB * amt; // Lorenz y / Camera Y距離 / Movement 上下位置
+                                const chaosC = src.outC * amt; // Lorenz z / Camera 轉角   / Movement 移動量
 
                                 // Feed Lorenz phase space history
                                 this.chaosHistoryDownsample++;
@@ -1903,7 +2076,8 @@
                     // running), which works on iPhone. Requesting camera and
                     // microphone concurrently left the camera without frames on
                     // iPhone Safari. No-op if already running.
-                    if (this.chaosMode === 'camera') {
+                    if (this.chaosMode === 'camera' || this.chaosMode === 'motion') {
+                        this.contourChaosGenerator.setMode(this.chaosMode === 'motion' ? 'motion' : 'contour');
                         this.contourChaosGenerator.startCamera();
                     }
 
@@ -2048,7 +2222,7 @@
                 const ctx = canvas.getContext('2d');
                 const draw = () => {
                     requestAnimationFrame(draw);
-                    if (this.chaosMode === 'camera') return;
+                    if (this.chaosMode !== 'lorenz') return;
 
                     const cw = canvas.width;
                     const ch = canvas.height;
