@@ -109,6 +109,9 @@ button:disabled{opacity:.4;cursor:default}
   width:100%;max-width:320px;min-height:60px;
   font-size:24px;letter-spacing:.16em;
 }
+.cpurow{display:flex;gap:8px;width:100%;max-width:320px;margin-top:-6px}
+.cpurow button{flex:1 1 0;min-height:44px;font-size:18px;letter-spacing:.12em;padding:0 4px}
+.cpurow button.sel{border-color:var(--acc);color:var(--acc-text)}
 .joinrow{display:flex;gap:8px;width:100%;max-width:320px}
 .joinrow button{flex:1 1 0;min-height:60px;font-size:24px;letter-spacing:.16em}
 #code{
@@ -272,6 +275,11 @@ button:disabled{opacity:.4;cursor:default}
     <h1 class="title">MODULAR <b>FIGHTERS</b></h1>
     <p class="sub" data-i18n="tagline">PATCH. SEND. KNOCK OUT.</p>
     <button id="btn-cpu" class="big pri" type="button" data-i18n="vsCpu">VS CPU</button>
+    <div id="cpurow" class="cpurow" role="group" aria-label="CPU difficulty">
+      <button id="cpu-easy" type="button" data-cpu="easy" data-i18n="cpuEasy">EASY</button>
+      <button id="cpu-normal" type="button" data-cpu="normal" data-i18n="cpuNormal">NORMAL</button>
+      <button id="cpu-hard" type="button" data-cpu="hard" data-i18n="cpuHard">HARD</button>
+    </div>
     <button id="btn-create" class="big" type="button" data-i18n="createRoom">CREATE ROOM</button>
     <div class="joinrow">
       <input id="code" type="text" inputmode="latin" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="4" placeholder="CODE" aria-label="room code" data-i18n-ph="codePh" data-i18n-aria="codeAria">
@@ -347,6 +355,7 @@ button:disabled{opacity:.4;cursor:default}
     <p class="sheet-text" data-i18n="helpPower"></p>
     <p class="sheet-text" data-i18n="helpSound"></p>
     <p class="sheet-text" data-i18n="helpModes"></p>
+    <p class="sheet-text" data-i18n="helpCpu"></p>
     <p class="sheet-text" data-i18n="helpModules"></p>
     <p class="sheet-label" data-i18n="langLabel">LANGUAGE</p>
     <div id="lang-seg" class="seg"></div>
@@ -436,6 +445,10 @@ button:disabled{opacity:.4;cursor:default}
       helpPower: '攻擊力來自接線的複雜度：模組越多、線越多、調變越多，傷害越高。SEND 送出攻擊並換一批新模組；AUTO 是快速但較弱的攻擊。攻擊力越高，你的角色動作越快，直到下一次送出。',
       helpSound: '送出新聲音時，上一個聲音會停止。對手的聲音會和你的一起播放。',
       helpModes: '對戰電腦：和電腦對打。建立房間：把 4 碼房號給朋友。加入房間：輸入房號。整場對戰會錄下來，KO 後可下載。背景可用裝置內的照片或影片，只留在你的裝置上，不會傳送。',
+      helpCpu: '電腦不會主動攻擊：你每攻擊一次，它才回擊一次。難度（簡單／普通／困難）決定它打多重。',
+      cpuEasy: '簡單',
+      cpuNormal: '普通',
+      cpuHard: '困難',
       helpModules: '模組：VCO/LFO、四軌混音器、低通濾波器、波形摺疊、立體聲延遲、ADSR、AR、五步音序器、手繪調變。',
       langLabel: '語言',
       themeLabel: '背景',
@@ -496,6 +509,10 @@ button:disabled{opacity:.4;cursor:default}
       helpPower: 'Attack power comes from patch complexity: more modules, more cables and more modulation mean more damage. SEND attacks and gives you new modules; AUTO is a quick, weak attack. Higher power makes your fighter move faster until your next patch.',
       helpSound: 'Your previous sound stops when you send a new one. The opponent’s sound plays together with yours.',
       helpModes: 'VS CPU: fight the computer. CREATE ROOM: give the 4-letter code to a friend. JOIN ROOM: enter the code. The whole match is recorded and can be downloaded after KO. The background can be a photo or video from your device; it stays on your device only.',
+      helpCpu: 'The CPU never attacks first: it answers each of your attacks once. The difficulty (EASY / NORMAL / HARD) sets how hard it hits.',
+      cpuEasy: 'EASY',
+      cpuNormal: 'NORMAL',
+      cpuHard: 'HARD',
       helpModules: 'Modules: VCO/LFO, 4-channel mixer, low-pass filter, wavefolder, stereo delay, ADSR, AR, 5-step sequencer, draw modulator.',
       langLabel: 'LANGUAGE',
       themeLabel: 'BACKGROUND',
@@ -556,6 +573,10 @@ button:disabled{opacity:.4;cursor:default}
       helpPower: '攻撃力はパッチの複雑さで決まります。モジュール、ケーブル、モジュレーションが多いほどダメージが大きくなります。SEND で攻撃し、新しいモジュールに入れ替わります。AUTO は速いけれど弱い攻撃です。攻撃力が高いほど、次のパッチを送るまでキャラクターの動きが速くなります。',
       helpSound: '新しい音を送ると前の音は止まります。相手の音はあなたの音と一緒に鳴ります。',
       helpModes: 'CPU対戦：コンピューターと対戦。ルーム作成：4文字のコードを友だちに伝えます。ルーム参加：コードを入力します。試合は全部録画され、KO のあとにダウンロードできます。背景には端末内の写真や動画を使えます。端末の外には送信されません。',
+      helpCpu: 'CPU は自分から攻撃しません。あなたが攻撃するごとに一回だけ反撃します。難易度（かんたん／ふつう／むずかしい）で反撃の強さが決まります。',
+      cpuEasy: 'かんたん',
+      cpuNormal: 'ふつう',
+      cpuHard: 'むずかしい',
       helpModules: 'モジュール：VCO/LFO、4ch ミキサー、ローパスフィルター、ウェーブフォルダー、ステレオディレイ、ADSR、AR、5ステップシーケンサー、手描きモジュレーター。',
       langLabel: '言語',
       themeLabel: '背景',
@@ -784,6 +805,35 @@ button:disabled{opacity:.4;cursor:default}
     });
   });
 
+  // ---------- CPU difficulty (home screen, under VS CPU) ----------
+  var CPU_KEY = 'mf_cpu';
+  var CPU_LEVELS = ['easy', 'normal', 'hard'];
+  function loadCpu() {
+    try {
+      var v = window.localStorage.getItem(CPU_KEY);
+      if (CPU_LEVELS.indexOf(v) >= 0) return v;
+    } catch (e) { /* storage unavailable */ }
+    return 'normal';
+  }
+  var cpuLevel = loadCpu();
+  function applyCpu() {
+    MFFight.cpu.setDifficulty(cpuLevel);
+    var bs = $('cpurow').querySelectorAll('button');
+    for (var i = 0; i < bs.length; i++) {
+      var on = bs[i].getAttribute('data-cpu') === cpuLevel;
+      bs[i].classList.toggle('sel', on);
+      bs[i].setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+  }
+  $('cpurow').addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('button[data-cpu]') : null;
+    if (!b) return;
+    cpuLevel = b.getAttribute('data-cpu');
+    try { window.localStorage.setItem(CPU_KEY, cpuLevel); } catch (e2) { /* ignore */ }
+    applyCpu();
+  });
+  applyCpu();
+
   // ---------- help sheet ----------
   var helpBtn = $('helpbtn');
   var helpSheet = $('helpsheet');
@@ -821,6 +871,7 @@ button:disabled{opacity:.4;cursor:default}
       lastPower.me = power;
       updateStatus();
       if (mode === 'net') MFNet.send({ t: 'attack', patch: patch, power: power });
+      if (mode === 'cpu') MFFight.cpu.notifyUserAttack();   // the CPU only ever answers a user attack
     }
     freshModules();
   }

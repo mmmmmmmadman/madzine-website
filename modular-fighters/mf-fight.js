@@ -37,7 +37,9 @@
   var BAR_H = 16;
   var BAR_TOP_MIN = 80;      // keeps the HP bars and their labels clear of the page's 44 px "?" button (top 8..52 px)
   var KEY_PX = 360;          // offscreen keying resolution (square)
-  var FIGHTER_H = 0.45;      // fighter frame height as a fraction of canvas height
+  var FIGHTER_H = 0.80;      // max figure (content) height as a fraction of canvas height
+  var FRONT_GAP = 2;         // px each figure's front edge sits from the canvas centre at idle
+  var LUNGE_OVER = 0.08;     // lunge carries the front edge this fraction of the width past centre
   var ALPHA_MIN = 40;        // alpha threshold for the content bounding box
 
   var T_LUNGE = 170;   // ms, attacker moves forward
@@ -175,7 +177,8 @@
       lastKey: -1,
       hasFrame: false,
       flashDirty: true,
-      box: { top: 0, bottom: KEY_PX, left: 0, right: KEY_PX }   // content bbox in keyed px
+      box: { top: 0, bottom: KEY_PX, left: 0, right: KEY_PX },  // content bbox of the current keyed frame
+      ext: null   // running union of the per-frame boxes (keyed px); stable anchor across the loop
     };
     fighters[side] = f;
     setFighterSource(side, makeVideo(def.src));
@@ -194,6 +197,7 @@
     f.lastKey = -1;
     f.hasFrame = false;
     f.flashDirty = true;
+    f.ext = null;
     if (source && source.tagName === 'VIDEO') {
       var who = whoAt(side);
       try { source.playbackRate = rates[who]; } catch (e) { /* ignore */ }
@@ -259,6 +263,15 @@
     kc.putImageData(img, 0, 0);
     if (bottom >= 0) {
       f.box.top = top; f.box.bottom = bottom + 1; f.box.left = left; f.box.right = right + 1;
+      var e = f.ext;
+      if (!e) {
+        f.ext = { top: f.box.top, bottom: f.box.bottom, left: f.box.left, right: f.box.right };
+      } else {
+        if (f.box.top < e.top) e.top = f.box.top;
+        if (f.box.bottom > e.bottom) e.bottom = f.box.bottom;
+        if (f.box.left < e.left) e.left = f.box.left;
+        if (f.box.right > e.right) e.right = f.box.right;
+      }
     }
     f.hasFrame = true;
     f.flashDirty = true;
@@ -418,6 +431,7 @@
     pops.length = 0;
     rates.me = 1; rates.foe = 1;
     applyRates();
+    if (cpuTimer) { clearTimeout(cpuTimer); cpuTimer = 0; }   // drop a pending CPU response
     startTime = now();
   }
 
@@ -496,23 +510,28 @@
     c.fillRect(0, 0, W, H);
   }
 
-  function drawPlaceholder(f, x, floorY, size) {
-    // video not decodable / not yet loaded: faint outline where the fighter stands
+  function drawPlaceholder(f, x, floorY, h) {
+    // video not decodable / not yet loaded: faint outline where the fighter stands (front edge at x)
     var c = ctx;
+    var w = h * 0.6;
     c.save();
     c.strokeStyle = f.color;
     c.globalAlpha = 0.35;
     c.lineWidth = 2;
     c.setLineDash([6, 6]);
-    c.strokeRect(x - size * 0.25, floorY - size * 0.75, size * 0.5, size * 0.75);
+    c.strokeRect(f.facing > 0 ? x - w : x, floorY - h, w, h);
     c.restore();
   }
 
+  // Extents used for layout: the running union box once a frame exists, else the full frame.
+  function extentOf(f) {
+    return (f && f.hasFrame && f.ext) ? f.ext : { top: 0, bottom: KEY_PX, left: 0, right: KEY_PX };
+  }
+
   function drawFighter(opts) {
-    // opts: f (fighter), x (foot centre), floorY, size (frame px), bob, flash, fall, t
+    // opts: f (fighter), x (front edge), floorY, k (canvas px per keyed px), bob, flash, fall
     var f = opts.f;
     var c = ctx;
-    keyFrame(f);
     c.save();
     c.translate(opts.x, opts.floorY);
     if (opts.fall > 0) {
@@ -522,18 +541,20 @@
     c.translate(0, -opts.bob);
     if (!f.hasFrame) {
       c.restore();
-      drawPlaceholder(f, opts.x, opts.floorY, opts.size);
+      drawPlaceholder(f, opts.x, opts.floorY, (KEY_PX * opts.k) * 0.75);
       return;
     }
-    var size = opts.size;
-    var k = size / KEY_PX;
-    // place the content bounding box so its bottom sits on the floor and its centre on x
-    var cx = (f.box.left + f.box.right) / 2 * k;
-    var by = f.box.bottom * k;
-    c.drawImage(f.keyed, -cx, -by, size, size);
+    var k = opts.k;
+    var size = KEY_PX * k;
+    var e = extentOf(f);
+    // front edge of the union box on x (left fighter: right edge; right fighter: left edge),
+    // bottom of the union box on the floor
+    var fx = (f.facing > 0 ? e.right : e.left) * k;
+    var by = e.bottom * k;
+    c.drawImage(f.keyed, -fx, -by, size, size);
     if (opts.flash > 0) {
       c.globalAlpha = 0.55 + 0.45 * opts.flash;
-      c.drawImage(flashCanvas(f), -cx, -by, size, size);
+      c.drawImage(flashCanvas(f), -fx, -by, size, size);
     }
     c.restore();
   }
@@ -631,40 +652,47 @@
     c.lineTo(W - pad, floorY + 0.5);
     c.stroke();
 
-    // fighter geometry
-    var size = Math.round(H * FIGHTER_H);
-    var scale = Math.max(0.6, Math.min(2.2, size / 150, W / 300));
-    var reach = Math.min(W * 0.22, size * 0.6);
-    var baseLeftX = W * 0.28;
-    var baseRightX = W * 0.72;
-    var elapsed = (t - startTime) / 1000;
-
+    // fighter geometry: key both frames first so the union boxes are current
     var whoL = whoAt('left'), whoR = whoAt('right');
     var fL = fighters.left, fR = fighters.right;
+    if (fL) keyFrame(fL);
+    if (fR) keyFrame(fR);
+    var eL = extentOf(fL), eR = extentOf(fR);
+    var hL = Math.max(1, eL.bottom - eL.top), hR = Math.max(1, eR.bottom - eR.top);
+    var wL = Math.max(1, eL.right - eL.left), wR = Math.max(1, eR.right - eR.left);
+    // canvas px per keyed px: figure height <= FIGHTER_H of the canvas and below the HP bars,
+    // and each figure's width (from its front edge at the centre back to its rear edge) fits its half
+    var maxFigH = Math.max(40, Math.min(H * FIGHTER_H, floorY - (barTop + BAR_H) - 6));
+    var k = Math.min(
+      maxFigH / Math.max(hL, hR),
+      (W / 2 - FRONT_GAP - pad) / Math.max(wL, wR));
+    var figH = Math.max(hL, hR) * k;
+    var scale = Math.max(0.6, Math.min(2.2, figH / 150, W / 300));
+    var reach = FRONT_GAP + W * LUNGE_OVER;
+    var baseLeftX = W / 2 - FRONT_GAP;
+    var baseRightX = W / 2 + FRONT_GAP;
+    var elapsed = (t - startTime) / 1000;
 
     var bobL = dead === whoL ? 0 : Math.sin(elapsed * 3.1) * 3 * scale;
     var bobR = dead === whoR ? 0 : Math.sin(elapsed * 3.1 + 1.7) * 3 * scale;
 
     // KO fall: body rotates backwards about the feet; slide inward so it stays in view
-    var bodyLen = size + 12;
     var fallL = fallAmount(whoL, t);
     var fallR = fallAmount(whoR, t);
-    var slideL = fallL * Math.max(0, bodyLen - (baseLeftX - pad));
-    var slideR = fallR * Math.max(0, bodyLen - (W - pad - baseRightX));
+    var slideL = fallL * Math.max(0, hL * k + 12 - (baseLeftX - pad));
+    var slideR = fallR * Math.max(0, hR * k + 12 - (W - pad - baseRightX));
     var leftX = baseLeftX + lungeOffset(whoL, t, reach) + shakeAmount(whoL, t) + slideL;
     var rightX = baseRightX - lungeOffset(whoR, t, reach) + shakeAmount(whoR, t) - slideR;
 
-    var headTopL = floorY - (fL && fL.hasFrame ? (fL.box.bottom - fL.box.top) * size / KEY_PX : size * 0.75);
-    var headTopR = floorY - (fR && fR.hasFrame ? (fR.box.bottom - fR.box.top) * size / KEY_PX : size * 0.75);
     var geo = {
       scale: scale,
-      left: { x: leftX, headTop: headTopL - bobL },
-      right: { x: rightX, headTop: headTopR - bobR }
+      left: { x: leftX - wL * k / 2, headTop: floorY - hL * k - bobL },
+      right: { x: rightX + wR * k / 2, headTop: floorY - hR * k - bobR }
     };
 
-    if (fL) drawFighter({ f: fL, x: leftX, floorY: floorY, size: size,
+    if (fL) drawFighter({ f: fL, x: leftX, floorY: floorY, k: k,
       bob: bobL, flash: flashAmount(whoL, t), fall: fallL });
-    if (fR) drawFighter({ f: fR, x: rightX, floorY: floorY, size: size,
+    if (fR) drawFighter({ f: fR, x: rightX, floorY: floorY, k: k,
       bob: bobR, flash: flashAmount(whoR, t), fall: fallR });
 
     drawBar(pad, barTop, barW, 'left', false);
@@ -859,28 +887,37 @@
     return Math.max(0, Math.min(100, Math.round(s)));
   }
 
-  function cpuTick() {
+  // Difficulty scales the CPU patch's power (easy 0.35, normal 0.6, hard 1.0).
+  var CPU_SCALE = { easy: 0.35, normal: 0.6, hard: 1.0 };
+  var cpuDifficulty = 'normal';
+
+  function cpuSetDifficulty(name) {
+    cpuDifficulty = CPU_SCALE[name] ? name : 'normal';
+  }
+
+  // The CPU is reactive only: one attack 1.5-3 s after each user attack, never otherwise.
+  function cpuRespond() {
     cpuTimer = 0;
     if (!cpuRunning || dead) return;
     var patch = buildPatch();
     var power = scorePatch(patch);
     if (power <= 0) power = 5;
+    power = Math.max(3, Math.min(100, Math.round(power * CPU_SCALE[cpuDifficulty])));
     if (cpuCallback) {
       try { cpuCallback(patch, power); } catch (e) { if (window.console) console.error(e); }
     }
-    schedule(6000 + Math.random() * 6000);
   }
 
-  function schedule(ms) {
-    if (cpuTimer) clearTimeout(cpuTimer);
-    cpuTimer = setTimeout(cpuTick, ms);
+  function cpuNotifyUserAttack() {
+    if (!cpuRunning || dead) return;
+    if (cpuTimer) return;   // a response is already pending; it covers this attack too
+    cpuTimer = setTimeout(cpuRespond, 1500 + Math.random() * 1500);
   }
 
   function cpuStart(onAttack) {
     cpuStop();
     cpuRunning = true;
     cpuCallback = typeof onAttack === 'function' ? onAttack : null;
-    schedule(4000);
   }
 
   function cpuStop() {
@@ -902,6 +939,7 @@
     setCharacterSource: setFighterSource,
     getSides: function () { return { me: sides.me, foe: sides.me === 'left' ? 'right' : 'left' }; },
     getRates: function () { return { me: rates.me, foe: rates.foe }; },
-    cpu: { start: cpuStart, stop: cpuStop, buildPatch: buildPatch }
+    cpu: { start: cpuStart, stop: cpuStop, notifyUserAttack: cpuNotifyUserAttack, respond: cpuRespond,
+      setDifficulty: cpuSetDifficulty, getDifficulty: function () { return cpuDifficulty; }, buildPatch: buildPatch }
   };
 })();
