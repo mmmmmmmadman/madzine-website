@@ -155,13 +155,42 @@
     "}\n" +
     "registerProcessor('mf-capture', MFCapture);\n";
 
+  // Linear-interpolation resampler for context rates that MP3 cannot carry
+  // (88.2 / 96 / 176.4 / 192 kHz audio interfaces). Position and the last input
+  // sample of each channel are carried across batches, so batch borders leave no seam.
+  // Coordinates: index 0 = last sample of the previous batch, index i+1 = a[i].
+  // No anti-alias filter before decimation (content above 24 kHz folds back).
+  function makeResampler(inRate, outRate) {
+    return { step: inRate / outRate, t: 1, pl: 0, pr: 0, init: false };
+  }
+  function resampleChunk(st, a, b) {
+    var n = a.length;
+    if (!n) return [a, b];
+    if (!st.init) { st.init = true; st.pl = a[0]; st.pr = b[0]; st.t = 1; }
+    var cap = Math.max(0, Math.ceil((n - st.t) / st.step) + 1);
+    var oL = new Float32Array(cap), oR = new Float32Array(cap), k = 0;
+    var t = st.t, step = st.step;
+    while (t < n && k < cap) {
+      var i = Math.floor(t), f = t - i;
+      var l0 = i === 0 ? st.pl : a[i - 1], r0 = i === 0 ? st.pr : b[i - 1];
+      oL[k] = l0 + (a[i] - l0) * f;
+      oR[k] = r0 + (b[i] - r0) * f;
+      k++;
+      t += step;
+    }
+    st.t = t - n;
+    st.pl = a[n - 1]; st.pr = b[n - 1];
+    return [oL.subarray(0, k), oR.subarray(0, k)];
+  }
+
   function onCapChunk(l, r) {
     var s = capTarget;
     if (!s || !s.pcm) return;
+    if (s.rs) { var o = resampleChunk(s.rs, l, r); l = o[0]; r = o[1]; }
     s.qL.push(l); s.qR.push(r); s.qN += l.length; s.frames += l.length;
     if (s.enc) {
-      if (s.qN >= ctx.sampleRate) encodeQueue(s);
-    } else if (s.qN > BACKLOG_MAX_S * ctx.sampleRate && s.mr) {
+      if (s.qN >= s.encRate) encodeQueue(s);
+    } else if (s.qN > BACKLOG_MAX_S * s.encRate && s.mr) {
       dropPcm(s);                          // lamejs never came: keep the MediaRecorder take
     }
   }
@@ -292,32 +321,38 @@
       try { m.rec.stop(); } catch (e) { finish(); }
     });
   }
-  function newEncoder() {
-    try { return new window.lamejs.Mp3Encoder(2, ctx.sampleRate, MP3_KBPS); } catch (e) { return null; }
+  function newEncoder(rate) {
+    try { return new window.lamejs.Mp3Encoder(2, rate, MP3_KBPS); } catch (e) { return null; }
   }
 
   function startRecorder() {
     if (rec) return;
+    // an earlier load failure (offline moment, blocked request) is retried for every new take
+    if (lameState === 'failed' && !(window.lamejs && window.lamejs.Mp3Encoder)) lameState = 'idle';
     loadLame();
-    var s = { pcm: false, enc: null, mp3: [], qL: [], qR: [], qN: 0, frames: 0, mr: null };
+    // MP3 rates are encoded as they are; any other context rate (e.g. 96 kHz) is
+    // resampled to 48 kHz before encoding instead of falling back to MediaRecorder
+    var encRate = MP3_RATES[ctx.sampleRate] === 1 ? ctx.sampleRate : 48000;
+    var s = { pcm: false, enc: null, mp3: [], qL: [], qR: [], qN: 0, frames: 0, mr: null, encRate: encRate,
+              rs: encRate !== ctx.sampleRate ? makeResampler(ctx.sampleRate, encRate) : null };
     rec = s;
-    var mp3Possible = MP3_RATES[ctx.sampleRate] === 1 && lameState !== 'failed';
+    var mp3Possible = lameState !== 'failed';
     var c = mp3Possible ? ensureCapture() : null;
     if (c) {
       s.pcm = true;
       if (capStopWait) capNext = s;           // previous take still flushing
       else { capTarget = s; c.post('start'); }
       if (lameState === 'ready') {
-        s.enc = newEncoder();
+        s.enc = newEncoder(s.encRate);
         if (!s.enc) { dropPcm(s); s.mr = startMR(); }
       } else {
         s.mr = startMR();                     // backup take until lamejs answers
         lameWaiters.push(function (ok) {
           if (!s.pcm) return;
-          if (ok) s.enc = newEncoder();
+          if (ok) s.enc = newEncoder(s.encRate);
           if (s.enc) {
             if (s.mr) { stopMR(s.mr, false); s.mr = null; }
-            if (s.qN >= ctx.sampleRate) encodeQueue(s);
+            if (s.qN >= s.encRate) encodeQueue(s);
           } else {
             dropPcm(s);
             if (!s.mr && rec === s) s.mr = startMR();
@@ -494,7 +529,28 @@
     this.nodes.push(this.out, this.sink);
     this.timer = null;
     this.dead = false;
+    this.seed = {};                     // id -> snapshot of the same module in the graph this one replaces
+    this.audible = false;               // any cable reaches OUT
   }
+  Graph.prototype.seedFor = function (m) {
+    var sd = this.seed[m.id];
+    return sd && sd.type === m.type ? sd : null;
+  };
+  // Envelope tap for the panel oscilloscope: level = peak of the last ~43 ms (main thread read only).
+  Graph.prototype.levelTap = function (node) {
+    var an = ctx.createAnalyser();
+    an.fftSize = 2048;
+    node.connect(an);
+    an.connect(this.sink);
+    this.nodes.push(an);
+    var buf = new Float32Array(an.fftSize);
+    return function () {
+      an.getFloatTimeDomainData(buf);
+      var mx = 0;
+      for (var i = 0; i < buf.length; i++) { var v = buf[i]; if (v > mx) mx = v; }
+      return clamp(mx, 0, 1);
+    };
+  };
   Graph.prototype.gain = function (v) {
     var g = ctx.createGain();
     g.gain.value = v;
@@ -851,10 +907,12 @@
         o.setTargetAtTime(0, t0, st.r / 4);
       }
     });
+    var level = g.levelTap(env);
     return {
       inputs: { gate: gateIn },
       outputs: { env: env },
-      set: function (key, v) { if (key === 'a' || key === 'd' || key === 's' || key === 'r') { p[key] = num(v, p[key]); read(); } }
+      set: function (key, v) { if (key === 'a' || key === 'd' || key === 's' || key === 'r') { p[key] = num(v, p[key]); read(); } },
+      state: function () { return { level: level() }; }
     };
   }
 
@@ -874,10 +932,12 @@
         o.setTargetAtTime(0, t0 + st.a, st.r / 4);
       }
     });
+    var level = g.levelTap(env);
     return {
       inputs: { trig: trigIn },
       outputs: { env: env },
-      set: function (key, v) { if (key === 'a' || key === 'r') { p[key] = num(v, p[key]); read(); } }
+      set: function (key, v) { if (key === 'a' || key === 'r') { p[key] = num(v, p[key]); read(); } },
+      state: function () { return { level: level() }; }
     };
   }
 
@@ -887,15 +947,35 @@
     return s;
   }
 
+  // SEQ5: internal clock at RATE when "clock" is not patched (runs in silent preview graphs
+  // too, so the step position is live from the moment the panel shows the module); a patched
+  // clock takes over. hist = scheduled steps, read by state() for the panel animation and by
+  // snapshot() so a rebuilt graph continues on the same step and the same beat.
   function buildSEQ5(g, m) {
     var p = m.params || (m.params = {});
     var st = { steps: readSteps(p.steps), rate: clamp(num(p.rate, 4), 0.1, 30), idx: 0, next: 0 };
-    var cv = g.constant(st.steps[0]), gate = g.constant(0), clockIn = g.gain(1);
     var external = !!g.patched[m.id + '.clock'];
+    var hist = [];
+    var now0 = ctx.currentTime;
+    var sd = g.seedFor(m), curIdx = -1, gateUntil = 0;
+    if (sd) {
+      st.idx = sd.idx;
+      curIdx = sd.cur;
+      if (!external && sd.next > now0) st.next = sd.next;
+      if (sd.cur >= 0 && sd.gEnd > now0) gateUntil = sd.gEnd;
+    }
+    var cv = g.constant(st.steps[curIdx >= 0 ? curIdx : 0]), gate = g.constant(0), clockIn = g.gain(1);
+    if (curIdx >= 0) hist.push({ t: now0, idx: curIdx, gEnd: gateUntil || now0 });
+    if (gateUntil > now0) {
+      gate.offset.setValueAtTime(1, now0);
+      gate.offset.setValueAtTime(0, gateUntil);
+    }
     function stepAt(t, gateLen) {
       cv.offset.setValueAtTime(st.steps[st.idx], t);
       gate.offset.setValueAtTime(1, t);
       gate.offset.setValueAtTime(0, t + gateLen);
+      hist.push({ t: t, idx: st.idx, gEnd: t + gateLen });
+      if (hist.length > 48) hist.splice(0, hist.length - 48);
       st.idx = (st.idx + 1) % 5;
     }
     if (external) {
@@ -907,7 +987,7 @@
         }
       });
     } else {
-      st.next = ctx.currentTime + 0.01;
+      if (!st.next) st.next = now0 + 0.01;
       g.tickers.push(function (now) {
         if (st.next < now) st.next = now + 0.005;
         while (st.next < now + LOOKAHEAD) {
@@ -917,12 +997,42 @@
         }
       });
     }
+    // the step sounding at time t (-1 before the first step)
+    function at(t) {
+      for (var i = hist.length - 1; i >= 0; i--) if (hist[i].t <= t) return hist[i];
+      return null;
+    }
     return {
       inputs: { clock: clockIn },
       outputs: { cv: cv, gate: gate },
       set: function (key, v) {
-        if (key === 'steps') { st.steps = readSteps(v); p.steps = st.steps.slice(); }
+        if (key === 'steps') {
+          st.steps = readSteps(v); p.steps = st.steps.slice();
+          // the step that is sounding now takes the new value at once
+          var h = at(ctx.currentTime);
+          if (h) {
+            var tt = ctx.currentTime;
+            var nx = null;
+            for (var i = 0; i < hist.length; i++) if (hist[i].t > tt) { nx = hist[i]; break; }
+            if (!nx) { cv.offset.cancelScheduledValues(tt); cv.offset.setValueAtTime(st.steps[h.idx], tt); }
+            else {
+              cv.offset.cancelScheduledValues(tt);
+              cv.offset.setValueAtTime(st.steps[h.idx], tt);
+              for (var k = 0; k < hist.length; k++) if (hist[k].t > tt) cv.offset.setValueAtTime(st.steps[hist[k].idx], hist[k].t);
+            }
+          }
+        }
         else if (key === 'rate') { st.rate = clamp(num(v, st.rate), 0.1, 30); p.rate = st.rate; }
+      },
+      state: function (t) {
+        var h = at(t);
+        return { step: h ? h.idx : -1, gate: !!(h && t < h.gEnd), external: external, rate: st.rate };
+      },
+      snapshot: function (t) {
+        var h = at(t), nx = null;
+        for (var i = 0; i < hist.length; i++) if (hist[i].t > t) { nx = hist[i]; break; }
+        return { type: 'SEQ5', cur: h ? h.idx : -1, gEnd: h ? h.gEnd : 0,
+                 idx: nx ? nx.idx : st.idx, next: nx ? nx.t : st.next };
       }
     };
   }
@@ -933,20 +1043,63 @@
     return out;
   }
 
+  function shapeAt(sh, ph) {
+    var x = clamp(ph, 0, 1) * 63, i = Math.floor(x);
+    if (i >= 63) return sh[63];
+    return sh[i] + (sh[i + 1] - sh[i]) * (x - i);
+  }
+  // DRAW: one cycle = the 64-point shape over 1/RATE s (setValueCurveAtTime). A rate or shape
+  // edit re-times the cycle in flight from the current phase (no wait for the next cycle).
+  // hist = scheduled segments {t, len, p0}: phase(T) = p0 + (T - t) / len * (1 - p0).
   function buildDRAW(g, m) {
     var p = m.params || (m.params = {});
-    var st = { shape: readShape(p.shape), rate: clamp(num(p.rate, 1), 0.05, 20), next: 0 };
-    var cv = g.constant(st.shape[0]);
+    var st = { shape: readShape(p.shape), rate: clamp(num(p.rate, 1), 0.05, 20), next: 0, retime: false };
     var GAP = 2 / ctx.sampleRate;
-    st.next = ctx.currentTime + 0.01;
+    var hist = [];
+    var now0 = ctx.currentTime;
+    var sd = g.seedFor(m);
+    var p0 = sd ? sd.phaseAt(now0 + 0.01) : 0;
+    var cv = g.constant(shapeAt(st.shape, p0));
+    function segment(t0, ph0) {
+      var len = (1 - ph0) / st.rate;
+      var curve;
+      if (ph0 <= 0) curve = st.shape;
+      else {
+        var M = Math.max(2, Math.ceil((1 - ph0) * 63) + 1);
+        curve = new Float32Array(M);
+        for (var k = 0; k < M; k++) curve[k] = shapeAt(st.shape, ph0 + (1 - ph0) * k / (M - 1));
+      }
+      cv.offset.setValueCurveAtTime(curve, t0, Math.max(len, 0.001));
+      hist.push({ t: t0, len: Math.max(len, 0.001), p0: ph0 });
+      if (hist.length > 24) hist.splice(0, hist.length - 24);
+      st.next = t0 + len + GAP;
+    }
+    function phaseAt(t) {
+      for (var i = hist.length - 1; i >= 0; i--) {
+        var h = hist[i];
+        if (h.t <= t) return clamp(h.p0 + (t - h.t) / h.len * (1 - h.p0), 0, 1) % 1;
+      }
+      return 0;
+    }
+    try { segment(now0 + 0.01, p0); } catch (e) { st.next = now0 + 0.01; }
     g.tickers.push(function (now) {
+      if (st.retime) {
+        st.retime = false;
+        var t0 = now + 0.02, ph = phaseAt(t0);
+        try {
+          var tHold = hold(cv.offset, t0);
+          for (var j = hist.length - 1; j >= 0; j--) if (hist[j].t >= tHold) hist.splice(j, 1);
+          segment(tHold + GAP, ph);
+        } catch (e) {
+          try { cv.offset.cancelScheduledValues(now); } catch (e2) {}
+          st.next = now + 0.01;
+        }
+      }
       if (st.next < now) st.next = now + 0.005;
       var guard = 0;
       while (st.next < now + LOOKAHEAD && guard++ < 64) {
-        var dur = 1 / st.rate;
         try {
-          cv.offset.setValueCurveAtTime(st.shape, st.next, dur);
-          st.next += dur + GAP;
+          segment(st.next, 0);
         } catch (e) {
           cv.offset.cancelScheduledValues(now);
           st.next = now + 0.01;
@@ -958,9 +1111,11 @@
       inputs: {},
       outputs: { cv: cv },
       set: function (key, v) {
-        if (key === 'shape') { st.shape = readShape(v); p.shape = Array.prototype.slice.call(st.shape); }
-        else if (key === 'rate') { st.rate = clamp(num(v, st.rate), 0.05, 20); p.rate = st.rate; }
-      }
+        if (key === 'shape') { st.shape = readShape(v); p.shape = Array.prototype.slice.call(st.shape); st.retime = true; }
+        else if (key === 'rate') { st.rate = clamp(num(v, st.rate), 0.05, 20); p.rate = st.rate; st.retime = true; }
+      },
+      state: function (t) { var ph = phaseAt(t); return { phase: ph, value: shapeAt(st.shape, ph), rate: st.rate }; },
+      snapshot: function () { return { type: 'DRAW', phaseAt: phaseAt }; }
     };
   }
 
@@ -991,9 +1146,11 @@
     return ms.join(',') + '|' + cs.join(',');
   }
 
-  function build(slot, patch) {
+  function build(slot, patch, seeds) {
     var s = sanitize(patch);
     var g = new Graph(slot);
+    if (seeds) g.seed = seeds;
+    g.audible = s.cables.some(function (c) { return c.to.mod === 'OUT'; });
     s.cables.forEach(function (c) { if (c.to.mod !== 'OUT') g.patched[c.to.mod + '.' + c.to.port] = true; });
     // Private deep copy of params so live edits never mutate the caller's patch.
     s.list.forEach(function (m) {
@@ -1133,10 +1290,11 @@
     if (ctx.state === 'suspended') ctx.resume();
     var old = slots[slot];
     slots[slot] = null;
+    var seeds = slot === 'preview' && old && !old.dead ? snapshotGraph(old) : null;
     if (old) old.kill();
     var g = null;
     try {
-      g = build(slot, patch);
+      g = build(slot, patch, seeds);
     } catch (e) {
       lastError = String(e && (e.stack || e.message) || e);
       if (g) g.kill();
@@ -1145,6 +1303,27 @@
     slots[slot] = g;
     g.start(fadeIn);
     return true;
+  }
+  // per-module continuity data (SEQ5 step + beat, DRAW phase) of a graph about to be replaced
+  function snapshotGraph(g) {
+    var out = {}, t = ctx.currentTime;
+    for (var id in g.mods) {
+      var inst = g.mods[id].inst;
+      if (inst && inst.snapshot) { try { out[id] = inst.snapshot(t); } catch (e) {} }
+    }
+    return out;
+  }
+  // context time of the sample leaving the speakers now (what the player hears)
+  function heardTime() {
+    if (ctx.getOutputTimestamp) {
+      try {
+        var ts = ctx.getOutputTimestamp();
+        if (ts && ts.contextTime > 0 && ts.performanceTime > 0 && window.performance) {
+          return ts.contextTime + Math.max(0, performance.now() - ts.performanceTime) / 1000;
+        }
+      } catch (e) {}
+    }
+    return ctx.currentTime - (ctx.outputLatency || ctx.baseLatency || 0);
   }
   function cancelPreviewTimer() {
     if (previewTimer) clearTimeout(previewTimer);
@@ -1155,7 +1334,11 @@
     var patch = previewPending;
     cancelPreviewTimer();
     if (!patch) return;
-    if (score(patch) <= 0) {
+    // the preview graph is built even when nothing reaches OUT (silent): SEQ5 / DRAW clocks
+    // and envelopes run from the moment the panel shows them. Only an empty panel stops it.
+    var nMods = 0;
+    try { nMods = sanitize(patch).list.length; } catch (e) { nMods = 0; }
+    if (!nMods) {
       if (slots.preview) { slots.preview.kill(); slots.preview = null; }
       return;
     }
@@ -1193,7 +1376,7 @@
 
     // Live preview of the patch being built. Debounced; rebuilds only when the
     // graph structure changed (params arrive through previewParam). Nothing
-    // reaching OUT stops the preview slot.
+    // reaching OUT keeps a silent graph (clocks, envelopes, panel animation).
     preview: function (patch) {
       previewPending = patch;
       if (previewTimer) clearTimeout(previewTimer);
@@ -1207,7 +1390,7 @@
     commitPreview: function (patch) {
       if (previewTimer) flushPreview();
       var g = slots.preview;
-      if (!g || g.dead) return false;
+      if (!g || g.dead || !g.audible) return false;
       if (patch !== undefined) {
         var sig = null;
         try { sig = signature(sanitize(patch)); } catch (e) { sig = null; }
@@ -1229,7 +1412,7 @@
     // Debug: which slots currently hold a live graph.
     slots: function () {
       var r = {};
-      SLOT_NAMES.forEach(function (s) { r[s] = !!(slots[s] && !slots[s].dead); });
+      SLOT_NAMES.forEach(function (s) { r[s] = !!(slots[s] && !slots[s].dead && (s !== 'preview' || slots[s].audible)); });
       return r;
     },
 
@@ -1241,6 +1424,26 @@
     // MP3 encoder could not be used. Without an active take: the last blob.
     stopRecording: function () {
       return stopRecorder();
+    },
+
+    // Panel animation: live state of a module, preview graph first, then "me".
+    // SEQ5 -> {step 0..4 (-1 none yet), gate, external, rate}; DRAW -> {phase 0..1, value 0..1, rate};
+    // ADSR / AR -> {level 0..1, peak of the last ~43 ms}. Times are what is heard now
+    // (output latency removed). null when no live graph holds the module.
+    getModuleState: function (modId) {
+      if (!ctx) return null;
+      var list = ['preview', 'me'];
+      for (var i = 0; i < list.length; i++) {
+        var g = slots[list[i]];
+        var md = g && !g.dead && g.mods[modId];
+        if (md && md.inst && md.inst.state) {
+          var o = md.inst.state(heardTime());
+          o.type = md.type;
+          o.slot = list[i];
+          return o;
+        }
+      }
+      return null;
     },
 
     // Live param edit: the module being edited lives in the preview graph; fall

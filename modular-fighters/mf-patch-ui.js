@@ -9,11 +9,16 @@
   var DOUBLE_TAP_MS = 300;
   var TAP_SLOP = 8;
 
-  /* ---------- case geometry (6U case = two rails, Eurorack-style HP widths) ---------- */
-  var HP_PX = 19;            // 1 HP in CSS px (390px phone shows ~2.5 modules per rail)
-  var JACK_HIT = 32;         // must match --mfp-jack-hit
+  /* ---------- case geometry (one rail of modules, Eurorack-style HP widths) ---------- */
+  var HP_PX = 19;            // 1 HP in CSS px (390px phone shows about 2 modules)
+  var JACK_HIT = 48;         // must match --mfp-jack-hit
   var MOD_CHROME = 10;       // module border 2 + horizontal padding 8
-  var HP = { VCO: 8, MIXVCA: 10, MIX4: 10, LPF: 8, FOLD: 6, DELAY: 8, ADSR: 8, AR: 6, SEQ5: 10, DRAW: 10 };
+  // ADSR / AR are wider than the other envelope-free modules: their oscilloscope strip needs the width
+  var HP = { VCO: 9, MIXVCA: 14, MIX4: 14, LPF: 12, FOLD: 9, DELAY: 11, ADSR: 12, AR: 7, SEQ5: 12, DRAW: 10 };
+  var AUTO_LOCK_MS = 10000;  // AUTO is locked this long after every new module set
+  var SCOPE_SECS = 2, SCOPE_N = 200;   // oscilloscope history: 2 s, one point per 10 ms
+  // engine clamps (mf-audio.js), used by the UI-side fallback clock
+  var SEQ_RATE = [0.1, 30], DRAW_RATE = [0.05, 20];
 
   /* ---------- rotary knob geometry ---------- */
   var KNOB_TRAVEL = 150;     // px of drag for the full range
@@ -104,8 +109,33 @@
 
   var FREQ_RANGE = { vco: [20, 2000], lfo: [0.05, 20] };
 
-  /* ---------- colour: HSB fixed-phase family around coral H=12 ---------- */
-  var BASE_HUE = 12 / 360;
+  /* ---------- colour: HSB fixed-phase family around the accent hue (coral H=12 by default) ---------- */
+  var DEFAULT_HUE = 12 / 360;
+  // CSS colour string -> HSB hue 0..1 (null for greys / unparsable)
+  var colorProbe = null;
+  function cssHue(str) {
+    if (!str) return null;
+    if (!colorProbe) { try { colorProbe = document.createElement('canvas').getContext('2d'); } catch (e) { return null; } }
+    if (!colorProbe) return null;
+    colorProbe.fillStyle = '#000000';
+    colorProbe.fillStyle = str;
+    var v = String(colorProbe.fillStyle), r, g, b, m;
+    if ((m = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})/i.exec(v))) { r = parseInt(m[1], 16); g = parseInt(m[2], 16); b = parseInt(m[3], 16); }
+    else if ((m = /rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)/i.exec(v))) { r = +m[1]; g = +m[2]; b = +m[3]; }
+    else return null;
+    var mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+    if (d < 1) return null;
+    var h;
+    if (mx === r) h = ((g - b) / d) % 6; else if (mx === g) h = (b - r) / d + 2; else h = (r - g) / d + 4;
+    return ((h / 6) % 1 + 1) % 1;
+  }
+  // accent hue: the home-screen HUE wheel state (window.MFHue) when present, else the --mfp-acc token
+  function accentHue(cs) {
+    var H = window.MFHue;
+    if (H && H.state && isFinite(H.state.hue)) return ((+H.state.hue % 1) + 1) % 1;
+    var h = cs ? cssHue(cs.getPropertyValue('--mfp-acc').trim()) : null;
+    return h == null ? DEFAULT_HUE : h;
+  }
   var CABLE_OFFSETS = [0, 0.5, 0.333, -0.333, 0.083, -0.083];
   function hsb(h, s, b) {
     h = ((h % 1) + 1) % 1;
@@ -131,6 +161,9 @@
     function v(name, fb) { var s = cs ? cs.getPropertyValue(name).trim() : ''; return s || fb; }
     function n(name, fb) { var x = parseFloat(v(name, '')); return isNaN(x) ? fb : x; }
     themeCache = {
+      hue: accentHue(cs),
+      fg2: v('--mfp-fg2', '#a8a8a8'),
+      acc: v('--mfp-acc', '#e8846c'),
       grid: v('--mfp-draw-grid', '#303030'),
       stroke: v('--mfp-draw-stroke', '#e8846c'),
       cs: n('--mfp-cable-s', 0.5),
@@ -142,7 +175,7 @@
   }
   function cableColor(i) {
     var t = themeVals();
-    return hsb(BASE_HUE + CABLE_OFFSETS[i % CABLE_OFFSETS.length], t.cs, t.cb);
+    return hsb(t.hue + CABLE_OFFSETS[i % CABLE_OFFSETS.length], t.cs, t.cb);
   }
 
   /* ---------- helpers ---------- */
@@ -188,7 +221,7 @@
   /* ---------- state ---------- */
   // svgEl/cableLayer: panel-level overlay (cables that reach the OUT module in the footer + drag preview)
   // csvgEl/cLayer: overlay inside the scrolling case (module-to-module cables, scrolls with the content)
-  var root = null, scrollEl = null, caseEl = null, railEls = [], footEl = null, svgEl = null, cableLayer = null, tempPath = null;
+  var root = null, scrollEl = null, caseEl = null, railEl = null, footEl = null, svgEl = null, cableLayer = null, tempPath = null;
   var csvgEl = null, cLayer = null;
   var opts = {};
   var modules = [];
@@ -198,6 +231,8 @@
   var redrawQueued = false;
   var drag = null;           // active cable drag
   var nextColor = 0;         // stable per-cable colour index (not part of Patch)
+  var anims = [];            // per-module animators (SEQ5 step, DRAW playhead, ADSR/AR scope)
+  var autoBtn = null, lockUntil = 0;
 
   function key(mod, port) { return mod + ':' + port; }
 
@@ -426,6 +461,31 @@
     box.addEventListener('pointerup', end);
     box.addEventListener('pointercancel', end);
     refresh();
+    // current step (animation loop): accent fill + outline, number lit
+    var curShown = -2;
+    function setCur(idx) {
+      if (idx === curShown) return;
+      if (curShown >= 0 && cells[curShown]) cells[curShown].classList.remove('mfp-cur');
+      if (idx >= 0 && cells[idx]) cells[idx].classList.add('mfp-cur');
+      curShown = idx;
+    }
+    // UI-side clock, used when no live engine graph holds this module
+    var fb = { idx: 0, acc: 0 };
+    anims.push(function (dt) {
+      var st = engineState(mod), idx;
+      if (st) {
+        idx = st.step;
+        if (idx >= 0) { fb.idx = idx; fb.acc = 0; }
+      } else {
+        if (!inputPatched(mod.id, 'clock')) {
+          fb.acc += dt * clamp(+mod.params.rate || RATE.def, SEQ_RATE[0], SEQ_RATE[1]);
+          if (fb.acc >= 1) { fb.idx = (fb.idx + Math.floor(fb.acc)) % 5; fb.acc -= Math.floor(fb.acc); }
+        }
+        idx = fb.idx;
+      }
+      setCur(idx);
+      return true;
+    });
     return { refresh: refresh };
   }
 
@@ -442,6 +502,7 @@
     }
     var cv = el('canvas', 'mfp-draw', parent);
     var ctx = cv.getContext('2d');
+    var head = null;       // playhead phase 0..1 (null: not drawn)
     function paint() {
       var r = cv.getBoundingClientRect();
       var dpr = window.devicePixelRatio || 1;
@@ -463,7 +524,26 @@
       }
       ctx.strokeStyle = acc; ctx.lineWidth = 2 * dpr; ctx.lineJoin = 'round';
       ctx.stroke();
+      if (head != null) {
+        // playhead + current value dot; x mapping matches the curve (point k at (k + 0.5) / 64)
+        var fx = head * (SHAPE_N - 1), i0 = Math.floor(fx), i1 = Math.min(SHAPE_N - 1, i0 + 1);
+        var val = sh[i0] + (sh[i1] - sh[i0]) * (fx - i0);
+        var px = (fx + 0.5) / SHAPE_N * w, py = pad + (1 - val) * (h - 2 * pad);
+        ctx.strokeStyle = tv.fg2; ctx.lineWidth = 1.5 * dpr;
+        ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, h); ctx.stroke();
+        ctx.fillStyle = tv.acc;
+        ctx.beginPath(); ctx.arc(px, py, 4.5 * dpr, 0, Math.PI * 2); ctx.fill();
+      }
     }
+    var fb = { ph: 0 };
+    anims.push(function (dt) {
+      var st = engineState(mod);
+      if (st) fb.ph = st.phase;
+      else fb.ph = (fb.ph + dt * clamp(+mod.params.rate || RATE.def, DRAW_RATE[0], DRAW_RATE[1])) % 1;
+      head = fb.ph;
+      paint();
+      return true;
+    });
     function sample(e) {
       var r = cv.getBoundingClientRect();
       var fx = clamp((e.clientX - r.left) / r.width, 0, 0.99999);
@@ -504,6 +584,115 @@
     cv.addEventListener('pointercancel', end);
     drawCanvases.push(paint);
     return { refresh: paint };
+  }
+
+  /* ---------- ADSR / AR oscilloscope: envelope output scrolling right to left over 2 s ---------- */
+  function buildScope(parent, mod) {
+    var cv = el('canvas', 'mfp-scope', parent);
+    cv.setAttribute('aria-hidden', 'true');
+    var c2 = cv.getContext('2d');
+    var buf = new Float32Array(SCOPE_N), pos = 0, acc = 0, peak = 0, wasFlat = false;
+    var step = SCOPE_SECS / SCOPE_N;
+    function paint(flat) {
+      var r = cv.getBoundingClientRect();
+      var dpr = window.devicePixelRatio || 1;
+      var w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
+      if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+      c2.clearRect(0, 0, w, h);
+      var tv = themeVals(), pad = 3 * dpr;
+      c2.beginPath();
+      if (flat) { c2.moveTo(0, h - pad); c2.lineTo(w, h - pad); }   // idle: flat trace at 0
+      for (var k = 0; !flat && k < SCOPE_N; k++) {
+        var v = buf[(pos + k) % SCOPE_N];           // oldest at the left, newest at the right
+        var x = k / (SCOPE_N - 1) * w, y = pad + (1 - v) * (h - 2 * pad);
+        if (k === 0) c2.moveTo(x, y); else c2.lineTo(x, y);
+      }
+      c2.strokeStyle = tv.stroke; c2.lineWidth = 2 * dpr; c2.lineJoin = 'round';
+      c2.stroke();
+    }
+    anims.push(function (dt) {
+      var st = engineState(mod);
+      var lv = st ? clamp(+st.level || 0, 0, 1) : 0;
+      peak = Math.max(peak, lv);
+      acc += dt;
+      var n = Math.min(SCOPE_N, Math.floor(acc / step));
+      if (n > 0) {
+        acc -= n * step;
+        for (var k = 0; k < n; k++) { buf[pos] = k === n - 1 ? lv : peak; pos = (pos + 1) % SCOPE_N; }
+        peak = 0;
+      }
+      var flat = true;
+      for (var q = 0; q < SCOPE_N; q++) if (buf[q] > 0.002) { flat = false; break; }
+      if (!flat || !wasFlat) paint(flat);      // idle: one flat repaint, then nothing
+      wasFlat = flat;
+      return true;
+    });
+    drawCanvases.push(function () { wasFlat = false; });
+  }
+
+  /* ---------- animation loop (step / playhead / scope / AUTO countdown) ---------- */
+  // engine state of a panel module: only the preview graph mirrors the panel
+  function engineState(mod) {
+    var A = window.MFAudio;
+    if (!A || typeof A.getModuleState !== 'function') return null;
+    var st = null;
+    try { st = A.getModuleState(mod.id); } catch (e) { return null; }
+    return st && st.type === mod.type && st.slot === 'preview' ? st : null;
+  }
+  function inputPatched(modId, port) {
+    for (var i = 0; i < cables.length; i++) if (cables[i].to.mod === modId && cables[i].to.port === port) return true;
+    return false;
+  }
+  var loopOn = false, lastFrame = 0, panelVisible = true, reduceMotion = null;
+  function loopWanted() {
+    return !!(root && root.isConnected && !document.hidden && panelVisible && (anims.length || lockUntil));
+  }
+  function kick() {
+    if (loopOn || !loopWanted()) return;
+    loopOn = true;
+    lastFrame = 0;
+    requestAnimationFrame(frame);
+  }
+  function frame(ts) {
+    if (!loopWanted()) { loopOn = false; return; }
+    var now = (typeof ts === 'number' && ts > 0) ? ts : performance.now();
+    var dt = lastFrame ? clamp((now - lastFrame) / 1000, 0, 0.25) : 0;
+    lastFrame = now;
+    for (var i = 0; i < anims.length; i++) { try { anims[i](dt); } catch (e) { console.error(e); } }
+    paintLock();
+    requestAnimationFrame(frame);
+  }
+
+  /* ---------- AUTO lockout: 10 s after each new module set, countdown drawn on the button ---------- */
+  function autoLockRemaining() {
+    if (!lockUntil) return 0;
+    var r = (lockUntil - performance.now()) / 1000;
+    if (r <= 0) { lockUntil = 0; return 0; }
+    return r;
+  }
+  function paintLock() {
+    if (!autoBtn) return;
+    var rem = autoLockRemaining();
+    var locked = rem > 0;
+    if (autoBtn.__locked !== locked) {
+      autoBtn.__locked = locked;
+      autoBtn.classList.toggle('mfp-locked', locked);
+      autoBtn.setAttribute('aria-disabled', locked ? 'true' : 'false');
+      if (!locked) { autoBtn.__secs = null; autoBtn.__num.textContent = ''; }
+    }
+    if (!locked) return;
+    var secs = Math.ceil(rem);
+    if (autoBtn.__secs !== secs) { autoBtn.__secs = secs; autoBtn.__num.textContent = String(secs); }
+    if (reduceMotion === null) reduceMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    // remaining share of the lockout; reduced motion: whole-second steps only
+    var frac = (reduceMotion ? secs : rem) / (AUTO_LOCK_MS / 1000);
+    autoBtn.style.setProperty('--mfp-lock', clamp(frac, 0, 1).toFixed(4));
+  }
+  function startAutoLock() {
+    lockUntil = performance.now() + AUTO_LOCK_MS;
+    if (autoBtn) { autoBtn.__locked = null; autoBtn.__secs = null; }
+    paintLock();
+    kick();
   }
 
   /* ---------- jacks ---------- */
@@ -577,6 +766,7 @@
     }
     var go = el('div', 'mfp-pgroup mfp-out', ports);
     outs.forEach(function (p) { buildPort(go, mod.id, p, 'out'); });
+    if (mod.type === 'ADSR' || mod.type === 'AR') buildScope(box, mod);
 
     var pw = el('div', 'mfp-knobs' + (inline ? ' mfp-inline' : ' mfp-fit'), jrow || box);
     def.params.forEach(function (p) {
@@ -809,30 +999,25 @@
   }
 
   /* ---------- build ---------- */
-  // fill rail 1 in order while it stays closest to half the total HP; the rest go to rail 2
-  function splitRails(list) {
-    var total = 0;
-    list.forEach(function (m) { total += HP[m.type] || 8; });
-    var half = total / 2, sum = 0, cut = 0;
-    for (var i = 0; i < list.length; i++) {
-      var w = HP[list[i].type] || 8;
-      if (i > 0 && sum + w / 2 > half) break;
-      sum += w; cut = i + 1;
-    }
-    return [list.slice(0, cut), list.slice(cut)];
-  }
-
   function rebuild() {
-    railEls[0].innerHTML = '';
-    railEls[1].innerHTML = '';
+    railEl.innerHTML = '';
     footEl.innerHTML = '';
     jackEls = {};
     drawCanvases = [];
+    anims = [];
     var counts = {}, seen = {};
     modules.forEach(function (m) { counts[m.type] = (counts[m.type] || 0) + 1; });
     var auto = el('button', 'mfp-btn mfp-auto', footEl);
-    auto.type = 'button'; auto.textContent = 'AUTO';
-    auto.addEventListener('click', function () { if (enabled && opts.onAuto) opts.onAuto(); });
+    auto.type = 'button';
+    auto.setAttribute('aria-label', 'AUTO');
+    el('span', 'mfp-lockbar', auto);
+    var al = el('span', 'mfp-auto-label', auto); al.textContent = 'AUTO';
+    auto.__num = el('span', 'mfp-auto-num', auto);
+    autoBtn = auto;
+    auto.addEventListener('click', function () {
+      if (autoLockRemaining() > 0) return;            // locked after a new module set: no cables
+      if (enabled && opts.onAuto) opts.onAuto();
+    });
     var send = el('button', 'mfp-btn mfp-send', footEl);
     send.type = 'button'; send.textContent = 'SEND';
     send.addEventListener('click', function () { if (enabled && opts.onSubmit) opts.onSubmit(getPatch()); });
@@ -841,19 +1026,18 @@
       if (!DEFS[m.type]) { console.warn('MFPatchUI: unknown module type', m.type); return false; }
       return true;
     });
-    var rails = splitRails(known);
-    rails.forEach(function (list, r) {
-      list.forEach(function (m) {
-        seen[m.type] = (seen[m.type] || 0) + 1;
-        var nm = TITLE[m.type] || m.type;
-        buildModule(m, counts[m.type] > 1 ? nm + ' ' + seen[m.type] : nm, railEls[r]);
-      });
+    known.forEach(function (m) {
+      seen[m.type] = (seen[m.type] || 0) + 1;
+      var nm = TITLE[m.type] || m.type;
+      buildModule(m, counts[m.type] > 1 ? nm + ' ' + seen[m.type] : nm, railEl);
     });
+    paintLock();
     requestAnimationFrame(function () {
       fitKnobs();
       drawCanvases.forEach(function (p) { p(); });
       redraw();
     });
+    kick();
   }
 
   var themeListening = false;
@@ -872,7 +1056,7 @@
     root.style.setProperty('--mfp-hp', HP_PX + 'px');
     scrollEl = el('div', 'mfp-scroll', root);
     caseEl = el('div', 'mfp-case', scrollEl);
-    railEls = [el('div', 'mfp-rail', caseEl), el('div', 'mfp-rail', caseEl)];
+    railEl = el('div', 'mfp-rail', caseEl);
     csvgEl = svg('svg', { 'class': 'mfp-cables mfp-case-cables' }, caseEl);
     cLayer = svg('g', {}, csvgEl);
     footEl = el('div', 'mfp-foot', root);
@@ -883,6 +1067,8 @@
     if (!themeListening) {
       themeListening = true;
       window.addEventListener('mf-theme', onThemeChange);
+      window.addEventListener('mf-hue', onThemeChange);         // HUE wheel: cables + canvases recolour
+      document.addEventListener('visibilitychange', kick);
     }
     themeCache = null;
     if (window.ResizeObserver) {
@@ -894,6 +1080,16 @@
       ro.observe(root);
       ro.observe(caseEl);
     }
+    // pause the animation loop while the panel is off screen (or the screen is hidden)
+    panelVisible = true;
+    if (window.IntersectionObserver) {
+      var io = new IntersectionObserver(function (ents) {
+        var e = ents[ents.length - 1];
+        panelVisible = !!(e && e.isIntersecting);
+        kick();
+      });
+      io.observe(root);
+    }
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { fitKnobs(); queueRedraw(); });
     rebuild();
     setEnabled(enabled);
@@ -904,6 +1100,12 @@
     cables = [];
     nextColor = 0;
     if (root) { rebuild(); scrollEl.scrollLeft = 0; }
+    if (modules.length) startAutoLock();
+    // after the caller's own follow-up calls (index.html stops the old preview right after
+    // setModules): report the new uncabled panel so the engine builds its silent preview
+    // graph, which runs the SEQ5 / DRAW clocks and envelopes from the moment they appear
+    var mine = modules;
+    setTimeout(function () { if (modules === mine && root) emitChange(); }, 0);
   }
 
   // Wire a whole patch onto the current panel (AUTO): params of modules that are on the
@@ -967,6 +1169,7 @@
     setModules: setModules,
     getPatch: getPatch,
     setPatch: setPatch,
-    setEnabled: setEnabled
+    setEnabled: setEnabled,
+    autoLockRemaining: autoLockRemaining     // seconds left of the AUTO lockout (0 = AUTO usable)
   };
 })();

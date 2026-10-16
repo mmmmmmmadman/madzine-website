@@ -17,6 +17,82 @@
       if (window.localStorage.getItem('mf_theme') === 'light') document.documentElement.setAttribute('data-theme', 'light');
     } catch (e) { /* storage unavailable */ }
   })();
+
+  // HUE accent system (port of AnyAni src/hue.rs: hsb_to_color32 / compute_accent_colors).
+  // Every accent token is HSB at the chosen hue; each role keeps the S / B of the original
+  // coral tokens, and S is multiplied by the saturation multiplier (0..2, clamped 0..1).
+  // Applied here, before the first paint, from localStorage mf_hue / mf_sat.
+  (function () {
+    var DEFAULT_HUE = 12 / 360, DEFAULT_SAT = 1;
+    // [S, B] per role, read from the coral tokens (dark / light themes keep their own values)
+    var ROLES = {
+      dark: { acc: [0.5345, 0.9098], text: [0.5345, 0.9098], dim: [0.3925, 0.4196], glow: [0.4980, 1.0],
+              line: [0.3925, 0.4196], fill: [0.3925, 0.4196], stroke: [0.5345, 0.9098] },
+      light: { acc: [0.5345, 0.9098], text: [0.6536, 0.7020], dim: [0.1852, 0.9529], glow: [0.6359, 0.8510],
+               line: [0.5345, 0.9098], fill: [0.4093, 0.9294], stroke: [0.6536, 0.7020] }
+    };
+    function clamp(v, lo, hi) { return v < lo ? lo : (v > hi ? hi : v); }
+    function hex2(v) { var s = Math.round(clamp(v, 0, 1) * 255).toString(16); return s.length < 2 ? '0' + s : s; }
+    // HSB -> '#rrggbb' (hue 0..1), same formula as hsb_to_color32
+    function hsb(h, s, b) {
+      h = ((h % 1) + 1) % 1 * 360;
+      var c = b * s, x = c * (1 - Math.abs((h / 60) % 2 - 1)), m = b - c, r, g, bl;
+      if (h < 60) { r = c; g = x; bl = 0; } else if (h < 120) { r = x; g = c; bl = 0; }
+      else if (h < 180) { r = 0; g = c; bl = x; } else if (h < 240) { r = 0; g = x; bl = c; }
+      else if (h < 300) { r = x; g = 0; bl = c; } else { r = c; g = 0; bl = x; }
+      return '#' + hex2(r + m) + hex2(g + m) + hex2(bl + m);
+    }
+    function compute(hue, sat) {
+      var out = {};
+      Object.keys(ROLES).forEach(function (th) {
+        var o = {};
+        Object.keys(ROLES[th]).forEach(function (k) {
+          var sb = ROLES[th][k];
+          o[k] = hsb(hue, clamp(sb[0] * sat, 0, 1), sb[1]);
+        });
+        out[th] = o;
+      });
+      return out;
+    }
+    function rules(c) {
+      return '--acc:' + c.acc + ';--acc-text:' + c.text + ';--acc-dim:' + c.dim + ';--acc-glow:' + c.glow + ';';
+    }
+    function mfpRules(c) {
+      return '--mfp-acc:' + c.acc + ';--mfp-acc-dim:' + c.dim + ';--mfp-acc-glow:' + c.glow + ';--mfp-acc-text:' + c.text +
+        ';--mfp-acc-line:' + c.line + ';--mfp-fill:' + c.fill + ';--mfp-draw-stroke:' + c.stroke + ';';
+    }
+    var state = { hue: DEFAULT_HUE, sat: DEFAULT_SAT, colors: null };
+    try {
+      var h = parseFloat(window.localStorage.getItem('mf_hue'));
+      var s = parseFloat(window.localStorage.getItem('mf_sat'));
+      if (isFinite(h) && h >= 0 && h <= 1) state.hue = h;
+      if (isFinite(s) && s >= 0 && s <= 2) state.sat = s;
+    } catch (e) { /* storage unavailable */ }
+    var styleEl = document.createElement('style');
+    styleEl.id = 'mf-hue-tokens';
+    document.head.appendChild(styleEl);
+    // higher specificity than the page :root / theme blocks and the .mfp blocks in mf-patch-ui.css
+    function apply(hue, sat) {
+      state.hue = ((hue % 1) + 1) % 1;
+      state.sat = clamp(sat, 0, 2);
+      var c = compute(state.hue, state.sat);
+      state.colors = c;
+      styleEl.textContent =
+        'html:root{' + rules(c.dark) + '}' +
+        'html .mfp{' + mfpRules(c.dark) + '}' +
+        'html:root[data-theme="light"]{' + rules(c.light) + '}' +
+        'html:root[data-theme="light"] .mfp{' + mfpRules(c.light) + '}';
+      return c;
+    }
+    function save() {
+      try {
+        window.localStorage.setItem('mf_hue', String(state.hue));
+        window.localStorage.setItem('mf_sat', String(state.sat));
+      } catch (e) { /* ignore */ }
+    }
+    apply(state.hue, state.sat);
+    window.MFHue = { DEFAULT_HUE: DEFAULT_HUE, DEFAULT_SAT: DEFAULT_SAT, state: state, hsb: hsb, compute: compute, apply: apply, save: save };
+  })();
 </script>
 <style>
 :root{
@@ -168,8 +244,9 @@ button:disabled{opacity:.4;cursor:default}
 #note.on{display:block}
 
 /* ---------- match ---------- */
-/* fight 22% / panel the rest: two module rows ~270px tall at 390x844 (fight canvas adapts via ResizeObserver) */
-#fight{flex:0 0 22%;height:22%;min-height:0;position:relative;background:var(--fight-bg)}
+/* panel = one module row (~270px at 390x844) + footer, sized by its content; fight takes the rest
+   (fight canvas adapts via ResizeObserver) */
+#fight{flex:1 1 auto;min-height:0;position:relative;background:var(--fight-bg)}
 #status{
   flex:0 0 auto;
   display:flex;align-items:center;justify-content:space-between;
@@ -181,7 +258,7 @@ button:disabled{opacity:.4;cursor:default}
 }
 #status b{font-weight:300;color:var(--fg)}
 #status .acc{color:var(--acc-text)}
-#panel{flex:1 1 auto;min-height:0;position:relative}
+#panel{flex:0 0 auto;min-height:0;position:relative}
 
 /* ---------- overlay ---------- */
 #overlay{
@@ -219,6 +296,7 @@ button:disabled{opacity:.4;cursor:default}
   z-index:40;
 }
 #helpbtn:active,#helpbtn.open{background:var(--panel);border-color:var(--fg)}
+#helpbtn[hidden]{display:none}
 /* Full-screen backdrop; a press on it (outside the card) closes the sheet.
    Top padding keeps the card below the "?" button. */
 #helpsheet{
@@ -267,6 +345,43 @@ button:disabled{opacity:.4;cursor:default}
 }
 .sheet-credits p{margin:0;font-size:14px;line-height:20px;letter-spacing:.02em;color:var(--fg2);line-break:strict}
 .sheet-credits a{color:var(--fg);text-decoration:underline;text-underline-offset:2px}
+
+/* ---------- home top-right row: language + HUE (left of the "?" button) ---------- */
+#homebar{
+  position:fixed;
+  top:calc(8px + env(safe-area-inset-top,0px));
+  right:calc(12px + env(safe-area-inset-right,0px));
+  display:flex;align-items:center;gap:6px;
+  z-index:40;
+}
+#homebar[hidden]{display:none}
+#home-lang{display:flex;gap:6px;margin-right:6px}
+#home-lang button{
+  width:44px;height:44px;padding:0;
+  background:transparent;border:1px solid var(--stroke);border-radius:8px;
+  color:var(--fg);font-size:18px;line-height:20px;letter-spacing:0;text-align:center;
+}
+#home-lang button:active{background:var(--panel)}
+#home-lang button.selected{background:var(--acc);border-color:var(--acc);color:var(--on-acc)}
+#huebtn{
+  width:44px;height:44px;padding:0;
+  display:flex;align-items:center;justify-content:center;
+  background:transparent;border:1px solid var(--stroke);border-radius:50%;
+}
+#huebtn:active,#huebtn.open{background:var(--panel);border-color:var(--fg)}
+#hueicon{display:block;width:36px;height:36px;pointer-events:none}
+/* HUE popup, anchored under the HUE button (right edges aligned) */
+#huepop{
+  position:fixed;
+  top:calc(60px + env(safe-area-inset-top,0px));
+  right:calc(62px + env(safe-area-inset-right,0px));
+  padding:16px;
+  background:var(--elev);border:1px solid var(--line);border-radius:12px;
+  box-shadow:0 8px 24px var(--shadow);
+  z-index:45;touch-action:none;
+}
+#huepop[hidden]{display:none}
+#huewheel{display:block;width:236px;height:236px;touch-action:none;cursor:pointer}
 </style>
 </head>
 <body>
@@ -344,7 +459,13 @@ button:disabled{opacity:.4;cursor:default}
 
 </div>
 
-<button id="helpbtn" type="button" aria-haspopup="dialog" aria-controls="helpsheet" aria-expanded="false">?</button>
+<button id="helpbtn" type="button" hidden aria-hidden="true" tabindex="-1">?</button>
+
+<div id="homebar">
+  <div id="home-lang" role="group" aria-label="Language"></div>
+  <button id="huebtn" type="button" aria-label="Hue" aria-haspopup="dialog" aria-controls="huepop" aria-expanded="false"><canvas id="hueicon" aria-hidden="true"></canvas></button>
+</div>
+<div id="huepop" role="dialog" aria-label="Hue" hidden><canvas id="huewheel"></canvas></div>
 
 <div id="helpsheet" hidden>
   <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="sheet-title">
@@ -359,6 +480,7 @@ button:disabled{opacity:.4;cursor:default}
     <p class="sheet-text" data-i18n="helpModes"></p>
     <p class="sheet-text" data-i18n="helpCpu"></p>
     <p class="sheet-text" data-i18n="helpModules"></p>
+    <p class="sheet-text" data-i18n="helpHue"></p>
     <p class="sheet-label" data-i18n="langLabel">LANGUAGE</p>
     <div id="lang-seg" class="seg"></div>
     <p class="sheet-label" data-i18n="themeLabel">BACKGROUND</p>
@@ -455,6 +577,7 @@ button:disabled{opacity:.4;cursor:default}
       cpuNormal: '普通',
       cpuHard: '困難',
       helpModules: '模組：VCO/LFO、四軌混音器、低通濾波器、波形摺疊、立體聲延遲、ADSR、AR、五步音序器、手繪調變。',
+      helpHue: '色相圈（首頁右上角）：拖外圈改主色，在中央上下拖改飽和度。',
       langLabel: '語言',
       themeLabel: '背景',
       themeLight: '白底',
@@ -522,6 +645,7 @@ button:disabled{opacity:.4;cursor:default}
       cpuNormal: 'NORMAL',
       cpuHard: 'HARD',
       helpModules: 'Modules: VCO/LFO, 4-channel mixer, low-pass filter, wavefolder, stereo delay, ADSR, AR, 5-step sequencer, draw modulator.',
+      helpHue: 'Hue ring (top right of the home screen): drag the outer ring to change the main colour; drag up or down in the centre to change the saturation.',
       langLabel: 'LANGUAGE',
       themeLabel: 'BACKGROUND',
       themeLight: 'WHITE',
@@ -532,7 +656,7 @@ button:disabled{opacity:.4;cursor:default}
     },
     ja: {
       htmlLang: 'ja',
-      button: 'JP',
+      button: '日',
       tagline: 'つなぐ。送る。倒す。',
       vsCpu: 'CPU対戦',
       createRoom: 'ルーム作成',
@@ -589,6 +713,7 @@ button:disabled{opacity:.4;cursor:default}
       cpuNormal: 'ふつう',
       cpuHard: 'むずかしい',
       helpModules: 'モジュール：VCO/LFO、4ch ミキサー、ローパスフィルター、ウェーブフォルダー、ステレオディレイ、ADSR、AR、5ステップシーケンサー、手描きモジュレーター。',
+      helpHue: '色相リング（ホーム画面の右上）：外側のリングをドラッグするとメインカラー、中央を上下にドラッグすると彩度が変わります。',
       langLabel: '言語',
       themeLabel: '背景',
       themeLight: '白',
@@ -650,6 +775,9 @@ button:disabled{opacity:.4;cursor:default}
   // ---------- helpers ----------
   function show(name) {
     Object.keys(screens).forEach(function (k) { screens[k].classList.toggle('on', k === name); });
+    // language + HUE row only on HOME
+    $('homebar').hidden = name !== 'home';
+    if (name !== 'home' && typeof closeHue === 'function') closeHue();
   }
   function setMsg(key) { homeMsgKey = key || null; homeMsg.textContent = key ? t(key) : ''; }
   function errKey(key) { return STRINGS.en['err_' + key] ? 'err_' + key : 'err_peer_error'; }
@@ -741,21 +869,25 @@ button:disabled{opacity:.4;cursor:default}
   }
 
   // ---------- language ----------
-  var langSeg = $('lang-seg');
-  var langButtons = LANGS.map(function (code) {
-    var b = document.createElement('button');
-    b.type = 'button';
-    b.className = 'textbtn';
-    b.lang = STRINGS[code].htmlLang;
-    b.textContent = STRINGS[code].button;
-    b.addEventListener('click', function () {
-      if (lang === code) return;
-      lang = code;
-      saveLang(lang);
-      applyLang();
+  // Two sets of language buttons (home top-right row and the help sheet) share one state:
+  // `lang` + mf_lang; applyLang() marks the selected one in both.
+  var langButtons = [];
+  [$('home-lang'), $('lang-seg')].forEach(function (holder) {
+    LANGS.forEach(function (code) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      if (holder.id === 'lang-seg') b.className = 'textbtn';
+      b.lang = STRINGS[code].htmlLang;
+      b.textContent = STRINGS[code].button;
+      b.addEventListener('click', function () {
+        if (lang === code) return;
+        lang = code;
+        saveLang(lang);
+        applyLang();
+      });
+      holder.appendChild(b);
+      langButtons.push({ code: code, btn: b });
     });
-    langSeg.appendChild(b);
-    return { code: code, btn: b };
   });
 
   function applyLang() {
@@ -873,6 +1005,168 @@ button:disabled{opacity:.4;cursor:default}
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape' && !helpSheet.hidden) closeHelp();
   });
+
+  // ---------- HUE wheel popup (port of AnyAni main.rs hue popup + hue.rs wheel texture) ----------
+  var hueBtn = $('huebtn'), huePop = $('huepop'), wheelCv = $('huewheel'), iconCv = $('hueicon');
+  var WHEEL = 236;                     // canvas size (CSS px)
+  var OUTER = 110;                     // ring outer radius
+  var RING = 26;                       // ring thickness
+  var INNER = OUTER - RING;            // 84
+  var CENTER_R = INNER - 4;            // centre circle (same 4 px gap as the source)
+  var ICON = 36;
+  var ringTex = null, ringDpr = 0;
+  var hueZone = null;                  // null | 'ring' | 'center', locked at pointer-down
+  var hueLastY = 0, hueRaf = 0;
+  function smoothstep(e0, e1, x) { var t = (x - e0) / (e1 - e0); t = t < 0 ? 0 : (t > 1 ? 1 : t); return t * t * (3 - 2 * t); }
+  // pre-rendered pastel ring (S 0.30, B 0.92 per hue), smoothstep edges, like generate_hue_wheel_texture
+  function buildRingTex(dpr) {
+    var size = Math.round(WHEEL * dpr);
+    var cv = document.createElement('canvas');
+    cv.width = size; cv.height = size;
+    var c = cv.getContext('2d'), img = c.createImageData(size, size), px = img.data;
+    var center = size / 2, oR = OUTER * dpr, iR = INNER * dpr;
+    for (var y = 0; y < size; y++) {
+      for (var x = 0; x < size; x++) {
+        var dx = x + 0.5 - center, dy = y + 0.5 - center, d = Math.sqrt(dx * dx + dy * dy);
+        var a = smoothstep(oR + 1.5, oR - 0.5, d) * smoothstep(iR - 1.5, iR + 0.5, d);
+        if (a <= 0) continue;
+        var ang = Math.atan2(dy, dx) + Math.PI / 2;
+        if (ang < 0) ang += Math.PI * 2;
+        var col = MFHue.hsb(ang / (Math.PI * 2), 0.30, 0.92);
+        var o = (y * size + x) * 4;
+        px[o] = parseInt(col.substr(1, 2), 16); px[o + 1] = parseInt(col.substr(3, 2), 16);
+        px[o + 2] = parseInt(col.substr(5, 2), 16); px[o + 3] = Math.round(a * 255);
+      }
+    }
+    c.putImageData(img, 0, 0);
+    ringTex = cv; ringDpr = dpr;
+  }
+  function sizeCanvas(cv, css) {
+    var dpr = window.devicePixelRatio || 1, w = Math.round(css * dpr);
+    if (cv.width !== w) { cv.width = w; cv.height = w; }
+    return dpr;
+  }
+  function drawWheel() {
+    var dpr = sizeCanvas(wheelCv, WHEEL);
+    if (!ringTex || ringDpr !== dpr) buildRingTex(dpr);
+    var c = wheelCv.getContext('2d'), cx = WHEEL / 2, cy = WHEEL / 2, st = MFHue.state;
+    c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    c.clearRect(0, 0, WHEEL, WHEEL);
+    c.drawImage(ringTex, 0, 0, WHEEL, WHEEL);
+    // centre: current accent
+    c.fillStyle = st.colors.dark.acc;
+    c.beginPath(); c.arc(cx, cy, CENTER_R, 0, Math.PI * 2); c.fill();
+    // marker: black alpha 50/255 r6 under a white r5 (Color32::from_black_alpha(50) in the source)
+    var ma = st.hue * Math.PI * 2 - Math.PI / 2, mr = OUTER - RING / 2;
+    var mx = cx + Math.cos(ma) * mr, my = cy + Math.sin(ma) * mr;
+    c.fillStyle = 'rgba(0,0,0,' + (50 / 255) + ')';
+    c.beginPath(); c.arc(mx, my, 6, 0, Math.PI * 2); c.fill();
+    c.fillStyle = '#ffffff';
+    c.beginPath(); c.arc(mx, my, 5, 0, Math.PI * 2); c.fill();
+    // chevrons ^ and v (two line segments each) + SATURATION
+    c.strokeStyle = 'rgba(0,0,0,0.7)';
+    c.lineWidth = 2; c.lineCap = 'round'; c.lineJoin = 'round';
+    c.beginPath();
+    c.moveTo(cx - 10, cy - 18); c.lineTo(cx, cy - 28); c.lineTo(cx + 10, cy - 18);
+    c.moveTo(cx - 10, cy + 18); c.lineTo(cx, cy + 28); c.lineTo(cx + 10, cy + 18);
+    c.stroke();
+    c.fillStyle = 'rgba(0,0,0,0.7)';
+    c.font = '300 14px "Barlow Condensed","Noto Sans JP",system-ui,sans-serif';
+    c.textAlign = 'center'; c.textBaseline = 'middle';
+    c.fillText('SATURATION', cx, cy + 1);
+  }
+  // HUE button icon: the same ring scaled down, accent centre, white marker
+  function drawIcon() {
+    var dpr = sizeCanvas(iconCv, ICON);
+    if (!ringTex || ringDpr !== dpr) buildRingTex(dpr);
+    var c = iconCv.getContext('2d'), k = ICON / WHEEL, cx = ICON / 2, st = MFHue.state;
+    c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    c.clearRect(0, 0, ICON, ICON);
+    c.drawImage(ringTex, 0, 0, ICON, ICON);
+    c.fillStyle = st.colors.dark.acc;
+    c.beginPath(); c.arc(cx, cx, CENTER_R * k, 0, Math.PI * 2); c.fill();
+    var ma = st.hue * Math.PI * 2 - Math.PI / 2, mr = (OUTER - RING / 2) * k;
+    var mx = cx + Math.cos(ma) * mr, my = cx + Math.sin(ma) * mr;
+    c.fillStyle = 'rgba(0,0,0,' + (50 / 255) + ')';
+    c.beginPath(); c.arc(mx, my, 3, 0, Math.PI * 2); c.fill();
+    c.fillStyle = '#ffffff';
+    c.beginPath(); c.arc(mx, my, 2.5, 0, Math.PI * 2); c.fill();
+  }
+  // live: tokens now, canvases + panel colour cache once per frame
+  function setHue(h, s) {
+    MFHue.apply(h, s);
+    if (hueRaf) return;
+    hueRaf = requestAnimationFrame(function () {
+      hueRaf = 0;
+      if (!huePop.hidden) drawWheel();
+      drawIcon();
+      // mf-patch-ui.js caches its colour tokens until this event
+      try {
+        window.dispatchEvent(new CustomEvent('mf-theme', { detail: { theme: theme, hue: MFHue.state.hue, sat: MFHue.state.sat } }));
+        window.dispatchEvent(new CustomEvent('mf-hue', { detail: { hue: MFHue.state.hue, sat: MFHue.state.sat, colors: MFHue.state.colors } }));
+      } catch (e) { /* old browser */ }
+    });
+  }
+  function openHue() {
+    huePop.hidden = false;
+    hueBtn.classList.add('open');
+    hueBtn.setAttribute('aria-expanded', 'true');
+    drawWheel();
+  }
+  function closeHue() {
+    if (huePop.hidden) return;
+    huePop.hidden = true;
+    hueZone = null;
+    hueBtn.classList.remove('open');
+    hueBtn.setAttribute('aria-expanded', 'false');
+  }
+  hueBtn.addEventListener('click', function () { if (huePop.hidden) openHue(); else closeHue(); });
+  // a press anywhere outside the popup and the HUE button closes it
+  document.addEventListener('pointerdown', function (e) {
+    if (huePop.hidden) return;
+    if (huePop.contains(e.target) || hueBtn.contains(e.target)) return;
+    closeHue();
+  }, true);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeHue(); });
+  function wheelPos(e) {
+    var r = wheelCv.getBoundingClientRect();
+    return { dx: e.clientX - (r.left + r.width / 2), dy: e.clientY - (r.top + r.height / 2) };
+  }
+  function hueFromPos(p) {
+    var a = Math.atan2(p.dy, p.dx) + Math.PI / 2;
+    if (a < 0) a += Math.PI * 2;
+    return (a / (Math.PI * 2)) % 1;
+  }
+  wheelCv.addEventListener('pointerdown', function (e) {
+    var p = wheelPos(e), d = Math.sqrt(p.dx * p.dx + p.dy * p.dy);
+    if (d <= CENTER_R) hueZone = 'center';
+    else if (d >= INNER - 4 && d <= OUTER + 4) hueZone = 'ring';
+    else { hueZone = null; return; }
+    e.preventDefault();
+    try { wheelCv.setPointerCapture(e.pointerId); } catch (err) { /* ignore */ }
+    hueLastY = e.clientY;
+    if (hueZone === 'ring') setHue(hueFromPos(p), MFHue.state.sat);
+  });
+  wheelCv.addEventListener('pointermove', function (e) {
+    if (!hueZone) return;
+    e.preventDefault();
+    if (hueZone === 'ring') {
+      setHue(hueFromPos(wheelPos(e)), MFHue.state.sat);
+    } else {
+      var dy = e.clientY - hueLastY;
+      hueLastY = e.clientY;
+      setHue(MFHue.state.hue, Math.max(0, Math.min(2, MFHue.state.sat - dy * 0.01)));
+    }
+  });
+  function endHueDrag() {
+    if (!hueZone) return;
+    hueZone = null;
+    MFHue.save();
+  }
+  wheelCv.addEventListener('pointerup', endHueDrag);
+  wheelCv.addEventListener('pointercancel', endHueDrag);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { if (!huePop.hidden) drawWheel(); });
+  drawIcon();
 
   // ---------- attacks ----------
   function fire(patch) {

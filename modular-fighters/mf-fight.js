@@ -7,7 +7,7 @@
   'use strict';
 
   var MAX_HP = 100;
-  var COLOR_LEFT = '#e8846c';            // osc (coral)
+  var COLOR_LEFT = '#e8846c';            // osc (coral); replaced by the page --acc token (HUE wheel), see refreshAccent
   var COLOR_RIGHT = 'hsl(215,22%,62%)';  // moddict (cool grey-blue)
   var COLOR_BAR_LOW = 'hsl(0,78%,55%)';
   var COLOR_BG_OVERLAY = 'rgba(0,0,0,0.35)';   // over a user background only (both themes)
@@ -228,6 +228,20 @@
     return [d[0], d[1], d[2]];
   }
 
+  // osc (left) follows the page accent: --acc on <html>, rewritten by the HUE wheel.
+  // Figure tint, HP bar and lunge colour all read SIDES.left.color.
+  function refreshAccent() {
+    var c = '';
+    try { c = window.getComputedStyle(document.documentElement).getPropertyValue('--acc').trim(); } catch (e) { c = ''; }
+    if (!c) c = COLOR_LEFT;
+    if (c === SIDES.left.color) return;
+    SIDES.left.color = c;
+    var f = fighters.left;
+    if (f) { f.color = c; f.rgb = null; f.lastKey = -1; }   // re-key the figure with the new tint
+  }
+  window.addEventListener('mf-hue', refreshAccent);
+  window.addEventListener('mf-theme', refreshAccent);
+
   // Key one frame: white -> transparent, dark lines -> fighter colour.
   function keyFrame(f) {
     var src = f.source;
@@ -368,6 +382,7 @@
     if (!el.style.height && el.clientHeight === 0) el.style.height = '40vh';
     el.appendChild(canvas);
     ctx = canvas.getContext('2d');
+    refreshAccent();
     checkFont();
     resize();
     if (!fighters.left) makeFighter('left'); else if (fighters.left.source && fighters.left.source.tagName === 'VIDEO') el.appendChild(fighters.left.source);
