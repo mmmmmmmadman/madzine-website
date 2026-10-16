@@ -908,11 +908,40 @@
 
   function cpuSetDifficulty(name) {
     cpuDifficulty = CPU_SCALE[name] ? name : 'normal';
+    if (cpuRunning) idleArm();   // the idle period length follows the difficulty
   }
 
-  // The CPU is reactive only: one attack 1.5-3 s after each user attack, never otherwise.
-  function cpuRespond() {
-    cpuTimer = 0;
+  // Idle attack (user rule 2026-10-16): when the user has not sent a scoring attack for
+  // 40 / 30 / 20 s (EASY / NORMAL / HARD) the CPU attacks once on its own, then the period
+  // restarts. The period starts at cpu.start() and restarts after any attack from either side
+  // (user attack = notifyUserAttack, CPU attack = cpuAttack). Cancelled by cpu.stop() (KO, HOME).
+  // While the tab is hidden (document.hidden) the attack is skipped and a fresh period starts;
+  // nothing fires in the background and nothing fires the moment the tab comes back.
+  var IDLE_MS = { easy: 40000, normal: 30000, hard: 20000 };
+  var idleTimer = 0;
+  var idleDue = 0;            // Date.now() at which the idle attack is due (0 = not armed)
+
+  function idleArm() {
+    if (idleTimer) { clearTimeout(idleTimer); idleTimer = 0; }
+    idleDue = 0;
+    if (!cpuRunning || dead) return;
+    var ms = IDLE_MS[cpuDifficulty] || IDLE_MS.normal;
+    idleDue = Date.now() + ms;
+    idleTimer = setTimeout(idleFire, ms);
+  }
+  function idleFire() {
+    idleTimer = 0; idleDue = 0;
+    if (!cpuRunning || dead) return;
+    if (document.hidden) { idleArm(); return; }   // skip-and-restart while hidden
+    cpuAttack();
+  }
+  function idleRemaining() {
+    if (!idleDue) return 0;
+    return Math.max(0, (idleDue - Date.now()) / 1000);
+  }
+
+  // One CPU attack now (reply path and idle path share it); restarts the idle period.
+  function cpuAttack() {
     if (!cpuRunning || dead) return;
     var patch = buildPatch();
     var power = scorePatch(patch);
@@ -921,10 +950,18 @@
     if (cpuCallback) {
       try { cpuCallback(patch, power); } catch (e) { if (window.console) console.error(e); }
     }
+    idleArm();
+  }
+
+  // Reply path: one attack 1.5-3 s after each user attack.
+  function cpuRespond() {
+    cpuTimer = 0;
+    cpuAttack();
   }
 
   function cpuNotifyUserAttack() {
     if (!cpuRunning || dead) return;
+    idleArm();              // a user attack restarts the idle period
     if (cpuTimer) return;   // a response is already pending; it covers this attack too
     cpuTimer = setTimeout(cpuRespond, 1500 + Math.random() * 1500);
   }
@@ -933,11 +970,14 @@
     cpuStop();
     cpuRunning = true;
     cpuCallback = typeof onAttack === 'function' ? onAttack : null;
+    idleArm();
   }
 
   function cpuStop() {
     cpuRunning = false;
     if (cpuTimer) { clearTimeout(cpuTimer); cpuTimer = 0; }
+    if (idleTimer) { clearTimeout(idleTimer); idleTimer = 0; }
+    idleDue = 0;
   }
 
   // ---------------------------------------------------------------- export
@@ -955,6 +995,7 @@
     getSides: function () { return { me: sides.me, foe: sides.me === 'left' ? 'right' : 'left' }; },
     getRates: function () { return { me: rates.me, foe: rates.foe }; },
     cpu: { start: cpuStart, stop: cpuStop, notifyUserAttack: cpuNotifyUserAttack, respond: cpuRespond,
-      setDifficulty: cpuSetDifficulty, getDifficulty: function () { return cpuDifficulty; }, buildPatch: buildPatch }
+      setDifficulty: cpuSetDifficulty, getDifficulty: function () { return cpuDifficulty; }, buildPatch: buildPatch,
+      idleRemaining: idleRemaining }   // seconds until the idle attack (0 = not armed)
   };
 })();

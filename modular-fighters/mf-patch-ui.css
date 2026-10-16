@@ -88,6 +88,7 @@ html[data-theme="light"] .mfp{
 .mfp.mfp-disabled{opacity:.4;filter:grayscale(1)}
 .mfp.mfp-disabled .mfp-scroll,
 .mfp.mfp-disabled .mfp-foot,
+.mfp.mfp-disabled .mfp-hbar,
 .mfp.mfp-disabled .mfp-cables{pointer-events:none}
 
 @supports (height:1dvh){ .mfp{--mfp-rowh:clamp(200px,32dvh,400px)} }
@@ -98,11 +99,34 @@ html[data-theme="light"] .mfp{
   overflow-x:auto;overflow-y:hidden;
   -webkit-overflow-scrolling:touch;
   overscroll-behavior:contain;
-  touch-action:pan-x;
+  touch-action:none;        /* fingers never pan the row: scroll with the bar below (wheel / trackpad still work) */
   background:var(--mfp-case);
   scrollbar-width:none;
 }
 .mfp-scroll::-webkit-scrollbar{display:none}
+/* horizontal scroll bar under the row: filled-track fader, thumb = visible share of the rail.
+   24px track, hit area grown to 44px with the pseudo-element; hidden when the rail fits. */
+.mfp-hbar{
+  position:relative;
+  flex:0 0 auto;height:24px;
+  margin:6px var(--mfp-gap);
+  background:var(--mfp-sunk);
+  border:1px solid var(--mfp-line);
+  border-radius:6px;
+  touch-action:none;
+  cursor:ew-resize;
+  z-index:6;
+}
+.mfp-hbar::before{content:"";position:absolute;left:0;right:0;top:-11px;bottom:-11px}
+.mfp-hbar.mfp-off{display:none}
+.mfp-hthumb{
+  position:absolute;top:2px;bottom:2px;left:0;
+  width:44px;
+  border-radius:4px;
+  background:var(--mfp-acc);
+  pointer-events:none;
+}
+.mfp-hbar.mfp-active .mfp-hthumb{background:var(--mfp-acc-glow)}
 .mfp-case{
   position:relative;
   display:flex;flex-direction:column;gap:4px;
@@ -128,7 +152,7 @@ html[data-theme="light"] .mfp{
   border-radius:2px;
   padding:3px 4px 4px;
   overflow:hidden;
-  touch-action:pan-x;
+  touch-action:none;
 }
 .mfp-head{
   flex:0 0 auto;
@@ -334,7 +358,7 @@ html[data-theme="light"] .mfp{
 /* case overlay: module-to-module cables, sized to the whole scrollable case in JS */
 .mfp-cables.mfp-case-cables{width:auto;height:auto;overflow:hidden;z-index:4}
 .mfp-cable{fill:none;stroke-width:4;stroke-linecap:round;pointer-events:none;opacity:.92}
-.mfp-cable-hit{fill:none;stroke:transparent;stroke-width:18;stroke-linecap:round;pointer-events:stroke;cursor:pointer;touch-action:pan-x}
+.mfp-cable-hit{fill:none;stroke:transparent;stroke-width:18;stroke-linecap:round;pointer-events:stroke;cursor:pointer;touch-action:none}
 .mfp-cables.mfp-dragging .mfp-cable-hit{pointer-events:none}
 .mfp-cable-end{pointer-events:none}
 .mfp-cable-temp{fill:none;stroke-width:4;stroke-linecap:round;stroke-dasharray:8 6;pointer-events:none}

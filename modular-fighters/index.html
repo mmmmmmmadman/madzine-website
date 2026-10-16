@@ -272,13 +272,18 @@ button:disabled{opacity:.4;cursor:default}
 #ov-title{font-size:64px;line-height:1;letter-spacing:.14em;margin:0 0 4px;text-align:center}
 #ov-title.win{color:var(--acc)}
 #ov-sub{font-size:16px;letter-spacing:.12em;color:var(--fg2);margin:0 0 16px;text-align:center}
-#dl{
-  display:none;width:100%;max-width:320px;min-height:60px;
-  align-items:center;justify-content:center;
+/* downloads: MP3 (full width) + MY PATCH / FOE PATCH (two per row, wrap at 390 px) */
+.dlrow{display:none;flex-wrap:wrap;gap:8px;width:100%;max-width:320px}
+.dlrow.on{display:flex}
+.dlbtn{
+  display:none;flex:1 1 100%;min-height:60px;
+  align-items:center;justify-content:center;text-align:center;
   font-size:24px;letter-spacing:.16em;text-decoration:none;
   color:var(--fg);background:var(--elev);border:1px solid var(--line);border-radius:10px;
 }
-#dl.on{display:flex}
+.dlbtn.on{display:flex}
+.dlbtn.dlp{flex:1 1 140px;min-height:52px;font-size:18px;letter-spacing:.06em;padding:0 8px;line-height:1.1}
+html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /* one per row: no mid-word wrap */
 
 /* ---------- help button + help sheet (same architecture as osc-bounce) ---------- */
 /* Round "?" at the top-right corner of every screen. It sits above the sheet backdrop,
@@ -451,7 +456,11 @@ button:disabled{opacity:.4;cursor:default}
     <div id="overlay">
       <h2 id="ov-title">YOU WIN</h2>
       <p id="ov-sub"></p>
-      <a id="dl" href="#" download="modular-fighters.mp3" data-i18n="download">DOWNLOAD MP3</a>
+      <div class="dlrow" id="dlrow">
+        <a id="dl" class="dlbtn" href="#" download="modular-fighters.mp3" data-i18n="download">DOWNLOAD MP3</a>
+        <a id="dl-me" class="dlbtn dlp" href="#" download="modular-fighters-me.png" data-i18n="downloadMe">DOWNLOAD MY PATCH</a>
+        <a id="dl-foe" class="dlbtn dlp" href="#" download="modular-fighters-foe.png" data-i18n="downloadFoe">DOWNLOAD FOE PATCH</a>
+      </div>
       <button id="btn-rematch" class="big pri" type="button" data-i18n="rematch">REMATCH</button>
       <button id="btn-home" class="big" type="button" data-i18n="home">HOME</button>
     </div>
@@ -509,6 +518,7 @@ button:disabled{opacity:.4;cursor:default}
   var screens = { home: $('home'), setup: $('setup'), room: $('room'), match: $('match') };
   var setupNote = $('setup-note'), noteEl = $('note'), roomWait = $('room-wait');
   var overlay = $('overlay'), ovTitle = $('ov-title'), ovSub = $('ov-sub'), dl = $('dl');
+  var dlRow = $('dlrow'), dlMe = $('dl-me'), dlFoe = $('dl-foe');
   var btnRematch = $('btn-rematch'), btnHome = $('btn-home');
   var stMode = $('st-mode'), stPower = $('st-power');
   var homeMsg = $('home-msg');
@@ -553,6 +563,8 @@ button:disabled{opacity:.4;cursor:default}
       download: '下載錄音 MP3',
       downloadWebm: '下載錄音 WEBM',
       downloadMp4: '下載錄音 MP4',
+      downloadMe: '下載我的配線',
+      downloadFoe: '下載對手配線',
       rematch: '再戰',
       home: '首頁',
       tookChar: '對手選了 {a}，你是 {b}',
@@ -572,7 +584,7 @@ button:disabled{opacity:.4;cursor:default}
       helpPower: '攻擊力來自接線的複雜度：模組越多、線越多、調變越多，傷害越高。AUTO 會幫你接好一組簡單的線，按 SEND 才會攻擊。SEND 送出攻擊並換一批新模組。攻擊力越高，你的角色動作越快，直到下一次送出。',
       helpSound: '送出新聲音時，上一個聲音會停止。對手的聲音會和你的一起播放。',
       helpModes: '對戰電腦：和電腦對打。建立房間：把 4 碼房號給朋友。加入房間：輸入房號。整場對戰的聲音會錄下來，KO 後可下載 MP3。背景可用裝置內的照片或影片，只留在你的裝置上，不會傳送。',
-      helpCpu: '電腦不會主動攻擊：你每攻擊一次，它才回擊一次。難度（簡單／普通／困難）決定它打多重。',
+      helpCpu: '你每攻擊一次，電腦回擊一次。你 40／30／20 秒（簡單／普通／困難）沒有送出攻擊，它會自己攻擊一次。難度也決定它打多重。',
       cpuEasy: '簡單',
       cpuNormal: '普通',
       cpuHard: '困難',
@@ -621,6 +633,8 @@ button:disabled{opacity:.4;cursor:default}
       download: 'DOWNLOAD MP3',
       downloadWebm: 'DOWNLOAD WEBM',
       downloadMp4: 'DOWNLOAD MP4',
+      downloadMe: 'DOWNLOAD MY PATCH',
+      downloadFoe: 'DOWNLOAD FOE PATCH',
       rematch: 'REMATCH',
       home: 'HOME',
       tookChar: 'OPPONENT TOOK {a}, YOU ARE {b}',
@@ -640,7 +654,7 @@ button:disabled{opacity:.4;cursor:default}
       helpPower: 'Attack power comes from patch complexity: more modules, more cables and more modulation mean more damage. AUTO wires a simple patch for you; press SEND to attack. SEND attacks and gives you new modules. Higher power makes your fighter move faster until your next patch.',
       helpSound: 'Your previous sound stops when you send a new one. The opponent’s sound plays together with yours.',
       helpModes: 'VS CPU: fight the computer. CREATE ROOM: give the 4-letter code to a friend. JOIN ROOM: enter the code. The sound of the whole match is recorded and can be downloaded as MP3 after KO. The background can be a photo or video from your device; it stays on your device only.',
-      helpCpu: 'The CPU never attacks first: it answers each of your attacks once. The difficulty (EASY / NORMAL / HARD) sets how hard it hits.',
+      helpCpu: 'The CPU answers each of your attacks once. If you send nothing for 40 / 30 / 20 s (EASY / NORMAL / HARD), it attacks once on its own. The difficulty also sets how hard it hits.',
       cpuEasy: 'EASY',
       cpuNormal: 'NORMAL',
       cpuHard: 'HARD',
@@ -689,6 +703,8 @@ button:disabled{opacity:.4;cursor:default}
       download: 'MP3 をダウンロード',
       downloadWebm: 'WEBM をダウンロード',
       downloadMp4: 'MP4 をダウンロード',
+      downloadMe: '自分のパッチを保存',
+      downloadFoe: '相手のパッチを保存',
       rematch: '再戦',
       home: 'ホーム',
       tookChar: '相手が {a} を選んだので、あなたは {b} です',
@@ -708,7 +724,7 @@ button:disabled{opacity:.4;cursor:default}
       helpPower: '攻撃力はパッチの複雑さで決まります。モジュール、ケーブル、モジュレーションが多いほどダメージが大きくなります。AUTO はかんたんなパッチをつないでくれます。攻撃するには SEND を押します。SEND で攻撃し、新しいモジュールに入れ替わります。攻撃力が高いほど、次のパッチを送るまでキャラクターの動きが速くなります。',
       helpSound: '新しい音を送ると前の音は止まります。相手の音はあなたの音と一緒に鳴ります。',
       helpModes: 'CPU対戦：コンピューターと対戦。ルーム作成：4文字のコードを友だちに伝えます。ルーム参加：コードを入力します。試合の音は全部録音され、KO のあとに MP3 でダウンロードできます。背景には端末内の写真や動画を使えます。端末の外には送信されません。',
-      helpCpu: 'CPU は自分から攻撃しません。あなたが攻撃するごとに一回だけ反撃します。難易度（かんたん／ふつう／むずかしい）で反撃の強さが決まります。',
+      helpCpu: 'CPU はあなたの攻撃ごとに一回反撃します。40／30／20 秒（かんたん／ふつう／むずかしい）攻撃を送らないと、CPU が自分から一回攻撃します。難易度で攻撃の強さも決まります。',
       cpuEasy: 'かんたん',
       cpuNormal: 'ふつう',
       cpuHard: 'むずかしい',
@@ -756,6 +772,10 @@ button:disabled{opacity:.4;cursor:default}
   var currentModules = [];
   var lastPower = { me: null, foe: null };
   var recUrl = null;
+  // last SENT patch of each side (last attack that scored > 0), for the KO patch images
+  var lastSent = { me: null, foe: null };
+  var patchUrls = { me: null, foe: null };
+  var patchGen = 0;           // render generation; stale renders are dropped
 
   // dynamic text state, kept as keys so a language change can re-render them
   var waitKey = 'waiting';
@@ -862,10 +882,44 @@ button:disabled{opacity:.4;cursor:default}
     var vids = screens.setup.querySelectorAll('video');
     for (var i = 0; i < vids.length; i++) { try { var p = vids[i].play(); if (p && p.catch) p.catch(function () {}); } catch (e) {} }
   }
+  function updateDlRow() {
+    dlRow.classList.toggle('on', dl.classList.contains('on') || dlMe.classList.contains('on') || dlFoe.classList.contains('on'));
+  }
+  function revokePatchImages() {
+    patchGen++;
+    ['me', 'foe'].forEach(function (who) {
+      if (patchUrls[who]) { try { URL.revokeObjectURL(patchUrls[who]); } catch (e) {} patchUrls[who] = null; }
+      var a = who === 'me' ? dlMe : dlFoe;
+      a.classList.remove('on');
+      a.removeAttribute('href');
+    });
+    updateDlRow();
+  }
+  // KO overlay: a PNG of each side's last sent patch, in the current theme; re-rendered on a theme change
+  function renderPatchImages() {
+    revokePatchImages();
+    var gen = patchGen;
+    if (!window.MFPatchUI || typeof MFPatchUI.renderPatchImage !== 'function') return;
+    ['me', 'foe'].forEach(function (who) {
+      var rec = lastSent[who];
+      if (!rec || !rec.patch) return;
+      var title = 'MODULAR FIGHTERS — ' + (who === 'me' ? 'YOU' : 'FOE') + ' ' + rec.power;
+      MFPatchUI.renderPatchImage(rec.patch, { theme: theme, title: title }).then(function (blob) {
+        if (gen !== patchGen || !ended || !blob || !blob.size) return;
+        var a = who === 'me' ? dlMe : dlFoe;
+        patchUrls[who] = URL.createObjectURL(blob);
+        a.href = patchUrls[who];
+        a.download = 'modular-fighters-' + who + '-' + stamp() + '.png';
+        a.classList.add('on');
+        updateDlRow();
+      }).catch(function (e) { if (window.console) console.warn('patch image', e); });
+    });
+  }
   function revokeRec() {
     if (recUrl) { try { URL.revokeObjectURL(recUrl); } catch (e) {} recUrl = null; }
     dl.classList.remove('on');
     dl.removeAttribute('href');
+    revokePatchImages();
   }
 
   // ---------- language ----------
@@ -946,6 +1000,7 @@ button:disabled{opacity:.4;cursor:default}
       theme = v;
       saveTheme(theme);
       applyTheme();
+      if (ended && overlay.classList.contains('on')) renderPatchImages();   // patch PNGs follow the theme
     });
   });
 
@@ -1178,6 +1233,7 @@ button:disabled{opacity:.4;cursor:default}
       if (!MFAudio.commitPreview(patch)) MFAudio.play('me', patch);
       MFFight.attack('me', power);
       lastPower.me = power;
+      lastSent.me = { patch: patch, power: power };
       updateStatus();
       if (mode === 'net') MFNet.send({ t: 'attack', patch: patch, power: power });
       if (mode === 'cpu') MFFight.cpu.notifyUserAttack();   // the CPU only ever answers a user attack
@@ -1190,6 +1246,7 @@ button:disabled{opacity:.4;cursor:default}
     MFAudio.play('foe', patch);
     MFFight.attack('foe', power);
     lastPower.foe = power;
+    if (power > 0 && patch && patch.modules) lastSent.foe = { patch: patch, power: power };
     updateStatus();
   }
 
@@ -1221,6 +1278,7 @@ button:disabled{opacity:.4;cursor:default}
     inMatch = true;
     ended = false;
     lastPower = { me: null, foe: null };
+    lastSent = { me: null, foe: null };
     revokeRec();
     overlay.classList.remove('on');
     MFFight.reset();
@@ -1240,6 +1298,7 @@ button:disabled{opacity:.4;cursor:default}
     MFPatchUI.setEnabled(false);
     if (mode === 'net') MFNet.send({ t: 'ko', winner: winner });
     showResult(winner === 'me');
+    renderPatchImages();
     MFAudio.stopRecording().then(function (blob) {
       if (!ended) return;
       if (!blob || !blob.size) return;
@@ -1253,6 +1312,7 @@ button:disabled{opacity:.4;cursor:default}
       dl.href = recUrl;
       dl.download = 'modular-fighters-' + stamp() + '.' + ext;
       dl.classList.add('on');
+      updateDlRow();
     }).catch(function () {});
   }
   function showResult(win) {

@@ -223,6 +223,7 @@
   // csvgEl/cLayer: overlay inside the scrolling case (module-to-module cables, scrolls with the content)
   var root = null, scrollEl = null, caseEl = null, railEl = null, footEl = null, svgEl = null, cableLayer = null, tempPath = null;
   var csvgEl = null, cLayer = null;
+  var hbarEl = null, hthumbEl = null, hgrab = null;   // horizontal scroll bar under the row + its active pointer
   var opts = {};
   var modules = [];
   var cables = [];
@@ -317,7 +318,7 @@
     var tap = makeTapper();
     var g = null;
     k.addEventListener('pointerdown', function (e) {
-      if (!enabled || e.button > 0) return;
+      if (!enabled || e.button > 0 || g) return;     // a second finger on the same knob is ignored
       e.preventDefault();
       cap(k, e.pointerId);
       g = { id: e.pointerId, x0: e.clientX, y0: e.clientY, lx: e.clientX, ly: e.clientY, locked: false, moved: false };
@@ -433,7 +434,7 @@
       emitParam(mod, 'steps', mod.params.steps);
     }
     box.addEventListener('pointerdown', function (e) {
-      if (!enabled || e.button > 0) return;
+      if (!enabled || e.button > 0 || g) return;
       e.preventDefault();
       cap(box, e.pointerId);
       var r = box.getBoundingClientRect();
@@ -566,7 +567,7 @@
       emitParam(mod, 'shape', sh);
     }
     cv.addEventListener('pointerdown', function (e) {
-      if (!enabled || e.button > 0) return;
+      if (!enabled || e.button > 0 || g) return;
       e.preventDefault();
       cap(cv, e.pointerId);
       g = { id: e.pointerId, last: null };
@@ -858,6 +859,9 @@
       if (a) a.classList.add('mfp-hot');
       if (b) b.classList.add('mfp-hot');
     });
+    // a cable held while the row scrolls (bar, wheel, auto-scroll): re-aim both ends from the finger
+    if (drag && tempPath && drag.cx != null) updateTemp(drag.cx, drag.cy);
+    updateHbar();
   }
   function queueRedraw() {
     if (redrawQueued) return;
@@ -902,9 +906,54 @@
     if (v !== 0) {
       var before = scrollEl.scrollLeft;
       scrollEl.scrollLeft = before + v * 12;
-      if (scrollEl.scrollLeft !== before) { redraw(); updateTemp(drag.cx, drag.cy); }
+      if (scrollEl.scrollLeft !== before) redraw();     // redraw re-aims the held cable
     }
     requestAnimationFrame(autoScrollTick);
+  }
+
+  /* ---------- horizontal scroll bar (the only touch way to scroll the row) ---------- */
+  // thumb width = visible share of the rail (min 44px); hidden when everything fits
+  function updateHbar() {
+    if (!hbarEl || !scrollEl) return;
+    var total = scrollEl.scrollWidth, vis = scrollEl.clientWidth;
+    if (total <= vis + 1) { hbarEl.classList.add('mfp-off'); return; }
+    hbarEl.classList.remove('mfp-off');
+    var tw = hbarEl.clientWidth;
+    var w = Math.max(44, Math.round(tw * vis / total));
+    var x = Math.round((tw - w) * scrollEl.scrollLeft / (total - vis));
+    hthumbEl.style.width = w + 'px';
+    hthumbEl.style.transform = 'translateX(' + Math.max(0, Math.min(tw - w, x)) + 'px)';
+  }
+  // thumb centre -> scrollLeft
+  function hbarScrollTo(clientX, grabOff) {
+    var r = hbarEl.getBoundingClientRect();
+    var tw = r.width, w = hthumbEl.offsetWidth;
+    var total = scrollEl.scrollWidth, vis = scrollEl.clientWidth;
+    if (tw - w <= 0 || total - vis <= 0) return;
+    var left = clientX - r.left - grabOff;
+    scrollEl.scrollLeft = Math.max(0, Math.min(1, left / (tw - w))) * (total - vis);
+    redraw();
+  }
+  function onHbarDown(e) {
+    if (hgrab || e.button > 0) return;             // one finger owns the bar at a time
+    e.preventDefault();
+    e.stopPropagation();
+    var tr = hthumbEl.getBoundingClientRect();
+    var off = (e.clientX >= tr.left && e.clientX <= tr.right) ? e.clientX - tr.left : tr.width / 2;
+    hgrab = { id: e.pointerId, off: off };
+    hbarEl.classList.add('mfp-active');
+    cap(hbarEl, e.pointerId);
+    hbarScrollTo(e.clientX, off);                  // tap outside the thumb: thumb jumps under the finger
+  }
+  function onHbarMove(e) {
+    if (!hgrab || e.pointerId !== hgrab.id) return;
+    e.preventDefault();
+    hbarScrollTo(e.clientX, hgrab.off);
+  }
+  function onHbarEnd(e) {
+    if (!hgrab || e.pointerId !== hgrab.id) return;
+    hgrab = null;
+    hbarEl.classList.remove('mfp-active');
   }
   function onDragMove(e) {
     if (!drag || e.pointerId !== drag.id) return;
@@ -952,7 +1001,7 @@
   }
 
   function onJackDown(e) {
-    if (!enabled || e.button > 0) return;
+    if (!enabled || e.button > 0 || drag) return;    // one cable in the air at a time; other fingers are free
     e.preventDefault();
     e.stopPropagation();
     var j = e.currentTarget;
@@ -1059,6 +1108,15 @@
     railEl = el('div', 'mfp-rail', caseEl);
     csvgEl = svg('svg', { 'class': 'mfp-cables mfp-case-cables' }, caseEl);
     cLayer = svg('g', {}, csvgEl);
+    hbarEl = el('div', 'mfp-hbar mfp-off', root);
+    hbarEl.setAttribute('role', 'scrollbar');
+    hbarEl.setAttribute('aria-orientation', 'horizontal');
+    hthumbEl = el('div', 'mfp-hthumb', hbarEl);
+    hgrab = null;
+    hbarEl.addEventListener('pointerdown', onHbarDown);
+    hbarEl.addEventListener('pointermove', onHbarMove);
+    hbarEl.addEventListener('pointerup', onHbarEnd);
+    hbarEl.addEventListener('pointercancel', onHbarEnd);
     footEl = el('div', 'mfp-foot', root);
     svgEl = svg('svg', { 'class': 'mfp-cables' }, root);
     cableLayer = svg('g', {}, svgEl);
@@ -1164,12 +1222,328 @@
     }
   }
 
+  /* ---------- renderPatchImage: PNG of a patch, drawn from the data (not a DOM screenshot) ----------
+     Used by the KO overlay (DOWNLOAD MY PATCH / DOWNLOAD FOE PATCH). Same house style as the live
+     panel: one row of modules at their HP widths, jacks + labels, knob arcs, SEQ5 faders, DRAW curve,
+     cables in the current cable colours, OUT module in a footer, a header line with title and date.
+     Colours come from the --mfp-* tokens of the requested theme (a hidden .mfp probe; the html
+     data-theme attribute is toggled synchronously while the tokens are read, no paint in between). */
+  var IMG_HEAD = 48, IMG_RAIL = 270, IMG_FOOT = 80, IMG_SCALE = 2;
+  var IMG_TOKENS = ['bg', 'elev', 'panel', 'sunk', 'case', 'line', 'line2', 'rail', 'fg', 'fg2', 'fg3', 'acc', 'acc-dim',
+    'acc-glow', 'acc-text', 'acc-line', 'fill', 'on-acc', 'draw-grid', 'draw-stroke', 'cable-s', 'cable-b',
+    'cable-shadow', 'cable-shadow-op'];
+  function readImageTheme(wanted) {
+    var html = document.documentElement;
+    var cur = html.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+    wanted = wanted === 'light' ? 'light' : (wanted === 'dark' ? 'dark' : cur);
+    var probe = el('div', 'mfp');
+    probe.style.cssText = 'position:absolute;left:-9999px;top:0;width:1px;height:1px;visibility:hidden;pointer-events:none';
+    document.body.appendChild(probe);
+    if (wanted !== cur) { if (wanted === 'light') html.setAttribute('data-theme', 'light'); else html.removeAttribute('data-theme'); }
+    var out = { theme: wanted };
+    try {
+      var cs = getComputedStyle(probe);
+      IMG_TOKENS.forEach(function (k) { out[k] = cs.getPropertyValue('--mfp-' + k).trim(); });
+      out.hue = accentHue(cs);
+    } finally {
+      if (wanted !== cur) { if (cur === 'light') html.setAttribute('data-theme', 'light'); else html.removeAttribute('data-theme'); }
+      probe.parentNode.removeChild(probe);
+    }
+    out.cs = isNaN(parseFloat(out['cable-s'])) ? 0.5 : parseFloat(out['cable-s']);
+    out.cb = isNaN(parseFloat(out['cable-b'])) ? 0.92 : parseFloat(out['cable-b']);
+    out.shadowOp = isNaN(parseFloat(out['cable-shadow-op'])) ? 0.5 : parseFloat(out['cable-shadow-op']);
+    return out;
+  }
+  function imgFont(px, spacing) {
+    return '300 ' + px + 'px "Barlow Condensed","Noto Sans JP","Noto Sans TC",system-ui,sans-serif';
+  }
+  function roundRect(ctx, x, y, w, h, r) {
+    r = Math.min(r, w / 2, h / 2);
+    ctx.beginPath();
+    ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y); ctx.arcTo(x + w, y, x + w, y + r, r);
+    ctx.lineTo(x + w, y + h - r); ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
+    ctx.lineTo(x + r, y + h); ctx.arcTo(x, y + h, x, y + h - r, r);
+    ctx.lineTo(x, y + r); ctx.arcTo(x, y, x + r, y, r);
+    ctx.closePath();
+  }
+  // letter-spaced text (canvas has no reliable letterSpacing everywhere)
+  function spacedText(ctx, s, x, y, em, align) {
+    var w = 0, i, cw = [];
+    for (i = 0; i < s.length; i++) { cw.push(ctx.measureText(s[i]).width); w += cw[i] + (i < s.length - 1 ? em : 0); }
+    var sx = align === 'right' ? x - w : (align === 'center' ? x - w / 2 : x);
+    ctx.textAlign = 'left';
+    for (i = 0; i < s.length; i++) { ctx.fillText(s[i], sx, y); sx += cw[i] + em; }
+    return w;
+  }
+  function ellipsize(ctx, s, maxW) {
+    if (ctx.measureText(s).width <= maxW) return s;
+    while (s.length > 1 && ctx.measureText(s + '…').width > maxW) s = s.slice(0, -1);
+    return s + '…';
+  }
+  function imgJack(ctx, tv, x, y, dir, hot) {
+    var r = 33 / 2;
+    if (hot) { ctx.fillStyle = tv['acc-glow']; ctx.beginPath(); ctx.arc(x, y, r + 3, 0, Math.PI * 2); ctx.fill(); }
+    if (dir === 'in') {
+      ctx.fillStyle = tv.fg2; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = tv.bg; ctx.beginPath(); ctx.arc(x, y, r - 4, 0, Math.PI * 2); ctx.fill();
+    } else {
+      ctx.fillStyle = tv.acc; ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = tv.bg; ctx.beginPath(); ctx.arc(x, y, (r - 3) * 0.27, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+  // one port group: jacks spread evenly over [x, x+w], label under each; returns the group height
+  function imgPortGroup(ctx, tv, ports, x, y, w, dir, modId, centres, hot, cols) {
+    cols = cols || ports.length;
+    var rows = Math.ceil(ports.length / cols);
+    var cw = w / cols, rowH = 58, i;
+    for (i = 0; i < ports.length; i++) {
+      var c = i % cols, r = Math.floor(i / cols);
+      var cx = x + cw * (c + 0.5), top = y + r * (rowH + 2);
+      var jy = top + 24;
+      var k = key(modId, ports[i]);
+      imgJack(ctx, tv, cx, jy, dir, !!hot[k]);
+      centres[k] = { x: cx, y: jy };
+      ctx.font = imgFont(16); ctx.fillStyle = dir === 'out' ? tv.fg : tv.fg2; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(ellipsize(ctx, PORT_LABEL[ports[i]] || ports[i].toUpperCase(), cw - 2), cx, top + 48 - 7 + 8.5);
+    }
+    return rows * rowH + (rows - 1) * 2 + 1;
+  }
+  function imgKnob(ctx, tv, cx, cy, d, n) {
+    var s = d / 100;
+    function pt(r, deg) { var a = deg * Math.PI / 180; return { x: cx + r * s * Math.sin(a), y: cy - r * s * Math.cos(a) }; }
+    function rad(deg) { return (deg - 90) * Math.PI / 180; }
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = tv.line2; ctx.lineWidth = 9 * s;
+    ctx.beginPath(); ctx.arc(cx, cy, 42 * s, rad(ARC_START), rad(ARC_START + ARC_SWEEP)); ctx.stroke();
+    if (n > 0.002) {
+      ctx.strokeStyle = tv.acc;
+      ctx.beginPath(); ctx.arc(cx, cy, 42 * s, rad(ARC_START), rad(ARC_START + ARC_SWEEP * n)); ctx.stroke();
+    }
+    ctx.fillStyle = tv.panel; ctx.strokeStyle = tv.line2; ctx.lineWidth = 2 * s;
+    ctx.beginPath(); ctx.arc(cx, cy, 31 * s, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+    var deg = ARC_START + ARC_SWEEP * n, a = pt(9, deg), b = pt(29, deg);
+    ctx.strokeStyle = tv.fg; ctx.lineWidth = 6 * s;
+    ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+  }
+  // knob grid in a box (mirror of fitKnobs: the column count giving the largest dial while labels fit)
+  function imgKnobGrid(ctx, tv, mod, params, x, y, w, h) {
+    var n = params.length;
+    if (!n || h < KNOB_MIN) return;
+    ctx.font = imgFont(16);
+    var lw = 0;
+    params.forEach(function (p) { lw = Math.max(lw, ctx.measureText(p.label).width); });
+    var best = 1, bestD = -1, c;
+    for (c = 1; c <= Math.min(n, 4); c++) {
+      var r = Math.ceil(n / c), cw = w / c;
+      if (c > 1 && cw < lw + 4) break;
+      var dd = Math.min(cw - 6, h / r - KNOB_LABEL_H - 6, KNOB_MAX);
+      if (dd > bestD + 0.5) { bestD = dd; best = c; }
+    }
+    var d = Math.floor(clamp(bestD, KNOB_MIN, KNOB_MAX));
+    var rows = Math.ceil(n / best), cellH = d + KNOB_LABEL_H + 4, cellW = w / best;
+    var free = Math.max(0, h - rows * cellH), gapY = free / (rows + 1);
+    for (var i = 0; i < n; i++) {
+      var p = params[i], row = Math.floor(i / best), col = i % best;
+      var inRow = Math.min(best, n - row * best);
+      var rowX = x + (w - inRow * cellW) / 2;
+      var cx = rowX + cellW * (col + 0.5), top = y + gapY + row * (cellH + gapY) + 2;
+      var def = paramDef(mod, p), v = mod.params[p.key];
+      if (v == null || isNaN(+v)) v = p.def;
+      imgKnob(ctx, tv, cx, top + d / 2, d, toNorm(def, clamp(+v, def.min, def.max)));
+      ctx.font = imgFont(16); ctx.fillStyle = tv.fg; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(ellipsize(ctx, p.label, cellW - 2), cx, top + d + 2 + 9.5);
+    }
+  }
+  function imgModule(ctx, tv, mod, x, y, hpW, h, centres, hot) {
+    var def = DEFS[mod.type];
+    ctx.fillStyle = tv.elev; ctx.strokeStyle = tv.line2; ctx.lineWidth = 1;
+    roundRect(ctx, x + 0.5, y + 0.5, hpW - 1, h - 1, 2); ctx.fill(); ctx.stroke();
+    var ix = x + 5, iw = hpW - MOD_CHROME, cy = y + 4;   // inner box (border 1 + padding 4; top padding 3)
+    // head
+    ctx.font = imgFont(18); ctx.fillStyle = tv.fg; ctx.textBaseline = 'middle';
+    var title = TITLE[mod.type] || mod.type;
+    var modeW = mod.type === 'VCO' ? 56 : 0;
+    spacedText(ctx, ellipsize(ctx, title, iw - modeW - 4), ix + 2, cy + 13, 1.8, 'left');
+    if (mod.type === 'VCO') {
+      var lfo = mod.params.mode === 'lfo';
+      var mx = ix + iw - 48, my = cy;
+      roundRect(ctx, mx + 0.5, my + 0.5, 47, 25, 4);
+      if (lfo) { ctx.fillStyle = tv['acc-dim']; ctx.fill(); }
+      ctx.strokeStyle = tv['acc-line']; ctx.lineWidth = 1; ctx.stroke();
+      ctx.font = imgFont(16); ctx.fillStyle = lfo ? tv.fg : tv['acc-text'];
+      spacedText(ctx, lfo ? 'LFO' : 'VCO', mx + 24, my + 13, 1.6, 'center');
+    }
+    cy += 26 + 4;
+    var ins = def.ins, outs = def.outs;
+    var inline = !!(def.seq || def.draw);
+    var portW = iw - (inline ? KNOB_INLINE + 16 + 4 : 0);
+    var portsH;
+    if (def.portGrid) {
+      var inW = (portW - 3) * def.portGrid / (def.portGrid + outs.length), outW = portW - 3 - inW;
+      portsH = imgPortGroup(ctx, tv, ins, ix, cy, inW, 'in', mod.id, centres, hot, def.portGrid);
+      ctx.fillStyle = tv.sunk; ctx.strokeStyle = tv.line; ctx.lineWidth = 1;
+      roundRect(ctx, ix + inW + 3 + 0.5, cy + 0.5, outW - 1, portsH - 1, 4); ctx.fill(); ctx.stroke();
+      imgPortGroup(ctx, tv, outs, ix + inW + 3, cy + (portsH - 58) / 2, outW, 'out', mod.id, centres, hot);
+    } else if ((ins.length + outs.length) * JACK_HIT > portW) {
+      portsH = imgPortGroup(ctx, tv, ins, ix, cy, portW, 'in', mod.id, centres, hot);
+      ctx.fillStyle = tv.sunk; ctx.strokeStyle = tv.line; ctx.lineWidth = 1;
+      roundRect(ctx, ix + 0.5, cy + portsH + 2 + 0.5, portW - 1, 58, 4); ctx.fill(); ctx.stroke();
+      portsH += 2 + imgPortGroup(ctx, tv, outs, ix, cy + portsH + 2, portW, 'out', mod.id, centres, hot);
+    } else {
+      var total = ins.length + outs.length, gap = ins.length ? 3 : 0;
+      var inW2 = ins.length ? (portW - gap) * ins.length / total : 0, outW2 = portW - gap - inW2;
+      if (ins.length) imgPortGroup(ctx, tv, ins, ix, cy, inW2, 'in', mod.id, centres, hot);
+      ctx.fillStyle = tv.sunk; ctx.strokeStyle = tv.line; ctx.lineWidth = 1;
+      roundRect(ctx, ix + inW2 + gap + 0.5, cy + 0.5, outW2 - 1, 58, 4); ctx.fill(); ctx.stroke();
+      portsH = imgPortGroup(ctx, tv, outs, ix + inW2 + gap, cy, outW2, 'out', mod.id, centres, hot);
+    }
+    var bottom = y + h - 5;
+    if (inline) {
+      // RATE knob beside the jacks (56 px column, 40 px dial)
+      var kx = ix + iw - 56;
+      var p0 = def.params[0], v0 = mod.params[p0.key];
+      if (v0 == null || isNaN(+v0)) v0 = p0.def;
+      imgKnob(ctx, tv, kx + 28, cy + 2 + 20, KNOB_INLINE, toNorm(p0, clamp(+v0, p0.min, p0.max)));
+      ctx.font = imgFont(16); ctx.fillStyle = tv.fg; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(p0.label, kx + 28, cy + 2 + KNOB_INLINE + 2 + 9.5);
+      cy += Math.max(portsH, KNOB_INLINE + KNOB_LABEL_H + 4) + 4;
+      var bh = bottom - cy;
+      if (def.seq) {
+        var steps = mod.params.steps || [], cw = (iw - 12) / 5;
+        for (var s = 0; s < 5; s++) {
+          var sx = ix + s * (cw + 3), lvl = clamp(+steps[s] || 0, 0, 1);
+          ctx.save();
+          roundRect(ctx, sx + 0.5, cy + 0.5, cw - 1, bh - 1, 4);
+          ctx.fillStyle = tv.sunk; ctx.fill();
+          ctx.clip();
+          ctx.fillStyle = tv.fill; ctx.fillRect(sx + 1, cy + 1 + (bh - 2) * (1 - lvl), cw - 2, (bh - 2) * lvl);
+          ctx.restore();
+          roundRect(ctx, sx + 0.5, cy + 0.5, cw - 1, bh - 1, 4); ctx.strokeStyle = tv.line; ctx.lineWidth = 1; ctx.stroke();
+          ctx.font = imgFont(16); ctx.fillStyle = tv.fg; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillText(String(s + 1), sx + cw / 2, cy + bh - 2 - 9);
+        }
+      } else {
+        roundRect(ctx, ix + 0.5, cy + 0.5, iw - 1, bh - 1, 4);
+        ctx.fillStyle = tv.sunk; ctx.fill(); ctx.strokeStyle = tv.line; ctx.lineWidth = 1; ctx.stroke();
+        var sh = mod.params.shape;
+        if (!sh || sh.length !== SHAPE_N) sh = sineShape();
+        ctx.strokeStyle = tv['draw-grid']; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(ix + 1, cy + bh / 2); ctx.lineTo(ix + iw - 1, cy + bh / 2); ctx.stroke();
+        ctx.beginPath();
+        for (var k = 0; k < SHAPE_N; k++) {
+          var px = ix + 1 + (k + 0.5) / SHAPE_N * (iw - 2), py = cy + 3 + (1 - clamp(+sh[k] || 0, 0, 1)) * (bh - 6);
+          if (k === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+        }
+        ctx.strokeStyle = tv['draw-stroke']; ctx.lineWidth = 2; ctx.lineJoin = 'round'; ctx.stroke();
+      }
+    } else {
+      cy += portsH + 4;
+      if (mod.type === 'ADSR' || mod.type === 'AR') {
+        roundRect(ctx, ix + 0.5, cy + 0.5, iw - 1, 47, 4);
+        ctx.fillStyle = tv.sunk; ctx.fill(); ctx.strokeStyle = tv.line; ctx.lineWidth = 1; ctx.stroke();
+        ctx.strokeStyle = tv['draw-stroke']; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(ix + 3, cy + 44); ctx.lineTo(ix + iw - 3, cy + 44); ctx.stroke();
+        cy += 48 + 4;
+      }
+      imgKnobGrid(ctx, tv, mod, def.params, ix, cy, iw, bottom - cy);
+    }
+  }
+  function renderPatchImage(patch, o) {
+    o = o || {};
+    var tv = readImageTheme(o.theme);
+    var mods = (patch && patch.modules || []).filter(function (m) { return m && DEFS[m.type]; });
+    var cabs = (patch && patch.cables || []).filter(function (c) { return c && c.from && c.to; });
+    var hot = {};
+    cabs.forEach(function (c) { hot[key(c.from.mod, c.from.port)] = 1; hot[key(c.to.mod, c.to.port)] = 1; });
+    var railW = 0;
+    mods.forEach(function (m, i) { railW += (HP[m.type] || 8) * HP_PX + (i ? 3 : 0); });
+    var W = Math.max(390, railW + 12), H = IMG_HEAD + IMG_RAIL + 8 + IMG_FOOT;
+    var cv = document.createElement('canvas');
+    cv.width = W * IMG_SCALE; cv.height = H * IMG_SCALE;
+    var ctx = cv.getContext('2d');
+    ctx.scale(IMG_SCALE, IMG_SCALE);
+    var centres = {};
+    function paint() {
+      ctx.fillStyle = tv.bg; ctx.fillRect(0, 0, W, H);
+      // header
+      ctx.textBaseline = 'middle';
+      ctx.font = imgFont(20); ctx.fillStyle = tv.fg;
+      var title = o.title != null ? String(o.title) : 'MODULAR FIGHTERS';
+      var d = new Date(), pad = function (n) { return (n < 10 ? '0' : '') + n; };
+      var date = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + ' ' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+      ctx.font = imgFont(16); var dw = ctx.measureText(date).width;
+      ctx.font = imgFont(20);
+      spacedText(ctx, ellipsize(ctx, title, W - 24 - dw - 16), 12, IMG_HEAD / 2, 2, 'left');
+      ctx.font = imgFont(16); ctx.fillStyle = tv.fg2; ctx.textAlign = 'right'; ctx.fillText(date, W - 12, IMG_HEAD / 2);
+      // case + rail
+      var caseY = IMG_HEAD;
+      ctx.fillStyle = tv['case']; ctx.fillRect(0, caseY, W, IMG_RAIL + 8);
+      var railY = caseY + 4;
+      ctx.fillStyle = tv.rail; ctx.fillRect(6, railY, W - 12, 2); ctx.fillRect(6, railY + IMG_RAIL - 2, W - 12, 2);
+      var modH = IMG_RAIL - 4 - 6, modY = railY + 2 + 3, mx = 6;
+      mods.forEach(function (m) {
+        var hpW = (HP[m.type] || 8) * HP_PX;
+        imgModule(ctx, tv, m, mx, modY, hpW, modH, centres, hot);
+        mx += hpW + 3;
+      });
+      // footer with the OUT module at the right
+      var footY = caseY + IMG_RAIL + 8;
+      ctx.fillStyle = tv.line; ctx.fillRect(0, footY, W, 1);
+      // centred under the rail so the cables from both ends of the row meet it from above
+      var ow = 10 + 44 + 6 + 104 + 8, oh = 64, ox = Math.round((W - ow) / 2), oy = footY + (IMG_FOOT - oh) / 2;
+      ctx.fillStyle = tv.elev; ctx.strokeStyle = tv['acc-line']; ctx.lineWidth = 1;
+      roundRect(ctx, ox + 0.5, oy + 0.5, ow - 1, oh - 1, 10); ctx.fill(); ctx.stroke();
+      ctx.font = imgFont(18); ctx.fillStyle = tv['acc-text']; ctx.textBaseline = 'middle';
+      spacedText(ctx, 'OUT', ox + 10, oy + oh / 2, 1.8, 'left');
+      ['L', 'R'].forEach(function (p, i) {
+        var cx = ox + 10 + 44 + 6 + 26 + i * 52, jy = oy + 3 + 24;
+        var k = key('OUT', p);
+        imgJack(ctx, tv, cx, jy, 'in', !!hot[k]);
+        centres[k] = { x: cx, y: jy };
+        ctx.font = imgFont(16); ctx.fillStyle = tv.fg2; ctx.textAlign = 'center';
+        ctx.fillText(PORT_LABEL[p], cx, oy + 3 + 48 - 6 + 8.5);
+      });
+      // cables
+      cabs.forEach(function (c, i) {
+        var a = centres[key(c.from.mod, c.from.port)], b = centres[key(c.to.mod, c.to.port)];
+        if (!a || !b) return;
+        var col = hsb(tv.hue + CABLE_OFFSETS[i % CABLE_OFFSETS.length], tv.cs, tv.cb);
+        var dx = b.x - a.x, dy = b.y - a.y, dist = Math.sqrt(dx * dx + dy * dy);
+        var sag = Math.min(90, 18 + dist * 0.28);
+        var room = H - 6 - Math.max(a.y, b.y);
+        sag = Math.max(0, Math.min(sag, room / 0.75));
+        ctx.lineCap = 'round';
+        ctx.globalAlpha = tv.shadowOp; ctx.strokeStyle = tv['cable-shadow']; ctx.lineWidth = 6;
+        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.bezierCurveTo(a.x, a.y + sag, b.x, b.y + sag, b.x, b.y); ctx.stroke();
+        ctx.globalAlpha = 0.92; ctx.strokeStyle = col; ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.bezierCurveTo(a.x, a.y + sag, b.x, b.y + sag, b.x, b.y); ctx.stroke();
+        ctx.globalAlpha = 1; ctx.fillStyle = col;
+        ctx.beginPath(); ctx.arc(a.x, a.y, 5, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(b.x, b.y, 5, 0, Math.PI * 2); ctx.fill();
+      });
+    }
+    var fontsReady = Promise.resolve();
+    if (document.fonts && document.fonts.load) {
+      fontsReady = Promise.all([
+        document.fonts.load('300 18px "Barlow Condensed"'),
+        document.fonts.load('300 18px "Noto Sans JP"')
+      ]).then(function () { return document.fonts.ready; }).catch(function () {});
+    }
+    return fontsReady.then(function () {
+      paint();
+      return new Promise(function (resolve, reject) {
+        cv.toBlob(function (blob) { if (blob) resolve(blob); else reject(new Error('toBlob failed')); }, 'image/png');
+      });
+    });
+  }
+
   window.MFPatchUI = {
     mount: mount,
     setModules: setModules,
     getPatch: getPatch,
     setPatch: setPatch,
     setEnabled: setEnabled,
-    autoLockRemaining: autoLockRemaining     // seconds left of the AUTO lockout (0 = AUTO usable)
+    autoLockRemaining: autoLockRemaining,    // seconds left of the AUTO lockout (0 = AUTO usable)
+    renderPatchImage: renderPatchImage      // (patch, {theme, title}) -> Promise<Blob image/png>
   };
 })();
