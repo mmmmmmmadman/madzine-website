@@ -285,6 +285,7 @@ button:disabled{opacity:.4;cursor:default}
       <input id="code" type="text" inputmode="latin" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="4" placeholder="CODE" aria-label="room code" data-i18n-ph="codePh" data-i18n-aria="codeAria">
       <button id="btn-join" type="button" data-i18n="joinRoom">JOIN ROOM</button>
     </div>
+    <button id="btn-help" class="big" type="button" aria-haspopup="dialog" aria-controls="helpsheet" data-i18n="howToPlay">HOW TO PLAY</button>
     <div id="home-msg" class="msg" role="status"></div>
   </section>
 
@@ -401,6 +402,7 @@ button:disabled{opacity:.4;cursor:default}
       vsCpu: '對戰電腦',
       createRoom: '建立房間',
       joinRoom: '加入房間',
+      howToPlay: '玩法說明',
       codePh: '房號',
       codeAria: '房號',
       character: '角色',
@@ -441,8 +443,8 @@ button:disabled{opacity:.4;cursor:default}
       sheetTitle: '玩法說明',
       close: '關閉',
       helpGoal: '把對手的 HP 打到零就贏。畫面上半是兩位角色與 HP，下半是一台 6U 機箱，每次隨機放入模組。',
-      helpPatch: '從輸出孔（實心）拖線到輸入孔（空心）。聲音接到 OUT 才會發出，並循環播放成為配樂。',
-      helpPower: '攻擊力來自接線的複雜度：模組越多、線越多、調變越多，傷害越高。SEND 送出攻擊並換一批新模組；AUTO 是快速但較弱的攻擊。攻擊力越高，你的角色動作越快，直到下一次送出。',
+      helpPatch: '從輸出孔（實心）拖線到輸入孔（空心）。聲音接到 OUT 就會發出，接線時就聽得到；按 SEND 後會循環播放成為配樂。',
+      helpPower: '攻擊力來自接線的複雜度：模組越多、線越多、調變越多，傷害越高。AUTO 會幫你接好一組簡單的線，按 SEND 才會攻擊。SEND 送出攻擊並換一批新模組。攻擊力越高，你的角色動作越快，直到下一次送出。',
       helpSound: '送出新聲音時，上一個聲音會停止。對手的聲音會和你的一起播放。',
       helpModes: '對戰電腦：和電腦對打。建立房間：把 4 碼房號給朋友。加入房間：輸入房號。整場對戰會錄下來，KO 後可下載。背景可用裝置內的照片或影片，只留在你的裝置上，不會傳送。',
       helpCpu: '電腦不會主動攻擊：你每攻擊一次，它才回擊一次。難度（簡單／普通／困難）決定它打多重。',
@@ -465,6 +467,7 @@ button:disabled{opacity:.4;cursor:default}
       vsCpu: 'VS CPU',
       createRoom: 'CREATE ROOM',
       joinRoom: 'JOIN ROOM',
+      howToPlay: 'HOW TO PLAY',
       codePh: 'CODE',
       codeAria: 'room code',
       character: 'CHARACTER',
@@ -505,8 +508,8 @@ button:disabled{opacity:.4;cursor:default}
       sheetTitle: 'HOW TO PLAY',
       close: 'CLOSE',
       helpGoal: 'Drain the opponent’s HP to win. The top shows the two fighters and their HP; the bottom is a 6U case filled with random modules.',
-      helpPatch: 'Drag cables from outputs (filled) to inputs (hollow). The sound plays once it reaches OUT and loops as the music.',
-      helpPower: 'Attack power comes from patch complexity: more modules, more cables and more modulation mean more damage. SEND attacks and gives you new modules; AUTO is a quick, weak attack. Higher power makes your fighter move faster until your next patch.',
+      helpPatch: 'Drag cables from outputs (filled) to inputs (hollow). The sound plays as soon as it reaches OUT, so you hear it while you patch; after SEND it loops as the music.',
+      helpPower: 'Attack power comes from patch complexity: more modules, more cables and more modulation mean more damage. AUTO wires a simple patch for you; press SEND to attack. SEND attacks and gives you new modules. Higher power makes your fighter move faster until your next patch.',
       helpSound: 'Your previous sound stops when you send a new one. The opponent’s sound plays together with yours.',
       helpModes: 'VS CPU: fight the computer. CREATE ROOM: give the 4-letter code to a friend. JOIN ROOM: enter the code. The whole match is recorded and can be downloaded after KO. The background can be a photo or video from your device; it stays on your device only.',
       helpCpu: 'The CPU never attacks first: it answers each of your attacks once. The difficulty (EASY / NORMAL / HARD) sets how hard it hits.',
@@ -529,6 +532,7 @@ button:disabled{opacity:.4;cursor:default}
       vsCpu: 'CPU対戦',
       createRoom: 'ルーム作成',
       joinRoom: '参加',
+      howToPlay: '遊び方',
       codePh: 'コード',
       codeAria: 'ルームコード',
       character: 'キャラクター',
@@ -569,8 +573,8 @@ button:disabled{opacity:.4;cursor:default}
       sheetTitle: 'あそびかた',
       close: '閉じる',
       helpGoal: '相手の HP をゼロにすれば勝ちです。画面の上半分は二人のキャラクターと HP、下半分は 6U ケースで、毎回ランダムなモジュールが入ります。',
-      helpPatch: '出力ジャック（塗り）から入力ジャック（白抜き）へケーブルをドラッグします。OUT につながると音が鳴り、ループして音楽になります。',
-      helpPower: '攻撃力はパッチの複雑さで決まります。モジュール、ケーブル、モジュレーションが多いほどダメージが大きくなります。SEND で攻撃し、新しいモジュールに入れ替わります。AUTO は速いけれど弱い攻撃です。攻撃力が高いほど、次のパッチを送るまでキャラクターの動きが速くなります。',
+      helpPatch: '出力ジャック（塗り）から入力ジャック（白抜き）へケーブルをドラッグします。OUT につながるとすぐ音が鳴るので、つなぎながら聴けます。SEND のあとはループして音楽になります。',
+      helpPower: '攻撃力はパッチの複雑さで決まります。モジュール、ケーブル、モジュレーションが多いほどダメージが大きくなります。AUTO はかんたんなパッチをつないでくれます。攻撃するには SEND を押します。SEND で攻撃し、新しいモジュールに入れ替わります。攻撃力が高いほど、次のパッチを送るまでキャラクターの動きが速くなります。',
       helpSound: '新しい音を送ると前の音は止まります。相手の音はあなたの音と一緒に鳴ります。',
       helpModes: 'CPU対戦：コンピューターと対戦。ルーム作成：4文字のコードを友だちに伝えます。ルーム参加：コードを入力します。試合は全部録画され、KO のあとにダウンロードできます。背景には端末内の写真や動画を使えます。端末の外には送信されません。',
       helpCpu: 'CPU は自分から攻撃しません。あなたが攻撃するごとに一回だけ反撃します。難易度（かんたん／ふつう／むずかしい）で反撃の強さが決まります。',
@@ -661,6 +665,7 @@ button:disabled{opacity:.4;cursor:default}
   function freshModules() {
     currentModules = MFAudio.randomModules(10);
     MFPatchUI.setModules(currentModules);
+    MFAudio.stop('preview');   // the new panel has no cables yet
   }
   function otherChar(c) { return c === 'osc' ? 'moddict' : 'osc'; }
   function sideOfChar(c) { return c === 'osc' ? 'left' : 'right'; }
@@ -852,6 +857,7 @@ button:disabled{opacity:.4;cursor:default}
     if (helpSheet.hidden) openHelp(); else closeHelp();
   });
   $('sheet-close').addEventListener('click', closeHelp);
+  $('btn-help').addEventListener('click', openHelp);   // home screen "HOW TO PLAY"
   // press on the backdrop (outside the card) closes the sheet; pointerdown, so a
   // drag that starts in the card and ends outside it does not close it
   helpSheet.addEventListener('pointerdown', function (e) {
@@ -866,7 +872,9 @@ button:disabled{opacity:.4;cursor:default}
     if (!inMatch || ended) return;
     var power = MFAudio.score(patch);
     if (power > 0) {
-      MFAudio.play('me', patch);
+      // the preview of this exact patch is already sounding: promote it instead of
+      // rebuilding (no click); otherwise build it now
+      if (!MFAudio.commitPreview(patch)) MFAudio.play('me', patch);
       MFFight.attack('me', power);
       lastPower.me = power;
       updateStatus();
@@ -891,7 +899,17 @@ button:disabled{opacity:.4;cursor:default}
     MFFight.mount($('fight'));
     MFPatchUI.mount($('panel'), {
       onSubmit: function (patch) { fire(patch); },
-      onAuto: function () { fire(MFAudio.autoPatch(currentModules)); }
+      // AUTO only wires a simple patch on the panel; the player still presses SEND
+      onAuto: function () {
+        if (!inMatch || ended) return;
+        // from the panel's current modules, so knob edits the player made are kept
+        MFPatchUI.setPatch(MFAudio.autoPatch(MFPatchUI.getPatch().modules));
+      },
+      // hear the patch while building it
+      onChange: function (patch) {
+        if (!inMatch || ended) return;
+        MFAudio.preview(patch);
+      }
     });
     MFFight.onKO(onKO);
   }
@@ -916,8 +934,7 @@ button:disabled{opacity:.4;cursor:default}
   function onKO(winner) {
     if (!inMatch || ended) return;
     ended = true;
-    MFAudio.stop('me');
-    MFAudio.stop('foe');
+    MFAudio.stop();            // me, foe and preview
     MFFight.cpu.stop();
     MFPatchUI.setEnabled(false);
     if (mode === 'net') MFNet.send({ t: 'ko', winner: winner });
@@ -942,8 +959,7 @@ button:disabled{opacity:.4;cursor:default}
   }
   function showLeft() {
     ended = true;
-    MFAudio.stop('me');
-    MFAudio.stop('foe');
+    MFAudio.stop();            // me, foe and preview
     MFFight.cpu.stop();
     MFPatchUI.setEnabled(false);
     ovKey = 'opponentLeft';
@@ -961,8 +977,7 @@ button:disabled{opacity:.4;cursor:default}
     inMatch = false;
     ended = false;
     MFFight.cpu.stop();
-    MFAudio.stop('me');
-    MFAudio.stop('foe');
+    MFAudio.stop();            // me, foe and preview
     MFNet.leave();
     if (mounted) { MFFight.reset(); MFPatchUI.setEnabled(true); }
     overlay.classList.remove('on');

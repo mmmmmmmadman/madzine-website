@@ -829,6 +829,54 @@
     if (root) { rebuild(); scrollEl.scrollLeft = 0; }
   }
 
+  // Wire a whole patch onto the current panel (AUTO): params of modules that are on the
+  // panel are taken over (and pushed to the audio engine like a knob edit), cables are
+  // replaced. Modules that are not on the panel and cables to unknown jacks are ignored.
+  // Fires onChange once so the preview plays what is shown.
+  function setPatch(patch) {
+    var byId = {};
+    modules.forEach(function (m) { byId[m.id] = m; });
+    var A = window.MFAudio;
+    ((patch && patch.modules) || []).forEach(function (pm) {
+      var m = pm && byId[String(pm.id)];
+      if (!m || m.type !== pm.type || !pm.params) return;
+      var np = cloneParams(pm.params);
+      // VCO "mode" first: a mode change remaps freq into the other range, so the new
+      // freq has to be applied after it
+      var keys = Object.keys(np).sort(function (x, y) { return (x === 'mode' ? 0 : 1) - (y === 'mode' ? 0 : 1); });
+      for (var ki = 0; ki < keys.length; ki++) {
+        var k = keys[ki];
+        var a = m.params[k], b = np[k];
+        var same = (a && typeof a === 'object' && b && typeof b === 'object')
+          ? JSON.stringify(Array.prototype.slice.call(a)) === JSON.stringify(Array.prototype.slice.call(b))
+          : a === b;
+        if (same) continue;
+        m.params[k] = b;
+        if (A && typeof A.previewParam === 'function') {
+          try { A.previewParam(m.id, k, (b && typeof b === 'object') ? b.slice() : b); } catch (e) { console.error(e); }
+        }
+      }
+    });
+    var ins = {};
+    modules.forEach(function (m) { if (DEFS[m.type]) DEFS[m.type].ins.forEach(function (p) { ins[key(m.id, p)] = 1; }); });
+    var outsOk = {};
+    modules.forEach(function (m) { if (DEFS[m.type]) DEFS[m.type].outs.forEach(function (p) { outsOk[key(m.id, p)] = 1; }); });
+    cables = [];
+    nextColor = 0;
+    ((patch && patch.cables) || []).forEach(function (c) {
+      if (!c || !c.from || !c.to) return;
+      var from = { mod: String(c.from.mod), port: String(c.from.port) };
+      var to = { mod: String(c.to.mod), port: String(c.to.port) };
+      if (!outsOk[key(from.mod, from.port)]) return;
+      var toOk = to.mod === 'OUT' ? (to.port === 'L' || to.port === 'R') : !!ins[key(to.mod, to.port)];
+      if (!toOk) return;
+      cables = cables.filter(function (k) { return !sameEnd(k.to, to); });   // one cable per input
+      cables.push({ from: from, to: to, ci: nextColor++ });
+    });
+    if (root) rebuild();     // re-renders knobs/labels from the new params, then redraws cables
+    emitChange();
+  }
+
   function setEnabled(b) {
     enabled = !!b;
     if (root) {
@@ -841,6 +889,7 @@
     mount: mount,
     setModules: setModules,
     getPatch: getPatch,
+    setPatch: setPatch,
     setEnabled: setEnabled
   };
 })();

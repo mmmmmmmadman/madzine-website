@@ -38,12 +38,17 @@ window.MFAudio
   .autoPatch(modules) -> Patch  — a trivial VCO->OUT (or VCO->LPF->OUT) patch, score should land 10..20.
   .randomModules(n=10) -> modules array (each has random params), always includes >=1 VCO.
   .stopRecording() -> Promise<Blob>  (webm/opus or mp4 depending on browser) ; .recordingActive -> bool
-  .previewParam(modId, key, value) — live param edit while patching (no-op if slot not playing)
+  .previewParam(modId, key, value) — live param edit while patching: preview slot first, then "me" (no-op if neither holds the module)
+  .preview(patch) — third slot "preview": hear the patch while building it. Debounced 80 ms; rebuilds (50 ms crossfade) only when the structure changes; stops the preview slot when nothing reaches OUT
+  .commitPreview(patch?) -> bool — promote the playing preview graph to "me" without a rebuild (old "me" fades 50 ms); false if no preview or (with patch) its structure differs
+  .slots() -> {me, foe, preview} booleans (debug); .lastError — last swallowed build error string
+  stop() with no argument stops all three slots. All slots use gain 0.6 into the master compressor.
 
 window.MFPatchUI
   .mount(containerEl, {onSubmit(patch), onAuto(), onChange(patch)})
   .setModules(modules)  — rebuild panel with fresh module set (clears cables)
   .getPatch() -> Patch
+  .setPatch(patch) — wire a patch onto the current panel (takes over params of matching modules, replaces cables, fires onChange once)
   .setEnabled(bool)
   Requirements: touch + mouse cable dragging from output port to input port; tap cable to delete;
   SEQ5 = 5 vertical faders side by side, one-finger horizontal sweep sets each fader by x position (location.x picks fader, y sets value);
@@ -69,7 +74,8 @@ window.MFNet  (copy architecture from ../sessionguide-app.html: PeerJS 1.5.4 fro
 ## Game flow (index.html integrator)
 1. Home: title, "VS CPU", "CREATE ROOM", "JOIN ROOM (code)". Any click -> MFAudio.init() (starts recording).
 2. Match: MFPatchUI shows randomModules(10). SEND -> patch=getPatch(); power=score(patch); if power>0: MFAudio.play("me",patch); MFFight.attack("me",power); MFNet.send(attack). Always: setModules(randomModules(10)).
-   AUTO -> patch=autoPatch(current modules); same as above.
+   AUTO -> MFPatchUI.setPatch(autoPatch(panel modules)): only wires the panel; the player presses SEND (user rule 2026-10-16).
+   While patching: onChange(patch) -> MFAudio.preview(patch). SEND promotes the preview with commitPreview(patch), else play("me").
    Incoming attack msg -> MFAudio.play("foe",patch); MFFight.attack("foe",power). CPU mode: MFFight.cpu.start does the same.
 3. KO -> stop both slots, MFAudio.stopRecording() -> offer download link (filename modular-fighters-YYYYMMDD-HHMM.webm). "REMATCH" button.
 Language: UI labels English only (short caps), to keep scope small.

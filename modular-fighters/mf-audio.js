@@ -35,10 +35,18 @@
   var LOOKAHEAD = 0.15;      // seconds scheduled ahead for SEQ5 / DRAW
   var FADE = 0.05;           // slot replace fade (SPEC: 50 ms)
   var RISE_TH = 0.5, FALL_TH = 0.25;
+  // Up to three graphs can sound at once (foe, the last sent "me", and the live
+  // "preview" of the patch being built). Every slot uses the same gain so a
+  // preview promoted to "me" keeps its level; 0.6 keeps three full-scale graphs
+  // at 1.8 into the master compressor (two at 0.7 = 1.4 before the preview slot).
+  var SLOT_NAMES = ['me', 'foe', 'preview'];
+  var SLOT_GAIN = 0.6;
+  var PREVIEW_DEBOUNCE_MS = 80;   // onChange fires on every cable / param edit
 
   var ctx = null, comp = null, hard = null, recDest = null;
-  var slotGain = { me: null, foe: null };
-  var slots = { me: null, foe: null };
+  var slotGain = { me: null, foe: null, preview: null };
+  var slots = { me: null, foe: null, preview: null };
+  var previewTimer = 0, previewPending = null;
   var recorder = null, recChunks = [], recMime = '';
   var idSeq = 0;
 
@@ -68,9 +76,9 @@
       recDest = ctx.createMediaStreamDestination();
       hard.connect(recDest);
     }
-    ['me', 'foe'].forEach(function (s) {
+    SLOT_NAMES.forEach(function (s) {
       var g = ctx.createGain();
-      g.gain.value = 0.7;
+      g.gain.value = SLOT_GAIN;
       g.connect(comp);
       slotGain[s] = g;
     });
@@ -272,10 +280,12 @@
     }
     for (var j = 0; j < this.tickers.length; j++) this.tickers[j](now);
   };
-  Graph.prototype.start = function () {
+  // fadeIn: seconds; play() keeps 5 ms, preview() uses FADE so a rebuild
+  // crossfades with the outgoing graph (which fades out over FADE in kill()).
+  Graph.prototype.start = function (fadeIn) {
     var self = this, t = ctx.currentTime;
     this.out.gain.setValueAtTime(0, t);
-    this.out.gain.linearRampToValueAtTime(1, t + 0.005);
+    this.out.gain.linearRampToValueAtTime(1, t + (fadeIn || 0.005));
     this.tick();
     this.timer = setInterval(function () { self.tick(); }, TICK_MS);
   };
@@ -683,6 +693,17 @@
     return satCurve;
   }
 
+  // Graph structure only (module ids/types + kept cables). Params are left out on
+  // purpose: while patching they reach the preview graph through previewParam(),
+  // so a param edit must not rebuild (and re-trigger) the graph.
+  function signature(s) {
+    var ms = s.list.map(function (m) { return m.id + ':' + m.type; }).sort();
+    var cs = s.cables.map(function (c) {
+      return c.from.mod + '.' + c.from.port + '>' + c.to.mod + '.' + c.to.port + (c.loop ? '~' : '');
+    }).sort();
+    return ms.join(',') + '|' + cs.join(',');
+  }
+
   function build(slot, patch) {
     var s = sanitize(patch);
     var g = new Graph(slot);
@@ -695,6 +716,7 @@
       }
       g.mods[m.id] = { type: m.type, def: copy, inst: BUILDERS[m.type](g, copy) };
     });
+    g.sig = signature(s);
     var outL = g.gain(1), outR = g.gain(1);
     [outL, outR].forEach(function (n) {
       n.channelCount = 1;
@@ -817,6 +839,48 @@
     return { modules: mods, cables: cables };
   }
 
+  // ---------- slot control ----------
+  var lastError = null;   // last build() failure (play/preview return false); read via MFAudio.lastError
+  function startSlot(slot, patch, fadeIn) {
+    ensureCtx();
+    if (ctx.state === 'suspended') ctx.resume();
+    var old = slots[slot];
+    slots[slot] = null;
+    if (old) old.kill();
+    var g = null;
+    try {
+      g = build(slot, patch);
+    } catch (e) {
+      lastError = String(e && (e.stack || e.message) || e);
+      if (g) g.kill();
+      return false;
+    }
+    slots[slot] = g;
+    g.start(fadeIn);
+    return true;
+  }
+  function cancelPreviewTimer() {
+    if (previewTimer) clearTimeout(previewTimer);
+    previewTimer = 0;
+    previewPending = null;
+  }
+  function flushPreview() {
+    var patch = previewPending;
+    cancelPreviewTimer();
+    if (!patch) return;
+    if (score(patch) <= 0) {
+      if (slots.preview) { slots.preview.kill(); slots.preview = null; }
+      return;
+    }
+    var cur = slots.preview;
+    if (cur && !cur.dead) {
+      var sig = null;
+      try { sig = signature(sanitize(patch)); } catch (e) { sig = null; }
+      if (sig === cur.sig) return;            // only params changed: already applied live
+    }
+    startSlot('preview', patch, FADE);
+  }
+
   // ---------- public API ----------
   var MFAudio = {
     TYPES: TYPES,
@@ -829,28 +893,57 @@
 
     play: function (slot, patch) {
       if (slot !== 'me' && slot !== 'foe') return false;
-      ensureCtx();
-      if (ctx.state === 'suspended') ctx.resume();
-      var old = slots[slot];
-      slots[slot] = null;
-      if (old) old.kill();
-      var g = null;
-      try {
-        g = build(slot, patch);
-      } catch (e) {
-        if (g) g.kill();
-        return false;
-      }
-      slots[slot] = g;
-      g.start();
-      return true;
+      return startSlot(slot, patch, 0.005);
     },
 
     stop: function (slot) {
-      var list = slot ? [slot] : ['me', 'foe'];
+      var list = slot ? [slot] : SLOT_NAMES;
       list.forEach(function (s) {
+        if (s === 'preview') cancelPreviewTimer();
         if (slots[s]) { slots[s].kill(); slots[s] = null; }
       });
+    },
+
+    // Live preview of the patch being built. Debounced; rebuilds only when the
+    // graph structure changed (params arrive through previewParam). Nothing
+    // reaching OUT stops the preview slot.
+    preview: function (patch) {
+      previewPending = patch;
+      if (previewTimer) clearTimeout(previewTimer);
+      previewTimer = setTimeout(flushPreview, PREVIEW_DEBOUNCE_MS);
+    },
+
+    // Promote the playing preview graph to "me" without rebuilding it. With a
+    // patch argument, the promotion only happens if the preview graph has the
+    // same structure (so the sound matches what is sent). Returns false when
+    // there is nothing to promote; the caller then falls back to play("me").
+    commitPreview: function (patch) {
+      if (previewTimer) flushPreview();
+      var g = slots.preview;
+      if (!g || g.dead) return false;
+      if (patch !== undefined) {
+        var sig = null;
+        try { sig = signature(sanitize(patch)); } catch (e) { sig = null; }
+        if (sig !== g.sig) return false;
+      }
+      var old = slots.me;
+      slots.me = null;
+      if (old) old.kill();                       // 50 ms fade, as play() does
+      // both slot gains are SLOT_GAIN: connect first, then disconnect, so the
+      // graph is never off the bus
+      g.out.connect(slotGain.me);
+      try { g.out.disconnect(slotGain.preview); } catch (e) {}
+      g.slot = 'me';
+      slots.preview = null;
+      slots.me = g;
+      return true;
+    },
+
+    // Debug: which slots currently hold a live graph.
+    slots: function () {
+      var r = {};
+      SLOT_NAMES.forEach(function (s) { r[s] = !!(slots[s] && !slots[s].dead); });
+      return r;
     },
 
     score: score,
@@ -870,15 +963,22 @@
       });
     },
 
-    // Live param edit on the playing "me" graph; no-op if that module is not playing.
+    // Live param edit: the module being edited lives in the preview graph; fall
+    // back to the playing "me" graph. No-op if neither holds that module.
     previewParam: function (modId, key, value) {
-      var g = slots.me;
-      if (!g || g.dead || !g.mods[modId]) return;
-      g.mods[modId].inst.set(key, value);
+      var list = ['preview', 'me'];
+      for (var i = 0; i < list.length; i++) {
+        var g = slots[list[i]];
+        if (g && !g.dead && g.mods[modId]) { g.mods[modId].inst.set(key, value); return; }
+      }
     }
   };
   Object.defineProperty(MFAudio, 'recordingActive', {
     get: function () { return !!(recorder && recorder.state === 'recording'); },
+    enumerable: true
+  });
+  Object.defineProperty(MFAudio, 'lastError', {
+    get: function () { return lastError; },
     enumerable: true
   });
 
