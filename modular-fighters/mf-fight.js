@@ -714,11 +714,11 @@
       typeof window.MFAudio.randomModules === 'function';
   }
 
-  var PROC_TYPES = { LPF: 1, FOLD: 1, DELAY: 1, MIX4: 1 };
+  var PROC_TYPES = { LPF: 1, FOLD: 1, DELAY: 1, MIXVCA: 1 };
   var VCO_OUTS = ['saw', 'sqr', 'tri'];
 
   function fallbackModules() {
-    var types = ['VCO', 'VCO', 'LPF', 'FOLD', 'DELAY', 'MIX4', 'ADSR', 'AR', 'SEQ5', 'DRAW'];
+    var types = ['VCO', 'VCO', 'LPF', 'FOLD', 'DELAY', 'MIXVCA', 'ADSR', 'AR', 'SEQ5', 'DRAW'];
     var mods = [];
     for (var i = 0; i < types.length; i++) {
       var p = {};
@@ -727,7 +727,7 @@
         case 'LPF': p = { cutoff: 200 + rnd(8000), res: Math.random() * 0.8, cvAmt: Math.random() }; break;
         case 'FOLD': p = { fold: Math.random(), cvAmt: Math.random() }; break;
         case 'DELAY': p = { time: 0.1 + Math.random() * 0.9, fb: Math.random() * 0.8, mix: 0.3 + Math.random() * 0.5 }; break;
-        case 'MIX4': p = { lvl1: 0.8, lvl2: 0.8, lvl3: 0.8, lvl4: 0.8 }; break;
+        case 'MIXVCA': p = { lvl1: 0.8, lvl2: 0.8, lvl3: 0.8, lvl4: 0.8 }; break;
         case 'ADSR': p = { a: 0.01, d: 0.2, s: 0.5, r: 0.3 }; break;
         case 'AR': p = { a: 0.01, r: 0.3 }; break;
         case 'SEQ5': p = { steps: [Math.random(), Math.random(), Math.random(), Math.random(), Math.random()], rate: 2 + rnd(6) }; break;
@@ -748,7 +748,7 @@
     return mod.type === 'DELAY' ? 'outL' : 'out';
   }
   function procIn(mod) {
-    return mod.type === 'MIX4' ? 'in' + (1 + rnd(4)) : 'in';
+    return mod.type === 'MIXVCA' ? 'in' + (1 + rnd(4)) : 'in';
   }
 
   // Modulation outputs a module can provide (as a modulation source).

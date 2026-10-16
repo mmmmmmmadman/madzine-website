@@ -21,7 +21,7 @@
   --mfp-acc-glow:#ff9c80;
   --mfp-acc-text:#e8846c;  /* accent used as small text */
   --mfp-acc-line:#6b4a41;  /* accent outlines (mode toggle, OUT module) */
-  --mfp-fill:#6b4a41;      /* fader / step fill at rest */
+  --mfp-fill:#6b4a41;      /* SEQ5 step fill at rest */
   --mfp-on-acc:#121212;    /* text on a full-accent surface */
   /* read by JS (canvas + SVG cables); re-read on the window 'mf-theme' event */
   --mfp-draw-grid:#303030;
@@ -34,8 +34,7 @@
   --mfp-gap:8px;
   --mfp-hp:19px;           /* 1 HP; set from JS (HP_PX) */
   --mfp-mgap:3px;          /* gap between neighbouring module panels */
-  --mfp-row:26px;          /* horizontal fader / toggle minimum height */
-  --mfp-row-max:64px;      /* faders grow up to this on tall rails (tablet) */
+  --mfp-row:26px;          /* module head / mode toggle height */
   --mfp-jack:22px;         /* visible jack diameter */
   --mfp-jack-hit:32px;     /* jack tap target (JS JACK_HIT) */
 
@@ -144,6 +143,10 @@ html[data-theme="light"] .mfp{
 .mfp-pgroup.mfp-out{background:var(--mfp-sunk);border:1px solid var(--mfp-line)}
 .mfp-ports:not(.mfp-two) .mfp-pgroup.mfp-in{flex:var(--mfp-in-n,1) 1 0}
 .mfp-ports:not(.mfp-two) .mfp-pgroup.mfp-out{flex:var(--mfp-out-n,1) 1 0}
+/* MIX VCA: inputs as a grid (IN 1-4 over CV 1-4), OUT beside, vertically centred */
+.mfp-ports.mfp-pgrid .mfp-pgroup.mfp-in{display:grid;grid-template-columns:repeat(var(--mfp-pcols,4),minmax(0,1fr));row-gap:2px;justify-items:center}
+.mfp-ports.mfp-pgrid .mfp-pgroup.mfp-out{align-items:center}
+.mfp-ports.mfp-pgrid .mfp-port{width:100%}
 .mfp-port{
   display:flex;flex-direction:column;align-items:center;
   flex:1 1 0;min-width:0;
@@ -181,42 +184,37 @@ html[data-theme="light"] .mfp{
 .mfp-jack.mfp-hot::before{box-shadow:0 0 0 3px var(--mfp-acc-glow)}
 .mfp-jack[data-dir="in"].mfp-target::before{border-color:var(--mfp-acc-glow)}
 
-/* ---------- params ---------- */
-.mfp-params{
+/* ---------- knobs ---------- */
+/* grid under the jacks: column count + dial size set by JS (fitKnobs) from the free space */
+.mfp-knobs.mfp-fit{
   flex:1 1 0;min-height:0;
-  display:grid;grid-template-columns:1fr;gap:3px;
-  grid-auto-rows:minmax(var(--mfp-row),var(--mfp-row-max));
-  align-content:start;
+  display:flex;flex-wrap:wrap;justify-content:center;align-content:space-evenly;
 }
-.mfp-params.mfp-c2{grid-template-columns:1fr 1fr}
-/* SEQ5 / DRAW: the editor takes the free height, the rate fader stays at its minimum */
-.mfp-mod[data-type="SEQ5"] .mfp-params,
-.mfp-mod[data-type="DRAW"] .mfp-params{flex:0 0 auto;grid-auto-rows:var(--mfp-row)}
-
-.mfp-fader{
-  position:relative;
-  min-height:var(--mfp-row);
-  background:var(--mfp-sunk);
-  border:1px solid var(--mfp-line);
-  border-radius:4px;
-  overflow:hidden;
+/* SEQ5 / DRAW: one RATE knob beside the jacks */
+.mfp-jrow{flex:0 0 auto;display:flex;align-items:flex-start;gap:4px}
+.mfp-jrow .mfp-ports{flex:1 1 auto;min-width:0}
+.mfp-knobs.mfp-inline{flex:0 0 56px;display:flex;justify-content:center;--mfp-knob:40px}
+.mfp-knob{
+  flex:0 0 calc(100% / var(--mfp-kcols,2));min-width:0;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  padding:2px 0;
   touch-action:none;
-  cursor:ew-resize;
+  cursor:ns-resize;
 }
-.mfp-fill{
-  position:absolute;left:0;top:0;bottom:0;width:0;
-  background:var(--mfp-fill);
-  pointer-events:none;
-}
-.mfp-fader.mfp-active .mfp-fill{background:var(--mfp-acc)}
-.mfp-flabel{
-  position:absolute;left:5px;right:3px;top:0;bottom:0;
-  display:flex;align-items:center;
-  font-size:16px;letter-spacing:.02em;color:var(--mfp-fg);
+.mfp-knobs.mfp-inline .mfp-knob{flex:0 0 100%}
+.mfp-kdial{display:block;width:var(--mfp-knob,44px);height:var(--mfp-knob,44px);overflow:visible;pointer-events:none}
+.mfp-ktrack,.mfp-kval{fill:none;stroke-width:9;stroke-linecap:round}
+.mfp-ktrack{stroke:var(--mfp-line2)}
+.mfp-kval{stroke:var(--mfp-acc)}
+.mfp-knob.mfp-active .mfp-kval{stroke:var(--mfp-acc-glow)}
+.mfp-kbody{fill:var(--mfp-panel);stroke:var(--mfp-line2);stroke-width:2}
+.mfp-kptr{stroke:var(--mfp-fg);stroke-width:6;stroke-linecap:round}
+.mfp-klabel{
+  display:block;width:max-content;max-width:100%;
+  font-size:16px;line-height:19px;letter-spacing:.02em;color:var(--mfp-fg);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
   pointer-events:none;
 }
-.mfp-fader.mfp-active .mfp-flabel{color:var(--mfp-on-acc)}
 
 /* VCO / LFO mode toggle */
 .mfp-mode{
@@ -248,7 +246,7 @@ html[data-theme="light"] .mfp{
   overflow:hidden;
   pointer-events:none;
 }
-.mfp-step .mfp-fill{left:0;right:0;top:auto;bottom:0;width:auto;height:0}
+.mfp-step .mfp-fill{position:absolute;left:0;right:0;top:auto;bottom:0;width:auto;height:0;background:var(--mfp-fill);pointer-events:none}
 .mfp-step.mfp-active .mfp-fill{background:var(--mfp-acc)}
 .mfp-step .mfp-slabel{
   position:absolute;left:0;right:0;bottom:2px;text-align:center;

@@ -13,7 +13,15 @@
   var HP_PX = 19;            // 1 HP in CSS px (390px phone shows ~2.5 modules per rail)
   var JACK_HIT = 32;         // must match --mfp-jack-hit
   var MOD_CHROME = 10;       // module border 2 + horizontal padding 8
-  var HP = { VCO: 8, MIX4: 8, LPF: 7, FOLD: 6, DELAY: 8, ADSR: 8, AR: 6, SEQ5: 10, DRAW: 10 };
+  var HP = { VCO: 8, MIXVCA: 10, MIX4: 10, LPF: 8, FOLD: 6, DELAY: 8, ADSR: 8, AR: 6, SEQ5: 10, DRAW: 10 };
+
+  /* ---------- rotary knob geometry ---------- */
+  var KNOB_TRAVEL = 150;     // px of drag for the full range
+  var KNOB_THRESH = 3;       // first-move threshold (px)
+  var KNOB_MIN = 40, KNOB_MAX = 72;   // dial diameter range (px)
+  var KNOB_LABEL_H = 21;     // label line (19) + gap (2), must match CSS
+  var KNOB_INLINE = 40;      // dial diameter of the RATE knob beside the SEQ5 / DRAW jacks
+  var ARC_START = -150, ARC_SWEEP = 300;   // 7 o'clock -> 5 o'clock, clockwise
 
   /* ---------- module definitions (port names fixed by SPEC) ---------- */
   // param curve: 'lin' | 'log'. Ranges not given in SPEC (ADSR/AR times, rate)
@@ -22,6 +30,7 @@
     fm: 'FM', sync: 'SYNC', mode_trig: 'TOGGLE',
     saw: 'SAW', sqr: 'SQUARE', tri: 'TRIANGLE',
     in1: 'IN 1', in2: 'IN 2', in3: 'IN 3', in4: 'IN 4', out: 'OUT',
+    cv1: 'CV 1', cv2: 'CV 2', cv3: 'CV 3', cv4: 'CV 4',
     'in': 'IN', cutoff_cv: 'CUTOFF', fold_cv: 'FOLD', time_cv: 'TIME',
     outL: 'LEFT', outR: 'RIGHT', gate: 'GATE', env: 'ENVELOPE', trig: 'TRIGGER',
     clock: 'CLOCK', cv: 'CV', L: 'LEFT', R: 'RIGHT'
@@ -37,8 +46,9 @@
         { key: 'fmAmt', label: 'FM AMOUNT', min: 0, max: 1, curve: 'lin', def: 0.3 }
       ]
     },
-    MIX4: {
-      ins: ['in1', 'in2', 'in3', 'in4'], outs: ['out'], cols: 2,
+    MIXVCA: {
+      // jacks as a 4-column grid: IN 1-4 on the first row, CV 1-4 under them, OUT beside
+      ins: ['in1', 'in2', 'in3', 'in4', 'cv1', 'cv2', 'cv3', 'cv4'], outs: ['out'], portGrid: 4,
       params: [
         { key: 'lvl1', label: 'LEVEL 1', min: 0, max: 1, curve: 'lin', def: 0.8 },
         { key: 'lvl2', label: 'LEVEL 2', min: 0, max: 1, curve: 'lin', def: 0.8 },
@@ -70,7 +80,7 @@
       ]
     },
     ADSR: {
-      ins: ['gate'], outs: ['env'], cols: 2,
+      ins: ['gate'], outs: ['env'],
       params: [
         { key: 'a', label: 'ATTACK', min: 0.001, max: 2, curve: 'log', def: 0.01 },
         { key: 'd', label: 'DECAY', min: 0.001, max: 2, curve: 'log', def: 0.2 },
@@ -88,6 +98,9 @@
     SEQ5: { ins: ['clock'], outs: ['cv', 'gate'], params: [RATE], seq: true },
     DRAW: { ins: [], outs: ['cv'], params: [RATE], draw: true }
   };
+  // old id of the mixer (before the audio engine renamed it): same panel, same jacks
+  DEFS.MIX4 = DEFS.MIXVCA;
+  var TITLE = { MIXVCA: 'MIX VCA', MIX4: 'MIX VCA' };
 
   var FREQ_RANGE = { vco: [20, 2000], lfo: [0.05, 20] };
 
@@ -219,22 +232,46 @@
     };
   }
 
-  /* ---------- horizontal filled fader ---------- */
+  /* ---------- parameter range (VCO freq follows the mode) ---------- */
   function paramDef(mod, p) {
     if (!p.vcoFreq) return p;
     var r = FREQ_RANGE[mod.params.mode === 'lfo' ? 'lfo' : 'vco'];
     return { key: p.key, label: p.label, min: r[0], max: r[1], curve: 'log', def: p.def };
   }
 
-  function buildFader(parent, mod, p) {
-    var f = el('div', 'mfp-fader', parent);
-    var fill = el('div', 'mfp-fill', f);
-    var lab = el('span', 'mfp-flabel', f);
+  /* ---------- rotary knob ---------- */
+  // dial in a 0..100 viewBox; angles in degrees clockwise from 12 o'clock
+  function polar(r, deg) {
+    var a = deg * Math.PI / 180;
+    return { x: 50 + r * Math.sin(a), y: 50 - r * Math.cos(a) };
+  }
+  function arcD(r, d0, d1) {
+    var a = polar(r, d0), b = polar(r, d1);
+    return 'M' + a.x.toFixed(2) + ' ' + a.y.toFixed(2) +
+      ' A' + r + ' ' + r + ' 0 ' + ((d1 - d0) > 180 ? 1 : 0) + ' 1 ' + b.x.toFixed(2) + ' ' + b.y.toFixed(2);
+  }
+
+  function buildKnob(parent, mod, p) {
+    var k = el('div', 'mfp-knob', parent);
+    k.setAttribute('role', 'slider');
+    k.setAttribute('aria-label', p.label);
+    var dial = svg('svg', { 'class': 'mfp-kdial', viewBox: '0 0 100 100', 'aria-hidden': 'true' }, k);
+    svg('path', { 'class': 'mfp-ktrack', d: arcD(42, ARC_START, ARC_START + ARC_SWEEP) }, dial);
+    var val = svg('path', { 'class': 'mfp-kval' }, dial);
+    svg('circle', { 'class': 'mfp-kbody', cx: 50, cy: 50, r: 31 }, dial);
+    var ptr = svg('line', { 'class': 'mfp-kptr', x1: 50, y1: 50, x2: 50, y2: 22 }, dial);
+    var lab = el('span', 'mfp-klabel', k);
     lab.textContent = p.label;
     var initial = mod.params[p.key];
     function refresh() {
       var d = paramDef(mod, p);
-      fill.style.width = (toNorm(d, mod.params[p.key]) * 100) + '%';
+      var n = toNorm(d, mod.params[p.key]);
+      var deg = ARC_START + ARC_SWEEP * n;
+      val.setAttribute('d', n > 0.002 ? arcD(42, ARC_START, deg) : '');
+      var a = polar(9, deg), b = polar(29, deg);
+      ptr.setAttribute('x1', a.x.toFixed(2)); ptr.setAttribute('y1', a.y.toFixed(2));
+      ptr.setAttribute('x2', b.x.toFixed(2)); ptr.setAttribute('y2', b.y.toFixed(2));
+      k.setAttribute('aria-valuenow', String(Math.round(n * 100)));
     }
     function set(n) {
       var d = paramDef(mod, p);
@@ -244,45 +281,72 @@
     }
     var tap = makeTapper();
     var g = null;
-    f.addEventListener('pointerdown', function (e) {
+    k.addEventListener('pointerdown', function (e) {
       if (!enabled || e.button > 0) return;
-      g = { id: e.pointerId, x0: e.clientX, y0: e.clientY, lastX: e.clientX, locked: e.pointerType === 'mouse', moved: false,
-            w: f.getBoundingClientRect().width };
-      if (g.locked) { cap(f, e.pointerId); f.classList.add('mfp-active'); }
-    });
-    f.addEventListener('pointermove', function (e) {
-      if (!g || e.pointerId !== g.id) return;
-      var dx = e.clientX - g.x0, dy = e.clientY - g.y0;
-      if (!g.locked) {
-        // fader owns the gesture (touch-action:none); small threshold keeps taps as taps
-        if (Math.abs(dx) < 4 && Math.abs(dy) < 4) return;
-        g.locked = true;
-        cap(f, e.pointerId);
-        f.classList.add('mfp-active');
-        g.lastX = e.clientX;
-      }
-      var d = paramDef(mod, p);
-      var n = toNorm(d, mod.params[p.key]) + (e.clientX - g.lastX) / Math.max(40, g.w);
-      g.lastX = e.clientX;
-      if (Math.abs(dx) > TAP_SLOP) g.moved = true;
-      set(n);
       e.preventDefault();
+      cap(k, e.pointerId);
+      g = { id: e.pointerId, x0: e.clientX, y0: e.clientY, lx: e.clientX, ly: e.clientY, locked: false, moved: false };
+    });
+    k.addEventListener('pointermove', function (e) {
+      if (!g || e.pointerId !== g.id) return;
+      e.preventDefault();
+      if (!g.locked) {
+        if (Math.abs(e.clientX - g.x0) < KNOB_THRESH && Math.abs(e.clientY - g.y0) < KNOB_THRESH) return;
+        g.locked = true;
+        k.classList.add('mfp-active');
+      }
+      // vertical (up = more) and horizontal (right = more) combined: the larger delta wins
+      var mx = e.clientX - g.lx, my = g.ly - e.clientY;
+      g.lx = e.clientX; g.ly = e.clientY;
+      var dlt = Math.abs(mx) > Math.abs(my) ? mx : my;
+      if (Math.abs(e.clientX - g.x0) > TAP_SLOP || Math.abs(e.clientY - g.y0) > TAP_SLOP) g.moved = true;
+      if (!dlt) return;
+      var d = paramDef(mod, p);
+      set(toNorm(d, mod.params[p.key]) + dlt / KNOB_TRAVEL * (e.shiftKey ? 0.1 : 1));
     });
     function end(e) {
-      if (!g || e.pointerId !== g.id) { return; }
+      if (!g || e.pointerId !== g.id) return;
       var wasTap = !g.moved && Math.abs(e.clientX - g.x0) < TAP_SLOP && Math.abs(e.clientY - g.y0) < TAP_SLOP;
       g = null;
-      f.classList.remove('mfp-active');
+      k.classList.remove('mfp-active');
       if (e.type === 'pointerup' && wasTap && tap(e.clientX, e.clientY, 0)) {
         var dv = initial != null ? initial : p.def;
         var d = paramDef(mod, p);
         set(toNorm(d, clamp(dv, d.min, d.max)));
       }
     }
-    f.addEventListener('pointerup', end);
-    f.addEventListener('pointercancel', end);
+    k.addEventListener('pointerup', end);
+    k.addEventListener('pointercancel', end);
     refresh();
-    return { el: f, refresh: refresh };
+    return { el: k, refresh: refresh };
+  }
+
+  // Size the knob grids to the space each module has left under its jacks: pick the column
+  // count that gives the largest dial while every label still fits its cell.
+  function fitKnobs() {
+    if (!caseEl) return;
+    var grids = caseEl.querySelectorAll('.mfp-knobs.mfp-fit');
+    for (var i = 0; i < grids.length; i++) {
+      var gEl = grids[i];
+      var w = gEl.clientWidth, h = gEl.clientHeight;
+      var cells = gEl.children, n = cells.length;
+      if (!n || !w || !h) continue;
+      var lw = 0;
+      for (var j = 0; j < n; j++) {
+        var l = cells[j].querySelector('.mfp-klabel');
+        if (l) lw = Math.max(lw, l.scrollWidth);
+      }
+      var best = 1, bestD = -1;
+      for (var c = 1; c <= Math.min(n, 4); c++) {
+        var r = Math.ceil(n / c);
+        var cw = w / c;
+        if (c > 1 && cw < lw + 4) break;
+        var dd = Math.min(cw - 6, h / r - KNOB_LABEL_H - 6, KNOB_MAX);
+        if (dd > bestD + 0.5) { bestD = dd; best = c; }
+      }
+      gEl.style.setProperty('--mfp-kcols', String(best));
+      gEl.style.setProperty('--mfp-knob', Math.floor(clamp(bestD, KNOB_MIN, KNOB_MAX)) + 'px');
+    }
   }
 
   /* ---------- SEQ5: one-finger sweep across 5 vertical faders ---------- */
@@ -483,7 +547,7 @@
         var oldDef = paramDef(mod, fp);
         var n = toNorm(oldDef, mod.params.freq);
         mod.params.mode = mod.params.mode === 'lfo' ? 'vco' : 'lfo';
-        mod.params.freq = fromNorm(paramDef(mod, fp), n);   // keep fader position, remap range
+        mod.params.freq = fromNorm(paramDef(mod, fp), n);   // keep knob position, remap range
         paintMode();
         refreshers.forEach(function (r) { r(); });
         emitParam(mod, 'mode', mod.params.mode);
@@ -492,10 +556,20 @@
     }
 
     var ins = def.ins, outs = def.outs;
-    var ports = el('div', 'mfp-ports', box);
-    // jacks on one row when they fit the panel width, otherwise inputs row + outputs row
-    if ((ins.length + outs.length) * JACK_HIT > hpW - MOD_CHROME) ports.classList.add('mfp-two');
-    ports.style.setProperty('--mfp-in-n', String(Math.max(1, ins.length)));
+    // SEQ5 / DRAW: the RATE knob sits beside the jacks so the editor keeps the free height
+    var inline = !!(def.seq || def.draw);
+    var jrow = inline ? el('div', 'mfp-jrow', box) : null;
+    var ports = el('div', 'mfp-ports', jrow || box);
+    var portW = hpW - MOD_CHROME - (inline ? KNOB_INLINE + 16 : 0);
+    if (def.portGrid) {
+      // inputs as a grid (MIX VCA: IN 1-4 over CV 1-4), output group beside it
+      ports.classList.add('mfp-pgrid');
+      ports.style.setProperty('--mfp-pcols', String(def.portGrid));
+    } else if ((ins.length + outs.length) * JACK_HIT > portW) {
+      // jacks on one row when they fit the panel width, otherwise inputs row + outputs row
+      ports.classList.add('mfp-two');
+    }
+    ports.style.setProperty('--mfp-in-n', String(Math.max(1, def.portGrid || ins.length)));
     ports.style.setProperty('--mfp-out-n', String(Math.max(1, outs.length)));
     if (ins.length) {
       var gi = el('div', 'mfp-pgroup mfp-in', ports);
@@ -504,18 +578,18 @@
     var go = el('div', 'mfp-pgroup mfp-out', ports);
     outs.forEach(function (p) { buildPort(go, mod.id, p, 'out'); });
 
-    if (def.seq) buildSeq(box, mod);
-    if (def.draw) buildDraw(box, mod);
-
-    var pw = el('div', 'mfp-params' + (def.cols === 2 ? ' mfp-c2' : ''), box);
+    var pw = el('div', 'mfp-knobs' + (inline ? ' mfp-inline' : ' mfp-fit'), jrow || box);
     def.params.forEach(function (p) {
       if (mod.params[p.key] == null || isNaN(+mod.params[p.key])) mod.params[p.key] = p.def;
       else mod.params[p.key] = +mod.params[p.key];
       var d = paramDef(mod, p);
       mod.params[p.key] = clamp(mod.params[p.key], d.min, d.max);
-      var f = buildFader(pw, mod, p);
-      refreshers.push(f.refresh);
+      var kb = buildKnob(pw, mod, p);
+      refreshers.push(kb.refresh);
     });
+
+    if (def.seq) buildSeq(box, mod);
+    if (def.draw) buildDraw(box, mod);
   }
 
   function buildOut() {
@@ -771,10 +845,12 @@
     rails.forEach(function (list, r) {
       list.forEach(function (m) {
         seen[m.type] = (seen[m.type] || 0) + 1;
-        buildModule(m, counts[m.type] > 1 ? m.type + ' ' + seen[m.type] : m.type, railEls[r]);
+        var nm = TITLE[m.type] || m.type;
+        buildModule(m, counts[m.type] > 1 ? nm + ' ' + seen[m.type] : nm, railEls[r]);
       });
     });
     requestAnimationFrame(function () {
+      fitKnobs();
       drawCanvases.forEach(function (p) { p(); });
       redraw();
     });
@@ -811,13 +887,14 @@
     themeCache = null;
     if (window.ResizeObserver) {
       var ro = new ResizeObserver(function () {
+        fitKnobs();
         drawCanvases.forEach(function (p) { p(); });
         queueRedraw();
       });
       ro.observe(root);
       ro.observe(caseEl);
     }
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(queueRedraw);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { fitKnobs(); queueRedraw(); });
     rebuild();
     setEnabled(enabled);
   }

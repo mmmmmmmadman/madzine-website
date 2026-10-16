@@ -20,7 +20,7 @@
 
   var TYPES = {
     VCO:   { inputs: ['fm', 'sync', 'mode_trig'], outputs: ['saw', 'sqr', 'tri'] },
-    MIX4:  { inputs: ['in1', 'in2', 'in3', 'in4'], outputs: ['out'] },
+    MIXVCA: { inputs: ['in1', 'in2', 'in3', 'in4', 'cv1', 'cv2', 'cv3', 'cv4'], outputs: ['out'] },
     LPF:   { inputs: ['in', 'cutoff_cv'], outputs: ['out'] },
     FOLD:  { inputs: ['in', 'fold_cv'], outputs: ['out'] },
     DELAY: { inputs: ['in', 'time_cv'], outputs: ['outL', 'outR'] },
@@ -47,7 +47,6 @@
   var slotGain = { me: null, foe: null, preview: null };
   var slots = { me: null, foe: null, preview: null };
   var previewTimer = 0, previewPending = null;
-  var recorder = null, recChunks = [], recMime = '';
   var idSeq = 0;
 
   // ---------- small helpers ----------
@@ -55,7 +54,8 @@
   function clamp(v, lo, hi) { return v < lo ? lo : (v > hi ? hi : v); }
   function rnd(lo, hi) { return lo + Math.random() * (hi - lo); }
   function rndLog(lo, hi) { return lo * Math.pow(hi / lo, Math.random()); }
-  function isModPort(p) { return MOD_PORTS[p] === 1 || /_cv$/.test(p); }
+  // cv1..cv4 are the MIXVCA per-channel VCA inputs (no output port is named cvN)
+  function isModPort(p) { return MOD_PORTS[p] === 1 || /_cv$/.test(p) || /^cv[1-4]$/.test(p); }
   function round3(v) { return Math.round(v * 1000) / 1000; }
 
   function ensureCtx() {
@@ -72,10 +72,6 @@
     hard.gain.value = 0.5;
     comp.connect(hard);
     hard.connect(ctx.destination);
-    if (ctx.createMediaStreamDestination) {
-      recDest = ctx.createMediaStreamDestination();
-      hard.connect(recDest);
-    }
     SLOT_NAMES.forEach(function (s) {
       var g = ctx.createGain();
       g.gain.value = SLOT_GAIN;
@@ -85,28 +81,293 @@
     return ctx;
   }
 
+  // ---------- recording: master PCM -> MP3 (lamejs), MediaRecorder fallback ----------
+  // The master output (after the compressor and the 0.5 trim, i.e. exactly what
+  // is heard) is captured as stereo float PCM by an AudioWorklet (ScriptProcessor
+  // if AudioWorklet is missing) and MP3-encoded on the main thread in ~1 s
+  // batches, so only about one second of PCM is held at a time.
+  // lamejs 1.2.1 is loaded from cdnjs, version pinned, with an SRI hash.
+  // License of lamejs is LGPL-3.0 (its package.json), loaded unmodified as a
+  // separate file. If it cannot load, or the context rate is not an MP3 rate,
+  // the old MediaRecorder path (webm/opus or mp4) is used instead.
+  var LAME_URL = 'https://cdnjs.cloudflare.com/ajax/libs/lamejs/1.2.1/lame.min.js';
+  var LAME_SRI = 'sha384-xuasJXVcyv3hZq0eYpelEkBC8l4yufatZXDsKuyCU2rqfhDCb+ftuE/mSfZAteiK';
+  var MP3_KBPS = 128;
+  var MP3_RATES = { 8000: 1, 11025: 1, 12000: 1, 16000: 1, 22050: 1, 24000: 1, 32000: 1, 44100: 1, 48000: 1 };
+  var MP3_BLOCK = 1152;                 // samples per MPEG-1 frame
+  var CAP_FRAMES = 4096;                // frames per chunk posted by the worklet
+  var BACKLOG_MAX_S = 120;              // PCM kept while lamejs is still loading
+  var lameState = 'idle';               // idle | loading | ready | failed
+  var lameWaiters = [];
+  var cap = null;                       // { node, ready, worklet, post(cmd) }
+  var capTarget = null, capNext = null; // session receiving PCM / session queued behind a stop
+  var capStopWait = null;               // resolver of the pending worklet stop
+  var rec = null;                       // active recording session
+  var lastBlob = null;
+  var recDest = null;
+
+  function loadLame() {
+    if (lameState !== 'idle') return;
+    if (window.lamejs && window.lamejs.Mp3Encoder) { lameState = 'ready'; return; }
+    if (typeof document === 'undefined' || !document.createElement) { lameState = 'failed'; return; }
+    lameState = 'loading';
+    var s = document.createElement('script');
+    s.src = LAME_URL;
+    s.integrity = LAME_SRI;
+    s.crossOrigin = 'anonymous';
+    s.async = true;
+    s.onload = function () { lameDone(!!(window.lamejs && window.lamejs.Mp3Encoder)); };
+    s.onerror = function () { lameDone(false); };
+    (document.head || document.documentElement).appendChild(s);
+  }
+  function lameDone(ok) {
+    lameState = ok ? 'ready' : 'failed';
+    var w = lameWaiters;
+    lameWaiters = [];
+    w.forEach(function (fn) { try { fn(ok); } catch (e) {} });
+  }
+
+  var WORKLET_SRC =
+    "class MFCapture extends AudioWorkletProcessor {\n" +
+    "  constructor() {\n" +
+    "    super(); this.on = false; this.n = 0;\n" +
+    "    this.L = new Float32Array(" + CAP_FRAMES + "); this.R = new Float32Array(" + CAP_FRAMES + ");\n" +
+    "    this.port.onmessage = (e) => {\n" +
+    "      if (e.data === 'start') { this.on = true; this.n = 0; }\n" +
+    "      else if (e.data === 'stop') { this.flush(); this.on = false; this.port.postMessage('stopped'); }\n" +
+    "    };\n" +
+    "  }\n" +
+    "  flush() {\n" +
+    "    if (!this.n) return;\n" +
+    "    var l = this.L.slice(0, this.n), r = this.R.slice(0, this.n);\n" +
+    "    this.port.postMessage([l, r], [l.buffer, r.buffer]); this.n = 0;\n" +
+    "  }\n" +
+    "  process(inputs) {\n" +
+    "    if (!this.on) return true;\n" +
+    "    var inp = inputs[0], a = inp && inp[0], b = inp && (inp[1] || inp[0]);\n" +
+    "    var len = a ? a.length : 128;\n" +   // no channels = silent input: still advance time
+    "    for (var i = 0; i < len; i++) {\n" +
+    "      this.L[this.n] = a ? a[i] : 0; this.R[this.n] = b ? b[i] : 0;\n" +
+    "      if (++this.n === " + CAP_FRAMES + ") this.flush();\n" +
+    "    }\n" +
+    "    return true;\n" +
+    "  }\n" +
+    "}\n" +
+    "registerProcessor('mf-capture', MFCapture);\n";
+
+  function onCapChunk(l, r) {
+    var s = capTarget;
+    if (!s || !s.pcm) return;
+    s.qL.push(l); s.qR.push(r); s.qN += l.length; s.frames += l.length;
+    if (s.enc) {
+      if (s.qN >= ctx.sampleRate) encodeQueue(s);
+    } else if (s.qN > BACKLOG_MAX_S * ctx.sampleRate && s.mr) {
+      dropPcm(s);                          // lamejs never came: keep the MediaRecorder take
+    }
+  }
+  function onCapStopped() {
+    if (!capStopWait) return;              // late reply after the 500 ms timeout already handled it
+    var w = capStopWait;
+    capStopWait = null;
+    capTarget = capNext;
+    capNext = null;
+    if (capTarget) cap.post('start');
+    if (w) w();
+  }
+
+  function setupScriptCapture() {
+    var sp = ctx.createScriptProcessor(4096, 2, 2);
+    sp.channelCount = 2; sp.channelCountMode = 'explicit'; sp.channelInterpretation = 'speakers';
+    var on = false;
+    sp.onaudioprocess = function (ev) {
+      var ob = ev.outputBuffer;
+      for (var c = 0; c < ob.numberOfChannels; c++) ob.getChannelData(c).fill(0);
+      if (!on) return;
+      var ib = ev.inputBuffer;
+      var l = new Float32Array(ib.getChannelData(0));
+      var r = new Float32Array(ib.numberOfChannels > 1 ? ib.getChannelData(1) : ib.getChannelData(0));
+      onCapChunk(l, r);
+    };
+    hard.connect(sp);
+    sp.connect(ctx.destination);
+    return {
+      node: sp, worklet: false, ready: Promise.resolve(),
+      post: function (cmd) {
+        if (cmd === 'start') on = true;
+        else if (cmd === 'stop') { on = false; setTimeout(onCapStopped, 0); }
+      }
+    };
+  }
+
+  function ensureCapture() {
+    if (cap) return cap;
+    var useWorklet = !!(ctx.audioWorklet && window.AudioWorkletNode && window.Blob && window.URL);
+    if (!useWorklet) {
+      if (!ctx.createScriptProcessor) return null;
+      cap = setupScriptCapture();
+      return cap;
+    }
+    var queued = [];
+    var c = { node: null, worklet: true, ready: null,
+              post: function (cmd) { if (c.node) c.node.port.postMessage(cmd); else queued.push(cmd); } };
+    cap = c;
+    var url = URL.createObjectURL(new Blob([WORKLET_SRC], { type: 'application/javascript' }));
+    c.ready = ctx.audioWorklet.addModule(url).then(function () {
+      var n = new AudioWorkletNode(ctx, 'mf-capture', {
+        numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [1],
+        channelCount: 2, channelCountMode: 'explicit', channelInterpretation: 'speakers'
+      });
+      n.port.onmessage = function (e) {
+        if (e.data === 'stopped') onCapStopped();
+        else if (e.data && e.data.length === 2) onCapChunk(e.data[0], e.data[1]);
+      };
+      hard.connect(n);
+      n.connect(ctx.destination);         // output stays silent; keeps the node pulled
+      c.node = n;
+      queued.forEach(function (cmd) { n.port.postMessage(cmd); });
+      queued = [];
+    }, function () {
+      // AudioWorklet unusable: same commands go to a ScriptProcessor instead
+      var sp = ctx.createScriptProcessor ? setupScriptCapture() : null;
+      c.worklet = false;
+      c.post = sp ? sp.post : function (cmd) { if (cmd === 'stop') setTimeout(onCapStopped, 0); };
+      c.node = sp && sp.node;
+      queued.forEach(function (cmd) { c.post(cmd); });
+      queued = [];
+    }).then(function () { try { URL.revokeObjectURL(url); } catch (e) {} });
+    return c;
+  }
+
+  function f2i(src, dst) {
+    for (var i = 0; i < src.length; i++) {
+      var v = src[i];
+      v = v > 1 ? 1 : (v < -1 ? -1 : (v === v ? v : 0));
+      dst[i] = v < 0 ? v * 0x8000 : v * 0x7fff;
+    }
+  }
+  function encodeQueue(s) {
+    if (!s.enc || !s.qN) return;
+    var L = new Int16Array(s.qN), R = new Int16Array(s.qN), off = 0;
+    for (var i = 0; i < s.qL.length; i++) {
+      f2i(s.qL[i], L.subarray(off, off + s.qL[i].length));
+      f2i(s.qR[i], R.subarray(off, off + s.qR[i].length));
+      off += s.qL[i].length;
+    }
+    s.qL = []; s.qR = []; s.qN = 0;
+    for (var k = 0; k < L.length; k += MP3_BLOCK) {
+      var out = s.enc.encodeBuffer(L.subarray(k, k + MP3_BLOCK), R.subarray(k, k + MP3_BLOCK));
+      if (out.length) s.mp3.push(out);
+    }
+  }
+  function dropPcm(s) {
+    s.pcm = false;
+    s.qL = []; s.qR = []; s.qN = 0;
+    s.enc = null;
+  }
+
   function pickMime() {
     if (!window.MediaRecorder || !MediaRecorder.isTypeSupported) return '';
     if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) return 'audio/webm;codecs=opus';
     if (MediaRecorder.isTypeSupported('audio/mp4')) return 'audio/mp4';
     return '';
   }
+  function startMR() {
+    if (!window.MediaRecorder || !ctx.createMediaStreamDestination) return null;
+    if (!recDest) { recDest = ctx.createMediaStreamDestination(); hard.connect(recDest); }
+    var mime = pickMime(), r;
+    try {
+      r = mime ? new MediaRecorder(recDest.stream, { mimeType: mime }) : new MediaRecorder(recDest.stream);
+    } catch (e) { return null; }
+    var m = { rec: r, chunks: [], mime: mime || r.mimeType || 'audio/webm' };
+    r.ondataavailable = function (ev) { if (ev.data && ev.data.size) m.chunks.push(ev.data); };
+    r.start(1000);
+    return m;
+  }
+  function stopMR(m, keep) {
+    return new Promise(function (resolve) {
+      function finish() { resolve(keep ? new Blob(m.chunks, { type: m.mime.split(';')[0] }) : null); }
+      if (!m || !m.rec || m.rec.state === 'inactive') { if (m) finish(); else resolve(null); return; }
+      m.rec.onstop = finish;
+      try { if (keep) m.rec.requestData(); } catch (e) {}
+      try { m.rec.stop(); } catch (e) { finish(); }
+    });
+  }
+  function newEncoder() {
+    try { return new window.lamejs.Mp3Encoder(2, ctx.sampleRate, MP3_KBPS); } catch (e) { return null; }
+  }
 
   function startRecorder() {
-    if (!recDest || !window.MediaRecorder) return;
-    if (recorder && recorder.state !== 'inactive') return;
-    recChunks = [];
-    recMime = pickMime();
-    try {
-      recorder = recMime ? new MediaRecorder(recDest.stream, { mimeType: recMime })
-                         : new MediaRecorder(recDest.stream);
-    } catch (e) {
-      recorder = null;
-      return;
+    if (rec) return;
+    loadLame();
+    var s = { pcm: false, enc: null, mp3: [], qL: [], qR: [], qN: 0, frames: 0, mr: null };
+    rec = s;
+    var mp3Possible = MP3_RATES[ctx.sampleRate] === 1 && lameState !== 'failed';
+    var c = mp3Possible ? ensureCapture() : null;
+    if (c) {
+      s.pcm = true;
+      if (capStopWait) capNext = s;           // previous take still flushing
+      else { capTarget = s; c.post('start'); }
+      if (lameState === 'ready') {
+        s.enc = newEncoder();
+        if (!s.enc) { dropPcm(s); s.mr = startMR(); }
+      } else {
+        s.mr = startMR();                     // backup take until lamejs answers
+        lameWaiters.push(function (ok) {
+          if (!s.pcm) return;
+          if (ok) s.enc = newEncoder();
+          if (s.enc) {
+            if (s.mr) { stopMR(s.mr, false); s.mr = null; }
+            if (s.qN >= ctx.sampleRate) encodeQueue(s);
+          } else {
+            dropPcm(s);
+            if (!s.mr && rec === s) s.mr = startMR();
+          }
+        });
+      }
+    } else {
+      s.mr = startMR();
     }
-    if (!recMime) recMime = recorder.mimeType || 'audio/webm';
-    recorder.ondataavailable = function (ev) { if (ev.data && ev.data.size) recChunks.push(ev.data); };
-    recorder.start(1000);
+  }
+
+  function stopCaptureFor(s) {
+    return new Promise(function (resolve) {
+      if (capTarget !== s) { if (capNext === s) capNext = null; resolve(); return; }
+      var done = false;
+      function fin() { if (done) return; done = true; resolve(); }
+      capStopWait = fin;
+      cap.post('stop');
+      setTimeout(function () { if (!done && capStopWait === fin) onCapStopped(); }, 500);
+    });
+  }
+
+  function stopRecorder() {
+    var s = rec;
+    if (!s) return Promise.resolve(lastBlob || new Blob([], { type: 'audio/mpeg' }));
+    rec = null;
+    var stopCap = s.pcm ? stopCaptureFor(s) : Promise.resolve();
+    return stopCap.then(function () {
+      if (s.pcm && !s.enc && lameState === 'loading') {
+        // lamejs still on its way: wait up to 5 s for it, else use the backup take
+        return new Promise(function (resolve) {
+          var t = setTimeout(resolve, 5000);
+          lameWaiters.push(function () { clearTimeout(t); resolve(); });
+        });
+      }
+    }).then(function () {
+      if (s.pcm && s.enc) {
+        encodeQueue(s);
+        var tail = s.enc.flush();
+        if (tail.length) s.mp3.push(tail);
+        s.enc = null;
+        if (s.mr) stopMR(s.mr, false);
+        return new Blob(s.mp3, { type: 'audio/mpeg' });
+      }
+      dropPcm(s);
+      return stopMR(s.mr, true).then(function (b) { return b || new Blob([], { type: 'audio/mpeg' }); });
+    }).then(function (blob) {
+      lastBlob = blob;
+      return blob;
+    });
   }
 
   // Hold the current value of an AudioParam at time t; returns the time from
@@ -405,13 +666,39 @@
     };
   }
 
-  function buildMIX4(g, m) {
+  // 3-point curve over input -1..1: [0, 0, 1] -> clamp(x, 0, 1); inputs beyond
+  // +-1 are held at the curve ends by WaveShaper itself.
+  var unipolarCurve = null;
+  function getUnipolarCurve() {
+    if (!unipolarCurve) unipolarCurve = new Float32Array([0, 0, 1]);
+    return unipolarCurve;
+  }
+
+  // MIX VCA: per channel  inN -> level gain (lvlN) -> vca gain -> out.
+  // cvN patched: vca gain base 0, cv clamped 0..1 drives vca.gain, so the
+  // effective gain is lvlN * clamp(cv, 0, 1). cvN not patched: vca gain 1.
+  function buildMIXVCA(g, m) {
     var p = m.params || (m.params = {});
-    var out = g.gain(1), ins = {};
+    var out = g.gain(1), ins = {}, lvls = {};
     for (var i = 1; i <= 4; i++) {
-      var k = 'in' + i;
-      ins[k] = g.gain(clamp(num(p['lvl' + i], 0.8), 0, 1));
-      ins[k].connect(out);
+      var lvl = g.gain(clamp(num(p['lvl' + i], 0.8), 0, 1));
+      var cvIn = g.gain(1);
+      var vca;
+      if (g.patched[m.id + '.cv' + i]) {
+        vca = g.gain(0);
+        var ws = ctx.createWaveShaper();
+        ws.curve = getUnipolarCurve();
+        g.nodes.push(ws);
+        cvIn.connect(ws);
+        ws.connect(vca.gain);
+      } else {
+        vca = g.gain(1);
+      }
+      lvl.connect(vca);
+      vca.connect(out);
+      ins['in' + i] = lvl;
+      ins['cv' + i] = cvIn;
+      lvls[i] = lvl;
     }
     return {
       inputs: ins,
@@ -421,7 +708,7 @@
         if (!mm) return;
         var val = clamp(num(v, 0), 0, 1);
         p[key] = val;
-        ins['in' + mm[1]].gain.setTargetAtTime(val, ctx.currentTime, 0.01);
+        lvls[mm[1]].gain.setTargetAtTime(val, ctx.currentTime, 0.01);
       }
     };
   }
@@ -677,7 +964,7 @@
     };
   }
 
-  var BUILDERS = { VCO: buildVCO, MIX4: buildMIX4, LPF: buildLPF, FOLD: buildFOLD, DELAY: buildDELAY,
+  var BUILDERS = { VCO: buildVCO, MIXVCA: buildMIXVCA, LPF: buildLPF, FOLD: buildFOLD, DELAY: buildDELAY,
                    ADSR: buildADSR, AR: buildAR, SEQ5: buildSEQ5, DRAW: buildDRAW };
 
   // Saturating curve for feedback cables (bounded loops).
@@ -748,7 +1035,7 @@
   }
 
   // ---------- random modules / auto patch ----------
-  var WEIGHTS = [['VCO', 3], ['MIX4', 1.5], ['LPF', 2], ['FOLD', 1.2], ['DELAY', 1.2],
+  var WEIGHTS = [['VCO', 3], ['MIXVCA', 1.5], ['LPF', 2], ['FOLD', 1.2], ['DELAY', 1.2],
                  ['ADSR', 1], ['AR', 1], ['SEQ5', 1.2], ['DRAW', 1]];
   function pickType() {
     var tot = 0, i;
@@ -773,7 +1060,7 @@
       case 'VCO':
         var lfo = Math.random() < 0.25;
         return { freq: round3(lfo ? rndLog(0.05, 20) : rndLog(20, 2000)), mode: lfo ? 'lfo' : 'vco', fmAmt: round3(Math.random()) };
-      case 'MIX4':
+      case 'MIXVCA':
         return { lvl1: round3(rnd(0.3, 1)), lvl2: round3(rnd(0.3, 1)), lvl3: round3(rnd(0.3, 1)), lvl4: round3(rnd(0.3, 1)) };
       case 'LPF':
         return { cutoff: Math.round(rndLog(200, 8000)), res: round3(rnd(0, 0.8)), cvAmt: round3(Math.random()) };
@@ -801,11 +1088,11 @@
     var types = [], i;
     for (i = 0; i < n; i++) types.push(pickType());
     if (types.indexOf('VCO') < 0) types[Math.floor(Math.random() * n)] = 'VCO';
-    if (n > 1 && types.indexOf('MIX4') < 0 && types.indexOf('LPF') < 0) {
+    if (n > 1 && types.indexOf('MIXVCA') < 0 && types.indexOf('LPF') < 0) {
       var vcoCount = types.filter(function (t) { return t === 'VCO'; }).length;
       var cand = [];
       for (i = 0; i < n; i++) if (types[i] !== 'VCO' || vcoCount > 1) cand.push(i);
-      types[cand[Math.floor(Math.random() * cand.length)]] = Math.random() < 0.5 ? 'LPF' : 'MIX4';
+      types[cand[Math.floor(Math.random() * cand.length)]] = Math.random() < 0.5 ? 'LPF' : 'MIXVCA';
     }
     return types.map(makeModule);
   }
@@ -950,17 +1237,10 @@
     autoPatch: autoPatch,
     randomModules: randomModules,
 
+    // -> Promise<Blob>: audio/mpeg normally; audio/webm or audio/mp4 when the
+    // MP3 encoder could not be used. Without an active take: the last blob.
     stopRecording: function () {
-      return new Promise(function (resolve) {
-        function finish() {
-          var type = (recMime || 'audio/webm').split(';')[0];
-          resolve(new Blob(recChunks, { type: type }));
-        }
-        if (!recorder || recorder.state === 'inactive') { finish(); return; }
-        recorder.onstop = finish;
-        try { recorder.requestData(); } catch (e) {}
-        recorder.stop();
-      });
+      return stopRecorder();
     },
 
     // Live param edit: the module being edited lives in the preview graph; fall
@@ -974,7 +1254,7 @@
     }
   };
   Object.defineProperty(MFAudio, 'recordingActive', {
-    get: function () { return !!(recorder && recorder.state === 'recording'); },
+    get: function () { return !!rec; },
     enumerable: true
   });
   Object.defineProperty(MFAudio, 'lastError', {
@@ -983,4 +1263,6 @@
   });
 
   window.MFAudio = MFAudio;
+  // fetch the MP3 encoder early so it is normally ready before the first take
+  try { loadLame(); } catch (e) {}
 })();

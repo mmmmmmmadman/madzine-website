@@ -168,7 +168,8 @@ button:disabled{opacity:.4;cursor:default}
 #note.on{display:block}
 
 /* ---------- match ---------- */
-#fight{flex:0 0 40%;height:40%;min-height:0;position:relative;background:var(--fight-bg)}
+/* fight 22% / panel the rest: two module rows ~270px tall at 390x844 (fight canvas adapts via ResizeObserver) */
+#fight{flex:0 0 22%;height:22%;min-height:0;position:relative;background:var(--fight-bg)}
 #status{
   flex:0 0 auto;
   display:flex;align-items:center;justify-content:space-between;
@@ -335,7 +336,7 @@ button:disabled{opacity:.4;cursor:default}
     <div id="overlay">
       <h2 id="ov-title">YOU WIN</h2>
       <p id="ov-sub"></p>
-      <a id="dl" href="#" download="modular-fighters.webm" data-i18n="download">DOWNLOAD RECORDING</a>
+      <a id="dl" href="#" download="modular-fighters.mp3" data-i18n="download">DOWNLOAD MP3</a>
       <button id="btn-rematch" class="big pri" type="button" data-i18n="rematch">REMATCH</button>
       <button id="btn-home" class="big" type="button" data-i18n="home">HOME</button>
     </div>
@@ -427,7 +428,9 @@ button:disabled{opacity:.4;cursor:default}
       youWin: '你贏了',
       youLose: '你輸了',
       opponentLeft: '對手離開',
-      download: '下載錄影',
+      download: '下載錄音 MP3',
+      downloadWebm: '下載錄音 WEBM',
+      downloadMp4: '下載錄音 MP4',
       rematch: '再戰',
       home: '首頁',
       tookChar: '對手選了 {a}，你是 {b}',
@@ -446,7 +449,7 @@ button:disabled{opacity:.4;cursor:default}
       helpPatch: '從輸出孔（實心）拖線到輸入孔（空心）。聲音接到 OUT 就會發出，接線時就聽得到；按 SEND 後會循環播放成為配樂。',
       helpPower: '攻擊力來自接線的複雜度：模組越多、線越多、調變越多，傷害越高。AUTO 會幫你接好一組簡單的線，按 SEND 才會攻擊。SEND 送出攻擊並換一批新模組。攻擊力越高，你的角色動作越快，直到下一次送出。',
       helpSound: '送出新聲音時，上一個聲音會停止。對手的聲音會和你的一起播放。',
-      helpModes: '對戰電腦：和電腦對打。建立房間：把 4 碼房號給朋友。加入房間：輸入房號。整場對戰會錄下來，KO 後可下載。背景可用裝置內的照片或影片，只留在你的裝置上，不會傳送。',
+      helpModes: '對戰電腦：和電腦對打。建立房間：把 4 碼房號給朋友。加入房間：輸入房號。整場對戰的聲音會錄下來，KO 後可下載 MP3。背景可用裝置內的照片或影片，只留在你的裝置上，不會傳送。',
       helpCpu: '電腦不會主動攻擊：你每攻擊一次，它才回擊一次。難度（簡單／普通／困難）決定它打多重。',
       cpuEasy: '簡單',
       cpuNormal: '普通',
@@ -492,7 +495,9 @@ button:disabled{opacity:.4;cursor:default}
       youWin: 'YOU WIN',
       youLose: 'YOU LOSE',
       opponentLeft: 'OPPONENT LEFT',
-      download: 'DOWNLOAD RECORDING',
+      download: 'DOWNLOAD MP3',
+      downloadWebm: 'DOWNLOAD WEBM',
+      downloadMp4: 'DOWNLOAD MP4',
       rematch: 'REMATCH',
       home: 'HOME',
       tookChar: 'OPPONENT TOOK {a}, YOU ARE {b}',
@@ -511,7 +516,7 @@ button:disabled{opacity:.4;cursor:default}
       helpPatch: 'Drag cables from outputs (filled) to inputs (hollow). The sound plays as soon as it reaches OUT, so you hear it while you patch; after SEND it loops as the music.',
       helpPower: 'Attack power comes from patch complexity: more modules, more cables and more modulation mean more damage. AUTO wires a simple patch for you; press SEND to attack. SEND attacks and gives you new modules. Higher power makes your fighter move faster until your next patch.',
       helpSound: 'Your previous sound stops when you send a new one. The opponent’s sound plays together with yours.',
-      helpModes: 'VS CPU: fight the computer. CREATE ROOM: give the 4-letter code to a friend. JOIN ROOM: enter the code. The whole match is recorded and can be downloaded after KO. The background can be a photo or video from your device; it stays on your device only.',
+      helpModes: 'VS CPU: fight the computer. CREATE ROOM: give the 4-letter code to a friend. JOIN ROOM: enter the code. The sound of the whole match is recorded and can be downloaded as MP3 after KO. The background can be a photo or video from your device; it stays on your device only.',
       helpCpu: 'The CPU never attacks first: it answers each of your attacks once. The difficulty (EASY / NORMAL / HARD) sets how hard it hits.',
       cpuEasy: 'EASY',
       cpuNormal: 'NORMAL',
@@ -557,7 +562,9 @@ button:disabled{opacity:.4;cursor:default}
       youWin: 'あなたの勝ち',
       youLose: 'あなたの負け',
       opponentLeft: '相手が退出しました',
-      download: '録画をダウンロード',
+      download: 'MP3 をダウンロード',
+      downloadWebm: 'WEBM をダウンロード',
+      downloadMp4: 'MP4 をダウンロード',
       rematch: '再戦',
       home: 'ホーム',
       tookChar: '相手が {a} を選んだので、あなたは {b} です',
@@ -576,7 +583,7 @@ button:disabled{opacity:.4;cursor:default}
       helpPatch: '出力ジャック（塗り）から入力ジャック（白抜き）へケーブルをドラッグします。OUT につながるとすぐ音が鳴るので、つなぎながら聴けます。SEND のあとはループして音楽になります。',
       helpPower: '攻撃力はパッチの複雑さで決まります。モジュール、ケーブル、モジュレーションが多いほどダメージが大きくなります。AUTO はかんたんなパッチをつないでくれます。攻撃するには SEND を押します。SEND で攻撃し、新しいモジュールに入れ替わります。攻撃力が高いほど、次のパッチを送るまでキャラクターの動きが速くなります。',
       helpSound: '新しい音を送ると前の音は止まります。相手の音はあなたの音と一緒に鳴ります。',
-      helpModes: 'CPU対戦：コンピューターと対戦。ルーム作成：4文字のコードを友だちに伝えます。ルーム参加：コードを入力します。試合は全部録画され、KO のあとにダウンロードできます。背景には端末内の写真や動画を使えます。端末の外には送信されません。',
+      helpModes: 'CPU対戦：コンピューターと対戦。ルーム作成：4文字のコードを友だちに伝えます。ルーム参加：コードを入力します。試合の音は全部録音され、KO のあとに MP3 でダウンロードできます。背景には端末内の写真や動画を使えます。端末の外には送信されません。',
       helpCpu: 'CPU は自分から攻撃しません。あなたが攻撃するごとに一回だけ反撃します。難易度（かんたん／ふつう／むずかしい）で反撃の強さが決まります。',
       cpuEasy: 'かんたん',
       cpuNormal: 'ふつう',
@@ -943,7 +950,12 @@ button:disabled{opacity:.4;cursor:default}
       if (!ended) return;
       if (!blob || !blob.size) return;
       recUrl = URL.createObjectURL(blob);
-      var ext = /mp4/.test(blob.type || '') ? 'mp4' : 'webm';
+      // MP3 normally; webm / mp4 only when the MP3 encoder could not load
+      var bt = blob.type || '';
+      var ext = /mpeg/.test(bt) ? 'mp3' : (/mp4/.test(bt) ? 'mp4' : 'webm');
+      var key = ext === 'mp3' ? 'download' : (ext === 'mp4' ? 'downloadMp4' : 'downloadWebm');
+      dl.setAttribute('data-i18n', key);
+      dl.textContent = t(key);
       dl.href = recUrl;
       dl.download = 'modular-fighters-' + stamp() + '.' + ext;
       dl.classList.add('on');

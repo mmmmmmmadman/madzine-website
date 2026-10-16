@@ -18,7 +18,9 @@ Patch = {
 Module types and ports (port names are fixed strings):
 - VCO    inputs: fm, sync, mode_trig   outputs: saw, sqr, tri   params: freq (20-2000, in LFO mode 0.05-20), mode:"vco"|"lfo", fmAmt 0-1
          mode_trig: any rising edge toggles vco<->lfo mode
-- MIX4   inputs: in1..in4            outputs: out               params: lvl1..lvl4 (0-1)
+- MIXVCA (title "MIX VCA")  inputs: in1..in4, cv1..cv4  outputs: out  params: lvl1..lvl4 (0-1)
+         per channel inN -> level lvlN -> VCA -> out. cvN patched: gain = lvlN * clamp(cvN, 0, 1)
+         (negative cv = silent, cv above 1 held at 1); cvN not patched: gain = lvlN. (Replaced MIX4, 2026-10-16.)
 - LPF    inputs: in, cutoff_cv       outputs: out               params: cutoff 20-20000, res 0-1, cvAmt 0-1
 - FOLD   inputs: in, fold_cv         outputs: out               params: fold 0-1, cvAmt 0-1
 - DELAY  inputs: in, time_cv         outputs: outL, outR        params: time 0.05-1.5 s, fb 0-0.9, mix 0-1
@@ -30,14 +32,17 @@ Every CV input accepts audio-rate or LFO-rate signal (Web Audio AudioParam or Ga
 
 ## Global APIs
 window.MFAudio
-  .init() -> Promise  (creates AudioContext on user gesture; starts MediaRecorder on a master recording tap)
+  .init() -> Promise  (creates AudioContext on user gesture; starts recording the master output if no take is active)
   .play(slot, patch) — slot: "me" | "foe". Builds the Web Audio graph, loops forever, replaces any previous graph in that slot (fade 50 ms).
   .stop(slot)
   .score(patch) -> integer attack power 0..100. Rule: 0 if nothing reaches OUT. Else
-     reachable modules*6 + cables reaching OUT*4 + modulation cables (into *_cv/fm/gate/trig/clock/mode_trig)*8, capped 100.
+     reachable modules*6 + cables reaching OUT*4 + modulation cables (into *_cv/cv1..cv4/fm/gate/trig/clock/mode_trig)*8, capped 100.
   .autoPatch(modules) -> Patch  — a trivial VCO->OUT (or VCO->LPF->OUT) patch, score should land 10..20.
   .randomModules(n=10) -> modules array (each has random params), always includes >=1 VCO.
-  .stopRecording() -> Promise<Blob>  (webm/opus or mp4 depending on browser) ; .recordingActive -> bool
+  .stopRecording() -> Promise<Blob>  audio/mpeg (MP3 128 kbps stereo at ctx.sampleRate): master PCM captured by an
+     AudioWorklet (ScriptProcessor fallback), encoded in ~1 s batches with lamejs 1.2.1 (cdnjs, pinned + SRI, LGPL-3.0).
+     If lamejs cannot load or the rate is not an MP3 rate: MediaRecorder fallback, audio/webm (opus) or audio/mp4.
+     .recordingActive -> bool (true from init() until stopRecording())
   .previewParam(modId, key, value) — live param edit while patching: preview slot first, then "me" (no-op if neither holds the module)
   .preview(patch) — third slot "preview": hear the patch while building it. Debounced 80 ms; rebuilds (50 ms crossfade) only when the structure changes; stops the preview slot when nothing reaches OUT
   .commitPreview(patch?) -> bool — promote the playing preview graph to "me" without a rebuild (old "me" fades 50 ms); false if no preview or (with patch) its structure differs
@@ -77,5 +82,5 @@ window.MFNet  (copy architecture from ../sessionguide-app.html: PeerJS 1.5.4 fro
    AUTO -> MFPatchUI.setPatch(autoPatch(panel modules)): only wires the panel; the player presses SEND (user rule 2026-10-16).
    While patching: onChange(patch) -> MFAudio.preview(patch). SEND promotes the preview with commitPreview(patch), else play("me").
    Incoming attack msg -> MFAudio.play("foe",patch); MFFight.attack("foe",power). CPU mode: MFFight.cpu.start does the same.
-3. KO -> stop both slots, MFAudio.stopRecording() -> offer download link (filename modular-fighters-YYYYMMDD-HHMM.webm). "REMATCH" button.
+3. KO -> stop both slots, MFAudio.stopRecording() -> offer download link (filename modular-fighters-YYYYMMDD-HHMM.mp3; .webm / .mp4 and label "DOWNLOAD WEBM" / "DOWNLOAD MP4" only on the fallback path). "REMATCH" button.
 Language: UI labels English only (short caps), to keep scope small.
