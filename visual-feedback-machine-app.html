@@ -694,14 +694,14 @@
         // --- Help Content (trilingual) ---
         const helpContent = {
             chaosSource: {
-                en: "Chaos Source: Lorenz = mathematical strange attractor generating 3 independent chaotic signals (x/y/z). Camera = webcam contour detection, scan point generates 3 signals from X-distance, Y-distance, and turning angle along the contour. Movement = webcam frame difference; A = horizontal position of the motion (left -1 / right +1), B = vertical position (top -1 / bottom +1), C = amount of motion (still -1 / lots +1).",
-                jp: "Chaosソース：Lorenz＝3つの独立したカオス信号（x/y/z）を生成する数学的ストレンジアトラクター。Camera＝Webカメラの輪郭検出、スキャン点がX距離・Y距離・転回角度から3信号を生成。Movement＝Webカメラのフレーム差分。A＝動きの左右位置（左 -1／右 +1）、B＝上下位置（上 -1／下 +1）、C＝動きの量（静止 -1／多い +1）。",
-                zh: "Chaos 來源：Lorenz = 數學奇異吸引子，產生 3 個獨立混沌訊號（x/y/z）。Camera = 網路攝影機輪廓偵測，掃描點沿輪廓產生 X 軸距離、Y 軸距離、轉角角度 3 個訊號。Movement = 網路攝影機後幀減前幀。A = 移動的左右位置（左 -1 / 右 +1）、B = 上下位置（上 -1 / 下 +1）、C = 移動量（靜止 -1 / 大量 +1）。"
+                en: "Chaos Source: Lorenz = mathematical strange attractor generating 3 independent chaotic signals (x/y/z). Camera = webcam contour detection, scan point generates 3 signals from X-distance, Y-distance, and turning angle along the contour. Movement = webcam frame difference; A = horizontal position of the motion (left -1 / right +1), B = vertical position (top -1 / bottom +1), C = amount of motion (still -1 / lots +1). Preview: moving areas in accent color, a ring at the motion centroid (larger = more motion), a bar along the bottom for the amount.",
+                jp: "Chaosソース：Lorenz＝3つの独立したカオス信号（x/y/z）を生成する数学的ストレンジアトラクター。Camera＝Webカメラの輪郭検出、スキャン点がX距離・Y距離・転回角度から3信号を生成。Movement＝Webカメラのフレーム差分。A＝動きの左右位置（左 -1／右 +1）、B＝上下位置（上 -1／下 +1）、C＝動きの量（静止 -1／多い +1）。プレビュー：動いた領域をアクセント色で表示、動きの重心にリング（大きい＝動きが多い）、下端に動きの量のバー。",
+                zh: "Chaos 來源：Lorenz = 數學奇異吸引子，產生 3 個獨立混沌訊號（x/y/z）。Camera = 網路攝影機輪廓偵測，掃描點沿輪廓產生 X 軸距離、Y 軸距離、轉角角度 3 個訊號。Movement = 網路攝影機後幀減前幀。A = 移動的左右位置（左 -1 / 右 +1）、B = 上下位置（上 -1 / 下 +1）、C = 移動量（靜止 -1 / 大量 +1）。預覽：動作區域塗強調色、移動重心畫圓環（越大 = 動得越多）、底邊橫條顯示移動量。"
             },
             delayTime: {
-                en: "Delay Time: Base delay buffer length in seconds. Modulated by chaos channel B (Lorenz y / contour Y-distance). Longer = more spacious echo, chaos makes it wobble.",
-                jp: "ディレイタイム：ディレイバッファの基本長さ（秒）。カオスチャンネルB（Lorenz y／輪郭Y距離）で変調。長い＝より広いエコー、カオスで揺らぐ。",
-                zh: "延遲時間：延遲緩衝基本長度（秒）。由混沌通道 B（Lorenz y / 輪廓 Y 距離）調變。越長 = 越寬廣的回音，混沌使其搖擺。"
+                en: "Delay Time: Base delay buffer length in seconds. Modulated by chaos channel B, up to ±100% of this value: Lorenz y / contour Y-distance / Movement vertical position (motion in the upper half = shorter, lower half = longer; when nothing moves the last position is held). Longer = more spacious echo.",
+                jp: "ディレイタイム：ディレイバッファの基本長さ（秒）。カオスチャンネルBでこの値の±100%まで変調：Lorenz y／輪郭Y距離／Movementの上下位置（画面上半分の動き＝短く、下半分＝長く。動きがないときは最後の位置を保持）。長い＝より広いエコー。",
+                zh: "延遲時間：延遲緩衝基本長度（秒）。由混沌通道 B 調變，幅度最多為此值的 ±100%：Lorenz y / 輪廓 Y 距離 / Movement 上下位置（動作在畫面上半 = 變短、下半 = 變長；沒有動作時保留最後位置）。越長 = 越寬廣的回音。"
             },
             feedback: {
                 en: "Feedback: Portion of delayed signal fed back into the delay input. Higher = longer decay tail. At 0.9+ the signal sustains almost indefinitely.",
@@ -709,19 +709,19 @@
                 zh: "回饋強度：延遲輸出回饋到延遲輸入的比例。越高 = 衰減尾部越長。0.9 以上時訊號幾乎無限持續。"
             },
             chaosAmount: {
-                en: "Chaos Amount: Master depth for all 3 chaos modulations. At 0, no chaos affects any parameter. At 1, full modulation: A → BPF frequency + grain position, B → delay time wobble, C → grain size + trigger density.",
-                jp: "カオス量：3つのカオス変調のマスター深度。0＝パラメータに影響なし。1＝フル変調：A→BPF周波数+グレイン位置、B→ディレイタイム揺らぎ、C→グレインサイズ+トリガー密度。",
-                zh: "混沌量：3 個混沌調變的總深度。0 = 無混沌影響。1 = 全幅調變：A → BPF 頻率 + 碎片位置、B → 延遲時間搖擺、C → 碎片大小 + 觸發密度。"
+                en: "Chaos Amount: Master depth for all 3 chaos modulations. At 0, no chaos affects any parameter. At 1, full modulation: A → BPF frequency + grain position, B → delay time, C → grain size + trigger density. In Movement mode A/B follow where the motion is on screen, C follows how much is moving.",
+                jp: "カオス量：3つのカオス変調のマスター深度。0＝パラメータに影響なし。1＝フル変調：A→BPF周波数+グレイン位置、B→ディレイタイム、C→グレインサイズ+トリガー密度。MovementモードではA/Bが画面上の動きの位置、Cが動きの量に従う。",
+                zh: "混沌量：3 個混沌調變的總深度。0 = 無混沌影響。1 = 全幅調變：A → BPF 頻率 + 碎片位置、B → 延遲時間、C → 碎片大小 + 觸發密度。Movement 模式下 A/B 跟隨動作在畫面的位置，C 跟隨移動量。"
             },
             grainSize: {
-                en: "Grain Size: Base length of each audio grain (ms). Modulated by chaos channel C (Lorenz z / contour turning angle). Shorter = glitchy texture, longer = smoother fragments.",
-                jp: "グレインサイズ：各オーディオグレインの基本長さ（ms）。カオスチャンネルC（Lorenz z／輪郭転回角度）で変調。短い＝グリッチ的テクスチャ、長い＝より滑らかな断片。",
-                zh: "碎片大小：每個音訊碎片的基本長度（毫秒）。由混沌通道 C（Lorenz z / 輪廓轉角角度）調變。越短 = 越 glitch 質感，越長 = 越平滑的片段。"
+                en: "Grain Size: Base length of each audio grain (ms). Modulated by chaos channel C: Lorenz z / contour turning angle / Movement amount of motion (still = shortest and sparsest, lots of motion = longest and densest). Shorter = glitchy texture, longer = smoother fragments.",
+                jp: "グレインサイズ：各オーディオグレインの基本長さ（ms）。カオスチャンネルCで変調：Lorenz z／輪郭転回角度／Movementの動きの量（静止＝最短・最も疎、動きが多い＝最長・最も密）。短い＝グリッチ的テクスチャ、長い＝より滑らかな断片。",
+                zh: "碎片大小：每個音訊碎片的基本長度（毫秒）。由混沌通道 C 調變：Lorenz z / 輪廓轉角角度 / Movement 移動量（靜止 = 最短最稀疏、大量移動 = 最長最密）。越短 = 越 glitch 質感，越長 = 越平滑的片段。"
             },
             gratchMix: {
                 en: "Gratch Mix: Blend between clean delay output and granular processing. 0 = pure delay, 1 = full granular chaos. The granular engine chops the delayed signal into grains with random direction, pitch shifts (0.25x-4x), and chaos-driven position/density.",
                 jp: "Gratch ミックス：クリーンディレイ出力とグラニュラー処理のブレンド。0＝純粋なディレイ、1＝フルグラニュラーカオス。グラニュラーエンジンがディレイ信号をランダム方向・ピッチシフト（0.25x-4x）・カオス駆動の位置/密度でグレインに分割。",
-                zh: "Gratch 混合：乾淨延遲輸出與顆粒處理的混合比。0 = 純延遲、1 = 完全顆粒混沌。顆粒引擎將延遲訊號切成碎片，隨機方向、音高偏移（0.25x~4x）、混沌驅動的位置/密度。"
+                zh: "Gratch 混合：乾淨延遲輸出與粒子合成處理的混合比。0 = 純延遲、1 = 完全粒子合成混沌。粒子合成引擎將延遲訊號切成碎片，隨機方向、音高偏移（0.25x~4x）、混沌驅動的位置/密度。"
             },
             volume: {
                 en: "Volume: Master output level. Controls the final gain before speakers/headphones.",
@@ -731,7 +731,7 @@
             startBtn: {
                 en: "Start: Request microphone access and begin real-time audio processing. Signal chain: mic → delay (with feedback loop) → granular engine (chaos-modulated) → bandpass filter → output.",
                 jp: "スタート：マイクアクセスを要求しリアルタイム音声処理を開始。信号経路：マイク→ディレイ（フィードバックループ付き）→グラニュラーエンジン（カオス変調）→バンドパスフィルター→出力。",
-                zh: "開始：請求麥克風權限並啟動即時音訊處理。訊號鏈：麥克風 → 延遲（含回饋迴路）→ 顆粒引擎（混沌調變）→ 帶通濾波器 → 輸出。"
+                zh: "開始：請求麥克風權限並啟動即時音訊處理。訊號鏈：麥克風 → 延遲（含回饋迴路）→ 粒子合成引擎（混沌調變）→ 帶通濾波器 → 輸出。"
             },
             stopBtn: {
                 en: "Stop: End all audio processing, disconnect nodes, and release microphone.",
@@ -739,14 +739,14 @@
                 zh: "停止：結束所有音訊處理、斷開節點、釋放麥克風。"
             },
             hueWheel: {
-                en: "Hue Wheel: Drag to select interface accent color (HSV saturation 30%, brightness 92%). Affects slider thumbs, buttons, status bar, and contour scan point.",
-                jp: "Hueホイール：ドラッグしてアクセントカラーを選択（HSV彩度30%、明度92%）。スライダー、ボタン、ステータスバー、輪郭スキャン点に適用。",
-                zh: "色相圈：拖曳選擇介面強調色（HSV 飽和度 30%、亮度 92%）。影響推桿圓點、按鈕、狀態列、輪廓掃描點。"
+                en: "Hue Wheel: Drag to select interface accent color (HSV saturation 30%, brightness 92%). Affects faders, buttons, status bar, contour scan point and motion preview.",
+                jp: "Hueホイール：ドラッグしてアクセントカラーを選択（HSV彩度30%、明度92%）。フェーダー、ボタン、ステータスバー、輪郭スキャン点、動きプレビューに適用。",
+                zh: "色相圈：拖曳選擇介面強調色（HSV 飽和度 30%、亮度 92%）。影響推桿、按鈕、狀態列、輪廓掃描點、移動預覽。"
             },
             chaosSpeed: {
-                en: "Chaos Speed: In Lorenz mode, controls the attractor evolution rate (dt multiplier). In Camera mode, controls contour scan speed (higher = faster scan cycle). Affects how rapidly the 3 chaos channels change.",
-                jp: "カオス速度：Lorenzモードではアトラクターの進化速度（dt乗数）を制御。Cameraモードでは輪郭スキャン速度を制御（高い＝より速いスキャン周期）。3つのカオスチャンネルの変化速度に影響。",
-                zh: "混沌速度：Lorenz 模式控制吸引子演化速率（dt 乘數）。Camera 模式控制輪廓掃描速度（越高 = 掃描週期越快）。影響 3 個混沌通道的變化速率。"
+                en: "Chaos Speed: In Lorenz mode, controls the attractor evolution rate (dt multiplier). In Camera mode, controls contour scan speed (higher = faster scan cycle). No effect in Movement mode: the 3 channels follow the camera image directly.",
+                jp: "カオス速度：Lorenzモードではアトラクターの進化速度（dt乗数）を制御。Cameraモードでは輪郭スキャン速度を制御（高い＝より速いスキャン周期）。Movementモードでは無効：3チャンネルはカメラ映像に直接従う。",
+                zh: "混沌速度：Lorenz 模式控制吸引子演化速率（dt 乘數）。Camera 模式控制輪廓掃描速度（越高 = 掃描週期越快）。Movement 模式不起作用：3 個通道直接跟隨相機畫面。"
             }
         };
 
