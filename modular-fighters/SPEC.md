@@ -102,7 +102,7 @@ window.MFPatchUI
 window.MFFight
   .mount(containerEl)  — draws two fighters (canvas), two HP bars (100 each) with names, round timer optional.
      The osc fighter (left), its HP bar and lunge use the page --acc token (HUE wheel); refreshed on 'mf-hue' / 'mf-theme'.
-  .attack(who:"me"|"foe", power)  — plays attack animation, reduces other side HP by power
+  .attack(who:"me"|"foe", power)  — plays attack animation, reduces other side HP by round(power × 0.5) (DAMAGE_SCALE; displayed power, speed and score unchanged)
   .getHP() -> {me, foe}
   .reset()
   .onKO(callback(winner))

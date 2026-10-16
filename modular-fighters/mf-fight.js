@@ -7,6 +7,7 @@
   'use strict';
 
   var MAX_HP = 100;
+  var DAMAGE_SCALE = 0.5;
   var COLOR_LEFT = '#e8846c';            // osc (coral); replaced by the page --acc token (HUE wheel), see refreshAccent
   var COLOR_RIGHT = 'hsl(215,22%,62%)';  // moddict (cool grey-blue)
   var COLOR_BAR_LOW = 'hsl(0,78%,55%)';
@@ -415,7 +416,8 @@
 
   function applyHit(who, power) {
     var victim = other(who);
-    hp[victim] = Math.max(0, hp[victim] - power);
+    // damage = half of attack power (2026-10-16: full power ended matches in two rounds)
+    hp[victim] = Math.max(0, hp[victim] - Math.round(power * DAMAGE_SCALE));
     shakes[victim] = now();
     if (hp[victim] <= 0 && !dead) {
       dead = victim;
