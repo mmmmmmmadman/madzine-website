@@ -14,6 +14,8 @@
  *   its "in" port; that cable then gets a one-render-quantum DelayNode plus a
  *   saturating WaveShaper so the loop is legal and bounded. Every other
  *   cycle-closing cable is dropped (both in play() and in score()).
+ * - VCO waves and the LPF follow Soundfreak hardware measurements (2026-10-16, see the
+ *   comments above buildVCO and buildLPF). fm and cutoff_cv are exponential (detune).
  */
 (function () {
   'use strict';
@@ -626,29 +628,101 @@
   // Each returns { inputs:{port:AudioNode}, outputs:{port:AudioNode}, set(key,value) }
   var WAVE = { saw: 'sawtooth', sqr: 'square', tri: 'triangle' };
 
+  // ---------- VCO waveforms (Soundfreak measurements) ----------
+  // PeriodicWave coefficients for harmonics 1..64 (h1 = 1), built from the averaged
+  // one-cycle captures in Archive/Soundfreak/analyzer/measurements/2026-10-10_1622/
+  // vco-shape/results.json (about 200 Hz):
+  //   tri = out4-shape5  (Osc3 triangle, Shape 5)
+  //   saw = out4-shape10 (Osc3 triangle, Shape 10)
+  //   sqr = out5-shape5  (pulse output, Shape 5)
+  // h1..h16 magnitudes are the measured spectrum fields, phases come from a DFT of the
+  // averaged cycle; h17..h64 are that DFT; a raised-cosine taper runs from h33 to h64
+  // (above h64 the capture says nothing, so nothing is added).
+  var SF_WAVE = {
+    tri: {
+      re: [0.002,-0.0028,0,0.0015,-0.0003,-0.001,0.0007,0.0009,-0.001,-0.0011,0.0012,0.0011,-0.0013,-0.0016,0.0013,0.0018,-0.0013,-0.0022,0.0011,0.0025,-0.0009,-0.0028,0.0006,0.003,-0.0002,-0.0032,-0.0002,0.0032,0.0007,-0.0032,-0.0011,0.0031,0.0016,-0.0029,-0.002,0.0026,0.0023,-0.0021,-0.0024,0.0016,0.0025,-0.0011,-0.0024,0.0006,0.0022,-0.0002,-0.0019,-0.0001,0.0016,0.0003,-0.0012,-0.0004,0.0008,0.0004,-0.0005,-0.0004,0.0003,0.0003,-0.0001,-0.0001,0,0.0001,0,0],
+      im: [1,-0.003,-0.1144,0.0032,0.0351,-0.003,-0.0203,0.0028,0.0113,-0.003,-0.008,0.0025,0.0062,-0.0027,-0.0047,0.0024,0.0044,-0.0022,-0.0041,0.0019,0.0039,-0.0015,-0.0039,0.0011,0.0038,-0.0007,-0.0038,0.0001,0.0037,0.0004,-0.0035,-0.0009,0.0033,0.0014,-0.0029,-0.0018,0.0025,0.0021,-0.0019,-0.0022,0.0014,0.0023,-0.0009,-0.0022,0.0004,0.002,0,-0.0017,-0.0002,0.0013,0.0004,-0.001,-0.0004,0.0006,0.0004,-0.0004,-0.0003,0.0002,0.0002,-0.0001,-0.0001,0,0,0]
+    },
+    saw: {
+      re: [-0.0394,0.1369,-0.1781,0.207,-0.164,0.1472,-0.1177,0.1002,-0.0693,0.0415,-0.0181,-0.0013,0.0196,-0.0331,0.0451,-0.0458,0.0446,-0.0435,0.0391,-0.032,0.0237,-0.0151,0.0061,0.003,-0.011,0.0173,-0.022,0.025,-0.0262,0.0252,-0.0225,0.0187,-0.0138,0.0082,-0.0024,-0.003,0.0075,-0.0111,0.0135,-0.0146,0.0144,-0.0132,0.0113,-0.0087,0.0059,-0.003,0.0006,0.0015,-0.0031,0.004,-0.0043,0.0042,-0.0037,0.003,-0.0022,0.0015,-0.0008,0.0003,0,-0.0002,0.0002,-0.0001,0.0001,0],
+      im: [0.9992,-0.4307,0.1866,-0.1207,0.055,-0.004,-0.0348,0.0581,-0.0678,0.0768,-0.0797,0.0733,-0.0652,0.0507,-0.0409,0.024,-0.009,-0.0031,0.0131,-0.0215,0.0282,-0.0321,0.0331,-0.0318,0.0289,-0.0242,0.0179,-0.0108,0.0038,0.0029,-0.0092,0.0144,-0.0181,0.0201,-0.0206,0.0196,-0.0172,0.0137,-0.0097,0.0055,-0.0013,-0.0024,0.0054,-0.0074,0.0086,-0.009,0.0085,-0.0075,0.006,-0.0044,0.0028,-0.0013,0.0001,0.0007,-0.0012,0.0014,-0.0014,0.0012,-0.0009,0.0006,-0.0003,0.0001,0,0]
+    },
+    sqr: {
+      re: [0.0227,-0.0248,0.0228,-0.0234,0.0231,-0.0219,0.0231,-0.02,0.0227,-0.0203,0.0217,-0.0208,0.0204,-0.0209,0.0187,-0.0205,0.0175,-0.0173,0.0167,-0.0165,0.016,-0.0158,0.0152,-0.015,0.0144,-0.0142,0.0136,-0.0133,0.0127,-0.0124,0.0118,-0.0115,0.0108,-0.0104,0.0097,-0.0093,0.0085,-0.008,0.0073,-0.0067,0.006,-0.0055,0.0048,-0.0044,0.0037,-0.0033,0.0028,-0.0024,0.002,-0.0017,0.0013,-0.0011,0.0008,-0.0006,0.0005,-0.0003,0.0002,-0.0002,0.0001,-0.0001,0,0,0,0],
+      im: [0.9997,0.0025,0.3513,0.0035,0.2171,0.0043,0.1561,0.005,0.1193,0.0062,0.0937,0.0075,0.0743,0.0087,0.059,0.0098,0.0485,0.0093,0.0415,0.01,0.0358,0.0107,0.031,0.0113,0.027,0.0118,0.0235,0.0123,0.0204,0.0126,0.0178,0.0129,0.0154,0.0129,0.0131,0.0126,0.011,0.0121,0.009,0.0113,0.0073,0.0103,0.0058,0.0092,0.0045,0.0079,0.0034,0.0066,0.0025,0.0052,0.0018,0.004,0.0012,0.0029,0.0008,0.0019,0.0005,0.0011,0.0003,0.0006,0.0001,0.0002,0,0]
+    }
+  };
+  // RMS of the Chromium built-in sawtooth / square / triangle these replace (measured with
+  // an OfflineAudioContext at 220 Hz). VCO mode scales each new wave to the same RMS so
+  // patches keep their loudness; LFO mode instead maps each wave's exact min..max onto 0..1.
+  var VCO_RMS = { tri: 0.5775, saw: 0.4881, sqr: 0.8461 };
+  var FM_CENTS = 2130;   // fm +-1 at fmAmt 1 = +-2130 cents (0.355 oct/V x 5 V, Soundfreak FM)
+  var sfWaves = null, sfWavesCtx = null;
+  function getSfWaves() {
+    if (sfWaves && sfWavesCtx === ctx) return sfWaves;
+    sfWaves = {};
+    sfWavesCtx = ctx;
+    Object.keys(SF_WAVE).forEach(function (k) {
+      var c = SF_WAVE[k], n = c.re.length;
+      var re = new Float32Array(n + 1), im = new Float32Array(n + 1);
+      for (var i = 0; i < n; i++) { re[i + 1] = c.re[i]; im[i + 1] = c.im[i]; }
+      // the browser normalises a PeriodicWave to peak 1; reproduce that to find the
+      // normalised min / max / RMS
+      var M = 4096, y = new Float64Array(M), pk = 0, s, h;
+      for (s = 0; s < M; s++) {
+        var v = 0, w = 2 * Math.PI * s / M;
+        for (h = 1; h <= n; h++) v += re[h] * Math.cos(h * w) + im[h] * Math.sin(h * w);
+        y[s] = v;
+        if (Math.abs(v) > pk) pk = Math.abs(v);
+      }
+      var mn = 1e9, mx = -1e9, ss = 0;
+      for (s = 0; s < M; s++) {
+        var u = y[s] / pk;
+        ss += u * u;
+        if (u < mn) mn = u;
+        if (u > mx) mx = u;
+      }
+      var rms = Math.sqrt(ss / M);
+      sfWaves[k] = {
+        wave: ctx.createPeriodicWave(re, im),
+        vcoGain: VCO_RMS[k] / rms,
+        lfoGain: 1 / (mx - mn),
+        lfoOffset: -mn / (mx - mn)
+      };
+    });
+    return sfWaves;
+  }
+
+  // fm is DC coupled and exponential: fm -> fmScale (fmAmt x FM_CENTS) -> osc.detune,
+  // so a slow LFO still moves the pitch. Each output: osc -> scales[k] -> outs[k], plus
+  // a constant 1 -> offs[k] -> outs[k] (LFO offset; 0 in VCO mode).
   function buildVCO(g, m) {
     var p = m.params || (m.params = {});
     var st = { mode: p.mode === 'lfo' ? 'lfo' : 'vco', fmAmt: clamp(num(p.fmAmt, 0), 0, 1) };
     st.freq = clamp(num(p.freq, st.mode === 'lfo' ? 1 : 220), VCO_RANGE[st.mode][0], VCO_RANGE[st.mode][1]);
-    var fmIn = g.gain(1), fmScale = g.gain(st.fmAmt * st.freq);
+    var waves = getSfWaves();
+    var fmIn = g.gain(1), fmScale = g.gain(st.fmAmt * FM_CENTS);
     fmIn.connect(fmScale);
     var syncIn = g.gain(1), trigIn = g.gain(1);
-    var offset = g.constant(st.mode === 'lfo' ? 0.5 : 0);
-    var scales = {}, outs = {};
+    var one = g.constant(1);
+    var scales = {}, offs = {}, outs = {};
     Object.keys(WAVE).forEach(function (k) {
-      scales[k] = g.gain(st.mode === 'lfo' ? 0.5 : 1);
+      var lfo = st.mode === 'lfo';
+      scales[k] = g.gain(lfo ? waves[k].lfoGain : waves[k].vcoGain);
+      offs[k] = g.gain(lfo ? waves[k].lfoOffset : 0);
       outs[k] = g.gain(1);
       scales[k].connect(outs[k]);
-      offset.connect(outs[k]);
+      one.connect(offs[k]);
+      offs[k].connect(outs[k]);
     });
     var oscs = null;
     function makeOscs(t) {
       var o = {};
       Object.keys(WAVE).forEach(function (k) {
         var osc = ctx.createOscillator();
-        osc.type = WAVE[k];
+        osc.setPeriodicWave(waves[k].wave);
         osc.frequency.value = st.freq;
-        fmScale.connect(osc.frequency);
+        fmScale.connect(osc.detune);
         osc.connect(scales[k]);
         osc.start(t);
         o[k] = osc;
@@ -659,7 +733,7 @@
       Object.keys(o).forEach(function (k) {
         var osc = o[k];
         osc.onended = function () {
-          try { fmScale.disconnect(osc.frequency); } catch (e) {}
+          try { fmScale.disconnect(osc.detune); } catch (e) {}
           try { osc.disconnect(); } catch (e) {}
         };
         try { osc.stop(t); } catch (e) {}
@@ -676,13 +750,17 @@
     function applyFreq() {
       var t = ctx.currentTime;
       Object.keys(oscs).forEach(function (k) { oscs[k].frequency.setTargetAtTime(st.freq, t, 0.005); });
-      fmScale.gain.setTargetAtTime(st.fmAmt * st.freq, t, 0.005);
       p.freq = round3(st.freq);
+    }
+    function applyFm() {
+      fmScale.gain.setTargetAtTime(st.fmAmt * FM_CENTS, ctx.currentTime, 0.005);
     }
     function applyMode() {
       var t = ctx.currentTime, lfo = st.mode === 'lfo';
-      Object.keys(scales).forEach(function (k) { scales[k].gain.setTargetAtTime(lfo ? 0.5 : 1, t, 0.003); });
-      offset.offset.setTargetAtTime(lfo ? 0.5 : 0, t, 0.003);
+      Object.keys(scales).forEach(function (k) {
+        scales[k].gain.setTargetAtTime(lfo ? waves[k].lfoGain : waves[k].vcoGain, t, 0.003);
+        offs[k].gain.setTargetAtTime(lfo ? waves[k].lfoOffset : 0, t, 0.003);
+      });
       p.mode = st.mode;
     }
     // Toggle keeps the knob's relative (log) position and maps it to the other range.
@@ -716,7 +794,7 @@
         } else if (key === 'fmAmt') {
           st.fmAmt = clamp(num(v, st.fmAmt), 0, 1);
           p.fmAmt = st.fmAmt;
-          applyFreq();
+          applyFm();
         }
       }
     };
@@ -769,29 +847,98 @@
     };
   }
 
+  // ---------- LPF (Soundfreak Dual Filter measurements) ----------
+  // in -> 1/LPF_SAT_SPAN -> asymmetric soft clip (WaveShaper, 2x) -> biquad A -> biquad B
+  //    -> thin (low-end loss as res rises) -> out
+  // Both biquads are Web Audio lowpass (Q in dB). A: LPF_RA x cutoff, Q fixed at LPF_QA.
+  // B: LPF_RB x cutoff, Q from res. With res 0 the pair is -3 dB at the cutoff and falls
+  // about 13 dB/oct over the next three octaves (filter-slope: -11.4 dB/oct in the 24 dB
+  // mode; the TN 18/24 dB modes average -7.25, -11.5, -14.25 dB per octave). LPF_RB =
+  // 241 / 64: the hardware self-oscillates at 241 Hz where its Response-0 corner is 64 Hz
+  // (filter-cutoff-law, filter-slope). Above about 6.4 kHz B hits Nyquist (48 kHz) and
+  // the resonance fades; above about 3 kHz the corner drifts up (bilinear warping).
+  // cutoff_cv is exponential: cutoff_cv -> cvAmt x 6000 cents -> detune of A and B
+  // (filter-cutoff-law: the cutoff knob is exponential, about 1.6-1.7 oct per step).
+  var LPF_RA = 3.2935, LPF_QA = -8, LPF_RB = 3.7704, LPF_CV_CENTS = 6000;
+  // res -> Q of B (dB). 0..0.45 reproduces the measured upward drift of the -3 dB point
+  // with no peak (TN Response row: 64, 88, 100, 123, 135, 158, 170 Hz); 0.475 gives a
+  // 2.4 dB peak (measured 223 Hz, first audible peak); 0.5 an 18 dB peak; 0.6..1 a 24 dB
+  // peak (the hardware readings above Response 6 do not change).
+  var LPF_RES_Q = [[0, -9], [0.1, -4.45], [0.2, -2.45], [0.3, 0.65], [0.4, 1.8], [0.425, 3.2],
+                   [0.45, 3.6], [0.475, 11.3], [0.5, 27.25], [0.6, 33.3], [1, 33.3]];
+  // overall gain falls from 1 at res 0 to 0.7 at res 1 (brief proposal standing in for the
+  // TN 1/(1+k) low-end loss). No make-up gain: heard level of 20 autoPatch patches after the master
+  // chain is +1.3 dB on average vs the old filter (the clipper rounds peaks, so the compressor acts less).
+  var LPF_THIN = 0.3;
+  function lpfResQ(r) {
+    var T = LPF_RES_Q;
+    for (var i = 1; i < T.length; i++) {
+      if (r <= T[i][0]) return T[i - 1][1] + (T[i][1] - T[i - 1][1]) * (r - T[i - 1][0]) / (T[i][0] - T[i - 1][0]);
+    }
+    return T[T.length - 1][1];
+  }
+  function lpfThin(r) { return 1 - LPF_THIN * r; }
+  // biquad frequency held at Nyquist (the browser would clamp it anyway, with a console warning)
+  function lpfHz(c, ratio) { return Math.min(c * ratio, ctx.sampleRate / 2); }
+  // f(x) = x >= 0 ? P tanh(x / P) : N tanh(x / N): a 1.0 sine gives h2 -25.1 dB, h3 -31.5 dB
+  // (Soundfreak h2 target -25 dB); 0.1 gives h2 -63 dB. Curve spans +-LPF_SAT_SPAN with an
+  // odd point count so 0 maps exactly to 0.
+  var LPF_SAT_SPAN = 4, LPF_SAT_P = 8, LPF_SAT_N = 1.11, lpfSatCurve = null;
+  function getLpfSatCurve() {
+    if (lpfSatCurve) return lpfSatCurve;
+    var N = 4097;
+    lpfSatCurve = new Float32Array(N);
+    for (var i = 0; i < N; i++) {
+      var x = (i / (N - 1) * 2 - 1) * LPF_SAT_SPAN;
+      lpfSatCurve[i] = x >= 0 ? LPF_SAT_P * Math.tanh(x / LPF_SAT_P) : LPF_SAT_N * Math.tanh(x / LPF_SAT_N);
+    }
+    lpfSatCurve[(N - 1) / 2] = 0;
+    return lpfSatCurve;
+  }
+
   function buildLPF(g, m) {
     var p = m.params || (m.params = {});
     var st = { cutoff: clamp(num(p.cutoff, 1000), 20, 20000), res: clamp(num(p.res, 0), 0, 1),
                cvAmt: clamp(num(p.cvAmt, 0.5), 0, 1) };
-    var inp = g.gain(1), cvIn = g.gain(1), cvScale = g.gain(st.cvAmt * 5000);
-    var f = ctx.createBiquadFilter();
-    f.type = 'lowpass';
-    f.frequency.value = st.cutoff;
-    f.Q.value = st.res * 18;           // lowpass Q is resonance in dB
-    g.nodes.push(f);
-    inp.connect(f);
+    var inp = g.gain(1 / LPF_SAT_SPAN), cvIn = g.gain(1), cvScale = g.gain(st.cvAmt * LPF_CV_CENTS);
+    var sat = ctx.createWaveShaper();
+    sat.curve = getLpfSatCurve();
+    sat.oversample = '2x';
+    var fa = ctx.createBiquadFilter(), fb = ctx.createBiquadFilter();
+    fa.type = 'lowpass';
+    fa.frequency.value = lpfHz(st.cutoff, LPF_RA);
+    fa.Q.value = LPF_QA;
+    fb.type = 'lowpass';
+    fb.frequency.value = lpfHz(st.cutoff, LPF_RB);
+    fb.Q.value = lpfResQ(st.res);
+    g.nodes.push(sat, fa, fb);
+    var thin = g.gain(lpfThin(st.res));
+    inp.connect(sat);
+    sat.connect(fa);
+    fa.connect(fb);
+    fb.connect(thin);
     cvIn.connect(cvScale);
-    cvScale.connect(f.frequency);
+    cvScale.connect(fa.detune);
+    cvScale.connect(fb.detune);
     var out = g.gain(1);
-    f.connect(out);
+    thin.connect(out);
     return {
       inputs: { in: inp, cutoff_cv: cvIn },
       outputs: { out: out },
       set: function (key, v) {
         var t = ctx.currentTime;
-        if (key === 'cutoff') { st.cutoff = clamp(num(v, st.cutoff), 20, 20000); p.cutoff = st.cutoff; f.frequency.setTargetAtTime(st.cutoff, t, 0.01); }
-        else if (key === 'res') { st.res = clamp(num(v, st.res), 0, 1); p.res = st.res; f.Q.setTargetAtTime(st.res * 18, t, 0.01); }
-        else if (key === 'cvAmt') { st.cvAmt = clamp(num(v, st.cvAmt), 0, 1); p.cvAmt = st.cvAmt; cvScale.gain.setTargetAtTime(st.cvAmt * 5000, t, 0.01); }
+        if (key === 'cutoff') {
+          st.cutoff = clamp(num(v, st.cutoff), 20, 20000); p.cutoff = st.cutoff;
+          fa.frequency.setTargetAtTime(lpfHz(st.cutoff, LPF_RA), t, 0.01);
+          fb.frequency.setTargetAtTime(lpfHz(st.cutoff, LPF_RB), t, 0.01);
+        } else if (key === 'res') {
+          st.res = clamp(num(v, st.res), 0, 1); p.res = st.res;
+          fb.Q.setTargetAtTime(lpfResQ(st.res), t, 0.01);
+          thin.gain.setTargetAtTime(lpfThin(st.res), t, 0.01);
+        } else if (key === 'cvAmt') {
+          st.cvAmt = clamp(num(v, st.cvAmt), 0, 1); p.cvAmt = st.cvAmt;
+          cvScale.gain.setTargetAtTime(st.cvAmt * LPF_CV_CENTS, t, 0.01);
+        }
       }
     };
   }
