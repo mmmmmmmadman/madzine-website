@@ -1,0 +1,315 @@
+/* Modular Fighters — patch panel (owner: ui agent)
+   Dark pure-grey surfaces (r=g=b), single coral accent (HSB H=12).
+   Host may override --mfp-acc / --mfp-acc-dim / --mfp-acc-glow.
+   Layout: a 6U "case" = two rails stacked, modules side by side (width in HP),
+   both rails scroll horizontally together; footer AUTO / SEND / OUT pinned. */
+
+.mfp{
+  --mfp-bg:#121212;
+  --mfp-elev:#1c1c1c;
+  --mfp-panel:#232323;
+  --mfp-sunk:#161616;
+  --mfp-case:#0c0c0c;
+  --mfp-line:#303030;
+  --mfp-line2:#3d3d3d;
+  --mfp-rail:#4a4a4a;
+  --mfp-fg:#f2f2f2;
+  --mfp-fg2:#a8a8a8;
+  --mfp-fg3:#6e6e6e;
+  --mfp-acc:#e8846c;
+  --mfp-acc-dim:#6b4a41;
+  --mfp-acc-glow:#ff9c80;
+  --mfp-acc-text:#e8846c;  /* accent used as small text */
+  --mfp-acc-line:#6b4a41;  /* accent outlines (mode toggle, OUT module) */
+  --mfp-fill:#6b4a41;      /* fader / step fill at rest */
+  --mfp-on-acc:#121212;    /* text on a full-accent surface */
+  /* read by JS (canvas + SVG cables); re-read on the window 'mf-theme' event */
+  --mfp-draw-grid:#303030;
+  --mfp-draw-stroke:#e8846c;
+  --mfp-cable-s:0.5;
+  --mfp-cable-b:0.92;
+  --mfp-cable-shadow:#000000;
+  --mfp-cable-shadow-op:0.5;
+  --mfp-font:var(--font-body,"Barlow Condensed","Noto Sans JP","Noto Sans TC",system-ui,sans-serif);
+  --mfp-gap:8px;
+  --mfp-hp:19px;           /* 1 HP; set from JS (HP_PX) */
+  --mfp-mgap:3px;          /* gap between neighbouring module panels */
+  --mfp-row:26px;          /* horizontal fader / toggle minimum height */
+  --mfp-row-max:64px;      /* faders grow up to this on tall rails (tablet) */
+  --mfp-jack:22px;         /* visible jack diameter */
+  --mfp-jack-hit:32px;     /* jack tap target (JS JACK_HIT) */
+
+  position:relative;
+  display:flex;flex-direction:column;
+  width:100%;height:100%;min-height:0;
+  overflow:hidden;
+  background:var(--mfp-bg);
+  color:var(--mfp-fg);
+  font-family:var(--mfp-font);
+  font-weight:300;
+  line-height:1.2;
+  font-size:16px;
+  -webkit-user-select:none;user-select:none;
+  -webkit-tap-highlight-color:transparent;
+  box-sizing:border-box;
+}
+/* white page theme (index.html sets html[data-theme="light"]): pure greys, dark text,
+   coral #e8846c kept for filled jacks / SEND / active fill; #b3563e only for small accent text */
+html[data-theme="light"] .mfp{
+  --mfp-bg:#ffffff;
+  --mfp-elev:#fafafa;
+  --mfp-panel:#e4e4e4;
+  --mfp-sunk:#e8e8e8;
+  --mfp-case:#dcdcdc;
+  --mfp-line:#c4c4c4;
+  --mfp-line2:#b4b4b4;
+  --mfp-rail:#7a7a7a;
+  --mfp-fg:#1a1a1a;
+  --mfp-fg2:#555555;
+  --mfp-fg3:#8a8a8a;
+  --mfp-acc:#e8846c;
+  --mfp-acc-dim:#f3cfc6;
+  --mfp-acc-glow:#d9684f;
+  --mfp-acc-text:#b3563e;
+  --mfp-acc-line:#e8846c;
+  --mfp-fill:#eda08c;
+  --mfp-on-acc:#121212;
+  --mfp-draw-grid:#b4b4b4;
+  --mfp-draw-stroke:#b3563e;
+  --mfp-cable-s:0.65;
+  --mfp-cable-b:0.66;
+  --mfp-cable-shadow:#000000;
+  --mfp-cable-shadow-op:0.3;
+}
+.mfp *,.mfp *::before,.mfp *::after{box-sizing:border-box}
+:where(.mfp) button{font-family:var(--mfp-font);font-weight:300;line-height:1.2;color:inherit;background:none;border:none;margin:0;padding:0;cursor:pointer}
+
+.mfp.mfp-disabled{opacity:.4;filter:grayscale(1)}
+.mfp.mfp-disabled .mfp-scroll,
+.mfp.mfp-disabled .mfp-foot,
+.mfp.mfp-disabled .mfp-cables{pointer-events:none}
+
+/* ---------- case: horizontal scroller with two stacked rails ---------- */
+.mfp-scroll{
+  flex:1 1 auto;min-height:0;
+  overflow-x:auto;overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior:contain;
+  touch-action:pan-x;
+  background:var(--mfp-case);
+  scrollbar-width:none;
+}
+.mfp-scroll::-webkit-scrollbar{display:none}
+.mfp-case{
+  position:relative;
+  display:flex;flex-direction:column;gap:4px;
+  width:max-content;min-width:100%;height:100%;
+  padding:4px 6px;
+}
+.mfp-rail{
+  flex:1 1 0;min-height:0;
+  display:flex;flex-direction:row;align-items:stretch;gap:var(--mfp-mgap);
+  padding:3px 0;
+  border-top:2px solid var(--mfp-rail);
+  border-bottom:2px solid var(--mfp-rail);
+  background:var(--mfp-case);
+}
+
+/* ---------- module panel ---------- */
+.mfp-mod{
+  flex:0 0 auto;
+  height:100%;min-height:0;
+  display:flex;flex-direction:column;gap:4px;
+  background:var(--mfp-elev);
+  border:1px solid var(--mfp-line2);
+  border-radius:2px;
+  padding:3px 4px 4px;
+  overflow:hidden;
+  touch-action:pan-x;
+}
+.mfp-head{
+  flex:0 0 auto;
+  display:flex;align-items:center;justify-content:space-between;gap:4px;
+  min-height:var(--mfp-row);
+}
+.mfp-title{
+  font-size:18px;letter-spacing:.1em;color:var(--mfp-fg);line-height:22px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding-left:2px;
+}
+
+/* ---------- ports ---------- */
+.mfp-ports{flex:0 0 auto;display:flex;gap:3px;align-items:stretch}
+.mfp-ports.mfp-two{flex-direction:column;gap:2px}
+.mfp-pgroup{display:flex;flex:1 1 auto;justify-content:space-around;border-radius:4px;padding:0 0 1px;min-width:0}
+.mfp-pgroup.mfp-out{background:var(--mfp-sunk);border:1px solid var(--mfp-line)}
+.mfp-ports:not(.mfp-two) .mfp-pgroup.mfp-in{flex:var(--mfp-in-n,1) 1 0}
+.mfp-ports:not(.mfp-two) .mfp-pgroup.mfp-out{flex:var(--mfp-out-n,1) 1 0}
+.mfp-port{
+  display:flex;flex-direction:column;align-items:center;
+  flex:1 1 0;min-width:0;
+}
+.mfp-plabel{
+  font-size:14px;letter-spacing:0;color:var(--mfp-fg2);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;
+  line-height:15px;
+  margin-top:-4px;          /* tuck under the jack hit area's transparent margin */
+}
+.mfp-out .mfp-plabel{color:var(--mfp-fg)}
+.mfp-jack{
+  position:relative;
+  width:var(--mfp-jack-hit);height:var(--mfp-jack-hit);
+  flex:0 0 auto;
+  display:flex;align-items:center;justify-content:center;
+  touch-action:none;
+  cursor:crosshair;
+}
+.mfp-jack::before{
+  content:"";
+  width:var(--mfp-jack);height:var(--mfp-jack);border-radius:50%;
+  box-sizing:border-box;
+}
+/* input = hollow ring */
+.mfp-jack[data-dir="in"]::before{
+  background:var(--mfp-bg);
+  border:3px solid var(--mfp-fg2);
+}
+/* output = filled disc with dark centre hole */
+.mfp-jack[data-dir="out"]::before{
+  background:radial-gradient(circle,var(--mfp-bg) 0 26%,var(--mfp-acc) 28% 100%);
+  border:2px solid var(--mfp-acc);
+}
+.mfp-jack.mfp-hot::before{box-shadow:0 0 0 3px var(--mfp-acc-glow)}
+.mfp-jack[data-dir="in"].mfp-target::before{border-color:var(--mfp-acc-glow)}
+
+/* ---------- params ---------- */
+.mfp-params{
+  flex:1 1 0;min-height:0;
+  display:grid;grid-template-columns:1fr;gap:3px;
+  grid-auto-rows:minmax(var(--mfp-row),var(--mfp-row-max));
+  align-content:start;
+}
+.mfp-params.mfp-c2{grid-template-columns:1fr 1fr}
+/* SEQ5 / DRAW: the editor takes the free height, the rate fader stays at its minimum */
+.mfp-mod[data-type="SEQ5"] .mfp-params,
+.mfp-mod[data-type="DRAW"] .mfp-params{flex:0 0 auto;grid-auto-rows:var(--mfp-row)}
+
+.mfp-fader{
+  position:relative;
+  min-height:var(--mfp-row);
+  background:var(--mfp-sunk);
+  border:1px solid var(--mfp-line);
+  border-radius:4px;
+  overflow:hidden;
+  touch-action:none;
+  cursor:ew-resize;
+}
+.mfp-fill{
+  position:absolute;left:0;top:0;bottom:0;width:0;
+  background:var(--mfp-fill);
+  pointer-events:none;
+}
+.mfp-fader.mfp-active .mfp-fill{background:var(--mfp-acc)}
+.mfp-flabel{
+  position:absolute;left:5px;right:3px;top:0;bottom:0;
+  display:flex;align-items:center;
+  font-size:16px;letter-spacing:.02em;color:var(--mfp-fg);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  pointer-events:none;
+}
+.mfp-fader.mfp-active .mfp-flabel{color:var(--mfp-on-acc)}
+
+/* VCO / LFO mode toggle */
+.mfp-mode{
+  flex:0 0 auto;
+  min-width:48px;height:var(--mfp-row);
+  border:1px solid var(--mfp-acc-line);
+  border-radius:4px;
+  background:transparent;  /* host page button background would otherwise leak in */
+  font-size:16px;letter-spacing:.1em;
+  color:var(--mfp-acc-text);
+  padding:0 8px;
+  touch-action:manipulation;
+}
+.mfp-mode.mfp-lfo{background:var(--mfp-acc-dim);color:var(--mfp-fg)}
+.mfp-mode:active{background:var(--mfp-acc);color:var(--mfp-on-acc)}
+
+/* SEQ5: five vertical filled faders, one-finger sweep */
+.mfp-seq{
+  flex:1 1 0;min-height:48px;
+  display:grid;grid-template-columns:repeat(5,1fr);gap:3px;
+  touch-action:none;
+  cursor:ns-resize;
+}
+.mfp-step{
+  position:relative;
+  background:var(--mfp-sunk);
+  border:1px solid var(--mfp-line);
+  border-radius:4px;
+  overflow:hidden;
+  pointer-events:none;
+}
+.mfp-step .mfp-fill{left:0;right:0;top:auto;bottom:0;width:auto;height:0}
+.mfp-step.mfp-active .mfp-fill{background:var(--mfp-acc)}
+.mfp-step .mfp-slabel{
+  position:absolute;left:0;right:0;bottom:2px;text-align:center;
+  font-size:16px;color:var(--mfp-fg);line-height:18px;
+}
+
+/* DRAW canvas */
+.mfp-draw{
+  display:block;width:100%;
+  flex:1 1 0;min-height:40px;
+  background:var(--mfp-sunk);
+  border:1px solid var(--mfp-line);
+  border-radius:4px;
+  touch-action:none;
+  cursor:crosshair;
+}
+
+/* ---------- footer: AUTO / SEND / OUT ---------- */
+.mfp-foot{
+  flex:0 0 auto;
+  display:flex;align-items:stretch;gap:var(--mfp-gap);
+  padding:0 var(--mfp-gap) var(--mfp-gap);
+  padding-bottom:calc(var(--mfp-gap) + env(safe-area-inset-bottom,0px));
+  border-top:1px solid var(--mfp-line);
+  padding-top:var(--mfp-gap);
+  background:var(--mfp-bg);
+}
+.mfp-btn{
+  flex:1 1 0;min-height:52px;
+  border:1px solid var(--mfp-line);border-radius:10px;
+  background:var(--mfp-elev);
+  font-size:22px;letter-spacing:.14em;color:var(--mfp-fg);
+  touch-action:manipulation;
+}
+.mfp-btn:active{background:var(--mfp-panel)}
+.mfp-btn.mfp-send{background:var(--mfp-acc);border-color:var(--mfp-acc);color:var(--mfp-on-acc)}
+.mfp-btn.mfp-send:active{background:var(--mfp-acc-glow)}
+.mfp-outmod{
+  flex:0 0 auto;
+  display:flex;align-items:center;gap:6px;
+  background:var(--mfp-elev);
+  border:1px solid var(--mfp-acc-line);
+  border-radius:10px;
+  padding:2px 8px 2px 10px;
+}
+.mfp-outmod .mfp-title{font-size:18px;color:var(--mfp-acc-text);padding:0 2px 0 0}
+.mfp-outmod .mfp-port{flex:0 0 auto;min-width:38px}
+.mfp-outmod .mfp-plabel{margin-top:-2px}
+
+/* ---------- cable overlays ---------- */
+/* panel overlay: cables to OUT + drag preview (viewport of the panel) */
+.mfp-cables{
+  position:absolute;left:0;top:0;width:100%;height:100%;
+  pointer-events:none;
+  z-index:5;
+  overflow:visible;
+}
+/* case overlay: module-to-module cables, sized to the whole scrollable case in JS */
+.mfp-cables.mfp-case-cables{width:auto;height:auto;overflow:hidden;z-index:4}
+.mfp-cable{fill:none;stroke-width:4;stroke-linecap:round;pointer-events:none;opacity:.92}
+.mfp-cable-hit{fill:none;stroke:transparent;stroke-width:18;stroke-linecap:round;pointer-events:stroke;cursor:pointer;touch-action:pan-x}
+.mfp-cables.mfp-dragging .mfp-cable-hit{pointer-events:none}
+.mfp-cable-end{pointer-events:none}
+.mfp-cable-temp{fill:none;stroke-width:4;stroke-linecap:round;stroke-dasharray:8 6;pointer-events:none}
