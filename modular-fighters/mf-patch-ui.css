@@ -38,7 +38,7 @@
   --mfp-row:26px;          /* module head / mode toggle height */
   --mfp-jack:33px;         /* visible jack diameter (1.5x of the old 22px, for touch) */
   --mfp-jack-hit:48px;     /* jack tap target (JS JACK_HIT), >= 44px */
-  --mfp-rowh:clamp(200px,32vh,400px);   /* module row height: 270px at 390x844 */
+  --mfp-rowh:clamp(240px,32vh,400px);   /* module row height: 270px at 390x844; 240px is the least that shows every knob (VCO) */
 
   position:relative;
   display:flex;flex-direction:column;
@@ -91,7 +91,7 @@ html[data-theme="light"] .mfp{
 .mfp.mfp-disabled .mfp-hbar,
 .mfp.mfp-disabled .mfp-cables{pointer-events:none}
 
-@supports (height:1dvh){ .mfp{--mfp-rowh:clamp(200px,32dvh,400px)} }
+@supports (height:1dvh){ .mfp{--mfp-rowh:clamp(240px,32dvh,400px)} }
 
 /* ---------- case: horizontal scroller with one rail ---------- */
 .mfp-scroll{
@@ -390,37 +390,44 @@ html[data-theme="light"] .mfp{
   .mfp-scroll{grid-area:1/1/2/2;background:var(--mfp-case-a)}
   .mfp-hbar{grid-area:2/1/3/2;background:var(--mfp-sunk-a)}
   .mfp-case{height:auto}
-  /* modules at 60% here too (user request 2026-10-21): 240px row -> 144px on screen; the cable
-     SVGs are outside the rail so they stay unzoomed (see the portrait rule at the end) */
-  .mfp-rail{height:240px;flex:0 0 auto;background:transparent;zoom:0.6}
+  .mfp-rail{height:240px;flex:0 0 auto;background:transparent}
   .mfp-mod{background:var(--mfp-elev-a)}
   .mfp-pgroup.mfp-out,.mfp-step,.mfp-scope,.mfp-draw{background:var(--mfp-sunk-a)}
   .mfp-jack[data-dir="in"]::before{background:var(--mfp-bg-a)}
   .mfp-jack[data-dir="out"]::before{background:radial-gradient(circle,var(--mfp-bg-a) 0 26%,var(--mfp-acc) 28% 100%)}
   .mfp-foot{
     grid-area:1/2/3/3;
-    flex-direction:column;align-items:stretch;gap:4px;
-    width:132px;
+    flex-direction:column;align-items:stretch;gap:6px;
+    width:92px;                      /* 30% narrower than the first cut (132px), user request 2026-10-22 */
     padding:4px 6px calc(4px + env(safe-area-inset-bottom,0px));
     border-top:0;border-left:1px solid var(--mfp-line);
     background:transparent;
   }
-  .mfp-btn{flex:0 0 42px;min-height:42px;font-size:20px;background:var(--mfp-elev-a)}
+  .mfp-btn{flex:0 0 48px;min-height:48px;font-size:17px;letter-spacing:.1em;background:var(--mfp-elev-a)}
+  .mfp-btn.mfp-auto{gap:6px}
+  .mfp-auto .mfp-auto-num{font-size:17px}
   .mfp-btn.mfp-auto.mfp-locked:active{background:var(--mfp-elev-a)}
   .mfp-btn.mfp-send{background:var(--mfp-acc)}
   .mfp-outmod{
     flex:1 1 auto;
-    flex-wrap:wrap;justify-content:center;align-content:center;gap:0 4px;
-    padding:2px 4px 2px;
+    flex-direction:column;justify-content:center;gap:0;
+    padding:2px 2px 4px;
     background:var(--mfp-elev-a);
   }
-  .mfp-outmod .mfp-title{flex:0 0 100%;text-align:center;padding:0}
+  .mfp-outmod .mfp-title{flex:0 0 auto;text-align:center;padding:0}
+  .mfp-outmod .mfp-port{min-width:0}
 }
 
-/* portrait phones: every module at 60% (user request 2026-10-21, trial). CSS zoom on the rail
-   only: the module boxes, their jacks, knobs and text shrink together, while the cable SVGs
-   (siblings of the rail / children of the panel) stay unzoomed, so the positions the JS reads
-   with getBoundingClientRect (viewport px) map 1:1 onto the cable coordinates. */
+/* portrait phones: the AUTO / SEND / OUT row 40% lower (user request 2026-10-22: the VCO's bottom
+   was clipped on an iPhone 13 mini in Safari). Buttons 40px, OUT jacks 40px with their labels
+   beside them instead of below: 78px -> 48px before the safe area. */
 @media (orientation:portrait) and (max-width:500px){
-  .mfp-rail{zoom:0.6}
+  .mfp-foot{gap:6px;padding:4px var(--mfp-gap) calc(4px + env(safe-area-inset-bottom,0px))}
+  .mfp-btn{min-height:40px;font-size:18px;letter-spacing:.1em}
+  .mfp-auto .mfp-auto-num{font-size:18px}
+  .mfp-outmod{gap:4px;padding:0 6px 0 8px}
+  .mfp-outmod .mfp-title{font-size:16px}
+  .mfp-outmod .mfp-port{flex-direction:row;align-items:center;min-width:0}
+  .mfp-outmod .mfp-jack{width:40px;height:40px}
+  .mfp-outmod .mfp-plabel{margin-top:0}
 }

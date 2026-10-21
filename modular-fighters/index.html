@@ -8,13 +8,13 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Modular Fighters">
-<link rel="manifest" href="manifest.webmanifest?v=20261022b">
+<link rel="manifest" href="manifest.webmanifest?v=20261022d">
 <title>Modular Fighters</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400&family=Noto+Sans+JP:wght@300&display=swap" rel="stylesheet">
 <!-- ?v= on the local css / js: bump the date on every change so Safari does not keep the old files -->
-<link rel="stylesheet" href="mf-patch-ui.css?v=20261022b">
+<link rel="stylesheet" href="mf-patch-ui.css?v=20261022d">
 <script>
   // Apply the saved theme before the first paint. Dark is the default for this game;
   // html[data-theme="light"] is the white theme. Same key as the toggle below (mf_theme).
@@ -453,14 +453,14 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
   #btn-back{grid-area:6/2/7/3}
   /* match: the module row runs across the full width (user rule: no left / right split) and the
      panel is laid OVER the lower part of the fight scene (user choice 2026-10-21, mockup 4):
-     the fight band is 100px shorter than the screen, the panel (240px row at 60% + bar = 188px) sits
+     the fight band is 130px shorter than the screen, the panel (240px row + bar = 284px) sits
      at the bottom with translucent surfaces (mf-patch-ui.css), so the figures' heads, the HP
      bars and the power numbers show above the panel and their lower halves through it.
      The status line overlays the top edge of the fight band instead of taking its own row. */
   #match.on{padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
   #fight{
     position:absolute;left:env(safe-area-inset-left,0px);right:env(safe-area-inset-right,0px);top:0;
-    height:calc(100% - 100px);min-height:200px;
+    height:calc(100% - 130px);min-height:200px;
   }
   #panel{position:absolute;left:env(safe-area-inset-left,0px);right:env(safe-area-inset-right,0px);bottom:0;z-index:2}
   #status{
@@ -621,10 +621,10 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
 </div>
 
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-<script src="mf-audio.js?v=20261022b"></script>
-<script src="mf-patch-ui.js?v=20261022b"></script>
-<script src="mf-fight.js?v=20261022b"></script>
-<script src="mf-net.js?v=20261022b"></script>
+<script src="mf-audio.js?v=20261022d"></script>
+<script src="mf-patch-ui.js?v=20261022d"></script>
+<script src="mf-fight.js?v=20261022d"></script>
+<script src="mf-net.js?v=20261022d"></script>
 <script>
 (function () {
   'use strict';

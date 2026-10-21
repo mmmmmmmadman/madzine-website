@@ -2,7 +2,15 @@
 
 ## 2026-10-21
 
-### Modular Fighters：手機模組縮到 60%（試用）+ 首頁標題被語言列蓋住修正
+### Modular Fighters：60% 撤回、AUTO／SEND／OUT 縮小、模組列最小 240px
+
+- 60% 縮放撤回（使用者實機：iPhone 上太小，回到原尺寸）：兩處 `zoom:0.6` 刪除，橫向角色場景回到螢幕高 − 130px
+- 橫向右端 AUTO／SEND／OUT 直欄寬 132 → 92px（−30%）：OUT 的 L／R 改上下疊放、按鈕字 20 → 17px、AUTO 數字同步縮；面板高 284px 內無溢出
+- 直式手機（寬 ≤ 500px）AUTO／SEND／OUT 列高 78 → 51px（−35%，使用者要求 −40%；再低就得砍接孔觸控區或標籤）：按鈕 52 → 40px、字 22 → 18px，OUT 接孔 48 → 40px 且 LEFT／RIGHT 標籤改放接孔右側而非下方
+- 模組列最小高度 200 → 240px（`clamp(240px, 32dvh, 400px)`）：iPhone 13 mini 在 Safari 內可視高約 660px，32dvh = 211px，VCO 下緣（FREQUENCY／FM AMOUNT 旋鈕）被裁切；240 是先前量到的「九種模組全部不裁」最小值。390×844 仍為 270px 不變
+- 以上三者在 375×660、390×844、812×375 量測：VCO 無裁切、footer 無溢出、線端誤差 0px
+
+### Modular Fighters：手機模組縮到 60%（試用，當日撤回）+ 首頁標題被語言列蓋住修正
 
 - 狀態列加 FULL SCREEN 鈕（三語，`#fsbtn`）：只在瀏覽器有 Fullscreen API 且目前不是全螢幕時顯示，按下重新進全螢幕；`fullscreenchange` 事件更新顯示。起因：iPad Safari 全螢幕中往下滑會退出全螢幕，原本只有 START 會進去。另在對戰畫面對 `touchmove` 做 `preventDefault`（KO 覆蓋層與說明卡例外），讓垂直滑動不被當成頁面手勢；是否真能擋住 iPad 的退出手勢未實機驗證
 - 本地 css / js 連結加 `?v=日期` 快取破壞參數（`index.html` 頂端有註解）：使用者 iPhone 13 mini 上看到的是舊版，GitHub Actions 部署全部成功，判斷為 Safari 快取舊 css / js；之後每次改這些檔要一起改版本字串
