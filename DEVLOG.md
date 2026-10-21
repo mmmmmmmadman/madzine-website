@@ -1,5 +1,17 @@
 # MADZINE Website 開發紀錄
 
+## 2026-10-21
+
+### Modular Fighters：新增角色 TATATA5 與 MAD，任一角色可站左右
+
+- 角色由兩個增為四個：OSC、MODDICT、TATATA5、MAD。選角畫面改為兩排各兩格
+- 新影片來源為 OSC兄弟提供的「MAD motion.mp4」「tatata5 motion.mp4」（2100×2100，0.67 s），轉成與原角色相同的 600×600、12fps、h264，放在 `modular-fighters/assets/`
+- 站位規則改為：自己永遠在左、對手永遠在右（取代原本「選角決定左右、不鏡像」）
+- 角色原圖面向與站位不同時，在去背階段水平鏡像，雙方永遠面對面；原圖面向記在 `mf-fight.js` 的角色表
+- CPU 對手從其他三個角色隨機選；連線對戰兩人可選同一角色，各自看到自己在左，先前「同角色時 guest 自動換角」的提示機制移除
+- 以無頭瀏覽器驗證四格顯示、左右站位、鏡像與影片載入；真實連線對戰未實機驗證
+- commit `768c54d`、`192710f`
+
 ## 2026-10-16
 
 ### Visual Feedback Machine：新增第三種 Chaos 來源 Movement
