@@ -363,34 +363,54 @@ html[data-theme="light"] .mfp{
 .mfp-cable-end{pointer-events:none}
 .mfp-cable-temp{fill:none;stroke-width:4;stroke-linecap:round;stroke-dasharray:8 6;pointer-events:none}
 
-/* short landscape (phone held sideways; index.html keeps the panel under the fight band, full
-   width): the row is 240px (the smallest height at which every module shows all its knobs,
-   measured per type: VCO needs the most, 236px still clips its knob labels by 3px),
-   the scroll bar sits under the row, and AUTO / SEND / OUT stack in a column at the right end
-   so the footer costs no height. */
+/* short landscape (phone held sideways): index.html lays the panel over the lower part of the
+   fight scene, so the panel surfaces go translucent (alpha tokens below, dark and light) while
+   text, jacks, knobs, cables and SEND stay opaque. The row is 240px (the smallest height at
+   which every module shows all its knobs, measured per type: VCO needs the most, 236px still
+   clips its knob labels by 3px), the scroll bar sits under the row, and AUTO / SEND / OUT stack
+   in a column at the right end so the footer costs no height. */
 @media (orientation:landscape) and (max-height:620px){
   .mfp{
+    --mfp-case-a:rgba(12,12,12,.45);
+    --mfp-elev-a:rgba(28,28,28,.72);
+    --mfp-sunk-a:rgba(22,22,22,.55);
+    --mfp-bg-a:rgba(18,18,18,.9);
     display:grid;
     grid-template-columns:minmax(0,1fr) auto;
     grid-template-rows:minmax(0,1fr) auto;
     padding-bottom:env(safe-area-inset-bottom,0px);
+    background:transparent;
   }
-  .mfp-scroll{grid-area:1/1/2/2}
-  .mfp-hbar{grid-area:2/1/3/2}
+  html[data-theme="light"] .mfp{
+    --mfp-case-a:rgba(220,220,220,.45);
+    --mfp-elev-a:rgba(250,250,250,.72);
+    --mfp-sunk-a:rgba(232,232,232,.55);
+    --mfp-bg-a:rgba(255,255,255,.9);
+  }
+  .mfp-scroll{grid-area:1/1/2/2;background:var(--mfp-case-a)}
+  .mfp-hbar{grid-area:2/1/3/2;background:var(--mfp-sunk-a)}
   .mfp-case{height:auto}
-  .mfp-rail{height:240px;flex:0 0 auto}
+  .mfp-rail{height:240px;flex:0 0 auto;background:transparent}
+  .mfp-mod{background:var(--mfp-elev-a)}
+  .mfp-pgroup.mfp-out,.mfp-step,.mfp-scope,.mfp-draw{background:var(--mfp-sunk-a)}
+  .mfp-jack[data-dir="in"]::before{background:var(--mfp-bg-a)}
+  .mfp-jack[data-dir="out"]::before{background:radial-gradient(circle,var(--mfp-bg-a) 0 26%,var(--mfp-acc) 28% 100%)}
   .mfp-foot{
     grid-area:1/2/3/3;
     flex-direction:column;align-items:stretch;gap:6px;
     width:132px;
     padding:4px 6px calc(4px + env(safe-area-inset-bottom,0px));
     border-top:0;border-left:1px solid var(--mfp-line);
+    background:transparent;
   }
-  .mfp-btn{flex:0 0 48px;min-height:48px;font-size:20px}
+  .mfp-btn{flex:0 0 48px;min-height:48px;font-size:20px;background:var(--mfp-elev-a)}
+  .mfp-btn.mfp-auto.mfp-locked:active{background:var(--mfp-elev-a)}
+  .mfp-btn.mfp-send{background:var(--mfp-acc)}
   .mfp-outmod{
     flex:1 1 auto;
     flex-wrap:wrap;justify-content:center;align-content:center;gap:0 4px;
     padding:2px 4px 4px;
+    background:var(--mfp-elev-a);
   }
   .mfp-outmod .mfp-title{flex:0 0 100%;text-align:center;padding:0}
 }

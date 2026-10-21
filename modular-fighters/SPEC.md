@@ -3,10 +3,13 @@
 Location: madzine-website/modular-fighters/  (pure static, no build, no npm)
 Files (one owner each):
 - index.html        — integration shell (integrator writes last). Portrait layout: patch panel at the bottom = ONE horizontal row of all modules (row height clamp(200px, 32dvh, 400px): 270 px at 390x844) + footer (AUTO / SEND / OUT); the row scrolls horizontally, the footer stays fixed. The fight scene takes all remaining height above (status bar 28 px between).
-                      Short landscape (orientation landscape and height <= 620 px, i.e. a phone held sideways): the same stack,
-                      the module row across the full width at 240 px with AUTO / SEND / OUT in a 132 px column at its right end
-                      (media query at the end of mf-patch-ui.css), the status line overlaid on the fight band, the fight band
-                      taking the rest (about 100 px; mf-fight.js compact mode: HP bars at the far sides level with the figures).
+                      Short landscape (orientation landscape and height <= 620 px, i.e. a phone held sideways): the module row
+                      across the full width at 240 px with AUTO / SEND / OUT in a 132 px column at its right end, and the panel
+                      (284 px) laid OVER the lower part of the fight scene with translucent surfaces (alpha tokens at the end of
+                      mf-patch-ui.css; text, jacks, knobs, cables and SEND stay opaque). The fight scene is 130 px shorter than
+                      the screen (260 px at 844x390); mf-fight.js "wide" mode (H < 320, W > 2H) narrows the HP bars to the far
+                      sides so the figures rise past them (about 194 px tall), heads and power numbers above the panel, lower
+                      halves through it. The status line overlays the top edge of the scene.
                       Home / setup / KO become two columns, every centred screen scrolls when it does not fit. Taller landscape
                       (iPad, desktop) keeps the portrait stack. START requests full screen (Fullscreen API, prefixed fallback),
                       HOME exits; manifest.webmanifest + apple-mobile-web-app-capable for Add to Home Screen.

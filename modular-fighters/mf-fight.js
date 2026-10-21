@@ -696,10 +696,16 @@
     // The HP bars then stand at the far left / right, level with the figures, and the figures
     // take nearly the whole height instead of the space under the bars.
     var compact = H < 220;
+    // wide = a short landscape band that is not that short (the panel overlays its lower part):
+    // the bars stay at the top but narrow, at the far left / right, so the figures may rise
+    // past them and use most of the height (their lower halves show through the panel).
+    var wide = !compact && H < 320 && W > H * 2;
     var pad = compact ? 12 : Math.max(12, Math.round(W * 0.04));
     // BAR_TOP_MIN only applies when there is height to spare
     var barTop = compact ? Math.round(H / 2 + 6) : Math.max(pad + 24, H < 480 ? 0 : BAR_TOP_MIN);
-    var barW = compact ? Math.min(180, Math.floor(W * 0.22)) : Math.floor((W - pad * 2 - Math.max(24, W * 0.08)) / 2);
+    var barW = compact ? Math.min(180, Math.floor(W * 0.22))
+      : wide ? Math.min(240, Math.floor(W * 0.26))
+      : Math.floor((W - pad * 2 - Math.max(24, W * 0.08)) / 2);
 
     // floor
     var floorY = compact ? H - 8 : Math.round(H * 0.86);
@@ -722,10 +728,12 @@
     // and each figure's width (from its front edge at the centre back to its rear edge) fits its half
     var maxFigH = compact
       ? Math.max(40, floorY - 26)                                     // below the status line
+      : wide ? Math.max(40, Math.min(H * FIGHTER_H, floorY - 30))     // beside the bars, below the status line
       : Math.max(40, Math.min(H * FIGHTER_H, floorY - (barTop + BAR_H) - 6));
+    // beside the bars (compact / wide) a figure may not reach back into its bar
     var k = Math.min(
       maxFigH / Math.max(hL, hR),
-      (W / 2 - FRONT_GAP - (compact ? pad + barW + 8 : pad)) / Math.max(wL, wR));
+      (W / 2 - FRONT_GAP - ((compact || wide) ? pad + barW + 8 : pad)) / Math.max(wL, wR));
     var figH = Math.max(hL, hR) * k;
     var scale = Math.max(0.6, Math.min(2.2, figH / 150, W / 300));
     var reach = FRONT_GAP + W * LUNGE_OVER;
