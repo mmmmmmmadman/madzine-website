@@ -4,10 +4,11 @@ Location: madzine-website/modular-fighters/  (pure static, no build, no npm)
 Files (one owner each):
 - index.html        — integration shell (integrator writes last). Portrait layout: patch panel at the bottom = ONE horizontal row of all modules (row height clamp(200px, 32dvh, 400px): 270 px at 390x844) + footer (AUTO / SEND / OUT); the row scrolls horizontally, the footer stays fixed. The fight scene takes all remaining height above (status bar 28 px between).
                       Short landscape (orientation landscape and height <= 620 px, i.e. a phone held sideways): the module row
-                      across the full width at 240 px with AUTO / SEND / OUT in a 132 px column at its right end, and the panel
-                      (284 px) laid OVER the lower part of the fight scene with translucent surfaces (alpha tokens at the end of
-                      mf-patch-ui.css; text, jacks, knobs, cables and SEND stay opaque). The fight scene is 130 px shorter than
-                      the screen (260 px at 844x390); mf-fight.js "wide" mode (H < 320, W > 2H) narrows the HP bars to the far
+                      across the full width at 240 px (zoom 0.6 -> 144 px on screen; portrait phones <= 500 px wide zoom the
+                      row to 0.6 as well) with AUTO / SEND / OUT in a 132 px column at its right end, and the panel
+                      (188 px) laid OVER the lower part of the fight scene with translucent surfaces (alpha tokens at the end of
+                      mf-patch-ui.css; text, jacks, knobs, cables and SEND stay opaque). The fight scene is 100 px shorter than
+                      the screen (290 px at 844x390); mf-fight.js "wide" mode (H < 320, W > 2H) narrows the HP bars to the far
                       sides so the figures rise past them (about 194 px tall), heads and power numbers above the panel, lower
                       halves through it. The status line overlays the top edge of the scene.
                       Home / setup / KO become two columns, every centred screen scrolls when it does not fit. Taller landscape

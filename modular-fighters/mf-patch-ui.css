@@ -390,26 +390,28 @@ html[data-theme="light"] .mfp{
   .mfp-scroll{grid-area:1/1/2/2;background:var(--mfp-case-a)}
   .mfp-hbar{grid-area:2/1/3/2;background:var(--mfp-sunk-a)}
   .mfp-case{height:auto}
-  .mfp-rail{height:240px;flex:0 0 auto;background:transparent}
+  /* modules at 60% here too (user request 2026-10-21): 240px row -> 144px on screen; the cable
+     SVGs are outside the rail so they stay unzoomed (see the portrait rule at the end) */
+  .mfp-rail{height:240px;flex:0 0 auto;background:transparent;zoom:0.6}
   .mfp-mod{background:var(--mfp-elev-a)}
   .mfp-pgroup.mfp-out,.mfp-step,.mfp-scope,.mfp-draw{background:var(--mfp-sunk-a)}
   .mfp-jack[data-dir="in"]::before{background:var(--mfp-bg-a)}
   .mfp-jack[data-dir="out"]::before{background:radial-gradient(circle,var(--mfp-bg-a) 0 26%,var(--mfp-acc) 28% 100%)}
   .mfp-foot{
     grid-area:1/2/3/3;
-    flex-direction:column;align-items:stretch;gap:6px;
+    flex-direction:column;align-items:stretch;gap:4px;
     width:132px;
     padding:4px 6px calc(4px + env(safe-area-inset-bottom,0px));
     border-top:0;border-left:1px solid var(--mfp-line);
     background:transparent;
   }
-  .mfp-btn{flex:0 0 48px;min-height:48px;font-size:20px;background:var(--mfp-elev-a)}
+  .mfp-btn{flex:0 0 42px;min-height:42px;font-size:20px;background:var(--mfp-elev-a)}
   .mfp-btn.mfp-auto.mfp-locked:active{background:var(--mfp-elev-a)}
   .mfp-btn.mfp-send{background:var(--mfp-acc)}
   .mfp-outmod{
     flex:1 1 auto;
     flex-wrap:wrap;justify-content:center;align-content:center;gap:0 4px;
-    padding:2px 4px 4px;
+    padding:2px 4px 2px;
     background:var(--mfp-elev-a);
   }
   .mfp-outmod .mfp-title{flex:0 0 100%;text-align:center;padding:0}
