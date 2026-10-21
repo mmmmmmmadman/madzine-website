@@ -8,12 +8,13 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Modular Fighters">
-<link rel="manifest" href="manifest.webmanifest">
+<link rel="manifest" href="manifest.webmanifest?v=20261022a">
 <title>Modular Fighters</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400&family=Noto+Sans+JP:wght@300&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="mf-patch-ui.css">
+<!-- ?v= on the local css / js: bump the date on every change so Safari does not keep the old files -->
+<link rel="stylesheet" href="mf-patch-ui.css?v=20261022a">
 <script>
   // Apply the saved theme before the first paint. Dark is the default for this game;
   // html[data-theme="light"] is the white theme. Same key as the toggle below (mf_theme).
@@ -610,10 +611,10 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
 </div>
 
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-<script src="mf-audio.js"></script>
-<script src="mf-patch-ui.js"></script>
-<script src="mf-fight.js"></script>
-<script src="mf-net.js"></script>
+<script src="mf-audio.js?v=20261022a"></script>
+<script src="mf-patch-ui.js?v=20261022a"></script>
+<script src="mf-fight.js?v=20261022a"></script>
+<script src="mf-net.js?v=20261022a"></script>
 <script>
 (function () {
   'use strict';
