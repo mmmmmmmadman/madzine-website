@@ -38,7 +38,8 @@
     cv1: 'CV 1', cv2: 'CV 2', cv3: 'CV 3', cv4: 'CV 4',
     'in': 'IN', cutoff_cv: 'CUTOFF', fold_cv: 'FOLD', time_cv: 'TIME',
     outL: 'LEFT', outR: 'RIGHT', gate: 'GATE', env: 'ENVELOPE', trig: 'TRIGGER',
-    clock: 'CLOCK', cv: 'CV', L: 'LEFT', R: 'RIGHT'
+    clock: 'CLOCK', cv: 'CV',
+    L: 'L', R: 'R'             // the OUT module (user rule 2026-10-22: short, so AUTO's countdown keeps its room)
   };
 
   var RATE = { key: 'rate', label: 'RATE', min: 0.1, max: 20, curve: 'log', def: 2 };

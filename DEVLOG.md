@@ -2,6 +2,14 @@
 
 ## 2026-10-21
 
+### Modular Fighters：橫向改回不重疊、OUT 改 L／R、AUTO 倒數不再被裁
+
+- 使用者實機截圖（iPhone 13 mini）：直式 AUTO 顯示成「UTO 8」左邊被裁；橫向背景角色透過面板干擾操作。另從截圖量到頁面被 Safari 放大約 120%（模組寬、狀態列高、接孔直徑都是 1.2 倍），所以可視區只有約 320×256 CSS px，已請使用者把 Safari 的「頁面縮放」調回 100%
+- OUT 接孔標籤 LEFT／RIGHT 改 L／R（`PORT_LABEL`；配線圖 PNG 同步），直式 footer 的 OUT 模組 190 → 145px，AUTO 多出空間；另 `.mfp-auto` 加 `min-width:min-content`，flex 收縮永遠不會裁到「AUTO + 倒數」（真因：overflow:hidden 的 flex item 最小寬度為 0，被擠扁後置中的文字兩側被裁）
+- 橫向重新佈局（使用者裁示「背景畫面有很多干擾上層視覺的內容」）：撤掉半透明面板疊在角色上的做法，回到角色帶在上、面板不透明在下；alpha token 全部移除。角色帶拿剩餘高度（812×375 為 91px，compact 模式 HP 條在兩側、角色約 57px），右欄 92px、OUT L 上 R 下
+- 極矮橫向（高 ≤ 340px，Safari 工具列佔位時約 300px）：角色帶最少 56px，`mf-fight.js` 新增 strip 模式（高 < 72：只畫 HP 條，YOU／FOE 與數字寫在條內，不畫角色）；面板可縮、模組列在面板內垂直捲動（812×300 時捲 40px）；右欄按鈕與 OUT 接孔縮到 40px，量測無溢出
+- 量測 812×375、812×300、375×660、320×560、390×844、1180×820：AUTO 不裁、footer 不溢出、頁面不橫向溢出、零錯誤
+
 ### Modular Fighters：60% 撤回、AUTO／SEND／OUT 縮小、模組列最小 240px
 
 - 60% 縮放撤回（使用者實機：iPhone 上太小，回到原尺寸）：兩處 `zoom:0.6` 刪除，橫向角色場景回到螢幕高 − 130px

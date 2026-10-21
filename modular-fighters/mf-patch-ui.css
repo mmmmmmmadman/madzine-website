@@ -363,67 +363,58 @@ html[data-theme="light"] .mfp{
 .mfp-cable-end{pointer-events:none}
 .mfp-cable-temp{fill:none;stroke-width:4;stroke-linecap:round;stroke-dasharray:8 6;pointer-events:none}
 
-/* short landscape (phone held sideways): index.html lays the panel over the lower part of the
-   fight scene, so the panel surfaces go translucent (alpha tokens below, dark and light) while
-   text, jacks, knobs, cables and SEND stay opaque. The row is 240px (the smallest height at
-   which every module shows all its knobs, measured per type: VCO needs the most, 236px still
-   clips its knob labels by 3px), the scroll bar sits under the row, and AUTO / SEND / OUT stack
-   in a column at the right end so the footer costs no height. */
+/* short landscape (phone held sideways): index.html keeps the panel under the fight band (the
+   overlay version was dropped 2026-10-22: the fight scene showed through the modules and got in
+   the way). The row is 240px (the smallest height at which every module shows all its knobs,
+   measured per type: VCO needs the most, 236px still clips its knob labels by 3px), the scroll
+   bar sits under the row, and AUTO / SEND / OUT stack in a 92px column at the right end so the
+   footer costs no height. When even that does not fit (Safari's toolbar showing), the row
+   scrolls vertically inside the panel. */
 @media (orientation:landscape) and (max-height:620px){
   .mfp{
-    --mfp-case-a:rgba(12,12,12,.25);
-    --mfp-elev-a:rgba(28,28,28,.55);
-    --mfp-sunk-a:rgba(22,22,22,.4);
-    --mfp-bg-a:rgba(18,18,18,.85);
     display:grid;
     grid-template-columns:minmax(0,1fr) auto;
     grid-template-rows:minmax(0,1fr) auto;
     padding-bottom:env(safe-area-inset-bottom,0px);
-    background:transparent;
   }
-  html[data-theme="light"] .mfp{
-    --mfp-case-a:rgba(220,220,220,.25);
-    --mfp-elev-a:rgba(250,250,250,.55);
-    --mfp-sunk-a:rgba(232,232,232,.4);
-    --mfp-bg-a:rgba(255,255,255,.85);
-  }
-  .mfp-scroll{grid-area:1/1/2/2;background:var(--mfp-case-a)}
-  .mfp-hbar{grid-area:2/1/3/2;background:var(--mfp-sunk-a)}
+  .mfp-scroll{grid-area:1/1/2/2;overflow-y:auto}
+  .mfp-hbar{grid-area:2/1/3/2}
   .mfp-case{height:auto}
-  .mfp-rail{height:240px;flex:0 0 auto;background:transparent}
-  .mfp-mod{background:var(--mfp-elev-a)}
-  .mfp-pgroup.mfp-out,.mfp-step,.mfp-scope,.mfp-draw{background:var(--mfp-sunk-a)}
-  .mfp-jack[data-dir="in"]::before{background:var(--mfp-bg-a)}
-  .mfp-jack[data-dir="out"]::before{background:radial-gradient(circle,var(--mfp-bg-a) 0 26%,var(--mfp-acc) 28% 100%)}
+  .mfp-rail{height:240px;flex:0 0 auto}
   .mfp-foot{
     grid-area:1/2/3/3;
     flex-direction:column;align-items:stretch;gap:6px;
-    width:92px;                      /* 30% narrower than the first cut (132px), user request 2026-10-22 */
+    width:92px;
     padding:4px 6px calc(4px + env(safe-area-inset-bottom,0px));
     border-top:0;border-left:1px solid var(--mfp-line);
-    background:transparent;
   }
-  .mfp-btn{flex:0 0 48px;min-height:48px;font-size:17px;letter-spacing:.1em;background:var(--mfp-elev-a)}
+  .mfp-btn{flex:0 0 48px;min-height:48px;font-size:17px;letter-spacing:.1em}
   .mfp-btn.mfp-auto{gap:6px}
   .mfp-auto .mfp-auto-num{font-size:17px}
-  .mfp-btn.mfp-auto.mfp-locked:active{background:var(--mfp-elev-a)}
-  .mfp-btn.mfp-send{background:var(--mfp-acc)}
   .mfp-outmod{
     flex:1 1 auto;
     flex-direction:column;justify-content:center;gap:0;
     padding:2px 2px 4px;
-    background:var(--mfp-elev-a);
   }
   .mfp-outmod .mfp-title{flex:0 0 auto;text-align:center;padding:0}
   .mfp-outmod .mfp-port{min-width:0}
 }
+/* shorter still (Safari's toolbar showing in landscape): the side column has about 240px, so
+   its buttons and the OUT jacks go to 40px */
+@media (orientation:landscape) and (max-height:340px){
+  .mfp-btn{flex-basis:40px;min-height:40px}
+  .mfp-outmod{padding-bottom:0}
+  .mfp-outmod .mfp-jack{width:40px;height:40px}
+}
 
 /* portrait phones: the AUTO / SEND / OUT row 40% lower (user request 2026-10-22: the VCO's bottom
-   was clipped on an iPhone 13 mini in Safari). Buttons 40px, OUT jacks 40px with their labels
-   beside them instead of below: 78px -> 48px before the safe area. */
+   was clipped on an iPhone 13 mini in Safari). Buttons 40px, OUT jacks 40px with their L / R
+   beside them instead of below: 78px -> 48px before the safe area. AUTO never shrinks below
+   its label + countdown (a flex item with overflow:hidden would otherwise clip "AUTO 8"). */
 @media (orientation:portrait) and (max-width:500px){
   .mfp-foot{gap:6px;padding:4px var(--mfp-gap) calc(4px + env(safe-area-inset-bottom,0px))}
   .mfp-btn{min-height:40px;font-size:18px;letter-spacing:.1em}
+  .mfp-btn.mfp-auto{min-width:-webkit-min-content;min-width:min-content}
   .mfp-auto .mfp-auto-num{font-size:18px}
   .mfp-outmod{gap:4px;padding:0 6px 0 8px}
   .mfp-outmod .mfp-title{font-size:16px}

@@ -612,7 +612,7 @@
     c.restore();
   }
 
-  function drawBar(x, y, w, side, alignRight) {
+  function drawBar(x, y, w, side, alignRight, inside) {
     var c = ctx;
     var who = whoAt(side);
     var name = who === 'me' ? 'YOU' : 'FOE';
@@ -623,6 +623,19 @@
     var fontPx = Math.max(16, Math.round(BAR_H * 1.15));
     c.font = '300 ' + fontPx + 'px ' + fontFamily();
     c.textBaseline = 'alphabetic';
+    if (inside) {
+      // no room above the bar: "YOU 88" over the bar, at its outer end
+      c.fillStyle = COLOR_BAR_BG;
+      c.fillRect(x, y, w, BAR_H);
+      var fw0 = Math.round(w * v);
+      c.fillStyle = col;
+      if (alignRight) c.fillRect(x + w - fw0, y, fw0, BAR_H);
+      else c.fillRect(x, y, fw0, BAR_H);
+      c.fillStyle = COLOR_TEXT;
+      c.textAlign = alignRight ? 'right' : 'left';
+      c.fillText(name + ' ' + hp[who], alignRight ? x + w - 4 : x + 4, y + BAR_H - 3);
+      return;
+    }
     c.fillStyle = COLOR_TEXT;
     c.textAlign = alignRight ? 'right' : 'left';
     var nameX = alignRight ? x + w : x;
@@ -696,13 +709,14 @@
     // The HP bars then stand at the far left / right, level with the figures, and the figures
     // take nearly the whole height instead of the space under the bars.
     var compact = H < 220;
+    var strip = H < 72;        // a strip: bars only (name + hp written inside), no figures
     // wide = a short landscape band that is not that short (the panel overlays its lower part):
     // the bars stay at the top but narrow, at the far left / right, so the figures may rise
     // past them and use most of the height (their lower halves show through the panel).
     var wide = !compact && H < 320 && W > H * 2;
     var pad = compact ? 12 : Math.max(12, Math.round(W * 0.04));
     // BAR_TOP_MIN only applies when there is height to spare
-    var barTop = compact ? Math.round(H / 2 + 6) : Math.max(pad + 24, H < 480 ? 0 : BAR_TOP_MIN);
+    var barTop = strip ? H - BAR_H - 6 : compact ? Math.round(H / 2 + 6) : Math.max(pad + 24, H < 480 ? 0 : BAR_TOP_MIN);
     var barW = compact ? Math.min(180, Math.floor(W * 0.22))
       : wide ? Math.min(240, Math.floor(W * 0.26))
       : Math.floor((W - pad * 2 - Math.max(24, W * 0.08)) / 2);
@@ -758,13 +772,15 @@
       right: { x: rightX + wR * k / 2, headTop: floorY - hR * k - bobR }
     };
 
-    if (fL) drawFighter({ f: fL, x: leftX, floorY: floorY, k: k,
-      bob: bobL, flash: flashAmount(whoL, t), fall: fallL });
-    if (fR) drawFighter({ f: fR, x: rightX, floorY: floorY, k: k,
-      bob: bobR, flash: flashAmount(whoR, t), fall: fallR });
+    if (!strip) {
+      if (fL) drawFighter({ f: fL, x: leftX, floorY: floorY, k: k,
+        bob: bobL, flash: flashAmount(whoL, t), fall: fallL });
+      if (fR) drawFighter({ f: fR, x: rightX, floorY: floorY, k: k,
+        bob: bobR, flash: flashAmount(whoR, t), fall: fallR });
+    }
 
-    drawBar(pad, barTop, barW, 'left', false);
-    drawBar(W - pad - barW, barTop, barW, 'right', true);
+    drawBar(pad, barTop, barW, 'left', false, strip);
+    drawBar(W - pad - barW, barTop, barW, 'right', true, strip);
     drawPops(t, geo);
     drawKO(t);
   }
