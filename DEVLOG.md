@@ -7,7 +7,7 @@
 - 使用者實機截圖（iPhone 13 mini）：直式 AUTO 顯示成「UTO 8」左邊被裁；橫向背景角色透過面板干擾操作。另從截圖量到頁面被 Safari 放大約 120%（模組寬、狀態列高、接孔直徑都是 1.2 倍），所以可視區只有約 320×256 CSS px，已請使用者把 Safari 的「頁面縮放」調回 100%
 - OUT 接孔標籤 LEFT／RIGHT 改 L／R（`PORT_LABEL`；配線圖 PNG 同步），直式 footer 的 OUT 模組 190 → 145px，AUTO 多出空間；另 `.mfp-auto` 加 `min-width:min-content`，flex 收縮永遠不會裁到「AUTO + 倒數」（真因：overflow:hidden 的 flex item 最小寬度為 0，被擠扁後置中的文字兩側被裁）
 - 橫向重新佈局（使用者裁示「背景畫面有很多干擾上層視覺的內容」）：撤掉半透明面板疊在角色上的做法，回到角色帶在上、面板不透明在下；alpha token 全部移除。角色帶拿剩餘高度（812×375 為 91px，compact 模式 HP 條在兩側、角色約 57px），右欄 92px、OUT L 上 R 下
-- 極矮橫向（高 ≤ 340px，Safari 工具列佔位時約 300px）：角色帶最少 56px，`mf-fight.js` 新增 strip 模式（高 < 72：只畫 HP 條，YOU／FOE 與數字寫在條內，不畫角色）；面板可縮、模組列在面板內垂直捲動（812×300 時捲 40px）；右欄按鈕與 OUT 接孔縮到 40px，量測無溢出
+- 矮橫向（Safari 工具列佔位約 300px；使用者頁面放大 120% 時只剩約 677×262）：使用者再截圖「橫向完全壞了」（模組被裁、右欄被裁、垂直捲動不可發現）。改為**依視窗高度縮放**：`index.html` 的 `updateRailZoom()` 以 `(innerHeight − 32 − 44 − 安全區) / 240` 算出 `--mfp-rail-zoom`（上限 1、下限 0.5），`mf-patch-ui.css` 的橫向區塊把 `.mfp-rail` 與 `.mfp-foot` 一起 `zoom`；線材 SVG 在兩者之外不縮，線端誤差仍 0px。角色帶最少 32px，`mf-fight.js` strip 模式（高 < 72）：不畫角色與地板，HP 條放畫面中段（26%～74%），YOU／FOE 與數字寫在條內，兩端留給狀態列。量測：812×375 zoom 1（角色帶 91px）、812×314 zoom 0.99、812×300 zoom 0.93、677×262 zoom 0.78，全部不裁、不溢出
 - 量測 812×375、812×300、375×660、320×560、390×844、1180×820：AUTO 不裁、footer 不溢出、頁面不橫向溢出、零錯誤
 
 ### Modular Fighters：60% 撤回、AUTO／SEND／OUT 縮小、模組列最小 240px

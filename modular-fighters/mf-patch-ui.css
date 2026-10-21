@@ -380,10 +380,14 @@ html[data-theme="light"] .mfp{
   .mfp-scroll{grid-area:1/1/2/2;overflow-y:auto}
   .mfp-hbar{grid-area:2/1/3/2}
   .mfp-case{height:auto}
-  .mfp-rail{height:240px;flex:0 0 auto}
+  /* --mfp-rail-zoom: index.html sets it below 1 when row + bar + strip do not fit the height
+     (Safari's toolbar up, or the page zoomed in Safari); the cable SVGs sit outside the rail
+     and the column, so the positions the JS reads stay 1:1 with the cable coordinates */
+  .mfp-rail{height:240px;flex:0 0 auto;zoom:var(--mfp-rail-zoom,1)}
+  .mfp-foot{zoom:var(--mfp-rail-zoom,1)}
   .mfp-foot{
     grid-area:1/2/3/3;
-    flex-direction:column;align-items:stretch;gap:6px;
+    flex-direction:column;align-items:stretch;justify-content:flex-start;gap:6px;
     width:92px;
     padding:4px 6px calc(4px + env(safe-area-inset-bottom,0px));
     border-top:0;border-left:1px solid var(--mfp-line);
@@ -399,14 +403,6 @@ html[data-theme="light"] .mfp{
   .mfp-outmod .mfp-title{flex:0 0 auto;text-align:center;padding:0}
   .mfp-outmod .mfp-port{min-width:0}
 }
-/* shorter still (Safari's toolbar showing in landscape): the side column has about 240px, so
-   its buttons and the OUT jacks go to 40px */
-@media (orientation:landscape) and (max-height:340px){
-  .mfp-btn{flex-basis:40px;min-height:40px}
-  .mfp-outmod{padding-bottom:0}
-  .mfp-outmod .mfp-jack{width:40px;height:40px}
-}
-
 /* portrait phones: the AUTO / SEND / OUT row 40% lower (user request 2026-10-22: the VCO's bottom
    was clipped on an iPhone 13 mini in Safari). Buttons 40px, OUT jacks 40px with their L / R
    beside them instead of below: 78px -> 48px before the safe area. AUTO never shrinks below

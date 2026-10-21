@@ -716,19 +716,24 @@
     var wide = !compact && H < 320 && W > H * 2;
     var pad = compact ? 12 : Math.max(12, Math.round(W * 0.04));
     // BAR_TOP_MIN only applies when there is height to spare
-    var barTop = strip ? H - BAR_H - 6 : compact ? Math.round(H / 2 + 6) : Math.max(pad + 24, H < 480 ? 0 : BAR_TOP_MIN);
-    var barW = compact ? Math.min(180, Math.floor(W * 0.22))
+    var barTop = strip ? Math.round(H / 2 - BAR_H / 2) : compact ? Math.round(H / 2 + 6) : Math.max(pad + 24, H < 480 ? 0 : BAR_TOP_MIN);
+    var barW = strip ? Math.floor(W * 0.22)       // the middle half: the status line owns both ends
+      : compact ? Math.min(180, Math.floor(W * 0.22))
       : wide ? Math.min(240, Math.floor(W * 0.26))
       : Math.floor((W - pad * 2 - Math.max(24, W * 0.08)) / 2);
+    var barL = strip ? Math.round(W * 0.26) : pad;
+    var barR = strip ? Math.round(W * 0.74) - barW : W - pad - barW;
 
     // floor
     var floorY = compact ? H - 8 : Math.round(H * 0.86);
-    c.strokeStyle = COLOR_FLOOR;
-    c.lineWidth = 1;
-    c.beginPath();
-    c.moveTo(pad, floorY + 0.5);
-    c.lineTo(W - pad, floorY + 0.5);
-    c.stroke();
+    if (!strip) {
+      c.strokeStyle = COLOR_FLOOR;
+      c.lineWidth = 1;
+      c.beginPath();
+      c.moveTo(pad, floorY + 0.5);
+      c.lineTo(W - pad, floorY + 0.5);
+      c.stroke();
+    }
 
     // fighter geometry: key both frames first so the union boxes are current
     var whoL = whoAt('left'), whoR = whoAt('right');
@@ -779,8 +784,8 @@
         bob: bobR, flash: flashAmount(whoR, t), fall: fallR });
     }
 
-    drawBar(pad, barTop, barW, 'left', false, strip);
-    drawBar(W - pad - barW, barTop, barW, 'right', true, strip);
+    drawBar(barL, barTop, barW, 'left', false, strip);
+    drawBar(barR, barTop, barW, 'right', true, strip);
     drawPops(t, geo);
     drawKO(t);
   }

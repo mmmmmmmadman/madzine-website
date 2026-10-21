@@ -8,8 +8,9 @@ Files (one owner each):
                       (OUT L over R), the panel opaque UNDER the fight band (media query at the end of mf-patch-ui.css; the
                       translucent overlay of 2026-10-21 was dropped the next day), the status line overlaid on the band, the
                       band taking the rest (91 px at 812x375: mf-fight.js compact mode, HP bars at the far sides; under 72 px
-                      the bars alone with the name + hp inside). Height <= 340 px (Safari toolbar up): the band is 56 px and the
-                      row scrolls vertically inside the panel.
+                      the bars alone with the name + hp inside). When row + bar + a 32 px strip do not fit the height (Safari toolbar up,
+                      page zoomed): index.html sets --mfp-rail-zoom from innerHeight and the row and the side column scale down
+                      (0.5..1); the band is then the 32 px strip.
                       Home / setup / KO become two columns, every centred screen scrolls when it does not fit. Taller landscape
                       (iPad, desktop) keeps the portrait stack. START requests full screen (Fullscreen API, prefixed fallback),
                       HOME exits; manifest.webmanifest + apple-mobile-web-app-capable for Add to Home Screen.
