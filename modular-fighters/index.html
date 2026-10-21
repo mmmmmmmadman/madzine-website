@@ -792,9 +792,8 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
   var bgState = { key: 'noBackground', name: null };
 
   // ---------- setup state (character + local background) ----------
-  // Characters: side is fixed by the drawing's facing (no mirroring).
-  var CHARS = { osc: 'left', tatata5: 'left', moddict: 'right', mad: 'right' };
-  var CHAR_IDS = Object.keys(CHARS);
+  // Characters: any character can stand on either side (you are always LEFT, the opponent RIGHT).
+  var CHAR_IDS = ['osc', 'moddict', 'tatata5', 'mad'];
   var myChar = 'osc';           // one of CHAR_IDS
   var foeChar = null;
   var bgEl = null;              // HTMLImageElement | HTMLVideoElement | null (local only)
@@ -833,12 +832,10 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     MFPatchUI.setModules(currentModules);
     MFAudio.stop('preview');   // the new panel has no cables yet
   }
-  function validChar(c) { return CHARS[c] ? c : 'osc'; }
-  function sideOfChar(c) { return CHARS[validChar(c)]; }
-  // A random character that stands on the opposite side of c.
+  function validChar(c) { return CHAR_IDS.indexOf(c) >= 0 ? c : 'osc'; }
+  // A random character other than c (CPU opponent).
   function otherChar(c) {
-    var side = sideOfChar(c);
-    var pool = CHAR_IDS.filter(function (id) { return CHARS[id] !== side; });
+    var pool = CHAR_IDS.filter(function (id) { return id !== c; });
     return pool[Math.floor(Math.random() * pool.length)];
   }
   function setChar(c) {
@@ -846,7 +843,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     CHAR_IDS.forEach(function (id) { $('tile-' + id).classList.toggle('sel', myChar === id); });
   }
   function applySetup() {
-    MFFight.setSides({ me: sideOfChar(myChar), meChar: myChar, foeChar: foeChar || otherChar(myChar) });
+    MFFight.setSides({ me: 'left', meChar: myChar, foeChar: foeChar || otherChar(myChar) });
     MFFight.setBackground(bgEl);
   }
   function showNote(text) {
@@ -1383,23 +1380,11 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     startMatch();
   }
   function onHello(data) {
-    var c = validChar(data && data.char);
-    var note = '';
-    if (sideOfChar(c) === sideOfChar(myChar)) {
-      if (MFNet.isHost) {
-        // host wins: the guest switches itself; treat the foe as the other character
-        c = otherChar(myChar);
-      } else {
-        setChar(otherChar(myChar));
-        note = fmt('tookChar', c.toUpperCase(), myChar.toUpperCase());
-        MFNet.send({ t: 'char', char: myChar });   // tell the host which character was picked
-      }
-    }
-    foeChar = c;
+    // Both players may pick the same character; each sees themself on the left.
+    foeChar = validChar(data && data.char);
     helloGot = true;
     setWait('ready');
     maybeStartNet();
-    if (note) showNote(note);
   }
   function onNet(type, data) {
     if (type === 'peer_joined') {
@@ -1428,12 +1413,6 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     if (type !== 'msg' || !data || typeof data !== 'object') return;
     if (data.t === 'hello') {
       onHello(data);
-    } else if (data.t === 'char') {
-      var fc = validChar(data.char);
-      if (sideOfChar(fc) !== sideOfChar(myChar)) {
-        foeChar = fc;
-        MFFight.setCharacter(sideOfChar(fc), fc);
-      }
     } else if (data.t === 'attack') {
       incoming(data.patch, data.power);
     } else if (data.t === 'ko') {

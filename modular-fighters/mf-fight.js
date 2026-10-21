@@ -1,8 +1,9 @@
 /* Modular Fighters - fight scene, game rules, CPU opponent.
    Exposes window.MFFight. Plain browser script, no modules, no build.
    Fighters are the two line-art videos in assets/ (black on white), keyed to
-   alpha and tinted per side each frame. osc always stands on the LEFT and
-   faces right; moddict always stands on the RIGHT and faces left. No mirroring. */
+   alpha and tinted per side each frame. Any character can stand on either side:
+   the LEFT fighter faces right, the RIGHT fighter faces left; a drawing whose
+   native facing differs from its side is mirrored at the keying step. */
 (function () {
   'use strict';
 
@@ -50,7 +51,7 @@
   var T_POP = 900;     // ms, power number
   var T_FALL = 700;    // ms, KO fall
 
-  // Character table. facing 1 = drawn facing right (stands LEFT); -1 = faces left (stands RIGHT).
+  // Character table. facing = native facing of the drawing (1 = right, -1 = left); mirrored when needed.
   var CHARS = {
     osc:     { name: 'osc',     src: 'assets/osc.mp4',     facing: 1 },
     tatata5: { name: 'tatata5', src: 'assets/tatata5.mp4', facing: 1 },
@@ -58,8 +59,8 @@
     mad:     { name: 'mad',     src: 'assets/mad.mp4',     facing: -1 }
   };
   var SIDES = {
-    left: { name: 'osc', src: 'assets/osc.mp4', color: COLOR_LEFT, facing: 1 },
-    right: { name: 'moddict', src: 'assets/moddict.mp4', color: COLOR_RIGHT, facing: -1 }
+    left: { name: 'osc', src: 'assets/osc.mp4', color: COLOR_LEFT, facing: 1, native: 1 },
+    right: { name: 'moddict', src: 'assets/moddict.mp4', color: COLOR_RIGHT, facing: -1, native: -1 }
   };
 
   // ---------------------------------------------------------------- state
@@ -177,6 +178,7 @@
       name: def.name,
       color: def.color,
       facing: def.facing,
+      mirror: def.native !== def.facing,
       source: null,
       keyed: keyed,
       kctx: keyed.getContext('2d', { willReadFrequently: true }),
@@ -260,7 +262,15 @@
     var kc = f.kctx;
     kc.clearRect(0, 0, KEY_PX, KEY_PX);
     try {
-      kc.drawImage(src, 0, 0, KEY_PX, KEY_PX);
+      if (f.mirror) {
+        kc.save();
+        kc.translate(KEY_PX, 0);
+        kc.scale(-1, 1);
+        kc.drawImage(src, 0, 0, KEY_PX, KEY_PX);
+        kc.restore();
+      } else {
+        kc.drawImage(src, 0, 0, KEY_PX, KEY_PX);
+      }
     } catch (e) { return; }
     var img;
     try { img = kc.getImageData(0, 0, KEY_PX, KEY_PX); } catch (e) { return; }
@@ -320,11 +330,11 @@
     if (!def || !SIDES[side]) return;
     var s = SIDES[side];
     if (s.name === def.name) return;
-    s.name = def.name; s.src = def.src; s.facing = def.facing;
+    s.name = def.name; s.src = def.src; s.native = def.facing;
     var f = fighters[side];
     if (f) {
       f.name = def.name;
-      f.facing = def.facing;
+      f.mirror = def.facing !== f.facing;
       setFighterSource(side, makeVideo(def.src));
     }
   }
