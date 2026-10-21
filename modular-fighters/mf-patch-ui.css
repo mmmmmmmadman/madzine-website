@@ -362,3 +362,10 @@ html[data-theme="light"] .mfp{
 .mfp-cables.mfp-dragging .mfp-cable-hit{pointer-events:none}
 .mfp-cable-end{pointer-events:none}
 .mfp-cable-temp{fill:none;stroke-width:4;stroke-linecap:round;stroke-dasharray:8 6;pointer-events:none}
+
+/* short landscape (index.html puts the panel beside the fight scene, full height):
+   the rail fills whatever height is left above the scroll bar and the footer */
+@media (orientation:landscape) and (max-height:620px){
+  .mfp-case{height:100%}
+  .mfp-rail{flex:1 1 auto;height:auto;min-height:160px}
+}

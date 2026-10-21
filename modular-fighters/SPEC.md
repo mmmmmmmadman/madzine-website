@@ -3,6 +3,10 @@
 Location: madzine-website/modular-fighters/  (pure static, no build, no npm)
 Files (one owner each):
 - index.html        — integration shell (integrator writes last). Portrait layout: patch panel at the bottom = ONE horizontal row of all modules (row height clamp(200px, 32dvh, 400px): 270 px at 390x844) + footer (AUTO / SEND / OUT); the row scrolls horizontally, the footer stays fixed. The fight scene takes all remaining height above (status bar 28 px between).
+                      Short landscape (orientation landscape and height <= 620 px, i.e. a phone held sideways): two columns,
+                      fight + status on the left, the panel full height on the right (1 : 1.3); the module row then fills the
+                      panel's free height (media query at the end of mf-patch-ui.css). Home / setup / KO become two columns,
+                      every centred screen scrolls when it does not fit. Taller landscape (iPad, desktop) keeps the portrait stack.
 - mf-audio.js       — audio engine (owner: audio agent)
 - mf-patch-ui.js + mf-patch-ui.css — module panel UI (owner: ui agent)
 - mf-fight.js       — fight scene + game rules + CPU opponent (owner: fight agent)

@@ -693,7 +693,9 @@
     drawBackground();
 
     var pad = Math.max(12, Math.round(W * 0.04));
-    var barTop = Math.max(pad + 24, BAR_TOP_MIN);
+    // short canvases (landscape phones: the scene is beside the panel) keep the bars at the top;
+    // BAR_TOP_MIN only applies when there is height to spare
+    var barTop = Math.max(pad + 24, H < 480 ? 0 : BAR_TOP_MIN);
     var barW = Math.floor((W - pad * 2 - Math.max(24, W * 0.08)) / 2);
 
     // floor

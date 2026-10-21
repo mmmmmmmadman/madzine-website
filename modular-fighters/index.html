@@ -171,9 +171,15 @@ button:disabled{opacity:.4;cursor:default}
 
 /* ---------- home / room ---------- */
 .center{
-  justify-content:center;align-items:center;
+  justify-content:center;align-items:stretch;
   padding:24px 16px calc(24px + env(safe-area-inset-bottom,0px));
-  gap:14px;
+  overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
+}
+/* the column of each centred screen: centred while it fits the height (flex auto margins),
+   scrolls from the top when it does not (short landscape phones) */
+.pane{
+  display:flex;flex-direction:column;align-items:center;gap:14px;
+  width:100%;flex:0 0 auto;margin:auto;
 }
 .title{
   font-size:52px;line-height:1;letter-spacing:.12em;text-align:center;
@@ -210,7 +216,7 @@ button:disabled{opacity:.4;cursor:default}
 .wait{font-size:18px;letter-spacing:.16em;color:var(--fg2);margin:0 0 20px}
 
 /* ---------- setup ---------- */
-#setup{gap:10px;justify-content:center}
+#setup .pane{gap:10px}
 .lbl{font-size:16px;letter-spacing:.16em;color:var(--fg2);margin:4px 0 0;text-align:center;width:100%;max-width:320px}
 .tiles{display:flex;flex-wrap:wrap;gap:12px;width:100%;max-width:320px;justify-content:center}
 .tile{
@@ -263,8 +269,9 @@ button:disabled{opacity:.4;cursor:default}
 /* ---------- overlay ---------- */
 #overlay{
   position:absolute;inset:0;display:none;
-  flex-direction:column;justify-content:center;align-items:center;gap:14px;
+  flex-direction:column;justify-content:center;align-items:stretch;
   padding:24px 16px calc(24px + env(safe-area-inset-bottom,0px));
+  overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
   background:var(--scrim);
   z-index:20;
 }
@@ -387,12 +394,80 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
 }
 #huepop[hidden]{display:none}
 #huewheel{display:block;width:236px;height:236px;touch-action:none;cursor:pointer}
+
+/* ---------- short landscape (phone held sideways; also a short desktop window) ----------
+   Portrait stacks fight / status / panel. Below 620px of height in landscape that leaves the
+   fight scene almost nothing, so the match becomes two columns: fight + status on the left,
+   the module panel full height on the right (mf-patch-ui.css lets the rail fill the height).
+   Home, setup and the KO overlay become two columns as well; everything else scrolls. */
+@media (orientation:landscape) and (max-height:620px){
+  .center{
+    padding:16px calc(16px + env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) calc(16px + env(safe-area-inset-left,0px));
+  }
+  .big,.joinrow button,#code{min-height:48px}
+  /* home: title + tagline left, the buttons column right; top padding keeps it under the language / HUE row */
+  #home{padding-top:calc(56px + env(safe-area-inset-top,0px))}
+  #home .pane,#setup .pane,#overlay .pane{
+    display:grid;grid-template-columns:minmax(0,1fr) minmax(0,320px);
+    column-gap:40px;row-gap:8px;align-items:center;justify-items:center;
+    max-width:760px;margin-left:auto;margin-right:auto;
+  }
+  #home .pane{grid-template-rows:repeat(6,auto)}
+  #home .title{grid-area:1/1/4/2;align-self:end;margin:0}
+  #home .sub{grid-area:4/1/7/2;align-self:start;margin:0}
+  #btn-cpu{grid-area:1/2/2/3}
+  #cpurow{grid-area:2/2/3/3;margin-top:0}
+  #btn-create{grid-area:3/2/4/3}
+  #home .joinrow{grid-area:4/2/5/3}
+  #btn-help{grid-area:5/2/6/3}
+  #home-msg{grid-area:6/2/7/3}
+  /* setup: character tiles (2 x 2, smaller previews) left; background, START and BACK right */
+  #setup .pane{grid-template-rows:repeat(6,auto)}
+  #setup .lbl:nth-of-type(1){grid-area:1/1/2/2;margin:0}
+  #setup .tiles{grid-area:2/1/7/2;align-self:start;max-width:260px}
+  #setup .tile{max-width:124px}
+  #setup .tile video{max-width:100px;max-height:100px}
+  #setup .lbl:nth-of-type(2){grid-area:1/2/2/3;margin:0}
+  #setup .bgrow{grid-area:2/2/3/3}
+  #setup .thumb{grid-area:3/2/4/3}
+  #setup-note{grid-area:4/2/5/3}
+  #btn-start{grid-area:5/2/6/3}
+  #btn-back{grid-area:6/2/7/3}
+  /* match: two columns */
+  #match.on{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);
+    grid-template-rows:minmax(0,1fr) auto;
+    padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px);
+  }
+  #fight{grid-area:1/1/2/2;min-height:0}
+  #status{
+    grid-area:2/1/3/2;
+    height:auto;min-height:28px;
+    padding-bottom:env(safe-area-inset-bottom,0px);
+    border-bottom:0;
+  }
+  #panel{grid-area:1/2/3/3;min-height:0;border-left:1px solid var(--line)}
+  /* KO overlay: result left, downloads / REMATCH / HOME right */
+  #overlay{padding:16px calc(16px + env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) calc(16px + env(safe-area-inset-left,0px))}
+  #overlay .pane{grid-template-rows:repeat(3,auto)}
+  #ov-title{grid-area:1/1/3/2;align-self:end;margin:0;font-size:48px}
+  #ov-sub{grid-area:3/1/4/2;align-self:start;margin:0}
+  #dlrow{grid-area:1/2/2/3}
+  #btn-rematch{grid-area:2/2/3/3}
+  #btn-home{grid-area:3/2/4/3}
+  /* help sheet: the 60px top padding was for the "?" button, which no longer shows; the card
+     takes the height instead and the language / HUE row steps aside while the sheet is open */
+  #helpsheet{padding-top:calc(16px + env(safe-area-inset-top,0px))}
+  body.mf-help-open #homebar{visibility:hidden}
+}
 </style>
 </head>
 <body>
 <div id="app">
 
   <section id="home" class="screen center on">
+    <div class="pane">
     <h1 class="title">MODULAR <b>FIGHTERS</b></h1>
     <p class="sub" data-i18n="tagline">PATCH. SEND. KNOCK OUT.</p>
     <button id="btn-cpu" class="big pri" type="button" data-i18n="vsCpu">VS CPU</button>
@@ -408,9 +483,11 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     </div>
     <button id="btn-help" class="big" type="button" aria-haspopup="dialog" aria-controls="helpsheet" data-i18n="howToPlay">HOW TO PLAY</button>
     <div id="home-msg" class="msg" role="status"></div>
+    </div>
   </section>
 
   <section id="setup" class="screen center">
+    <div class="pane">
     <p class="lbl" data-i18n="character">CHARACTER</p>
     <div class="tiles">
       <button id="tile-osc" class="tile sel" type="button" data-char="osc">
@@ -445,13 +522,16 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     <div id="setup-note" class="msg" role="status"></div>
     <button id="btn-start" class="big pri" type="button" data-i18n="start">START</button>
     <button id="btn-back" class="big" type="button" data-i18n="back">BACK</button>
+    </div>
   </section>
 
   <section id="room" class="screen center">
+    <div class="pane">
     <p class="sub" data-i18n="roomCode">ROOM CODE</p>
     <div id="room-code" class="roomcode">----</div>
     <p id="room-wait" class="wait">WAITING FOR OPPONENT</p>
     <button id="btn-cancel" class="big" type="button" data-i18n="cancel">CANCEL</button>
+    </div>
   </section>
 
   <section id="match" class="screen">
@@ -462,6 +542,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     </div>
     <div id="panel"><div id="note" role="status"></div></div>
     <div id="overlay">
+    <div class="pane">
       <h2 id="ov-title">YOU WIN</h2>
       <p id="ov-sub"></p>
       <div class="dlrow" id="dlrow">
@@ -471,6 +552,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       </div>
       <button id="btn-rematch" class="big pri" type="button" data-i18n="rematch">REMATCH</button>
       <button id="btn-home" class="big" type="button" data-i18n="home">HOME</button>
+      </div>
     </div>
   </section>
 
@@ -1051,12 +1133,14 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
   var helpSheet = $('helpsheet');
   function openHelp() {
     helpSheet.hidden = false;
+    document.body.classList.add('mf-help-open');
     helpBtn.classList.add('open');
     helpBtn.setAttribute('aria-expanded', 'true');
     helpSheet.querySelector('.sheet-card').scrollTop = 0;
   }
   function closeHelp() {
     helpSheet.hidden = true;
+    document.body.classList.remove('mf-help-open');
     helpBtn.classList.remove('open');
     helpBtn.setAttribute('aria-expanded', 'false');
   }
