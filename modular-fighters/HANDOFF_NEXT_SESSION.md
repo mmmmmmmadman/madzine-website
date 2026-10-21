@@ -18,10 +18,10 @@
 - `mf-patch-ui.js` + `mf-patch-ui.css`：`window.MFPatchUI` 模組面板（旋鈕、接線、SEQ5、DRAW、示波器、AUTO 鎖定、滑桿、多點、配線圖 PNG）
 - `mf-fight.js`：`window.MFFight` 上半場（角色影片、HP、攻擊動畫、CPU 對手與閒置攻擊、KO）
 - `mf-net.js`：`window.MFNet` PeerJS 1.5.4 房間碼（前綴 mf-、4 碼、2 人、host 權威）
-- `assets/osc.mp4`（面右，左側）、`assets/moddict.mp4`（面左，右側），**不鏡像**
+- 角色四個（2026-10-21）：`assets/osc.mp4`、`assets/tatata5.mp4` 面右站左側；`assets/moddict.mp4`、`assets/mad.mp4` 面左站右側，**不鏡像**。來源是下載資料夾的「X motion.mp4」2100×2100，轉 600×600 12fps h264。角色表在 mf-fight.js CHARS 與 index.html CHARS（同步維護）；CPU 對手＝對側隨機；連線同側時 guest 換對側隨機角色並送 char 訊息給 host
 
 ## 目前狀態（全部已 commit 並 push）
-- 最新 commit：`4038a2d`（扣血減半）、`25de9f4`（Soundfreak 音色 + SPEC 附錄合併）、`b6ab791`、`774792b`、`cbc183d`、`1aaf0ae`、`3d40f0c`、`c21f909`
+- 最新 commit：`768c54d`（加 TATATA5／MAD 角色，2026-10-21）、`4038a2d`（扣血減半）、`25de9f4`（Soundfreak 音色 + SPEC 附錄合併）、`b6ab791`、`774792b`、`cbc183d`、`1aaf0ae`、`3d40f0c`、`c21f909`
 - 工作樹乾淨。
 
 ## 已落地的使用者需求（全部保留，禁改）
