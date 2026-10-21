@@ -414,3 +414,11 @@ html[data-theme="light"] .mfp{
   }
   .mfp-outmod .mfp-title{flex:0 0 100%;text-align:center;padding:0}
 }
+
+/* portrait phones: every module at 60% (user request 2026-10-21, trial). CSS zoom on the rail
+   only: the module boxes, their jacks, knobs and text shrink together, while the cable SVGs
+   (siblings of the rail / children of the panel) stay unzoomed, so the positions the JS reads
+   with getBoundingClientRect (viewport px) map 1:1 onto the cable coordinates. */
+@media (orientation:portrait) and (max-width:500px){
+  .mfp-rail{zoom:0.6}
+}

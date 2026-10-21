@@ -176,8 +176,8 @@ button:disabled{opacity:.4;cursor:default}
 
 /* ---------- home / room ---------- */
 .center{
-  justify-content:center;align-items:stretch;
-  padding:24px 16px calc(24px + env(safe-area-inset-bottom,0px));
+  justify-content:flex-start;align-items:stretch;   /* .pane's auto margins centre it; flex-start keeps an overflowing pane reachable from the top */
+  padding:calc(24px + env(safe-area-inset-top,0px)) 16px calc(24px + env(safe-area-inset-bottom,0px));
   overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
 }
 /* the column of each centred screen: centred while it fits the height (flex auto margins),
@@ -222,6 +222,9 @@ button:disabled{opacity:.4;cursor:default}
 
 /* ---------- setup ---------- */
 #setup .pane{gap:10px}
+/* home: the language / HUE row is fixed at the top right (8..52px); keep the title below it on
+   short screens (iPhone SE, Safari with its toolbars, standalone under the status bar) */
+#home{padding-top:calc(60px + env(safe-area-inset-top,0px))}
 .lbl{font-size:16px;letter-spacing:.16em;color:var(--fg2);margin:4px 0 0;text-align:center;width:100%;max-width:320px}
 .tiles{display:flex;flex-wrap:wrap;gap:12px;width:100%;max-width:320px;justify-content:center}
 .tile{
@@ -274,7 +277,7 @@ button:disabled{opacity:.4;cursor:default}
 /* ---------- overlay ---------- */
 #overlay{
   position:absolute;inset:0;display:none;
-  flex-direction:column;justify-content:center;align-items:stretch;
+  flex-direction:column;justify-content:flex-start;align-items:stretch;
   padding:24px 16px calc(24px + env(safe-area-inset-bottom,0px));
   overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;
   background:var(--scrim);
