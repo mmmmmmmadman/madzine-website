@@ -8,13 +8,13 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Modular Fighters">
-<link rel="manifest" href="manifest.webmanifest?v=20261022a">
+<link rel="manifest" href="manifest.webmanifest?v=20261022b">
 <title>Modular Fighters</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400&family=Noto+Sans+JP:wght@300&display=swap" rel="stylesheet">
 <!-- ?v= on the local css / js: bump the date on every change so Safari does not keep the old files -->
-<link rel="stylesheet" href="mf-patch-ui.css?v=20261022a">
+<link rel="stylesheet" href="mf-patch-ui.css?v=20261022b">
 <script>
   // Apply the saved theme before the first paint. Dark is the default for this game;
   // html[data-theme="light"] is the white theme. Same key as the toggle below (mf_theme).
@@ -273,6 +273,15 @@ button:disabled{opacity:.4;cursor:default}
 }
 #status b{font-weight:300;color:var(--fg)}
 #status .acc{color:var(--acc-text)}
+/* FULL SCREEN (iPad / desktop Safari, Chrome): back into full screen after a gesture left it */
+#fsbtn{
+  height:24px;padding:0 10px;margin:0 8px;
+  background:transparent;border:1px solid var(--stroke);border-radius:6px;
+  color:var(--fg);font-size:15px;letter-spacing:.1em;line-height:22px;white-space:nowrap;
+  pointer-events:auto;
+}
+#fsbtn:active{background:var(--panel)}
+#fsbtn[hidden]{display:none}
 #panel{flex:0 0 auto;min-height:0;position:relative}
 
 /* ---------- overlay ---------- */
@@ -456,7 +465,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
   #panel{position:absolute;left:env(safe-area-inset-left,0px);right:env(safe-area-inset-right,0px);bottom:0;z-index:2}
   #status{
     position:absolute;left:env(safe-area-inset-left,0px);right:env(safe-area-inset-right,0px);top:0;
-    height:24px;padding:0 12px;
+    height:28px;padding:0 12px;
     background:transparent;border:0;
     font-size:15px;
     pointer-events:none;
@@ -552,6 +561,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     <div id="fight"></div>
     <div id="status">
       <span id="st-mode">VS CPU</span>
+      <button id="fsbtn" type="button" hidden data-i18n="fullScreen">FULL SCREEN</button>
       <span id="st-power"><b>YOU</b> -&nbsp;&nbsp;<b>FOE</b> -</span>
     </div>
     <div id="panel"><div id="note" role="status"></div></div>
@@ -611,10 +621,10 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
 </div>
 
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-<script src="mf-audio.js?v=20261022a"></script>
-<script src="mf-patch-ui.js?v=20261022a"></script>
-<script src="mf-fight.js?v=20261022a"></script>
-<script src="mf-net.js?v=20261022a"></script>
+<script src="mf-audio.js?v=20261022b"></script>
+<script src="mf-patch-ui.js?v=20261022b"></script>
+<script src="mf-fight.js?v=20261022b"></script>
+<script src="mf-net.js?v=20261022b"></script>
 <script>
 (function () {
   'use strict';
@@ -689,6 +699,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       helpPower: '攻擊力來自接線的複雜度：模組越多、線越多、調變越多，傷害越高。AUTO 會幫你接好一組簡單的線，按 SEND 才會攻擊。SEND 送出攻擊並換一批新模組。攻擊力越高，你的角色動作越快，直到下一次送出。',
       helpSound: '送出新聲音時，上一個聲音會停止。對手的聲音會和你的一起播放。',
       helpModes: '對戰電腦：和電腦對打。建立房間：把 4 碼房號給朋友。加入房間：輸入房號。整場對戰的聲音會錄下來，KO 後可下載 MP3。背景可用裝置內的照片或影片，只留在你的裝置上，不會傳送。',
+      fullScreen: '全螢幕',
       helpFull: '全螢幕：按 START 時會嘗試進入全螢幕（iPad 與電腦的 Safari 可以）。iPhone 的 Safari 不開放網頁全螢幕，有兩個做法：一、分享 → 加入主畫面，從主畫面開啟就是全螢幕；二、點網址列旁的「大小」按鈕（AA），選「隱藏工具列」，再點螢幕頂端會收回。',
       helpCpu: '你每攻擊一次，電腦回擊一次。你 40／30／20 秒（簡單／普通／困難）沒有送出攻擊，它會自己攻擊一次。難度也決定它打多重。',
       cpuEasy: '簡單',
@@ -760,6 +771,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       helpPower: 'Attack power comes from patch complexity: more modules, more cables and more modulation mean more damage. AUTO wires a simple patch for you; press SEND to attack. SEND attacks and gives you new modules. Higher power makes your fighter move faster until your next patch.',
       helpSound: 'Your previous sound stops when you send a new one. The opponent’s sound plays together with yours.',
       helpModes: 'VS CPU: fight the computer. CREATE ROOM: give the 4-letter code to a friend. JOIN ROOM: enter the code. The sound of the whole match is recorded and can be downloaded as MP3 after KO. The background can be a photo or video from your device; it stays on your device only.',
+      fullScreen: 'FULL SCREEN',
       helpFull: 'Full screen: START tries to go full screen (Safari on iPad and desktop allows it). Safari on iPhone does not allow web pages to go full screen; two ways around it: Share → Add to Home Screen, then open the game from the Home Screen; or tap the page settings button (AA) next to the address bar and choose Hide Toolbar, tap the top of the screen to bring it back.',
       helpCpu: 'The CPU answers each of your attacks once. If you send nothing for 40 / 30 / 20 s (EASY / NORMAL / HARD), it attacks once on its own. The difficulty also sets how hard it hits.',
       cpuEasy: 'EASY',
@@ -831,6 +843,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       helpPower: '攻撃力はパッチの複雑さで決まります。モジュール、ケーブル、モジュレーションが多いほどダメージが大きくなります。AUTO はかんたんなパッチをつないでくれます。攻撃するには SEND を押します。SEND で攻撃し、新しいモジュールに入れ替わります。攻撃力が高いほど、次のパッチを送るまでキャラクターの動きが速くなります。',
       helpSound: '新しい音を送ると前の音は止まります。相手の音はあなたの音と一緒に鳴ります。',
       helpModes: 'CPU対戦：コンピューターと対戦。ルーム作成：4文字のコードを友だちに伝えます。ルーム参加：コードを入力します。試合の音は全部録音され、KO のあとに MP3 でダウンロードできます。背景には端末内の写真や動画を使えます。端末の外には送信されません。',
+      fullScreen: '全画面',
       helpFull: '全画面：START を押すと全画面を試みます（iPad と Mac の Safari は対応）。iPhone の Safari はウェブページの全画面に対応していないため、二つの方法があります。一、共有 → ホーム画面に追加 で、ホーム画面から開くと全画面になります。二、アドレスバー横の「AA」ボタンから「ツールバーを非表示」を選びます。画面上部をタップすると戻ります。',
       helpCpu: 'CPU はあなたの攻撃ごとに一回反撃します。40／30／20 秒（かんたん／ふつう／むずかしい）攻撃を送らないと、CPU が自分から一回攻撃します。難易度で攻撃の強さも決まります。',
       cpuEasy: 'かんたん',
@@ -925,6 +938,25 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       if (p && typeof p.catch === 'function') p.catch(function () { /* ignore */ });
     } catch (e) { /* ignore */ }
   }
+
+  function fullscreenAvailable() {
+    var el = document.documentElement;
+    return typeof (el.requestFullscreen || el.webkitRequestFullscreen) === 'function' &&
+      (document.fullscreenEnabled !== false && document.webkitFullscreenEnabled !== false);
+  }
+  function isFullscreen() { return !!(document.fullscreenElement || document.webkitFullscreenElement); }
+  var fsBtn = $('fsbtn');
+  function updateFsBtn() { fsBtn.hidden = !(fullscreenAvailable() && !isFullscreen()); }
+  fsBtn.addEventListener('click', function () { enterFullscreen(); });
+  ['fullscreenchange', 'webkitfullscreenchange'].forEach(function (ev) { document.addEventListener(ev, updateFsBtn); });
+  updateFsBtn();
+  // A vertical swipe on the match screen (fight band, status line) must not become a page
+  // gesture: on iPad Safari a downward drag on a page that cannot scroll leaves full screen.
+  // The panel already sets touch-action: none; the KO overlay and the help sheet may scroll.
+  $('match').addEventListener('touchmove', function (e) {
+    if (e.target.closest && e.target.closest('#overlay, .sheet-card')) return;
+    if (e.cancelable) e.preventDefault();
+  }, { passive: false });
 
   // ---------- helpers ----------
   function show(name) {

@@ -4,6 +4,7 @@
 
 ### Modular Fighters：手機模組縮到 60%（試用）+ 首頁標題被語言列蓋住修正
 
+- 狀態列加 FULL SCREEN 鈕（三語，`#fsbtn`）：只在瀏覽器有 Fullscreen API 且目前不是全螢幕時顯示，按下重新進全螢幕；`fullscreenchange` 事件更新顯示。起因：iPad Safari 全螢幕中往下滑會退出全螢幕，原本只有 START 會進去。另在對戰畫面對 `touchmove` 做 `preventDefault`（KO 覆蓋層與說明卡例外），讓垂直滑動不被當成頁面手勢；是否真能擋住 iPad 的退出手勢未實機驗證
 - 本地 css / js 連結加 `?v=日期` 快取破壞參數（`index.html` 頂端有註解）：使用者 iPhone 13 mini 上看到的是舊版，GitHub Actions 部署全部成功，判斷為 Safari 快取舊 css / js；之後每次改這些檔要一起改版本字串
 - 橫向（短橫向版面）也縮 60%：`.mfp-rail{zoom:0.6}` 加進橫向媒體查詢，240px 列在螢幕上 144px，面板（列 + 捲動桿）從 284 降到 188px；右端 AUTO／SEND／OUT 直欄按鈕 48 → 42px、間距 6 → 4 以塞進 188px（量測無溢出）；角色場景改為螢幕高 − 100px（844×390 為 290px），下半身透出面板的部分約 50px。線端與接孔誤差 0px
 - 直式且寬 ≤ 500px 時 `.mfp-rail{zoom:0.6}`（`mf-patch-ui.css` 末段）：模組盒、接孔、旋鈕、文字一起縮成 60%，390 寬一次看到約 3.5 個模組（原本 2 個），模組列高 270 → 162px，角色區相對變高（390×844 為 528px）。只 zoom 模組列、不 zoom 線材 SVG（SVG 是列的兄弟或面板層的子元素），JS 用 getBoundingClientRect 讀到的 viewport 座標直接對應線材座標，無頭瀏覽器量測線端與接孔中心誤差 0px；旋鈕拖曳、接孔拉線、捲動桿都正常。**代價**：接孔觸控區 48 → 29px、字 16 → 9.6px，低於先前「接孔放大 50% 給 iPhone」與「字 ≥ 14pt」兩條規則，使用者指示先試，不合再退
