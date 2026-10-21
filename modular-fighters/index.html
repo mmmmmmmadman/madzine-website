@@ -212,9 +212,9 @@ button:disabled{opacity:.4;cursor:default}
 /* ---------- setup ---------- */
 #setup{gap:10px;justify-content:center}
 .lbl{font-size:16px;letter-spacing:.16em;color:var(--fg2);margin:4px 0 0;text-align:center;width:100%;max-width:320px}
-.tiles{display:flex;gap:12px;width:100%;max-width:320px;justify-content:center}
+.tiles{display:flex;flex-wrap:wrap;gap:12px;width:100%;max-width:320px;justify-content:center}
 .tile{
-  flex:1 1 0;max-width:154px;min-height:44px;
+  flex:0 0 calc(50% - 6px);max-width:154px;min-height:44px;
   display:flex;flex-direction:column;align-items:center;gap:6px;
   padding:6px 6px 8px;border:2px solid var(--line);border-radius:12px;background:var(--elev);
 }
@@ -420,6 +420,14 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       <button id="tile-moddict" class="tile" type="button" data-char="moddict">
         <video src="assets/moddict.mp4" muted loop playsinline autoplay preload="auto" aria-hidden="true"></video>
         <span>MODDICT</span>
+      </button>
+      <button id="tile-tatata5" class="tile" type="button" data-char="tatata5">
+        <video src="assets/tatata5.mp4" muted loop playsinline autoplay preload="auto" aria-hidden="true"></video>
+        <span>TATATA5</span>
+      </button>
+      <button id="tile-mad" class="tile" type="button" data-char="mad">
+        <video src="assets/mad.mp4" muted loop playsinline autoplay preload="auto" aria-hidden="true"></video>
+        <span>MAD</span>
       </button>
     </div>
     <p class="lbl" data-i18n="background">BACKGROUND</p>
@@ -784,7 +792,10 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
   var bgState = { key: 'noBackground', name: null };
 
   // ---------- setup state (character + local background) ----------
-  var myChar = 'osc';           // "osc" | "moddict"
+  // Characters: side is fixed by the drawing's facing (no mirroring).
+  var CHARS = { osc: 'left', tatata5: 'left', moddict: 'right', mad: 'right' };
+  var CHAR_IDS = Object.keys(CHARS);
+  var myChar = 'osc';           // one of CHAR_IDS
   var foeChar = null;
   var bgEl = null;              // HTMLImageElement | HTMLVideoElement | null (local only)
   var bgUrl = null;
@@ -822,15 +833,20 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     MFPatchUI.setModules(currentModules);
     MFAudio.stop('preview');   // the new panel has no cables yet
   }
-  function otherChar(c) { return c === 'osc' ? 'moddict' : 'osc'; }
-  function sideOfChar(c) { return c === 'osc' ? 'left' : 'right'; }
+  function validChar(c) { return CHARS[c] ? c : 'osc'; }
+  function sideOfChar(c) { return CHARS[validChar(c)]; }
+  // A random character that stands on the opposite side of c.
+  function otherChar(c) {
+    var side = sideOfChar(c);
+    var pool = CHAR_IDS.filter(function (id) { return CHARS[id] !== side; });
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
   function setChar(c) {
-    myChar = c === 'moddict' ? 'moddict' : 'osc';
-    $('tile-osc').classList.toggle('sel', myChar === 'osc');
-    $('tile-moddict').classList.toggle('sel', myChar === 'moddict');
+    myChar = validChar(c);
+    CHAR_IDS.forEach(function (id) { $('tile-' + id).classList.toggle('sel', myChar === id); });
   }
   function applySetup() {
-    MFFight.setSides({ me: sideOfChar(myChar) });
+    MFFight.setSides({ me: sideOfChar(myChar), meChar: myChar, foeChar: foeChar || otherChar(myChar) });
     MFFight.setBackground(bgEl);
   }
   function showNote(text) {
@@ -1367,15 +1383,16 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     startMatch();
   }
   function onHello(data) {
-    var c = data && data.char === 'moddict' ? 'moddict' : 'osc';
+    var c = validChar(data && data.char);
     var note = '';
-    if (c === myChar) {
+    if (sideOfChar(c) === sideOfChar(myChar)) {
       if (MFNet.isHost) {
         // host wins: the guest switches itself; treat the foe as the other character
         c = otherChar(myChar);
       } else {
         setChar(otherChar(myChar));
         note = fmt('tookChar', c.toUpperCase(), myChar.toUpperCase());
+        MFNet.send({ t: 'char', char: myChar });   // tell the host which character was picked
       }
     }
     foeChar = c;
@@ -1411,6 +1428,12 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     if (type !== 'msg' || !data || typeof data !== 'object') return;
     if (data.t === 'hello') {
       onHello(data);
+    } else if (data.t === 'char') {
+      var fc = validChar(data.char);
+      if (sideOfChar(fc) !== sideOfChar(myChar)) {
+        foeChar = fc;
+        MFFight.setCharacter(sideOfChar(fc), fc);
+      }
     } else if (data.t === 'attack') {
       incoming(data.patch, data.power);
     } else if (data.t === 'ko') {
@@ -1505,8 +1528,9 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
   }
 
   // ---------- setup screen ----------
-  $('tile-osc').addEventListener('click', function () { setChar('osc'); });
-  $('tile-moddict').addEventListener('click', function () { setChar('moddict'); });
+  CHAR_IDS.forEach(function (id) {
+    $('tile-' + id).addEventListener('click', function () { setChar(id); });
+  });
   $('bg-take').addEventListener('click', function () { $('bg-file-take').click(); });
   $('bg-import').addEventListener('click', function () { $('bg-file-import').click(); });
   $('bg-none').addEventListener('click', function () { clearBackground(); });

@@ -50,6 +50,13 @@
   var T_POP = 900;     // ms, power number
   var T_FALL = 700;    // ms, KO fall
 
+  // Character table. facing 1 = drawn facing right (stands LEFT); -1 = faces left (stands RIGHT).
+  var CHARS = {
+    osc:     { name: 'osc',     src: 'assets/osc.mp4',     facing: 1 },
+    tatata5: { name: 'tatata5', src: 'assets/tatata5.mp4', facing: 1 },
+    moddict: { name: 'moddict', src: 'assets/moddict.mp4', facing: -1 },
+    mad:     { name: 'mad',     src: 'assets/mad.mp4',     facing: -1 }
+  };
   var SIDES = {
     left: { name: 'osc', src: 'assets/osc.mp4', color: COLOR_LEFT, facing: 1 },
     right: { name: 'moddict', src: 'assets/moddict.mp4', color: COLOR_RIGHT, facing: -1 }
@@ -307,9 +314,28 @@
     return f.flash;
   }
 
+  // Put a character on a side (video reloaded only when it changes).
+  function setCharacter(side, id) {
+    var def = CHARS[id];
+    if (!def || !SIDES[side]) return;
+    var s = SIDES[side];
+    if (s.name === def.name) return;
+    s.name = def.name; s.src = def.src; s.facing = def.facing;
+    var f = fighters[side];
+    if (f) {
+      f.name = def.name;
+      f.facing = def.facing;
+      setFighterSource(side, makeVideo(def.src));
+    }
+  }
+
+  // opts: { me: 'left'|'right', meChar?: id, foeChar?: id }
   function setSides(opts) {
     var me = opts && opts.me === 'right' ? 'right' : 'left';
     sides.me = me;
+    var foe = me === 'left' ? 'right' : 'left';
+    if (opts && opts.meChar) setCharacter(me, opts.meChar);
+    if (opts && opts.foeChar) setCharacter(foe, opts.foeChar);
     applyRates();
   }
 
@@ -990,6 +1016,8 @@
     reset: reset,
     onKO: onKO,
     setSides: setSides,
+    setCharacter: setCharacter,
+    CHARS: CHARS,
     setTheme: setTheme,
     getTheme: function () { return themeName; },
     setBackground: setBackground,
