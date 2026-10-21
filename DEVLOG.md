@@ -12,7 +12,7 @@
   - 首頁：標題與標語左，按鈕欄右；上方留 56 px 給語言／HUE 列。角色選擇：四格 2×2（預覽縮為 100 px）左，背景、START、BACK 右。KO：結果左，下載／再戰／首頁右
   - 其餘畫面（房號）維持置中；每個置中畫面內容包進 `.pane`，放得下就置中、放不下從頂端開始捲動
   - 說明頁：上方 60 px（原留給已刪除的問號鈕）改 16 px，開啟時暫時隱藏語言／HUE 列避免重疊
-- 全螢幕：按 START（使用者手勢）時呼叫 Fullscreen API（`requestFullscreen` / `webkitRequestFullscreen`），HOME 時離開；不支援或被拒就維持原狀。另加 `apple-mobile-web-app-capable` 等 meta 與 `manifest.webmanifest`（display fullscreen），從主畫面開啟即全螢幕；說明頁三語加一段說明。iPhone Safari 對非影片元素的 Fullscreen API 支援約自 iOS 17.2 起且可能受設定影響，未實機驗證
+- 全螢幕：按 START（使用者手勢）時呼叫 Fullscreen API（`requestFullscreen` / `webkitRequestFullscreen`），HOME 時離開；不支援或被拒就維持原狀。另加 `apple-mobile-web-app-capable` 等 meta 與 `manifest.webmanifest`（display fullscreen），從主畫面開啟即全螢幕；說明頁三語加一段說明（含 Safari「AA → 隱藏工具列」的手動做法）。**iPhone Safari 不開放非影片元素的 Fullscreen API**（WebKit bug 212934 標 WONTFIX，2026-01 仍維持），iPhone 上只能靠加入主畫面或手動隱藏工具列；iPad 與桌機 Safari 可用
 - 直式版面未動（390×844 量測與改前相同）
 - 以無頭瀏覽器驗證 844×390、667×375、932×430、1180×820、390×844 全部畫面，含對戰中旋轉（線材保留、畫布重算）、白底主題；真實 iPhone Safari 的安全區、觸控與全螢幕未實機驗證
 
