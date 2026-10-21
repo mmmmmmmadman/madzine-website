@@ -1,0 +1,10 @@
+{
+  "name": "Modular Fighters",
+  "short_name": "Modular Fighters",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#121212",
+  "theme_color": "#121212"
+}

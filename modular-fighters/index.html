@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="theme-color" content="#121212">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Modular Fighters">
+<link rel="manifest" href="manifest.webmanifest">
 <title>Modular Fighters</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -433,21 +438,19 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
   #setup-note{grid-area:4/2/5/3}
   #btn-start{grid-area:5/2/6/3}
   #btn-back{grid-area:6/2/7/3}
-  /* match: two columns */
-  #match.on{
-    display:grid;
-    grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);
-    grid-template-rows:minmax(0,1fr) auto;
-    padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px);
-  }
-  #fight{grid-area:1/1/2/2;min-height:0}
+  /* match: same stack as portrait (fight band on top, the module row across the full width).
+     The panel keeps a 240px row and puts AUTO / SEND / OUT in a column at its right end
+     (mf-patch-ui.css), so the fight band gets what is left (about 100px at 390px tall).
+     The status line overlays the top edge of the fight band instead of taking its own row. */
+  #match.on{padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
+  #fight{min-height:48px}
   #status{
-    grid-area:2/1/3/2;
-    height:auto;min-height:28px;
-    padding-bottom:env(safe-area-inset-bottom,0px);
-    border-bottom:0;
+    position:absolute;left:env(safe-area-inset-left,0px);right:env(safe-area-inset-right,0px);top:0;
+    height:24px;padding:0 12px;
+    background:transparent;border:0;
+    font-size:15px;
+    pointer-events:none;
   }
-  #panel{grid-area:1/2/3/3;min-height:0;border-left:1px solid var(--line)}
   /* KO overlay: result left, downloads / REMATCH / HOME right */
   #overlay{padding:16px calc(16px + env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) calc(16px + env(safe-area-inset-left,0px))}
   #overlay .pane{grid-template-rows:repeat(3,auto)}
@@ -577,6 +580,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     <p class="sheet-text" data-i18n="helpPower"></p>
     <p class="sheet-text" data-i18n="helpSound"></p>
     <p class="sheet-text" data-i18n="helpModes"></p>
+    <p class="sheet-text" data-i18n="helpFull"></p>
     <p class="sheet-text" data-i18n="helpCpu"></p>
     <p class="sheet-text" data-i18n="helpModules"></p>
     <p class="sheet-text" data-i18n="helpHue"></p>
@@ -674,6 +678,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       helpPower: '攻擊力來自接線的複雜度：模組越多、線越多、調變越多，傷害越高。AUTO 會幫你接好一組簡單的線，按 SEND 才會攻擊。SEND 送出攻擊並換一批新模組。攻擊力越高，你的角色動作越快，直到下一次送出。',
       helpSound: '送出新聲音時，上一個聲音會停止。對手的聲音會和你的一起播放。',
       helpModes: '對戰電腦：和電腦對打。建立房間：把 4 碼房號給朋友。加入房間：輸入房號。整場對戰的聲音會錄下來，KO 後可下載 MP3。背景可用裝置內的照片或影片，只留在你的裝置上，不會傳送。',
+      helpFull: '橫向：按 START 時會嘗試進入全螢幕。iPhone 的 Safari 若不支援，請用分享 → 加入主畫面，從主畫面開啟就是全螢幕。',
       helpCpu: '你每攻擊一次，電腦回擊一次。你 40／30／20 秒（簡單／普通／困難）沒有送出攻擊，它會自己攻擊一次。難度也決定它打多重。',
       cpuEasy: '簡單',
       cpuNormal: '普通',
@@ -744,6 +749,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       helpPower: 'Attack power comes from patch complexity: more modules, more cables and more modulation mean more damage. AUTO wires a simple patch for you; press SEND to attack. SEND attacks and gives you new modules. Higher power makes your fighter move faster until your next patch.',
       helpSound: 'Your previous sound stops when you send a new one. The opponent’s sound plays together with yours.',
       helpModes: 'VS CPU: fight the computer. CREATE ROOM: give the 4-letter code to a friend. JOIN ROOM: enter the code. The sound of the whole match is recorded and can be downloaded as MP3 after KO. The background can be a photo or video from your device; it stays on your device only.',
+      helpFull: 'Landscape: START tries to go full screen. If Safari on iPhone does not allow it, use Share → Add to Home Screen; opened from there the game runs full screen.',
       helpCpu: 'The CPU answers each of your attacks once. If you send nothing for 40 / 30 / 20 s (EASY / NORMAL / HARD), it attacks once on its own. The difficulty also sets how hard it hits.',
       cpuEasy: 'EASY',
       cpuNormal: 'NORMAL',
@@ -814,6 +820,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       helpPower: '攻撃力はパッチの複雑さで決まります。モジュール、ケーブル、モジュレーションが多いほどダメージが大きくなります。AUTO はかんたんなパッチをつないでくれます。攻撃するには SEND を押します。SEND で攻撃し、新しいモジュールに入れ替わります。攻撃力が高いほど、次のパッチを送るまでキャラクターの動きが速くなります。',
       helpSound: '新しい音を送ると前の音は止まります。相手の音はあなたの音と一緒に鳴ります。',
       helpModes: 'CPU対戦：コンピューターと対戦。ルーム作成：4文字のコードを友だちに伝えます。ルーム参加：コードを入力します。試合の音は全部録音され、KO のあとに MP3 でダウンロードできます。背景には端末内の写真や動画を使えます。端末の外には送信されません。',
+      helpFull: '横向き：START を押すと全画面を試みます。iPhone の Safari で全画面にならない場合は、共有 → ホーム画面に追加 で、ホーム画面から開くと全画面になります。',
       helpCpu: 'CPU はあなたの攻撃ごとに一回反撃します。40／30／20 秒（かんたん／ふつう／むずかしい）攻撃を送らないと、CPU が自分から一回攻撃します。難易度で攻撃の強さも決まります。',
       cpuEasy: 'かんたん',
       cpuNormal: 'ふつう',
@@ -883,6 +890,30 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
   var afterSetup = null;        // function run on START
   var helloSent = false, helloGot = false;
   var noteTimer = 0;
+
+  // ---------- full screen ----------
+  // START is a user gesture, so the page may go full screen there (Safari toolbars hidden);
+  // HOME leaves it. Browsers without the API (or with it blocked) simply stay as they are;
+  // the help sheet tells iPhone users about Add to Home Screen (standalone = full screen).
+  function enterFullscreen() {
+    var el = document.documentElement;
+    var fn = el.requestFullscreen || el.webkitRequestFullscreen;
+    if (typeof fn !== 'function') return;
+    if (document.fullscreenElement || document.webkitFullscreenElement) return;
+    try {
+      var p = fn.call(el, { navigationUI: 'hide' });
+      if (p && typeof p.catch === 'function') p.catch(function () { /* refused */ });
+    } catch (e) { /* ignore */ }
+  }
+  function exitFullscreen() {
+    if (!(document.fullscreenElement || document.webkitFullscreenElement)) return;
+    var fn = document.exitFullscreen || document.webkitExitFullscreen;
+    if (typeof fn !== 'function') return;
+    try {
+      var p = fn.call(document);
+      if (p && typeof p.catch === 'function') p.catch(function () { /* ignore */ });
+    } catch (e) { /* ignore */ }
+  }
 
   // ---------- helpers ----------
   function show(name) {
@@ -1449,6 +1480,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     mode = null;
     roomCode = null;
     helloSent = false; helloGot = false; foeChar = null;
+    exitFullscreen();
     show('home');
   }
 
@@ -1610,6 +1642,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
   $('btn-start').addEventListener('click', function () {
     var next = afterSetup;
     afterSetup = null;
+    enterFullscreen();
     if (mode === 'cpu') foeChar = otherChar(myChar);
     if (next) next();
   });

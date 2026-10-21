@@ -363,9 +363,34 @@ html[data-theme="light"] .mfp{
 .mfp-cable-end{pointer-events:none}
 .mfp-cable-temp{fill:none;stroke-width:4;stroke-linecap:round;stroke-dasharray:8 6;pointer-events:none}
 
-/* short landscape (index.html puts the panel beside the fight scene, full height):
-   the rail fills whatever height is left above the scroll bar and the footer */
+/* short landscape (phone held sideways; index.html keeps the panel under the fight band, full
+   width): the row is 240px (the smallest height at which every module shows all its knobs,
+   measured per type: VCO needs the most, 236px still clips its knob labels by 3px),
+   the scroll bar sits under the row, and AUTO / SEND / OUT stack in a column at the right end
+   so the footer costs no height. */
 @media (orientation:landscape) and (max-height:620px){
-  .mfp-case{height:100%}
-  .mfp-rail{flex:1 1 auto;height:auto;min-height:160px}
+  .mfp{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) auto;
+    grid-template-rows:minmax(0,1fr) auto;
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  .mfp-scroll{grid-area:1/1/2/2}
+  .mfp-hbar{grid-area:2/1/3/2}
+  .mfp-case{height:auto}
+  .mfp-rail{height:240px;flex:0 0 auto}
+  .mfp-foot{
+    grid-area:1/2/3/3;
+    flex-direction:column;align-items:stretch;gap:6px;
+    width:132px;
+    padding:4px 6px calc(4px + env(safe-area-inset-bottom,0px));
+    border-top:0;border-left:1px solid var(--mfp-line);
+  }
+  .mfp-btn{flex:0 0 48px;min-height:48px;font-size:20px}
+  .mfp-outmod{
+    flex:1 1 auto;
+    flex-wrap:wrap;justify-content:center;align-content:center;gap:0 4px;
+    padding:2px 4px 4px;
+  }
+  .mfp-outmod .mfp-title{flex:0 0 100%;text-align:center;padding:0}
 }

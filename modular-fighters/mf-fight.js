@@ -692,14 +692,17 @@
     c.setTransform(dpr, 0, 0, dpr, 0, 0);
     drawBackground();
 
-    var pad = Math.max(12, Math.round(W * 0.04));
-    // short canvases (landscape phones: the scene is beside the panel) keep the bars at the top;
+    // compact = a short, wide band (landscape phones: the scene sits over the module row).
+    // The HP bars then stand at the far left / right, level with the figures, and the figures
+    // take nearly the whole height instead of the space under the bars.
+    var compact = H < 220;
+    var pad = compact ? 12 : Math.max(12, Math.round(W * 0.04));
     // BAR_TOP_MIN only applies when there is height to spare
-    var barTop = Math.max(pad + 24, H < 480 ? 0 : BAR_TOP_MIN);
-    var barW = Math.floor((W - pad * 2 - Math.max(24, W * 0.08)) / 2);
+    var barTop = compact ? Math.round(H / 2 + 6) : Math.max(pad + 24, H < 480 ? 0 : BAR_TOP_MIN);
+    var barW = compact ? Math.min(180, Math.floor(W * 0.22)) : Math.floor((W - pad * 2 - Math.max(24, W * 0.08)) / 2);
 
     // floor
-    var floorY = Math.round(H * 0.86);
+    var floorY = compact ? H - 8 : Math.round(H * 0.86);
     c.strokeStyle = COLOR_FLOOR;
     c.lineWidth = 1;
     c.beginPath();
@@ -717,10 +720,12 @@
     var wL = Math.max(1, eL.right - eL.left), wR = Math.max(1, eR.right - eR.left);
     // canvas px per keyed px: figure height <= FIGHTER_H of the canvas and below the HP bars,
     // and each figure's width (from its front edge at the centre back to its rear edge) fits its half
-    var maxFigH = Math.max(40, Math.min(H * FIGHTER_H, floorY - (barTop + BAR_H) - 6));
+    var maxFigH = compact
+      ? Math.max(40, floorY - 26)                                     // below the status line
+      : Math.max(40, Math.min(H * FIGHTER_H, floorY - (barTop + BAR_H) - 6));
     var k = Math.min(
       maxFigH / Math.max(hL, hR),
-      (W / 2 - FRONT_GAP - pad) / Math.max(wL, wR));
+      (W / 2 - FRONT_GAP - (compact ? pad + barW + 8 : pad)) / Math.max(wL, wR));
     var figH = Math.max(hL, hR) * k;
     var scale = Math.max(0.6, Math.min(2.2, figH / 150, W / 300));
     var reach = FRONT_GAP + W * LUNGE_OVER;
