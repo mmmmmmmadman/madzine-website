@@ -7,7 +7,7 @@
 - 使用者實機：橫向觸控位置全部歪掉（按 AUTO 變 SEND、拉不出線），之後又自己好了。原因判定為 iPhone Safari 對 CSS `zoom` 的點擊座標不穩。改為 `MFPatchUI.setScale(s)`：模組列與右欄用 `transform: scale`（點擊與 getBoundingClientRect 在所有瀏覽器都跟 transform 走），排版尺寸以負 margin 補償（列的 margin-bottom／margin-right），右欄改絕對定位、以 `--mfp-foot-w` 保留 grid 欄寬，所以面板高度只由列決定。index.html 不再寫 `--mfp-rail-zoom`，改呼叫 `setScale`。量測 677×262／812×300／812×375／390×844：線端誤差 0、旋鈕與拉線正常、AUTO／SEND 點擊各命中自己、捲動範圍＝縮放後列寬
 - 首頁標語下加版本號（`MF_VERSION`，目前 v1.1.0；改 css／js 的 `?v=` 時一併調），橫向兩欄版面也排進去
 - 日文「むずかしい」在 375 寬折成兩行：`html[lang="ja"] .cpurow button` 字 17px、無字距、不換行
-- 語言／HUE 列 z-index 40 → 60、`touch-action:manipulation`。使用者反映 iPhone 上語言鈕按不了，無頭瀏覽器直式橫式都能按且切換成功，未能重現；懷疑與 Safari 頁面縮放 120% 下 fixed 元素的定位有關，待使用者把縮放調回 100% 後再確認
+- 語言／HUE 列 z-index 40 → 60、`touch-action:manipulation`。使用者反映語言鈕**只有下半部按得到**：橫向時 iOS Safari 把螢幕最上緣約 24px 的點擊拿去叫回工具列，8px 起算的 44px 鈕上半部因此沒反應。橫向把語言／HUE 列往下移到 28px（HUE 彈窗、首頁上方留白、說明頁上方留白同步 +20px）；直式不動（狀態列是系統區，網頁從其下方開始）
 
 ### Modular Fighters：橫向角色回到半透明面板後面（HP 條位置不變）
 
