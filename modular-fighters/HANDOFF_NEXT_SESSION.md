@@ -1,4 +1,4 @@
-# Modular Fighters — 開發紀錄與下一輪引言（2026-10-16）
+# Modular Fighters — 開發紀錄與下一輪引言（2026-10-22）
 
 ## 工作目錄與部署
 - 專案：`/Users/madzine/MADZINE/Documents/madzine-website/modular-fighters/`
@@ -21,11 +21,11 @@
 - 角色四個（2026-10-21）：osc、tatata5 原圖面右；moddict、mad 原圖面左。**任一角色可站左或右**：自己永遠左、對手永遠右；原圖面向與站位不同時在去背階段水平鏡像（2026-10-21 使用者裁示，取代舊「不鏡像、選角決定左右」）。CPU 對手＝其他三個隨機；連線兩人可選同角色。來源是下載資料夾的「X motion.mp4」2100×2100，轉 600×600 12fps h264
 
 ## 目前狀態（全部已 commit 並 push）
-- 最新 commit：見 git log（2026-10-21 四角色＋鏡像）、`768c54d`（加 TATATA5／MAD 角色，2026-10-21）、`4038a2d`（扣血減半）、`25de9f4`（Soundfreak 音色 + SPEC 附錄合併）、`b6ab791`、`774792b`、`cbc183d`、`1aaf0ae`、`3d40f0c`、`c21f909`
+- 版本 v1.1.2。最新 commit 見 git log：2026-10-22 橫向版面定案與 iPhone Safari 三個實機問題（`31daf78`…），2026-10-21 四角色＋鏡像（`768c54d`、`192710f`），更早見 DEVLOG。
 - 工作樹乾淨。
 
 ## 已落地的使用者需求（全部保留，禁改）
-1. 直式畫面；上方兩角色＋HP；下方隨機模組一橫排（270px 高）；**橫向也能顯示（2026-10-21）**：landscape 且高度 ≤ 620px 時對戰仍上下堆疊、模組一橫排跨滿版寬（使用者裁示：**不做左右分區**），模組列 240px、AUTO／SEND／OUT 直欄在列右端；角色畫布整個螢幕高、**半透明面板疊在下半**（2026-10-22 最終裁示：HP 條與狀態列留在面板上方的帶子裡，角色站在螢幕底部從模組後面透出，`MFFight.setBand`），高度不夠時模組列與右欄依高度縮放（`MFPatchUI.setScale`，transform；**禁用 CSS zoom**，iPhone Safari 點擊座標會歪）；OUT 標籤 L／R；首頁／選角／KO 改兩欄，其餘畫面可捲動；iPad 橫向與桌機維持直式堆疊；START 進全螢幕、HOME 離開，另有 manifest 與加入主畫面；patch 線；聲音複雜度＝攻擊力；接到 OUT 才有聲音並成為循環音樂；SEND 後模組溶解換新；AUTO 只配線不送出；房間碼連線；無對手時 CPU；己方＋敵方聲音同時播放；自己新聲音取代舊的；整場自動錄音，下載直接是 MP3（48 kHz 128 kbps）。
+1. 直式畫面；上方兩角色＋HP；下方隨機模組一橫排（270px 高，最小 240px）。**橫向（landscape 且高 ≤ 620px）**：角色畫布整個螢幕高，半透明面板疊在下半（使用者裁示：模組一橫排跨滿版寬、不做左右分區、角色要在半透明模組後面），HP 條與狀態列在面板上方的帶子裡（`MFFight.setBand`），AUTO／SEND／OUT 直欄 92px 在列右端，高度不夠時以 `MFPatchUI.setScale`（transform）縮小；詳 DEVLOG 2026-10-22。
 2. 模組：VCO（可切 LFO、可觸發切換、FM 直流耦合指數式）、MIX VCA（四路、音量可 CV）、LPF、FOLD、立體聲 DELAY、ADSR、AR、SEQ5（直向 fader 一指橫掃、內建 clock）、DRAW（內建 clock）。
 3. 角色：四個任選，自己永遠左、對手永遠右，需要時鏡像（2026-10-21）；背景可匯入照片／影片。
 4. 攻擊力高 → 角色影片加速（1 到 3 倍），直到下一次送出；對手只在送出那一次扣血。
@@ -53,7 +53,7 @@
 
 ## 未驗證項目（全部只在無頭瀏覽器測過）
 - 真實兩台裝置連線對戰
-- 真實 iPhone／iPad Safari 的觸控、多點、安全區（含 2026-10-21 橫向版面在瀏海機的左右安全區）
+- 真實 iPhone／iPad Safari：多點、安全區、加入主畫面後的全螢幕、iPad 往下滑退出全螢幕是否已被擋住。13 mini 上的橫向觸控、語言鈕、直式 footer 已由使用者實機確認
 - 真實相機／相簿匯入背景
 - 分頁隱藏時 CPU 閒置攻擊的跳過策略
 - 新音色的實際聽感、即時播放的 CPU 負載
@@ -62,7 +62,8 @@
 ## 測試方法（開機驗證）
 - 無頭瀏覽器：`~/Library/Caches/ms-playwright/chromium_headless_shell-1248`，從 Node 以 DevTools 協定操作。
 - 網站根目錄起 server：`python3 -m http.server 8781`（在 madzine-website 目錄）。
-- 測試腳本在 session scratchpad（`/private/tmp/claude-501/-Users-madzine/d4051934-7722-4a2a-87f6-4df4805f8dc3/scratchpad/`，**新 session 可能已清空**）：`run.mjs`（引擎 33 項）、`run-preview.mjs`（21 項）、`vca-run.mjs`（15 項）、`mf-mp3-page.mjs`（整頁打到 KO 兩次＋MP3 檢查）、`mf-multitouch-test.mjs`、`mf-cpu-test.mjs`、`mf-hue-test.mjs`。若已清空，依 SPEC.md 的 API 重寫。
+- 2026-10-22 的版面測試是在雲端 session 用 Playwright 跑（`shoot.mjs` 全畫面五尺寸、`final.mjs` 橫向多尺寸、`zoom.mjs` 直式線端／旋鈕／拉線、`scaletest.mjs` 縮放後線端／旋鈕／拉線／AUTO 與 SEND 命中、`home2.mjs` 語言鈕與版本號；角色 mp4 用 ffmpeg 轉 VP9 以 route 餵入，因無頭 Chromium 沒有 h264），腳本不在 repo，**要重寫就照 SPEC 的 API**
+- 更早的引擎測試腳本在 Mac 的 session scratchpad（`/private/tmp/claude-501/-Users-madzine/d4051934-7722-4a2a-87f6-4df4805f8dc3/scratchpad/`，**可能已清空**）：`run.mjs`（引擎 33 項）、`run-preview.mjs`（21 項）、`vca-run.mjs`（15 項）、`mf-mp3-page.mjs`（整頁打到 KO 兩次＋MP3 檢查）、`mf-multitouch-test.mjs`、`mf-cpu-test.mjs`、`mf-hue-test.mjs`。若已清空，依 SPEC.md 的 API 重寫。
 - 禁止啟動 GUI app 或截圖使用者螢幕；使用者在桌面瀏覽器自己玩。
 
 ## 版本號（使用者規則 2026-10-22）

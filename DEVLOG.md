@@ -1,56 +1,51 @@
 # MADZINE Website 開發紀錄
 
+## 2026-10-22
+
+### Modular Fighters v1.1.1：橫向版面定案、iPhone Safari 三個實機問題
+
+整天與使用者在 iPhone 13 mini 實機來回，橫向版面改了五次才定案。下面只記最終狀態與決策理由，中途撤回的做法在「過程」一段。
+
+**最終版面（短橫向：landscape 且高度 ≤ 620px）**
+- 角色畫布整個螢幕高；面板（240px 模組列 + 捲動桿 = 284px）絕對定位在底部、底板半透明（模組 55%、機箱 25%、凹陷區 40%、接孔中心 85%，黑白主題各一組 alpha token；文字、接孔、旋鈕、線材、SEND 不透明）。HP 條與狀態列留在面板上方沒被蓋住的帶子裡（`MFFight.setBand(px)`，index.html 以 `ResizeObserver` 盯面板上緣餵入），角色站在螢幕底部、從模組後面透出。帶子 91px（812×375）時 compact 模式：HP 條在左右兩側；帶子 < 72px 時只畫 HP 條在中段、名字和數字寫在條內。
+- 模組一橫排跨滿版寬（使用者裁示不做左右分區）；AUTO／SEND／OUT 改直欄放在列右端，寬 92px，OUT 的 L 上 R 下。
+- 高度不夠時（Safari 工具列佔位約 300px，或頁面被放大）：`MFPatchUI.setScale(s)` 以 `(innerHeight − 32 − 44 − 安全區) / 240` 縮小模組列與右欄（0.5–1），**用 `transform: scale` 加負 margin 補償排版，禁用 CSS `zoom`**（見下）。812×314 為 0.99、812×300 為 0.93、677×262 為 0.78。
+- 首頁、角色選擇、KO 覆蓋層為兩欄；其餘畫面置中、放不下從頂端捲動（`.pane` + flex auto margin）。
+- iPad 橫向（高 > 620px）與桌機維持原本直式堆疊，直式手機版面只動了 footer（下）。
+
+**直式手機（寬 ≤ 500px）**
+- AUTO／SEND／OUT 列 78 → 51px：按鈕 40px、字 18px，OUT 接孔 40px、標籤 L／R 放接孔右側。使用者要求 −40%，再低要砍接孔觸控區，停在 −35%。
+- 模組列最小高度 200 → 240px：13 mini 在 Safari 內可視高約 660px，32dvh 只有 211px，VCO 的旋鈕被裁；240 是量過九種模組全部不裁的最小值。390×844 仍為 270px。
+- OUT 接孔標籤全站改 L／R（配線圖 PNG 同步）；`.mfp-auto` 加 `min-width:min-content`，AUTO 倒數不再被 flex 擠扁裁字（真因：overflow:hidden 的 flex item 最小寬為 0）。
+
+**iPhone Safari 三個實機問題（都是真因，記下來）**
+1. **CSS `zoom` 的點擊座標會歪**：橫向用 `zoom` 縮模組列時，按 AUTO 變成 SEND、拉不出線，且時好時壞。改 `transform` 後消失。全站禁用 `zoom`。
+2. **螢幕最上緣約 24px 的點擊 Safari 留給自己**（叫回工具列／捲到頂），直式橫向都一樣。44px 的語言鈕從 8px 起算，上半部按了沒反應。語言／HUE 列、HUE 彈窗、首頁與說明頁上方留白全部下移到 28px 起。
+3. **Safari 快取舊 css／js**：部署成功但手機看到舊版。本地 css／js 連結加 `?v=` 版本字串，每次改檔要換。
+
+**其他**
+- 從使用者截圖量到 Safari 頁面縮放約 120%（模組寬、狀態列高、接孔直徑皆 1.2 倍），可視區因此只剩約 677×262；已請使用者調回 100%，版面也已能在該尺寸下成立。
+- 全螢幕：START 呼叫 Fullscreen API、HOME 離開；狀態列加 FULL SCREEN 鈕（有 API 且非全螢幕時顯示，iPad 往下滑退出後可按回去）；對戰畫面 `touchmove` 攔下不交給瀏覽器。**iPhone Safari 不開放網頁全螢幕**（WebKit bug 212934 WONTFIX），只能加入主畫面（已加 manifest 與 apple-mobile-web-app 標記）或 AA → 隱藏工具列；說明頁三語寫明。
+- 首頁標語下顯示版本號 `MF_VERSION`；**使用者規則：每次推送 +0.0.1**，與 `?v=` 一起改。
+- 日文「むずかしい」在 375 寬折兩行：ja 的難度鈕字 17px、無字距、不換行。
+
+**過程（已撤回，勿再走）**
+- 左右分區（角色左、面板右）：使用者否決。
+- 整個模組列縮 60%（直式與橫向）：實機太小，撤回。
+- 面板不透明、不重疊：使用者要角色在半透明模組後面，撤回。
+- 用 `zoom` 做縮放：觸控歪掉，改 transform。
+
+**驗證**：無頭 Chromium（角色影片轉 VP9 餵入）量測 390×844、375×660、320×560、812×375、812×314、812×300、677×262、1180×820：線端與接孔誤差 0、旋鈕拖曳與拉線正常、AUTO／SEND 點擊各命中自己、footer 不溢出、零錯誤。實機由使用者在 13 mini 驗證：橫向觸控、語言鈕、L／R、版本號皆回報正常。
+
+commit：`31daf78`…`6dfc2c9`（17 筆，見 git log）。
+
 ## 2026-10-21
 
-### Modular Fighters：縮放改用 transform、版本號、日文難度鈕一行、語言列加固
+### Modular Fighters：橫向也能顯示 + 全螢幕（當日版本，隔日大改，見上）
 
-- 使用者實機：橫向觸控位置全部歪掉（按 AUTO 變 SEND、拉不出線），之後又自己好了。原因判定為 iPhone Safari 對 CSS `zoom` 的點擊座標不穩。改為 `MFPatchUI.setScale(s)`：模組列與右欄用 `transform: scale`（點擊與 getBoundingClientRect 在所有瀏覽器都跟 transform 走），排版尺寸以負 margin 補償（列的 margin-bottom／margin-right），右欄改絕對定位、以 `--mfp-foot-w` 保留 grid 欄寬，所以面板高度只由列決定。index.html 不再寫 `--mfp-rail-zoom`，改呼叫 `setScale`。量測 677×262／812×300／812×375／390×844：線端誤差 0、旋鈕與拉線正常、AUTO／SEND 點擊各命中自己、捲動範圍＝縮放後列寬
-- 首頁標語下加版本號（`MF_VERSION`；**使用者規則：每次推送 +0.0.1**，與 css／js 的 `?v=` 一起改），橫向兩欄版面也排進去。v1.1.0 = 版本號首次出現；v1.1.1 = 語言列直式也下移
-- 日文「むずかしい」在 375 寬折成兩行：`html[lang="ja"] .cpurow button` 字 17px、無字距、不換行
-- 語言／HUE 列 z-index 40 → 60、`touch-action:manipulation`。使用者反映語言鈕**只有下半部按得到**：橫向時 iOS Safari 把螢幕最上緣約 24px 的點擊拿去叫回工具列，8px 起算的 44px 鈕上半部因此沒反應。語言／HUE 列往下移到 28px（HUE 彈窗、首頁上方留白、說明頁上方留白同步 +20px）；先只改橫向，使用者回報直式也一樣，改為兩種方向都 28px
-
-### Modular Fighters：橫向角色回到半透明面板後面（HP 條位置不變）
-
-- 使用者裁示：HP 條與狀態列維持目前位置，角色要放回半透明模組後面。做法：橫向時角色畫布改為**整個螢幕高**，面板絕對定位疊在下方（alpha token 的半透明面板回來，數值同 2026-10-21：模組 55%、機箱 25%、凹陷區 40%）；`mf-fight.js` 新增 `setBand(px)`：index.html 以面板上緣（`ResizeObserver` 盯 `#panel` + resize）告知未被蓋住的高度，HP 條、狀態列、compact／strip 模式都以這個高度排版，角色則站在螢幕底部、高度為「畫布底到帶子底」的八成內，從模組後面透出；K.O. 文字畫在帶子內。不是短橫向時 `setBand(0)`，行為與以前完全相同
-- 依高度縮放機制保留：812×375 zoom 1（帶子 91px，角色約 265px）、812×314 zoom 0.99、812×300 zoom 0.93、677×262 zoom 0.78（帶子 32px，HP 條在中段，角色仍在面板後）；線端誤差 0、不溢出
-
-### Modular Fighters：橫向改回不重疊、OUT 改 L／R、AUTO 倒數不再被裁（同日被上一條取代其中「不重疊」部分）
-
-- 使用者實機截圖（iPhone 13 mini）：直式 AUTO 顯示成「UTO 8」左邊被裁；橫向背景角色透過面板干擾操作。另從截圖量到頁面被 Safari 放大約 120%（模組寬、狀態列高、接孔直徑都是 1.2 倍），所以可視區只有約 320×256 CSS px，已請使用者把 Safari 的「頁面縮放」調回 100%
-- OUT 接孔標籤 LEFT／RIGHT 改 L／R（`PORT_LABEL`；配線圖 PNG 同步），直式 footer 的 OUT 模組 190 → 145px，AUTO 多出空間；另 `.mfp-auto` 加 `min-width:min-content`，flex 收縮永遠不會裁到「AUTO + 倒數」（真因：overflow:hidden 的 flex item 最小寬度為 0，被擠扁後置中的文字兩側被裁）
-- 橫向重新佈局（使用者裁示「背景畫面有很多干擾上層視覺的內容」）：撤掉半透明面板疊在角色上的做法，回到角色帶在上、面板不透明在下；alpha token 全部移除。角色帶拿剩餘高度（812×375 為 91px，compact 模式 HP 條在兩側、角色約 57px），右欄 92px、OUT L 上 R 下
-- 矮橫向（Safari 工具列佔位約 300px；使用者頁面放大 120% 時只剩約 677×262）：使用者再截圖「橫向完全壞了」（模組被裁、右欄被裁、垂直捲動不可發現）。改為**依視窗高度縮放**：`index.html` 的 `updateRailZoom()` 以 `(innerHeight − 32 − 44 − 安全區) / 240` 算出 `--mfp-rail-zoom`（上限 1、下限 0.5），`mf-patch-ui.css` 的橫向區塊把 `.mfp-rail` 與 `.mfp-foot` 一起 `zoom`；線材 SVG 在兩者之外不縮，線端誤差仍 0px。角色帶最少 32px，`mf-fight.js` strip 模式（高 < 72）：不畫角色與地板，HP 條放畫面中段（26%～74%），YOU／FOE 與數字寫在條內，兩端留給狀態列。量測：812×375 zoom 1（角色帶 91px）、812×314 zoom 0.99、812×300 zoom 0.93、677×262 zoom 0.78，全部不裁、不溢出
-- 量測 812×375、812×300、375×660、320×560、390×844、1180×820：AUTO 不裁、footer 不溢出、頁面不橫向溢出、零錯誤
-
-### Modular Fighters：60% 撤回、AUTO／SEND／OUT 縮小、模組列最小 240px
-
-- 60% 縮放撤回（使用者實機：iPhone 上太小，回到原尺寸）：兩處 `zoom:0.6` 刪除，橫向角色場景回到螢幕高 − 130px
-- 橫向右端 AUTO／SEND／OUT 直欄寬 132 → 92px（−30%）：OUT 的 L／R 改上下疊放、按鈕字 20 → 17px、AUTO 數字同步縮；面板高 284px 內無溢出
-- 直式手機（寬 ≤ 500px）AUTO／SEND／OUT 列高 78 → 51px（−35%，使用者要求 −40%；再低就得砍接孔觸控區或標籤）：按鈕 52 → 40px、字 22 → 18px，OUT 接孔 48 → 40px 且 LEFT／RIGHT 標籤改放接孔右側而非下方
-- 模組列最小高度 200 → 240px（`clamp(240px, 32dvh, 400px)`）：iPhone 13 mini 在 Safari 內可視高約 660px，32dvh = 211px，VCO 下緣（FREQUENCY／FM AMOUNT 旋鈕）被裁切；240 是先前量到的「九種模組全部不裁」最小值。390×844 仍為 270px 不變
-- 以上三者在 375×660、390×844、812×375 量測：VCO 無裁切、footer 無溢出、線端誤差 0px
-
-### Modular Fighters：手機模組縮到 60%（試用，當日撤回）+ 首頁標題被語言列蓋住修正
-
-- 狀態列加 FULL SCREEN 鈕（三語，`#fsbtn`）：只在瀏覽器有 Fullscreen API 且目前不是全螢幕時顯示，按下重新進全螢幕；`fullscreenchange` 事件更新顯示。起因：iPad Safari 全螢幕中往下滑會退出全螢幕，原本只有 START 會進去。另在對戰畫面對 `touchmove` 做 `preventDefault`（KO 覆蓋層與說明卡例外），讓垂直滑動不被當成頁面手勢；是否真能擋住 iPad 的退出手勢未實機驗證
-- 本地 css / js 連結加 `?v=日期` 快取破壞參數（`index.html` 頂端有註解）：使用者 iPhone 13 mini 上看到的是舊版，GitHub Actions 部署全部成功，判斷為 Safari 快取舊 css / js；之後每次改這些檔要一起改版本字串
-- 橫向（短橫向版面）也縮 60%：`.mfp-rail{zoom:0.6}` 加進橫向媒體查詢，240px 列在螢幕上 144px，面板（列 + 捲動桿）從 284 降到 188px；右端 AUTO／SEND／OUT 直欄按鈕 48 → 42px、間距 6 → 4 以塞進 188px（量測無溢出）；角色場景改為螢幕高 − 100px（844×390 為 290px），下半身透出面板的部分約 50px。線端與接孔誤差 0px
-- 直式且寬 ≤ 500px 時 `.mfp-rail{zoom:0.6}`（`mf-patch-ui.css` 末段）：模組盒、接孔、旋鈕、文字一起縮成 60%，390 寬一次看到約 3.5 個模組（原本 2 個），模組列高 270 → 162px，角色區相對變高（390×844 為 528px）。只 zoom 模組列、不 zoom 線材 SVG（SVG 是列的兄弟或面板層的子元素），JS 用 getBoundingClientRect 讀到的 viewport 座標直接對應線材座標，無頭瀏覽器量測線端與接孔中心誤差 0px；旋鈕拖曳、接孔拉線、捲動桿都正常。**代價**：接孔觸控區 48 → 29px、字 16 → 9.6px，低於先前「接孔放大 50% 給 iPhone」與「字 ≥ 14pt」兩條規則，使用者指示先試，不合再退
-- 首頁標題在短螢幕（iPhone SE、Safari 工具列佔掉高度、加入主畫面後狀態列）被右上語言／HUE 列蓋住：原因是 `.center` 用 `justify-content:center`，內容高於視窗時 flex 的 auto margin 歸零、置中造成上緣溢出到看不見。改 `flex-start`（`.pane` 的 auto margin 仍負責放得下時置中），`#home` 上方留 60px + 安全區給語言列，`.center` 上方 padding 加 `env(safe-area-inset-top)`
-
-### Modular Fighters：橫向也能顯示 + 全螢幕
-
-- 原本只有直式版面：整頁 `overflow:hidden` 加垂直置中、模組列固定高度。手機橫拿時（844×390、667×375）首頁標題與角色選擇被裁掉，對戰畫面角色區只剩 36 px，KO 畫面溢出
-- 新增「短橫向」版面：`(orientation: landscape) and (max-height: 620px)` 時生效，iPad 橫向（820 高）與桌機一般視窗維持原本直式堆疊
-  - 對戰維持上下堆疊、模組一橫排跨滿版寬（使用者裁示：不做左右分區）。模組列 240 px（逐一量測九種模組，240 是全部旋鈕標籤都不被裁的最小值），捲動桿在列下方；AUTO / SEND / OUT 改成直欄放在模組列右端（寬 132 px，`.mfp` 改 grid），所以 footer 不再吃高度
-  - **面板疊在角色場景上**（使用者看過四張模擬圖後選第四張）：角色場景高度＝螢幕高 − 130 px（844×390 為 260 px），面板（284 px）絕對定位在底部蓋住場景下半，面板底板半透明（模組 55%、機箱 25%、凹陷區 40%，使用者看過 72% 版後要求再透明一點；`mf-patch-ui.css` 新增 `--mfp-case-a` / `--mfp-elev-a` / `--mfp-sunk-a` / `--mfp-bg-a` 四個 alpha token，黑白主題各一組；文字、接孔、旋鈕、線材、SEND 維持不透明）。角色頭部、HP 條、攻擊力數字在面板上方清楚可見，下半身透出
-  - `mf-fight.js` 新增 wide 模式（畫布高 < 320 且寬 > 2 倍高）：HP 條維持在上方但縮窄到左右兩側（寬 26%），角色可高過 HP 條、用到地板減 30 px 的高度（844×390 約 194 px，原本被 HP 條壓到 144 px）；另保留 compact 模式（高 < 220）給更矮的畫布。狀態列（模式、雙方攻擊力）疊在場景上緣的透明一行，不佔高度
-  - 首頁：標題與標語左，按鈕欄右；上方留 56 px 給語言／HUE 列。角色選擇：四格 2×2（預覽縮為 100 px）左，背景、START、BACK 右。KO：結果左，下載／再戰／首頁右
-  - 其餘畫面（房號）維持置中；每個置中畫面內容包進 `.pane`，放得下就置中、放不下從頂端開始捲動
-  - 說明頁：上方 60 px（原留給已刪除的問號鈕）改 16 px，開啟時暫時隱藏語言／HUE 列避免重疊
-- 全螢幕：按 START（使用者手勢）時呼叫 Fullscreen API（`requestFullscreen` / `webkitRequestFullscreen`），HOME 時離開；不支援或被拒就維持原狀。另加 `apple-mobile-web-app-capable` 等 meta 與 `manifest.webmanifest`（display fullscreen），從主畫面開啟即全螢幕；說明頁三語加一段說明（含 Safari「AA → 隱藏工具列」的手動做法）。**iPhone Safari 不開放非影片元素的 Fullscreen API**（WebKit bug 212934 標 WONTFIX，2026-01 仍維持），iPhone 上只能靠加入主畫面或手動隱藏工具列；iPad 與桌機 Safari 可用
-- 直式版面未動（390×844 量測與改前相同）
-- 以無頭瀏覽器驗證 844×390、667×375、932×430、1180×820、390×844 全部畫面，含對戰中旋轉（線材保留、畫布重算）、白底主題；真實 iPhone Safari 的安全區、觸控與全螢幕未實機驗證
+- 原本只有直式版面：整頁 `overflow:hidden` 加垂直置中、模組列固定高度。手機橫拿時首頁標題與角色選擇被裁掉，對戰畫面角色區只剩 36px，KO 畫面溢出
+- 新增「短橫向」版面 `(orientation: landscape) and (max-height: 620px)`；模組列 240px（量測九種模組不裁的最小值）；AUTO／SEND／OUT 改直欄；使用者看過四張模擬圖選定「面板半透明疊在角色上」；`mf-fight.js` 加 wide／compact 模式；首頁、角色選擇、KO 兩欄；`.pane` 置中或捲動
+- 全螢幕 API 接法與 manifest 同上一段
 
 ### Modular Fighters：新增角色 TATATA5 與 MAD，任一角色可站左右
 
