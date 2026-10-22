@@ -392,6 +392,12 @@
   }
 
   // ---------------------------------------------------------------- canvas
+  // band > 0: only the top `band` px of the canvas are uncovered (the patch panel lies over the
+  // rest, translucent). The HP bars and their layout modes use the band as their height; the
+  // figures stand on the canvas floor below it, seen through the panel.
+  var band = 0;
+  function setBand(px) { band = Math.max(0, Math.round(+px || 0)); }
+
   function resize() {
     if (!container || !canvas) return;
     var r = container.getBoundingClientRect();
@@ -686,12 +692,13 @@
     var c = ctx;
     c.save();
     c.globalAlpha = k;
-    var fontPx = Math.round(Math.min(W * 0.2, H * 0.24));
+    var Hk = band > 0 && band < H ? band : H;     // covered: inside the uncovered strip
+    var fontPx = Math.round(Math.min(W * 0.2, Hk * 0.24));
     c.font = '300 ' + fontPx + 'px ' + fontFamily();
     c.textAlign = 'center';
     c.textBaseline = 'middle';
     c.fillStyle = COLOR_TEXT;
-    c.fillText('K.O.', W / 2, H * 0.3);
+    c.fillText('K.O.', W / 2, Hk * 0.3);
     c.restore();
   }
 
@@ -708,15 +715,19 @@
     // compact = a short, wide band (landscape phones: the scene sits over the module row).
     // The HP bars then stand at the far left / right, level with the figures, and the figures
     // take nearly the whole height instead of the space under the bars.
-    var compact = H < 220;
-    var strip = H < 72;        // a strip: bars only (name + hp written inside), no figures
-    // wide = a short landscape band that is not that short (the panel overlays its lower part):
-    // the bars stay at the top but narrow, at the far left / right, so the figures may rise
-    // past them and use most of the height (their lower halves show through the panel).
-    var wide = !compact && H < 320 && W > H * 2;
+    var covered = band > 0 && band < H;      // the panel lies over everything below `band`
+    var Hb = covered ? band : H;             // the height the bars (and the status line) have
+    var compact = Hb < 220;
+    var strip = Hb < 72;       // a strip: bars only (name + hp written inside); no figures unless covered
+    // wide = a short landscape band that is not that short: the bars stay at the top but narrow,
+    // at the far left / right, so the figures may rise past them and use most of the height.
+    var wide = !compact && Hb < 320 && W > Hb * 2;
     var pad = compact ? 12 : Math.max(12, Math.round(W * 0.04));
     // BAR_TOP_MIN only applies when there is height to spare
-    var barTop = strip ? Math.round(H / 2 - BAR_H / 2) : compact ? Math.round(H / 2 + 6) : Math.max(pad + 24, H < 480 ? 0 : BAR_TOP_MIN);
+    var barTop = strip ? Math.round(Hb / 2 - BAR_H / 2)
+      : compact ? Math.round(Hb / 2 + 6)
+      : wide ? 32                                  // right under the status line
+      : Math.max(pad + 24, Hb < 480 ? 0 : BAR_TOP_MIN);
     var barW = strip ? Math.floor(W * 0.22)       // the middle half: the status line owns both ends
       : compact ? Math.min(180, Math.floor(W * 0.22))
       : wide ? Math.min(240, Math.floor(W * 0.26))
@@ -724,9 +735,9 @@
     var barL = strip ? Math.round(W * 0.26) : pad;
     var barR = strip ? Math.round(W * 0.74) - barW : W - pad - barW;
 
-    // floor
-    var floorY = compact ? H - 8 : Math.round(H * 0.86);
-    if (!strip) {
+    // floor (covered: the canvas floor, behind the panel; the figures stand there)
+    var floorY = covered ? H - 10 : compact ? H - 8 : Math.round(H * 0.86);
+    if (!strip || covered) {
       c.strokeStyle = COLOR_FLOOR;
       c.lineWidth = 1;
       c.beginPath();
@@ -745,14 +756,16 @@
     var wL = Math.max(1, eL.right - eL.left), wR = Math.max(1, eR.right - eR.left);
     // canvas px per keyed px: figure height <= FIGHTER_H of the canvas and below the HP bars,
     // and each figure's width (from its front edge at the centre back to its rear edge) fits its half
-    var maxFigH = compact
+    var maxFigH = covered
+      ? Math.max(40, Math.min(H * FIGHTER_H, floorY - Hb - 6))        // under the band, behind the panel
+      : compact
       ? Math.max(40, floorY - 26)                                     // below the status line
       : wide ? Math.max(40, Math.min(H * FIGHTER_H, floorY - 30))     // beside the bars, below the status line
       : Math.max(40, Math.min(H * FIGHTER_H, floorY - (barTop + BAR_H) - 6));
-    // beside the bars (compact / wide) a figure may not reach back into its bar
+    // beside the bars (compact / wide, not covered) a figure may not reach back into its bar
     var k = Math.min(
       maxFigH / Math.max(hL, hR),
-      (W / 2 - FRONT_GAP - ((compact || wide) ? pad + barW + 8 : pad)) / Math.max(wL, wR));
+      (W / 2 - FRONT_GAP - ((compact || wide) && !covered ? pad + barW + 8 : pad)) / Math.max(wL, wR));
     var figH = Math.max(hL, hR) * k;
     var scale = Math.max(0.6, Math.min(2.2, figH / 150, W / 300));
     var reach = FRONT_GAP + W * LUNGE_OVER;
@@ -777,7 +790,7 @@
       right: { x: rightX + wR * k / 2, headTop: floorY - hR * k - bobR }
     };
 
-    if (!strip) {
+    if (!strip || covered) {
       if (fL) drawFighter({ f: fL, x: leftX, floorY: floorY, k: k,
         bob: bobL, flash: flashAmount(whoL, t), fall: fallL });
       if (fR) drawFighter({ f: fR, x: rightX, floorY: floorY, k: k,
@@ -1056,6 +1069,7 @@
 
   // ---------------------------------------------------------------- export
   window.MFFight = {
+    setBand: setBand,
     mount: mount,
     attack: attack,
     getHP: getHP,

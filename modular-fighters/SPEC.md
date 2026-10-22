@@ -3,14 +3,15 @@
 Location: madzine-website/modular-fighters/  (pure static, no build, no npm)
 Files (one owner each):
 - index.html        — integration shell (integrator writes last). Portrait layout: patch panel at the bottom = ONE horizontal row of all modules (row height clamp(240px, 32dvh, 400px): 270 px at 390x844; 240 px is the least that shows every knob) + footer (AUTO / SEND / OUT); the row scrolls horizontally, the footer stays fixed. The fight scene takes all remaining height above (status bar 28 px between).
-                      Short landscape (orientation landscape and height <= 620 px, i.e. a phone held sideways): the same stack,
-                      the module row across the full width at 240 px with AUTO / SEND / OUT in a 92 px column at its right end
-                      (OUT L over R), the panel opaque UNDER the fight band (media query at the end of mf-patch-ui.css; the
-                      translucent overlay of 2026-10-21 was dropped the next day), the status line overlaid on the band, the
-                      band taking the rest (91 px at 812x375: mf-fight.js compact mode, HP bars at the far sides; under 72 px
-                      the bars alone with the name + hp inside). When row + bar + a 32 px strip do not fit the height (Safari toolbar up,
-                      page zoomed): index.html sets --mfp-rail-zoom from innerHeight and the row and the side column scale down
-                      (0.5..1); the band is then the 32 px strip.
+                      Short landscape (orientation landscape and height <= 620 px, i.e. a phone held sideways): the module row
+                      across the full width at 240 px with AUTO / SEND / OUT in a 92 px column at its right end (OUT L over R),
+                      the fight canvas filling the whole screen and the panel (284 px) laid OVER its lower part with translucent
+                      surfaces (alpha tokens at the end of mf-patch-ui.css; text, jacks, knobs, cables and SEND stay opaque).
+                      index.html feeds the panel's top edge to MFFight.setBand(px): the HP bars, the status line and the K.O.
+                      text keep the uncovered strip (91 px at 812x375: compact mode, bars at the far sides; under 72 px bars
+                      only, in the middle, name + hp inside), the figures stand on the screen floor behind the modules. When
+                      row + bar + a 32 px strip do not fit the height (Safari toolbar up, page zoomed): index.html sets
+                      --mfp-rail-zoom from innerHeight and the row and the side column scale down (0.5..1).
                       Home / setup / KO become two columns, every centred screen scrolls when it does not fit. Taller landscape
                       (iPad, desktop) keeps the portrait stack. START requests full screen (Fullscreen API, prefixed fallback),
                       HOME exits; manifest.webmanifest + apple-mobile-web-app-capable for Add to Home Screen.
@@ -111,6 +112,8 @@ window.MFPatchUI
   Buttons "AUTO" and "SEND" are inside the panel footer.
 
 window.MFFight
+  .setBand(px) — px > 0: only the top px of the canvas are uncovered (the panel lies over the rest); bars, status
+     and K.O. lay out in that strip, the figures stand on the canvas floor below it. 0 = whole canvas (default).
   .mount(containerEl)  — draws two fighters (canvas), two HP bars (100 each) with names, round timer optional.
      The osc fighter (left), its HP bar and lunge use the page --acc token (HUE wheel); refreshed on 'mf-hue' / 'mf-theme'.
   .attack(who:"me"|"foe", power)  — plays attack animation, reduces other side HP by round(power × 0.5) (DAMAGE_SCALE; displayed power, speed and score unchanged)

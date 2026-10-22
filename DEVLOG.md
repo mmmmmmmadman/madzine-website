@@ -2,7 +2,12 @@
 
 ## 2026-10-21
 
-### Modular Fighters：橫向改回不重疊、OUT 改 L／R、AUTO 倒數不再被裁
+### Modular Fighters：橫向角色回到半透明面板後面（HP 條位置不變）
+
+- 使用者裁示：HP 條與狀態列維持目前位置，角色要放回半透明模組後面。做法：橫向時角色畫布改為**整個螢幕高**，面板絕對定位疊在下方（alpha token 的半透明面板回來，數值同 2026-10-21：模組 55%、機箱 25%、凹陷區 40%）；`mf-fight.js` 新增 `setBand(px)`：index.html 以面板上緣（`ResizeObserver` 盯 `#panel` + resize）告知未被蓋住的高度，HP 條、狀態列、compact／strip 模式都以這個高度排版，角色則站在螢幕底部、高度為「畫布底到帶子底」的八成內，從模組後面透出；K.O. 文字畫在帶子內。不是短橫向時 `setBand(0)`，行為與以前完全相同
+- 依高度縮放機制保留：812×375 zoom 1（帶子 91px，角色約 265px）、812×314 zoom 0.99、812×300 zoom 0.93、677×262 zoom 0.78（帶子 32px，HP 條在中段，角色仍在面板後）；線端誤差 0、不溢出
+
+### Modular Fighters：橫向改回不重疊、OUT 改 L／R、AUTO 倒數不再被裁（同日被上一條取代其中「不重疊」部分）
 
 - 使用者實機截圖（iPhone 13 mini）：直式 AUTO 顯示成「UTO 8」左邊被裁；橫向背景角色透過面板干擾操作。另從截圖量到頁面被 Safari 放大約 120%（模組寬、狀態列高、接孔直徑都是 1.2 倍），所以可視區只有約 320×256 CSS px，已請使用者把 Safari 的「頁面縮放」調回 100%
 - OUT 接孔標籤 LEFT／RIGHT 改 L／R（`PORT_LABEL`；配線圖 PNG 同步），直式 footer 的 OUT 模組 190 → 145px，AUTO 多出空間；另 `.mfp-auto` 加 `min-width:min-content`，flex 收縮永遠不會裁到「AUTO + 倒數」（真因：overflow:hidden 的 flex item 最小寬度為 0，被擠扁後置中的文字兩側被裁）

@@ -8,13 +8,13 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Modular Fighters">
-<link rel="manifest" href="manifest.webmanifest?v=20261022f">
+<link rel="manifest" href="manifest.webmanifest?v=20261022g">
 <title>Modular Fighters</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400&family=Noto+Sans+JP:wght@300&display=swap" rel="stylesheet">
 <!-- ?v= on the local css / js: bump the date on every change so Safari does not keep the old files -->
-<link rel="stylesheet" href="mf-patch-ui.css?v=20261022f">
+<link rel="stylesheet" href="mf-patch-ui.css?v=20261022g">
 <script>
   // Apply the saved theme before the first paint. Dark is the default for this game;
   // html[data-theme="light"] is the white theme. Same key as the toggle below (mf_theme).
@@ -452,16 +452,17 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
   #setup-note{grid-area:4/2/5/3}
   #btn-start{grid-area:5/2/6/3}
   #btn-back{grid-area:6/2/7/3}
-  /* match: the same stack as portrait. The module row runs across the full width (user rule: no
-     left / right split) and the panel sits UNDER the fight band, opaque (the overlay version was
-     dropped 2026-10-22: the scene showed through the modules). The band takes what is left
-     (about 90px at 390px tall). When the screen is shorter than row + bar + band (Safari's
-     toolbar up, or the page zoomed in Safari) the row and the side column are scaled down to
-     fit: --mfp-rail-zoom, set from the viewport height by the script below, read by
-     mf-patch-ui.css. The band is then a 32px strip (bars only) and the status line overlays it. */
+  /* match: the module row runs across the full width (user rule: no left / right split). The
+     fight canvas fills the whole screen; the panel (240px row + bar = 284px) lies over its lower
+     part with translucent surfaces (mf-patch-ui.css). The HP bars and the status line keep the
+     uncovered strip above the panel (MFFight.setBand, fed from the panel's top edge by the
+     script below) and the figures stand on the screen floor, seen through the modules (user
+     rule 2026-10-22). When the screen is shorter than row + bar + a 32px strip (Safari's
+     toolbar up, or the page zoomed in Safari) the row and the side column are scaled down:
+     --mfp-rail-zoom, set from the viewport height by the script below. */
   #match.on{padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)}
-  #fight{min-height:32px}
-  #panel{flex:0 1 auto;min-height:0}
+  #fight{position:absolute;left:env(safe-area-inset-left,0px);right:env(safe-area-inset-right,0px);top:0;bottom:0;min-height:0}
+  #panel{position:absolute;left:env(safe-area-inset-left,0px);right:env(safe-area-inset-right,0px);bottom:0;z-index:2}
   #status{
     position:absolute;left:env(safe-area-inset-left,0px);right:env(safe-area-inset-right,0px);top:0;
     height:28px;padding:0 12px;
@@ -620,10 +621,10 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
 </div>
 
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-<script src="mf-audio.js?v=20261022f"></script>
-<script src="mf-patch-ui.js?v=20261022f"></script>
-<script src="mf-fight.js?v=20261022f"></script>
-<script src="mf-net.js?v=20261022f"></script>
+<script src="mf-audio.js?v=20261022g"></script>
+<script src="mf-patch-ui.js?v=20261022g"></script>
+<script src="mf-fight.js?v=20261022g"></script>
+<script src="mf-net.js?v=20261022g"></script>
 <script>
 (function () {
   'use strict';
@@ -957,8 +958,9 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     if (e.cancelable) e.preventDefault();
   }, { passive: false });
 
-  // Short landscape: scale the module row (and the side column) so row + scroll bar + a 32px
-  // fight strip always fit the height. 240px row, 36px bar + 8px case padding; never above 1.
+  // Short landscape: scale the module row (and the side column) so row + scroll bar leave at
+  // least a 32px strip (status line + HP bars) above the panel. 240px row, 36px bar + 8px case
+  // padding; never above 1.
   var SHORT_LANDSCAPE = '(orientation: landscape) and (max-height: 620px)';
   function updateRailZoom() {
     var short = window.matchMedia && window.matchMedia(SHORT_LANDSCAPE).matches;
@@ -970,8 +972,18 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     var z = Math.max(0.5, Math.min(1, avail / 240));
     root.style.setProperty('--mfp-rail-zoom', String(Math.round(z * 1000) / 1000));
   }
-  window.addEventListener('resize', updateRailZoom);
-  window.addEventListener('orientationchange', updateRailZoom);
+  // the uncovered strip above the panel: the fight scene lays its bars out in it
+  function updateBand() {
+    if (!window.MFFight || typeof MFFight.setBand !== 'function') return;
+    var short = window.matchMedia && window.matchMedia(SHORT_LANDSCAPE).matches;
+    if (!short || !mounted) { MFFight.setBand(0); return; }
+    var pr = $('panel').getBoundingClientRect(), mr = $('match').getBoundingClientRect();
+    MFFight.setBand(pr.top - mr.top);
+  }
+  function onViewportChange() { updateRailZoom(); updateBand(); }
+  window.addEventListener('resize', onViewportChange);
+  window.addEventListener('orientationchange', onViewportChange);
+  if (window.ResizeObserver) new ResizeObserver(function () { updateBand(); }).observe($('panel'));
   updateRailZoom();
 
   // ---------- helpers ----------
@@ -1442,6 +1454,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     if (mounted) return;
     mounted = true;
     MFFight.mount($('fight'));
+    updateBand();
     MFPatchUI.mount($('panel'), {
       onSubmit: function (patch) { fire(patch); },
       // AUTO only wires a simple patch on the panel; the player still presses SEND
