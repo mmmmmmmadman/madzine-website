@@ -65,6 +65,10 @@
 - 測試腳本在 session scratchpad（`/private/tmp/claude-501/-Users-madzine/d4051934-7722-4a2a-87f6-4df4805f8dc3/scratchpad/`，**新 session 可能已清空**）：`run.mjs`（引擎 33 項）、`run-preview.mjs`（21 項）、`vca-run.mjs`（15 項）、`mf-mp3-page.mjs`（整頁打到 KO 兩次＋MP3 檢查）、`mf-multitouch-test.mjs`、`mf-cpu-test.mjs`、`mf-hue-test.mjs`。若已清空，依 SPEC.md 的 API 重寫。
 - 禁止啟動 GUI app 或截圖使用者螢幕；使用者在桌面瀏覽器自己玩。
 
+## 版本號（使用者規則 2026-10-22）
+- 首頁標語下方顯示 `MF_VERSION`（index.html 兩處：`<p id="ver">` 的初始文字與 script 內常數）。**每一次推送都要 +0.0.1**，同時把 css／js 連結的 `?v=` 換新，否則 Safari 會沿用舊檔。
+- 語言／HUE 列與其他貼頂元件離螢幕上緣至少 28px：iOS Safari 把最上緣的點擊留給自己。
+
 ## 強規則（摘自全域 CLAUDE.md）
 - 回覆白話文、短句、不列檔名／函式名、不用表格。
 - 使用者下指令就直接做，不再列清單確認；描述問題時才先列清單。
