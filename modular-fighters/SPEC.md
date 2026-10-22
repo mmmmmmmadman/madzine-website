@@ -10,8 +10,9 @@ Files (one owner each):
                       index.html feeds the panel's top edge to MFFight.setBand(px): the HP bars, the status line and the K.O.
                       text keep the uncovered strip (91 px at 812x375: compact mode, bars at the far sides; under 72 px bars
                       only, in the middle, name + hp inside), the figures stand on the screen floor behind the modules. When
-                      row + bar + a 32 px strip do not fit the height (Safari toolbar up, page zoomed): index.html sets
-                      --mfp-rail-zoom from innerHeight and the row and the side column scale down (0.5..1).
+                      row + bar + a 32 px strip do not fit the height (Safari toolbar up, page zoomed): index.html calls
+                      MFPatchUI.setScale(0.5..1) from innerHeight; the row and the side column scale down with a transform
+                      (never CSS zoom: iPhone Safari's hit testing drifted with it).
                       Home / setup / KO become two columns, every centred screen scrolls when it does not fit. Taller landscape
                       (iPad, desktop) keeps the portrait stack. START requests full screen (Fullscreen API, prefixed fallback),
                       HOME exits; manifest.webmanifest + apple-mobile-web-app-capable for Add to Home Screen.
@@ -91,6 +92,7 @@ window.MFPatchUI
   .getPatch() -> Patch
   .setPatch(patch) — wire a patch onto the current panel (takes over params of matching modules, replaces cables, fires onChange once)
   .setEnabled(bool)
+  .setScale(s) — 0.4..1: scales the module rail and the footer with a transform (layout compensated); 1 = normal
   .autoLockRemaining() -> seconds (float) left of the AUTO lockout, 0 when AUTO is usable.
      AUTO lockout: every new module set (setModules: first panel, after SEND, after rematch) disables AUTO for 10 s.
      The button shows the whole seconds left next to the AUTO label and an accent-dim bar that drains left to right;

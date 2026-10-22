@@ -8,13 +8,13 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Modular Fighters">
-<link rel="manifest" href="manifest.webmanifest?v=20261022g">
+<link rel="manifest" href="manifest.webmanifest?v=20261022h">
 <title>Modular Fighters</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400&family=Noto+Sans+JP:wght@300&display=swap" rel="stylesheet">
 <!-- ?v= on the local css / js: bump the date on every change so Safari does not keep the old files -->
-<link rel="stylesheet" href="mf-patch-ui.css?v=20261022g">
+<link rel="stylesheet" href="mf-patch-ui.css?v=20261022h">
 <script>
   // Apply the saved theme before the first paint. Dark is the default for this game;
   // html[data-theme="light"] is the white theme. Same key as the toggle below (mf_theme).
@@ -193,7 +193,8 @@ button:disabled{opacity:.4;cursor:default}
   margin:0 0 6px;font-weight:300;
 }
 .title b{font-weight:300;color:var(--acc)}
-.sub{font-size:16px;letter-spacing:.14em;color:var(--fg2);text-align:center;margin:0 0 18px}
+.sub{font-size:16px;letter-spacing:.14em;color:var(--fg2);text-align:center;margin:0}
+.ver{font-size:14px;letter-spacing:.14em;color:var(--fg3);text-align:center;margin:-8px 0 12px}
 .big{
   width:100%;max-width:320px;min-height:60px;
   font-size:24px;letter-spacing:.16em;
@@ -201,6 +202,7 @@ button:disabled{opacity:.4;cursor:default}
 .cpurow{display:flex;gap:8px;width:100%;max-width:320px;margin-top:-6px}
 .cpurow button{flex:1 1 0;min-height:44px;font-size:18px;letter-spacing:.12em;padding:0 4px}
 .cpurow button.sel{border-color:var(--acc);color:var(--acc-text)}
+html[lang="ja"] .cpurow button{font-size:17px;letter-spacing:0;white-space:nowrap}   /* むずかしい on one line at 375px */
 .joinrow{display:flex;gap:8px;width:100%;max-width:320px}
 .joinrow button{flex:1 1 0;min-height:60px;font-size:24px;letter-spacing:.16em}
 #code{
@@ -383,8 +385,9 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
   top:calc(8px + env(safe-area-inset-top,0px));
   right:calc(12px + env(safe-area-inset-right,0px));
   display:flex;align-items:center;gap:6px;
-  z-index:40;
+  z-index:60;pointer-events:auto;
 }
+#homebar button{touch-action:manipulation}
 #homebar[hidden]{display:none}
 #home-lang{display:flex;gap:6px;margin-right:6px}
 #home-lang button{
@@ -433,7 +436,8 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
   }
   #home .pane{grid-template-rows:repeat(6,auto)}
   #home .title{grid-area:1/1/4/2;align-self:end;margin:0}
-  #home .sub{grid-area:4/1/7/2;align-self:start;margin:0}
+  #home .sub{grid-area:4/1/5/2;align-self:start;margin:0}
+  #home .ver{grid-area:5/1/7/2;align-self:start;margin:0}
   #btn-cpu{grid-area:1/2/2/3}
   #cpurow{grid-area:2/2/3/3;margin-top:0}
   #btn-create{grid-area:3/2/4/3}
@@ -493,6 +497,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     <div class="pane">
     <h1 class="title">MODULAR <b>FIGHTERS</b></h1>
     <p class="sub" data-i18n="tagline">PATCH. SEND. KNOCK OUT.</p>
+    <p class="ver" id="ver">v1.1.0</p>
     <button id="btn-cpu" class="big pri" type="button" data-i18n="vsCpu">VS CPU</button>
     <div id="cpurow" class="cpurow" role="group" aria-label="CPU difficulty">
       <button id="cpu-easy" type="button" data-cpu="easy" data-i18n="cpuEasy">EASY</button>
@@ -621,10 +626,10 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
 </div>
 
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-<script src="mf-audio.js?v=20261022g"></script>
-<script src="mf-patch-ui.js?v=20261022g"></script>
-<script src="mf-fight.js?v=20261022g"></script>
-<script src="mf-net.js?v=20261022g"></script>
+<script src="mf-audio.js?v=20261022h"></script>
+<script src="mf-patch-ui.js?v=20261022h"></script>
+<script src="mf-fight.js?v=20261022h"></script>
+<script src="mf-net.js?v=20261022h"></script>
 <script>
 (function () {
   'use strict';
@@ -860,6 +865,8 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       creditCode: 'プログラム：MADZINE'
     }
   };
+  var MF_VERSION = '1.1.0';   // shown under the tagline; bump with the ?v= on the css / js links
+  $('ver').textContent = 'v' + MF_VERSION;
   var LANG_KEY = 'mf_lang';
   var THEME_KEY = 'mf_theme';
 
@@ -963,14 +970,13 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
   // padding; never above 1.
   var SHORT_LANDSCAPE = '(orientation: landscape) and (max-height: 620px)';
   function updateRailZoom() {
+    if (!window.MFPatchUI || typeof MFPatchUI.setScale !== 'function') return;
     var short = window.matchMedia && window.matchMedia(SHORT_LANDSCAPE).matches;
-    var root = document.documentElement;
-    if (!short) { root.style.removeProperty('--mfp-rail-zoom'); return; }
+    if (!short) { MFPatchUI.setScale(1); return; }
     var safe = 0;
-    try { safe = parseFloat(getComputedStyle(root).getPropertyValue('--mf-safe-bottom')) || 0; } catch (e) { /* ignore */ }
+    try { safe = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--mf-safe-bottom')) || 0; } catch (e) { /* ignore */ }
     var avail = window.innerHeight - 32 - 44 - safe;
-    var z = Math.max(0.5, Math.min(1, avail / 240));
-    root.style.setProperty('--mfp-rail-zoom', String(Math.round(z * 1000) / 1000));
+    MFPatchUI.setScale(Math.max(0.5, Math.min(1, avail / 240)));
   }
   // the uncovered strip above the panel: the fight scene lays its bars out in it
   function updateBand() {
@@ -1454,6 +1460,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     if (mounted) return;
     mounted = true;
     MFFight.mount($('fight'));
+    updateRailZoom();
     updateBand();
     MFPatchUI.mount($('panel'), {
       onSubmit: function (patch) { fire(patch); },

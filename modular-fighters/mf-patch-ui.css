@@ -379,7 +379,7 @@ html[data-theme="light"] .mfp{
     --mfp-sunk-a:rgba(22,22,22,.4);
     --mfp-bg-a:rgba(18,18,18,.85);
     display:grid;
-    grid-template-columns:minmax(0,1fr) auto;
+    grid-template-columns:minmax(0,1fr) var(--mfp-foot-w,92px);   /* the column reserved for the footer (scaled width when setScale < 1) */
     grid-template-rows:minmax(0,1fr) auto;
     padding-bottom:env(safe-area-inset-bottom,0px);
     background:transparent;
@@ -397,13 +397,13 @@ html[data-theme="light"] .mfp{
   .mfp-pgroup.mfp-out,.mfp-step,.mfp-scope,.mfp-draw{background:var(--mfp-sunk-a)}
   .mfp-jack[data-dir="in"]::before{background:var(--mfp-bg-a)}
   .mfp-jack[data-dir="out"]::before{background:radial-gradient(circle,var(--mfp-bg-a) 0 26%,var(--mfp-acc) 28% 100%)}
-  /* --mfp-rail-zoom: index.html sets it below 1 when row + bar + strip do not fit the height
-     (Safari's toolbar up, or the page zoomed in Safari); the cable SVGs sit outside the rail
-     and the column, so the positions the JS reads stay 1:1 with the cable coordinates */
-  .mfp-rail{height:240px;flex:0 0 auto;background:transparent;zoom:var(--mfp-rail-zoom,1)}
-  .mfp-foot{zoom:var(--mfp-rail-zoom,1);background:transparent}
+  /* when row + bar + strip do not fit the height (Safari's toolbar up, or the page zoomed in
+     Safari) index.html calls MFPatchUI.setScale(): the rail and the footer are scaled with a
+     transform (never CSS zoom: iPhone Safari's hit testing drifted with it) */
+  .mfp-rail{height:240px;flex:0 0 auto;background:transparent}
+  .mfp-foot{background:transparent}
   .mfp-foot{
-    grid-area:1/2/3/3;
+    position:absolute;top:0;right:0;bottom:0;    /* out of the grid's sizing: the row's height never follows the column */
     flex-direction:column;align-items:stretch;justify-content:flex-start;gap:6px;
     width:92px;
     padding:4px 6px calc(4px + env(safe-area-inset-bottom,0px));

@@ -1099,6 +1099,38 @@
     queueRedraw();
   }
 
+  /* ---------- scale (short landscape): transform, never CSS zoom ----------
+     The rail and the footer are scaled with transform (hit testing and getBoundingClientRect
+     follow transforms in every browser; iPhone Safari's zoom hit testing drifted). Transforms
+     do not change layout, so negative margins shrink the boxes to the scaled size: the case's
+     width, the scroll range and the cable overlays all follow. */
+  var scale = 1;
+  function setScale(v) {
+    v = Math.max(0.4, Math.min(1, +v || 1));
+    if (Math.abs(v - scale) < 0.001) return;
+    scale = v;
+    applyScale();
+  }
+  function applyScale() {
+    if (!railEl || !footEl) return;
+    if (scale >= 0.999) {
+      railEl.style.transform = ''; railEl.style.transformOrigin = '';
+      railEl.style.marginBottom = ''; railEl.style.marginRight = '';
+      footEl.style.transform = ''; footEl.style.transformOrigin = '';
+      root.style.removeProperty('--mfp-foot-w');
+    } else {
+      railEl.style.transformOrigin = '0 0';
+      railEl.style.transform = 'scale(' + scale + ')';
+      railEl.style.marginBottom = Math.round(railEl.offsetHeight * (scale - 1)) + 'px';
+      railEl.style.marginRight = Math.round(railEl.offsetWidth * (scale - 1)) + 'px';
+      // the footer column (short landscape: absolute at the right, its grid column reserved by --mfp-foot-w)
+      footEl.style.transformOrigin = '100% 0';
+      footEl.style.transform = 'scale(' + scale + ')';
+      root.style.setProperty('--mfp-foot-w', Math.round(footEl.offsetWidth * scale) + 'px');
+    }
+    queueRedraw();
+  }
+
   function mount(container, o) {
     opts = o || {};
     if (root && root.parentNode) root.parentNode.removeChild(root);
@@ -1158,7 +1190,7 @@
     modules = (list || []).map(function (m) { return { id: String(m.id), type: m.type, params: cloneParams(m.params || {}) }; });
     cables = [];
     nextColor = 0;
-    if (root) { rebuild(); scrollEl.scrollLeft = 0; }
+    if (root) { rebuild(); if (scale < 0.999) applyScale(); scrollEl.scrollLeft = 0; }
     if (modules.length) startAutoLock();
     // after the caller's own follow-up calls (index.html stops the old preview right after
     // setModules): report the new uncabled panel so the engine builds its silent preview
@@ -1544,6 +1576,7 @@
     getPatch: getPatch,
     setPatch: setPatch,
     setEnabled: setEnabled,
+    setScale: setScale,                    // 0.4..1: short landscape scales the row + footer (transform)
     autoLockRemaining: autoLockRemaining,    // seconds left of the AUTO lockout (0 = AUTO usable)
     renderPatchImage: renderPatchImage      // (patch, {theme, title}) -> Promise<Blob image/png>
   };
