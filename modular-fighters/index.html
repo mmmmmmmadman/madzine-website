@@ -8,13 +8,13 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Modular Fighters">
-<link rel="manifest" href="manifest.webmanifest?v=20261022i">
+<link rel="manifest" href="manifest.webmanifest?v=20261022j">
 <title>Modular Fighters</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400&family=Noto+Sans+JP:wght@300&display=swap" rel="stylesheet">
 <!-- ?v= on the local css / js: bump the date on every change so Safari does not keep the old files -->
-<link rel="stylesheet" href="mf-patch-ui.css?v=20261022i">
+<link rel="stylesheet" href="mf-patch-ui.css?v=20261022j">
 <script>
   // Apply the saved theme before the first paint. Dark is the default for this game;
   // html[data-theme="light"] is the white theme. Same key as the toggle below (mf_theme).
@@ -440,8 +440,8 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
   }
   #home .pane{grid-template-rows:repeat(6,auto)}
   #home .title{grid-area:1/1/4/2;align-self:end;margin:0}
-  #home .sub{grid-area:4/1/5/2;align-self:start;margin:0}
-  #home .ver{grid-area:5/1/7/2;align-self:start;margin:0}
+  #home .sub{grid-area:4/1/7/2;align-self:start;margin:0}
+  #home .ver{grid-area:4/1/7/2;align-self:start;margin:26px 0 0}   /* same cell, one line under the tagline */
   #btn-cpu{grid-area:1/2/2/3}
   #cpurow{grid-area:2/2/3/3;margin-top:0}
   #btn-create{grid-area:3/2/4/3}
@@ -630,10 +630,10 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
 </div>
 
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-<script src="mf-audio.js?v=20261022i"></script>
-<script src="mf-patch-ui.js?v=20261022i"></script>
-<script src="mf-fight.js?v=20261022i"></script>
-<script src="mf-net.js?v=20261022i"></script>
+<script src="mf-audio.js?v=20261022j"></script>
+<script src="mf-patch-ui.js?v=20261022j"></script>
+<script src="mf-fight.js?v=20261022j"></script>
+<script src="mf-net.js?v=20261022j"></script>
 <script>
 (function () {
   'use strict';
