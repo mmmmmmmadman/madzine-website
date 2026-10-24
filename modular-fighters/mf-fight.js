@@ -56,7 +56,9 @@
     osc:     { name: 'osc',     src: 'assets/osc.mp4',     facing: 1 },
     tatata5: { name: 'tatata5', src: 'assets/tatata5.mp4', facing: 1 },
     moddict: { name: 'moddict', src: 'assets/moddict.mp4', facing: -1 },
-    mad:     { name: 'mad',     src: 'assets/mad.mp4',     facing: -1 }
+    mad:     { name: 'mad',     src: 'assets/mad.mp4',     facing: -1 },
+    hataken: { name: 'hataken', src: 'assets/hataken.mp4', facing: -1 },
+    zhyper:  { name: 'zhyper',  src: 'assets/zhyper.mp4',  facing: -1 }
   };
   var SIDES = {
     left: { name: 'osc', src: 'assets/osc.mp4', color: COLOR_LEFT, facing: 1, native: 1 },

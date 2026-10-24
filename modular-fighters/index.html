@@ -8,13 +8,13 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Modular Fighters">
-<link rel="manifest" href="manifest.webmanifest?v=20261022l">
+<link rel="manifest" href="manifest.webmanifest?v=20261024a">
 <title>Modular Fighters</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400&family=Noto+Sans+JP:wght@300&display=swap" rel="stylesheet">
 <!-- ?v= on the local css / js: bump the date on every change so Safari does not keep the old files -->
-<link rel="stylesheet" href="mf-patch-ui.css?v=20261022l">
+<link rel="stylesheet" href="mf-patch-ui.css?v=20261024a">
 <script>
   // Apply the saved theme before the first paint. Dark is the default for this game;
   // html[data-theme="light"] is the white theme. Same key as the toggle below (mf_theme).
@@ -500,7 +500,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     <div class="pane">
     <h1 class="title">MODULAR <b>FIGHTERS</b></h1>
     <p class="sub" data-i18n="tagline">PATCH. SEND. KNOCK OUT.</p>
-    <p class="ver" id="ver">v1.1.2</p>
+    <p class="ver" id="ver">v1.1.3</p>
     <button id="btn-cpu" class="big pri" type="button" data-i18n="vsCpu">VS CPU</button>
     <div id="cpurow" class="cpurow" role="group" aria-label="CPU difficulty">
       <button id="cpu-easy" type="button" data-cpu="easy" data-i18n="cpuEasy">EASY</button>
@@ -536,6 +536,14 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       <button id="tile-mad" class="tile" type="button" data-char="mad">
         <video src="assets/mad.mp4" muted loop playsinline autoplay preload="auto" aria-hidden="true"></video>
         <span>MAD</span>
+      </button>
+      <button id="tile-hataken" class="tile" type="button" data-char="hataken">
+        <video src="assets/hataken.mp4" muted loop playsinline autoplay preload="auto" aria-hidden="true"></video>
+        <span>HATAKEN</span>
+      </button>
+      <button id="tile-zhyper" class="tile" type="button" data-char="zhyper">
+        <video src="assets/zhyper.mp4" muted loop playsinline autoplay preload="auto" aria-hidden="true"></video>
+        <span>Z_HYPER</span>
       </button>
     </div>
     <p class="lbl" data-i18n="background">BACKGROUND</p>
@@ -629,10 +637,10 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
 </div>
 
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-<script src="mf-audio.js?v=20261022l"></script>
-<script src="mf-patch-ui.js?v=20261022l"></script>
-<script src="mf-fight.js?v=20261022l"></script>
-<script src="mf-net.js?v=20261022l"></script>
+<script src="mf-audio.js?v=20261024a"></script>
+<script src="mf-patch-ui.js?v=20261024a"></script>
+<script src="mf-fight.js?v=20261024a"></script>
+<script src="mf-net.js?v=20261024a"></script>
 <script>
 (function () {
   'use strict';
@@ -868,7 +876,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       creditCode: 'プログラム：MADZINE'
     }
   };
-  var MF_VERSION = '1.1.2';   // shown under the tagline; +0.0.1 on EVERY push (user rule 2026-10-22), with the ?v= on the css / js links
+  var MF_VERSION = '1.1.3';   // shown under the tagline; +0.0.1 on EVERY push (user rule 2026-10-22), with the ?v= on the css / js links
   $('ver').textContent = 'v' + MF_VERSION;
   var LANG_KEY = 'mf_lang';
   var THEME_KEY = 'mf_theme';
@@ -916,7 +924,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
 
   // ---------- setup state (character + local background) ----------
   // Characters: any character can stand on either side (you are always LEFT, the opponent RIGHT).
-  var CHAR_IDS = ['osc', 'moddict', 'tatata5', 'mad'];
+  var CHAR_IDS = ['osc', 'moddict', 'tatata5', 'mad', 'hataken', 'zhyper'];
   var myChar = 'osc';           // one of CHAR_IDS
   var foeChar = null;
   var bgEl = null;              // HTMLImageElement | HTMLVideoElement | null (local only)

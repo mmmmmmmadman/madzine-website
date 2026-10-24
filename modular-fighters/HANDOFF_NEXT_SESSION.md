@@ -18,16 +18,16 @@
 - `mf-patch-ui.js` + `mf-patch-ui.css`：`window.MFPatchUI` 模組面板（旋鈕、接線、SEQ5、DRAW、示波器、AUTO 鎖定、滑桿、多點、配線圖 PNG）
 - `mf-fight.js`：`window.MFFight` 上半場（角色影片、HP、攻擊動畫、CPU 對手與閒置攻擊、KO）
 - `mf-net.js`：`window.MFNet` PeerJS 1.5.4 房間碼（前綴 mf-、4 碼、2 人、host 權威）
-- 角色四個（2026-10-21）：osc、tatata5 原圖面右；moddict、mad 原圖面左。**任一角色可站左或右**：自己永遠左、對手永遠右；原圖面向與站位不同時在去背階段水平鏡像（2026-10-21 使用者裁示，取代舊「不鏡像、選角決定左右」）。CPU 對手＝其他三個隨機；連線兩人可選同角色。來源是下載資料夾的「X motion.mp4」2100×2100，轉 600×600 12fps h264
+- 角色六個（2026-10-24）：osc、tatata5 原圖面右；moddict、mad、hataken、zhyper 原圖面左。**任一角色可站左或右**：自己永遠左、對手永遠右；原圖面向與站位不同時在去背階段水平鏡像（2026-10-21 使用者裁示，取代舊「不鏡像、選角決定左右」）。CPU 對手＝其他五個隨機；連線兩人可選同角色。來源是下載資料夾的「X motion.mp4」2100×2100，轉 600×600 12fps h264
 
 ## 目前狀態（全部已 commit 並 push）
-- 版本 v1.1.2。最新 commit 見 git log：2026-10-22 橫向版面定案與 iPhone Safari 三個實機問題（`31daf78`…），2026-10-21 四角色＋鏡像（`768c54d`、`192710f`），更早見 DEVLOG。
+- 版本 v1.1.3（2026-10-24 加 HATAKEN、Z_HYPER 兩角色，共六個）。最新 commit 見 git log：2026-10-22 橫向版面定案與 iPhone Safari 三個實機問題（`31daf78`…），2026-10-21 四角色＋鏡像（`768c54d`、`192710f`），更早見 DEVLOG。
 - 工作樹乾淨。
 
 ## 已落地的使用者需求（全部保留，禁改）
 1. 直式畫面；上方兩角色＋HP；下方隨機模組一橫排（270px 高，最小 240px）。**橫向（landscape 且高 ≤ 620px）**：角色畫布整個螢幕高，半透明面板疊在下半（使用者裁示：模組一橫排跨滿版寬、不做左右分區、角色要在半透明模組後面），HP 條與狀態列在面板上方的帶子裡（`MFFight.setBand`），AUTO／SEND／OUT 直欄 92px 在列右端，高度不夠時以 `MFPatchUI.setScale`（transform）縮小；詳 DEVLOG 2026-10-22。
 2. 模組：VCO（可切 LFO、可觸發切換、FM 直流耦合指數式）、MIX VCA（四路、音量可 CV）、LPF、FOLD、立體聲 DELAY、ADSR、AR、SEQ5（直向 fader 一指橫掃、內建 clock）、DRAW（內建 clock）。
-3. 角色：四個任選，自己永遠左、對手永遠右，需要時鏡像（2026-10-21）；背景可匯入照片／影片。
+3. 角色：六個任選，自己永遠左、對手永遠右，需要時鏡像（2026-10-21）；背景可匯入照片／影片。
 4. 攻擊力高 → 角色影片加速（1 到 3 倍），直到下一次送出；對手只在送出那一次扣血。
 5. 說明頁三語（中／英／日）、WHITE／BLACK 主題（預設 BLACK），署名 OSC兄弟（連結 https://oscbrothers.stores.jp/）＋ Programming: MADZINE。右上角問號已刪，說明從首頁 HOW TO PLAY 進，主題切換在說明頁內。
 6. 首頁右上：中／EN／日 ＋ HUE 色圈（含飽和度），角色、HP 條、線條跟著色相。
