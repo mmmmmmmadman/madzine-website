@@ -230,6 +230,27 @@ const I18N = {
             multilang: '三語介面（中 / 日 / 英）'
           }
         },
+        modularfighters: {
+          name: 'Modular Fighters',
+          desc: '瀏覽器模組接線對戰遊戲',
+          platform: 'Web',
+          launch: '開啟應用程式',
+          intro: 'Modular Fighters 是在瀏覽器執行的對戰遊戲，以手機直向操作為主。畫面上半是兩位角色與血量，下半是每回合隨機放入的模組。從輸出孔拖線到輸入孔，聲音接到 OUT 就會發出，接線時就聽得到。<br><br>攻擊力來自接線的複雜度：模組越多、線越多、調變越多，傷害越高。AUTO 會幫你接好一組簡單的線，按 SEND 才會攻擊；SEND 送出攻擊並換一批新模組，送出的聲音會循環播放成為配樂，攻擊力越高角色動作越快。對手的聲音會和你的一起播放。<br><br>建立房間後把房號給朋友，兩人即可連線對戰；沒有對手時可對戰電腦，有三種難度。六個角色任選，背景可匯入裝置內的照片或影片，只留在你的裝置上。整場對戰的聲音會自動錄下來，KO 後可下載 MP3。首頁右上角可切換中、日、英三語與色相色圈，說明頁內可切換黑底／白底主題。<br><br>角色圖像與 logo 由 OSC兄弟繪製，程式由 MADZINE 開發。角色圖像與 logo 之著作權屬 OSC兄弟，程式著作權屬 MADZINE，未經許可請勿轉載。',
+          copyright: '角色圖像與 logo 之著作權屬 OSC兄弟，程式著作權屬 MADZINE，未經許可請勿轉載。',
+          features: {
+            layout: '直式畫面：上方兩位角色與血量，下方每回合隨機放入的模組',
+            patch: '從輸出孔拖線到輸入孔，接到 OUT 就發聲，接線時就聽得到',
+            power: '攻擊力來自接線的複雜度：模組越多、線越多、調變越多，傷害越高',
+            send: 'SEND 送出攻擊並換一批新模組；AUTO 幫你接好一組簡單的線',
+            modules: '模組：VCO/LFO、四軌混音器、低通濾波器、波形摺疊、立體聲延遲、ADSR、AR、五步音序器、手繪調變',
+            net: '房間碼連線：建立房間後把房號給朋友，兩人即可對戰',
+            cpu: '無對手時可對戰電腦，三種難度',
+            characters: '六個角色任選，背景可匯入裝置內的照片或影片',
+            record: '整場對戰自動錄音，KO 後可下載 MP3',
+            theme: '黑底／白底主題與色相色圈，角色、血量條、線條跟著色相',
+            multilang: '三語介面（中 / 日 / 英）'
+          }
+        },
         vfm: {
           name: 'Visual Feedback Machine',
           desc: '即時混沌音訊處理，Lorenz 吸引子、相機輪廓偵測與移動偵測',
@@ -702,6 +723,27 @@ const I18N = {
             multilang: 'Trilingual interface (Chinese / Japanese / English)'
           }
         },
+        modularfighters: {
+          name: 'Modular Fighters',
+          desc: 'Browser-based modular patching fighting game',
+          platform: 'Web',
+          launch: 'Launch App',
+          intro: 'Modular Fighters is a fighting game that runs in the browser, designed mainly for phones in portrait. The top of the screen shows the two fighters and their HP; the bottom is a case filled with random modules every round. Drag cables from outputs to inputs; the sound plays as soon as it reaches OUT, so you hear it while you patch.<br><br>Attack power comes from patch complexity: more modules, more cables and more modulation mean more damage. AUTO wires a simple patch for you; press SEND to attack. SEND attacks and gives you new modules, the sound you sent loops as the music, and higher power makes your fighter move faster. The opponent\'s sound plays together with yours.<br><br>Create a room and give the code to a friend to fight online; with no opponent, fight the computer at one of three difficulties. Choose from six fighters, and use a photo or video from your device as the background; it stays on your device only. The sound of the whole match is recorded and can be downloaded as MP3 after KO. The top-right of the home screen switches between Chinese, Japanese and English and sets the hue with a colour ring; the help page switches between black and white themes.<br><br>Character art and logo by OSC兄弟; programming by MADZINE. Copyright of the character art and logo belongs to OSC兄弟; copyright of the program belongs to MADZINE. Do not reproduce without permission.',
+          copyright: 'Copyright of the character art and logo belongs to OSC兄弟; copyright of the program belongs to MADZINE. Do not reproduce without permission.',
+          features: {
+            layout: 'Portrait layout: two fighters and their HP on top, random modules below every round',
+            patch: 'Drag cables from outputs to inputs; the sound plays as soon as it reaches OUT',
+            power: 'Attack power comes from patch complexity: more modules, cables and modulation mean more damage',
+            send: 'SEND attacks and gives you new modules; AUTO wires a simple patch for you',
+            modules: 'Modules: VCO/LFO, 4-channel mixer, low-pass filter, wavefolder, stereo delay, ADSR, AR, 5-step sequencer, draw modulator',
+            net: 'Room code play: create a room, give the code to a friend and fight online',
+            cpu: 'Fight the computer when no opponent is around, three difficulties',
+            characters: 'Six fighters to choose from; use a photo or video from your device as the background',
+            record: 'The whole match is recorded; download it as MP3 after KO',
+            theme: 'Black / white theme and a hue ring; fighters, HP bars and cables follow the hue',
+            multilang: 'Trilingual interface (Chinese / Japanese / English)'
+          }
+        },
         vfm: {
           name: 'Visual Feedback Machine',
           desc: 'Real-time chaotic audio processing with Lorenz attractor, camera contour detection and motion detection',
@@ -1171,6 +1213,27 @@ const I18N = {
             clear: 'CLEAR：キャラクターをすべて消し、枠をフィールド全体に戻す',
             tilt: '手のひらボタン：傾きモード、スマホを傾けてボールを転がす。SLIP が大きいほど速い',
             theme: '黒背景／白背景の切り替え',
+            multilang: '3 言語インターフェース（中国語 / 日本語 / 英語）'
+          }
+        },
+        modularfighters: {
+          name: 'Modular Fighters',
+          desc: 'ブラウザで遊ぶモジュラーパッチ対戦ゲーム',
+          platform: 'Web',
+          launch: 'アプリを開く',
+          intro: 'Modular Fighters はブラウザで動く対戦ゲームで、スマホの縦向き操作を主にしています。画面の上半分は二人のキャラクターと HP、下半分は毎回ランダムなモジュールが入るケースです。出力ジャックから入力ジャックへケーブルをドラッグし、OUT につながるとすぐ音が鳴るので、つなぎながら聴けます。<br><br>攻撃力はパッチの複雑さで決まります。モジュール、ケーブル、モジュレーションが多いほどダメージが大きくなります。AUTO はかんたんなパッチをつないでくれます。攻撃するには SEND を押します。SEND で攻撃し、新しいモジュールに入れ替わり、送った音はループして音楽になります。攻撃力が高いほどキャラクターの動きが速くなります。相手の音はあなたの音と一緒に鳴ります。<br><br>ルームを作成して 4 文字のコードを友だちに伝えればオンラインで対戦できます。相手がいないときは CPU と対戦でき、難易度は 3 段階です。キャラクターは 6 人から選べ、背景には端末内の写真や動画を使えます。端末の外には送信されません。試合の音は全部録音され、KO のあとに MP3 でダウンロードできます。ホーム画面の右上で中国語・日本語・英語の切り替えと色相リングによるメインカラーの変更ができ、あそびかたの画面で黒背景／白背景を切り替えられます。<br><br>キャラクターのイラストとロゴは OSC兄弟、プログラムは MADZINE が制作。キャラクター画像とロゴの著作権は OSC兄弟、プログラムの著作権は MADZINE に帰属します。無断転載を禁じます。',
+          copyright: 'キャラクター画像とロゴの著作権は OSC兄弟、プログラムの著作権は MADZINE に帰属します。無断転載を禁じます。',
+          features: {
+            layout: '縦画面：上に二人のキャラクターと HP、下に毎回ランダムなモジュール',
+            patch: '出力ジャックから入力ジャックへケーブルをドラッグ、OUT につながるとすぐ音が鳴る',
+            power: '攻撃力はパッチの複雑さで決まる：モジュール、ケーブル、モジュレーションが多いほどダメージが大きい',
+            send: 'SEND で攻撃し、新しいモジュールに入れ替わる。AUTO はかんたんなパッチをつないでくれる',
+            modules: 'モジュール：VCO/LFO、4ch ミキサー、ローパスフィルター、ウェーブフォルダー、ステレオディレイ、ADSR、AR、5 ステップシーケンサー、手描きモジュレーター',
+            net: 'ルームコード対戦：ルームを作成してコードを友だちに伝えればオンラインで対戦',
+            cpu: '相手がいないときは CPU と対戦、難易度は 3 段階',
+            characters: 'キャラクターは 6 人から選択、背景には端末内の写真や動画を使える',
+            record: '試合の音を全部録音、KO のあとに MP3 でダウンロード',
+            theme: '黒背景／白背景のテーマと色相リング。キャラクター、HP バー、ケーブルが色相に追従',
             multilang: '3 言語インターフェース（中国語 / 日本語 / 英語）'
           }
         },

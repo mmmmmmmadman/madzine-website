@@ -1,5 +1,13 @@
 # MADZINE Website 開發紀錄
 
+## 2026-10-24
+
+### Modular Fighters：新增角色 HATAKEN、Z_Hyper，官網入口頁
+
+- 遊戲角色由四個增為六個（v1.1.3 → v1.1.4）：新增 HATAKEN、Z_Hyper，影片來源為下載資料夾的「HATAKEN motion.mp4」「z_Hyper motion.mp4」，轉 600×600 12fps h264 放 `modular-fighters/assets/`；兩者原圖皆面左。選角畫面兩欄三排
+- 使用者裁示新增官網入口（推翻 2026-10-16「不做入口頁」）：新增 `modularfighters.html`（結構複製 oscbounce.html，無 YouTube 影片區塊，只有一張截圖），`software.html` 在 OSC Bounce 下方加一列，`js/i18n.js` 三語新增 `apps.modularfighters`
+- 預覽圖 `assets/images/software/Modular_Fighters_1.jpg`：無頭 Chrome 截遊戲首頁，960×1483 與 OSC_Bounce_1.jpg 同尺寸
+
 ## 2026-10-22
 
 ### Modular Fighters v1.1.1：橫向版面定案、iPhone Safari 三個實機問題
