@@ -7,7 +7,7 @@
 - 使用者規則：HATAKEN 的攻擊力是一般的 1.3 倍。`index.html` 加 `CHAR_POWER = { hataken: 1.3 }`，在攻擊產生處套用：自己送出時 `fire()` 以 `charPower(myChar, score)`；CPU 對手走 `cpu.start` 的 callback 以 `charPower(foeChar, power)`（在難度倍率之後）；連線對手由對方端乘好再送來，收端不再乘。顯示的攻擊力、扣血（×0.5）、角色加速全部跟著乘後的值走
 - 上限由 100 放寬到 130（`incoming` 的 clamp、`mf-fight.js` 新增 `MAX_POWER`，`attack` 與 `rateFor` 改用；加速仍封頂 3 倍）
 - 驗證（無頭）：自己選 HATAKEN，AUTO 配線算分 20 → 狀態列 26、對手扣 13；自己選 OSC、CPU 對手抽到 HATAKEN 時，原始分 26 × 難度 0.6 = 16 → 收到 21；對手非 HATAKEN 時 60 → 36 不乘
-- 說明頁三語加一段「角色：六位任選。HATAKEN 的攻擊力是其他角色的 1.3 倍。」（v1.1.6）
+- 說明頁**不寫**這件事（v1.1.6 曾加一段三語說明，v1.1.7 依使用者裁示移除：倍率是隱藏設定，不讓玩家知道）
 
 ### 軟體介紹頁手機版 hero 裁切治本（16 頁）
 
