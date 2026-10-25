@@ -8,6 +8,7 @@
   'use strict';
 
   var MAX_HP = 100;
+  var MAX_POWER = 130;       // attack power may exceed 100 by a character multiplier (HATAKEN 1.3x, index.html)
   var DAMAGE_SCALE = 0.5;
   var COLOR_LEFT = '#e8846c';            // osc (coral); replaced by the page --acc token (HUE wheel), see refreshAccent
   var COLOR_RIGHT = 'hsl(215,22%,62%)';  // moddict (cool grey-blue)
@@ -379,8 +380,8 @@
   }
 
   function rateFor(power) {
-    var p = Math.max(0, Math.min(MAX_HP, Number(power) || 0));
-    return Math.max(1, Math.min(3, 1 + (p / MAX_HP) * 2));
+    var p = Math.max(0, Math.min(MAX_POWER, Number(power) || 0));
+    return Math.max(1, Math.min(3, 1 + (p / MAX_HP) * 2));   // 3x from power 100 up
   }
 
   function applyRates() {
@@ -451,7 +452,7 @@
   function attack(who, power) {
     if (who !== 'me' && who !== 'foe') return;
     if (dead) return;
-    var p = Math.max(0, Math.min(MAX_HP, Math.round(Number(power) || 0)));
+    var p = Math.max(0, Math.min(MAX_POWER, Math.round(Number(power) || 0)));
     rates[who] = rateFor(p);
     applyRates();
     queue.push({ who: who, power: p });
