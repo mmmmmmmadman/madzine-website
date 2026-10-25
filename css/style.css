@@ -800,3 +800,22 @@ main {
     font-size: var(--text-xl);
   }
 }
+
+/* ==========================================================================
+   Bottom bar — mobile: let the three groups wrap instead of squeezing the
+   nav links into one character per line (2026-10-25, Open Call link added)
+   ========================================================================== */
+
+@media (max-width: 640px) {
+  .bottom-bar {
+    flex-wrap: wrap;
+    gap: var(--space-3) var(--space-4);
+  }
+  .bottom-bar__nav {
+    flex-wrap: wrap;
+    row-gap: var(--space-2);
+  }
+  .bottom-bar__nav a {
+    white-space: nowrap;
+  }
+}

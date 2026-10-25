@@ -2,6 +2,14 @@
 
 ## 2026-10-25
 
+### Open Call 頁加入海報與動態海報影片；手機版底部導覽治本
+
+- 使用者提供三張海報（視覺 @xinhsin）與一支 4 秒動態海報影片。海報存 `assets/images/opencall/poster_1..3.jpg`（原尺寸 1144×1430 / 834×1040，JPEG q86 重壓）；影片原檔 720×900、150fps、無音軌，以 ffmpeg 轉 30fps h264 yuv420p faststart 存 `assets/video/opencall_poster.mp4`（615 KB），首幀另存 `poster_video_frame.jpg` 當 `<video poster>`
+- `open-call.html` 標題下新增 hero 區：動態海報 `<video autoplay muted loop playsinline>`（最大寬 480px、4:5），下方三張海報縮圖（120×150，手機 96×120），點擊開 lightbox；lightbox 樣式與 `switchImage` / `openLightbox` / `closeLightbox` 沿用 visionmod.html 寫法，`js/main.js` 的 Lightbox 自動掛上前後鈕與方向鍵
+- **手機版底部導覽一字一行治本**：各頁 `.bottom-bar` 為行內 CSS、`display:flex` 無 wrap，390px 寬下版權 + 五個導覽連結 + 語言鈕擠在一列，日文連結被壓成每字一行（使用者截圖的 research 頁即此症狀；加了 Open Call 後更糟）。修法為在共用 `css/style.css` 末尾加 `@media (max-width: 640px)`：`.bottom-bar` 與 `.bottom-bar__nav` 改 `flex-wrap: wrap`、連結 `white-space: nowrap`。各頁行內樣式沒設 wrap，共用規則直接生效，不必動 35 個頁面。量測 contact / research / software / works / open-call 五頁 390px 三語，連結高度全回到單行 24px，底部欄不再溢出
+- 附帶發現（未修，非本次造成）：works.html 日文模式 390px 有一筆 `.works-v1__row-title` 過長溢出 16px
+- 驗證：無頭 Chromium 影片自動播放（currentTime 推進、720×900）、lightbox 開關 / 方向鍵切換 / Esc 關閉、零 console error
+
 ### Open Call 頁換上 2026 Taiwan Tour 徵選辦法
 
 - 內容來源：使用者貼上的 Patreon 貼文（post 171658751，10/7；本 session 網路政策擋 patreon.com，無法直接抓）

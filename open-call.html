@@ -24,6 +24,67 @@
     .section__title { color: #FF6B6B; }
     .section__subtitle { letter-spacing: var(--tracking-wide); }
 
+    /* ── Hero: animated poster + poster thumbnails ── */
+    .oc-hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-6);
+      margin: 0 0 var(--space-16);
+    }
+    .oc-hero__video {
+      display: block;
+      width: 100%;
+      max-width: 480px;
+      aspect-ratio: 4 / 5;
+      object-fit: cover;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-lg);
+      background: var(--surface-sunken);
+    }
+    .thumb-strip {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+    .thumb-strip__item {
+      width: 120px;
+      height: 150px;
+      object-fit: cover;
+      object-position: top;
+      flex-shrink: 0;
+      border-radius: var(--radius-sm);
+      border: 2px solid var(--border-default);
+      cursor: pointer;
+      opacity: 0.75;
+      transition:
+        opacity var(--duration-normal) var(--ease-default),
+        border-color var(--duration-normal) var(--ease-default);
+    }
+    .thumb-strip__item:hover { opacity: 1; }
+    .thumb-strip__item.active {
+      opacity: 1;
+      border-color: var(--color-primary);
+    }
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      background: oklch(0.10 0.005 55 / 0.92);
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .lightbox.is-open { display: flex; }
+    .lightbox img {
+      max-width: 90vw;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: var(--radius-sm);
+    }
+
     /* ── Key facts ── */
     .oc-facts {
       display: grid;
@@ -97,6 +158,7 @@
 
     @media (max-width: 640px) {
       .oc-facts { grid-template-columns: 1fr; }
+      .thumb-strip__item { width: 96px; height: 120px; }
       .oc-kv > li { grid-template-columns: 1fr; gap: var(--space-1); }
       .bottom-bar { flex-wrap: wrap; gap: var(--space-3); }
     }
@@ -111,6 +173,20 @@
         <div class="section__header">
           <h1 class="section__title" data-i18n="opencall.title">Open Call</h1>
           <p class="section__subtitle" data-i18n="opencall.desc">HATAKEN × SAKAGUCHI × MADZINE 2026 Taiwan Tour 藝術家徵選辦法</p>
+        </div>
+
+        <div class="oc-hero">
+          <video class="oc-hero__video" autoplay muted loop playsinline preload="metadata"
+                 poster="assets/images/opencall/poster_video_frame.jpg"
+                 aria-label="HATAKEN × SAKAGUCHI × MADZINE 2026 Taiwan Tour Open Call">
+            <source src="assets/video/opencall_poster.mp4" type="video/mp4">
+            <img src="assets/images/opencall/poster_video_frame.jpg" alt="HATAKEN × SAKAGUCHI × MADZINE 2026 Taiwan Tour Open Call">
+          </video>
+          <div class="thumb-strip">
+            <img class="thumb-strip__item" src="assets/images/opencall/poster_1.jpg" data-full="assets/images/opencall/poster_1.jpg" alt="Open Call poster 1" onclick="openLightbox(this)">
+            <img class="thumb-strip__item" src="assets/images/opencall/poster_2.jpg" data-full="assets/images/opencall/poster_2.jpg" alt="Open Call poster 2" onclick="openLightbox(this)">
+            <img class="thumb-strip__item" src="assets/images/opencall/poster_3.jpg" data-full="assets/images/opencall/poster_3.jpg" alt="2027 February Taipei / Taichung / Kaohsiung" onclick="openLightbox(this)">
+          </div>
         </div>
 
         <dl class="oc-facts">
@@ -163,6 +239,10 @@
     </section>
   </main>
 
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <img id="lightbox-img" src="" alt="">
+  </div>
+
   <!-- Bottom Bar -->
   <div class="bottom-bar">
     <span class="bottom-bar__copyright" data-i18n="footer.copyright">&copy; 2025 MADZINE. 保留所有權利。</span>
@@ -185,5 +265,25 @@
 
   <script src="js/i18n.js"></script>
   <script src="js/main.js"></script>
+  <script>
+    function switchImage(thumb) {
+      var all = document.querySelectorAll('.thumb-strip__item');
+      for (var i = 0; i < all.length; i++) all[i].classList.remove('active');
+      thumb.classList.add('active');
+    }
+    function openLightbox(thumb) {
+      switchImage(thumb);
+      var img = document.getElementById('lightbox-img');
+      img.src = thumb.dataset.full;
+      img.alt = thumb.alt;
+      document.getElementById('lightbox').classList.add('is-open');
+    }
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('is-open');
+    }
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeLightbox();
+    });
+  </script>
 </body>
 </html>
