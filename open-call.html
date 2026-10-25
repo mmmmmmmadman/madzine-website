@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MADZINE — Open Call</title>
-  <meta name="description" content="MADZINE 徵件與合作邀請">
+  <meta name="description" content="HATAKEN × SAKAGUCHI × MADZINE 2026 Taiwan Tour 藝術家徵選辦法：台北、台中、高雄各徵選 2 名模組合成器藝術家，報名期間 2026/10/20 至 11/1">
   <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/style.css">
   <style>
@@ -22,14 +22,83 @@
     .bottom-bar__nav a:hover { color: var(--color-primary); }
     .bottom-bar__controls { display: flex; align-items: center; gap: var(--space-4); }
     .section__title { color: #FF6B6B; }
-    .opencall-block {
-      margin-bottom: var(--space-12);
+    .section__subtitle { letter-spacing: var(--tracking-wide); }
+
+    /* ── Key facts ── */
+    .oc-facts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4) var(--space-8);
+      margin: 0 0 var(--space-16);
+      padding: var(--space-6) 0;
+      border-top: 1px solid var(--border-default);
+      border-bottom: 1px solid var(--border-default);
     }
-    .opencall-body {
+    .oc-fact { margin: 0; }
+    .oc-fact__label {
+      font-size: var(--text-sm);
+      letter-spacing: var(--tracking-wider);
+      color: var(--text-tertiary);
+      margin-bottom: var(--space-1);
+    }
+    .oc-fact__value {
+      font-size: var(--text-md);
+      color: var(--text-primary);
+      line-height: var(--leading-snug);
+      margin: 0;
+    }
+
+    /* ── Sections ── */
+    .oc-section { margin-bottom: var(--space-12); }
+    .oc-section__title {
+      font-size: var(--text-md);
+      font-weight: var(--weight-medium);
+      color: var(--text-primary);
+      margin-bottom: var(--space-4);
+      padding-bottom: var(--space-2);
+      border-bottom: 1px solid var(--border-default);
+    }
+    .oc-body {
       font-size: var(--text-base);
       color: var(--text-secondary);
-      line-height: 1.7;
-      margin: 0 0 var(--space-4);
+      line-height: var(--leading-relaxed);
+    }
+    .oc-body p { margin: 0 0 var(--space-4); }
+    .oc-body a { color: var(--color-primary); text-decoration: none; }
+    .oc-body a:hover { color: var(--text-primary); }
+    .oc-kv { list-style: none; margin: 0; padding: 0; }
+    .oc-kv > li {
+      display: grid;
+      grid-template-columns: 9.5rem 1fr;
+      gap: var(--space-4);
+      padding: var(--space-2) 0;
+    }
+    .oc-kv__key { color: var(--text-primary); }
+    .oc-kv__val { min-width: 0; }
+    .oc-bullets { margin: 0; padding-left: 1.2em; }
+    .oc-kv .oc-bullets { margin-top: var(--space-1); }
+    .oc-bullets li { margin-bottom: var(--space-2); }
+    .oc-bullets li:last-child { margin-bottom: 0; }
+    .oc-sub {
+      font-size: var(--text-base);
+      color: var(--text-primary);
+      margin: var(--space-6) 0 var(--space-2);
+    }
+    .oc-sub:first-child { margin-top: 0; }
+    .oc-credits {
+      font-size: var(--text-sm);
+      color: var(--text-tertiary);
+      margin: var(--space-16) 0 0;
+      padding-top: var(--space-6);
+      border-top: 1px solid var(--border-default);
+    }
+    .oc-credits a { color: var(--text-secondary); text-decoration: none; }
+    .oc-credits a:hover { color: var(--color-primary); }
+
+    @media (max-width: 640px) {
+      .oc-facts { grid-template-columns: 1fr; }
+      .oc-kv > li { grid-template-columns: 1fr; gap: var(--space-1); }
+      .bottom-bar { flex-wrap: wrap; gap: var(--space-3); }
     }
   </style>
 </head>
@@ -41,19 +110,55 @@
       <div class="container container--narrow">
         <div class="section__header">
           <h1 class="section__title" data-i18n="opencall.title">Open Call</h1>
-          <p class="section__subtitle" data-i18n="opencall.desc">徵件與合作邀請</p>
+          <p class="section__subtitle" data-i18n="opencall.desc">HATAKEN × SAKAGUCHI × MADZINE 2026 Taiwan Tour 藝術家徵選辦法</p>
         </div>
 
-        <div class="opencall-block">
-          <h2 class="contact-section__title" data-i18n="opencall.status.title">目前狀態</h2>
-          <p class="opencall-body" data-i18n="opencall.status.body">目前沒有進行中的徵件。下一波徵件的主題、資格與截止日期會在這裡公告。</p>
-        </div>
+        <dl class="oc-facts">
+          <div class="oc-fact"><dt class="oc-fact__label" data-i18n="opencall.facts.dates.label">巡演日期</dt><dd class="oc-fact__value" data-i18n="opencall.facts.dates.value">2027/2/20 台北 · 2/24 台中 · 2/26 高雄</dd></div>
+          <div class="oc-fact"><dt class="oc-fact__label" data-i18n="opencall.facts.slots.label">徵選名額</dt><dd class="oc-fact__value" data-i18n="opencall.facts.slots.value">共 6 名，每地 2 名</dd></div>
+          <div class="oc-fact"><dt class="oc-fact__label" data-i18n="opencall.facts.period.label">報名期間</dt><dd class="oc-fact__value" data-i18n="opencall.facts.period.value">2026/10/20 – 11/1</dd></div>
+          <div class="oc-fact"><dt class="oc-fact__label" data-i18n="opencall.facts.fee.label">報名費</dt><dd class="oc-fact__value" data-i18n="opencall.facts.fee.value">NT$1,000，含三場 ALL PASS 與工作坊</dd></div>
+          <div class="oc-fact"><dt class="oc-fact__label" data-i18n="opencall.facts.announce.label">結果公布</dt><dd class="oc-fact__value" data-i18n="opencall.facts.announce.value">2026/11/16（一）</dd></div>
+        </dl>
 
-        <div class="opencall-block">
-          <h2 class="contact-section__title" data-i18n="opencall.inquiry.title">洽詢</h2>
-          <p class="opencall-body" data-i18n="opencall.inquiry.body">若有合作提案或想提前了解徵件內容，歡迎來信。</p>
-          <a href="mailto:madzinetw@gmail.com" class="contact-link">madzinetw@gmail.com</a>
-        </div>
+        <article class="oc-section">
+          <h2 class="oc-section__title" data-i18n="opencall.s1.title">一、活動簡介</h2>
+          <div class="oc-body" data-i18n-html="opencall.s1.body"><p>TFoM 主辦人 HATAKEN、SAKAGUCHI 將與 MADZINE 共同展開台灣巡演，於台北、台中、高雄三地舉辦演出與工作坊，並同步公開徵選在地藝術家參與演出，入選藝術家演出內容為 30 分鐘。</p><ul class="oc-kv"><li><span class="oc-kv__key">巡演日期</span><span class="oc-kv__val">2027/2/20（六）台北、2/24（三）台中、2/26（五）高雄</span></li><li><span class="oc-kv__key">演出陣容</span><span class="oc-kv__val">TFoM 主辦人 HATAKEN、SAKAGUCHI、MADZINE，以及本次 Open Call 徵選藝術家（每地 2 名）</span></li></ul></div>
+        </article>
+        <article class="oc-section">
+          <h2 class="oc-section__title" data-i18n="opencall.s2.title">二、徵選名額與對象</h2>
+          <div class="oc-body" data-i18n-html="opencall.s2.body"><ul class="oc-kv"><li><span class="oc-kv__key">徵選名額</span><span class="oc-kv__val">共 6 名（台北、台中、高雄各 2 名）</span></li><li><span class="oc-kv__key">徵選對象</span><span class="oc-kv__val">以模組合成器（Modular Synthesizer）創作者為主，亦歡迎使用電腦或 iPad 執行 VCV Rack 等軟體模組合成器的藝術家報名，並可搭配其他樂器共同演出。演出風格不限，報名者須為可自行安排赴當地演出之藝術家。</span></li></ul></div>
+        </article>
+        <article class="oc-section">
+          <h2 class="oc-section__title" data-i18n="opencall.s3.title">三、報名方式</h2>
+          <div class="oc-body" data-i18n-html="opencall.s3.body"><ul class="oc-kv"><li><span class="oc-kv__key">報名期間</span><span class="oc-kv__val">2026 年 10 月 20 日起至 2026 年 11 月 1 日</span></li><li><span class="oc-kv__key">報名方式</span><span class="oc-kv__val">填寫線上表單，表單將於近期開放</span></li><li><span class="oc-kv__key">應繳交資料</span><span class="oc-kv__val"><ul class="oc-bullets"><li>基本資料：姓名、E-Mail、聯絡方式、所在城市</li><li>作品／演出 Demo：20–30 分鐘純音樂檔（將上傳至街聲作為 PR 宣傳素材），並附上影片檔案，須能清楚呈現整段作品所使用之樂器與發聲方式</li><li>希望參與場次：台北／台中／高雄</li></ul></span></li><li><span class="oc-kv__key">報名費</span><span class="oc-kv__val">新台幣 1,000 元（含三場巡演通用 ALL PASS 及工作坊參與資格）</span></li></ul></div>
+        </article>
+        <article class="oc-section">
+          <h2 class="oc-section__title" data-i18n="opencall.s4.title">四、甄選方式</h2>
+          <div class="oc-body" data-i18n-html="opencall.s4.body"><ul class="oc-kv"><li><span class="oc-kv__key">評選方式</span><span class="oc-kv__val">由 HATAKEN、SAKAGUCHI、MADZINE 三位主理人共同評選，評分標準為完成度、聲音設計、模組使用比例</span></li><li><span class="oc-kv__key">公布方式與時間</span><span class="oc-kv__val">11/16（一）以 MADZINE 粉專公告，並以 E-Mail 發送入選通知</span></li></ul></div>
+        </article>
+        <article class="oc-section">
+          <h2 class="oc-section__title" data-i18n="opencall.s5.title">五、入選權益與義務</h2>
+          <div class="oc-body" data-i18n-html="opencall.s5.body"><ul class="oc-bullets"><li>完成報名繳費者，無論是否入選，均即可獲得 ALL PASS（含三場巡演演出＋工作坊參與資格）</li><li>入選者可登台共同演出，並須配合演出前彩排、宣傳素材拍攝與提供等相關事宜</li></ul></div>
+        </article>
+        <article class="oc-section">
+          <h2 class="oc-section__title" data-i18n="opencall.s6.title">六、活動場次與地點</h2>
+          <div class="oc-body" data-i18n-html="opencall.s6.body"><ul class="oc-kv"><li><span class="oc-kv__key">2027/2/20（六）台北</span><span class="oc-kv__val">空總國家文化基地</span></li><li><span class="oc-kv__key">2027/2/24（三）台中</span><span class="oc-kv__val">The Pillars 柱</span></li><li><span class="oc-kv__key">2027/2/26（五）高雄</span><span class="oc-kv__val">LIVE WAREHOUSE 小庫</span></li></ul></div>
+        </article>
+        <article class="oc-section">
+          <h2 class="oc-section__title" data-i18n="opencall.s7.title">七、票券資訊</h2>
+          <div class="oc-body" data-i18n-html="opencall.s7.body"><ul class="oc-kv"><li><span class="oc-kv__key">演出票價</span><span class="oc-kv__val">預售 800 元，現場票 1,000 元</span></li><li><span class="oc-kv__key">售票平台</span><span class="oc-kv__val">活動上架中</span></li></ul></div>
+        </article>
+        <article class="oc-section">
+          <h2 class="oc-section__title" data-i18n="opencall.s8.title">八、聯絡窗口</h2>
+          <div class="oc-body" data-i18n-html="opencall.s8.body"><ul class="oc-kv"><li><span class="oc-kv__key">電子郵件</span><span class="oc-kv__val"><a href="mailto:madzinetw@gmail.com">madzinetw@gmail.com</a>（MADZINE）</span></li></ul></div>
+        </article>
+        <article class="oc-section">
+          <h2 class="oc-section__title" data-i18n="opencall.s9.title">九、其他注意事項</h2>
+          <div class="oc-body" data-i18n-html="opencall.s9.body"><h3 class="oc-sub">（一）報名資格限制</h3><ul class="oc-bullets"><li>報名者須年滿 18 歲，未滿 18 歲者須經法定代理人（監護人）同意後方可報名。</li><li>報名者須為可自行安排交通並赴指定場次演出之個人或團體，主辦單位不提供交通、住宿補助。</li><li>入選者須全程配合該場次之彩排及演出流程，無法配合者視同放棄資格，由備取藝術家遞補。</li><li>報名資料如有造假、冒名或重複報名等情事，主辦單位有權取消其參賽資格。</li></ul><h3 class="oc-sub">（二）肖像授權與影像使用</h3><ul class="oc-bullets"><li>報名者同意主辦單位及協辦單位於本活動期間（含報名、彩排、演出、工作坊）拍攝之照片、影片、錄音等素材，主辦單位得無償使用於本活動及後續之宣傳、紀錄、社群媒體、新聞稿、官方網站等用途，不限使用地區及次數。</li><li>前項影像之著作財產權歸主辦單位所有，報名者放棄主張任何形式之報酬或費用。</li><li>報名者於 Open Call 階段所提供之演出 Demo 影音檔案，主辦單位得將其用於街聲（StreetVoice）等合作平台之 Playlist 宣傳曝光，報名者同意授權前述用途。</li><li>若報名者對影像使用範圍有特殊疑慮，請於報名時另行書面告知，主辦單位將個別評估。</li></ul><h3 class="oc-sub">（三）活動取消或異動政策</h3><ul class="oc-bullets"><li>如遇不可抗力因素（如天災、疫情、政府法令限制等），主辦單位得取消、延期或變更場地、場次內容，並將盡速以 E-Mail 或官方管道通知已報名者。</li><li>如因前項因素導致活動取消，已繳交之報名費將依實際情況辦理退費或轉為下期活動抵用，詳細辦法屆時另行公告。</li><li>主辦單位保有依報名與甄選狀況調整徵選名額、場次內容及工作坊形式之權利，異動時將公告於官方宣傳管道。</li><li>入選藝術家如因個人因素無法於演出前完成彩排或如期演出，須提前告知主辦單位，以利安排備取遞補；未告知擅自缺席者，主辦單位保留追究相關責任之權利。</li></ul></div>
+        </article>
+
+        <p class="oc-credits" data-i18n-html="opencall.credits">活動企劃：熊也　／　視覺：<a href="https://www.instagram.com/xinhsin/" target="_blank" rel="noopener">@xinhsin</a>　／　<a href="https://www.patreon.com/madzinetw/posts/171658751" target="_blank" rel="noopener">Patreon 原文</a></p>
       </div>
     </section>
   </main>

@@ -34,7 +34,7 @@ const I18N = {
           desc: '合作洽談與社群連結'
         },
         opencall: {
-          desc: '徵件與合作邀請'
+          desc: '2026 Taiwan Tour 藝術家徵選'
         }
       },
       software: {
@@ -456,16 +456,24 @@ const I18N = {
       },
       opencall: {
         title: 'Open Call',
-        desc: '徵件與合作邀請',
-        status: {
-          title: '目前狀態',
-          body: '目前沒有進行中的徵件。下一波徵件的主題、資格與截止日期會在這裡公告。'
+        desc: 'HATAKEN × SAKAGUCHI × MADZINE 2026 Taiwan Tour 藝術家徵選辦法',
+        facts: {
+          dates: { label: '巡演日期', value: '2027/2/20 台北 · 2/24 台中 · 2/26 高雄' },
+          slots: { label: '徵選名額', value: '共 6 名，每地 2 名' },
+          period: { label: '報名期間', value: '2026/10/20 – 11/1' },
+          fee: { label: '報名費', value: 'NT$1,000，含三場 ALL PASS 與工作坊' },
+          announce: { label: '結果公布', value: '2026/11/16（一）' }
         },
-        inquiry: {
-          title: '洽詢',
-          body: '若有合作提案或想提前了解徵件內容，歡迎來信。',
-          email: '電子郵件'
-        }
+        s1: { title: '一、活動簡介', body: '<p>TFoM 主辦人 HATAKEN、SAKAGUCHI 將與 MADZINE 共同展開台灣巡演，於台北、台中、高雄三地舉辦演出與工作坊，並同步公開徵選在地藝術家參與演出，入選藝術家演出內容為 30 分鐘。</p><ul class="oc-kv"><li><span class="oc-kv__key">巡演日期</span><span class="oc-kv__val">2027/2/20（六）台北、2/24（三）台中、2/26（五）高雄</span></li><li><span class="oc-kv__key">演出陣容</span><span class="oc-kv__val">TFoM 主辦人 HATAKEN、SAKAGUCHI、MADZINE，以及本次 Open Call 徵選藝術家（每地 2 名）</span></li></ul>' },
+        s2: { title: '二、徵選名額與對象', body: '<ul class="oc-kv"><li><span class="oc-kv__key">徵選名額</span><span class="oc-kv__val">共 6 名（台北、台中、高雄各 2 名）</span></li><li><span class="oc-kv__key">徵選對象</span><span class="oc-kv__val">以模組合成器（Modular Synthesizer）創作者為主，亦歡迎使用電腦或 iPad 執行 VCV Rack 等軟體模組合成器的藝術家報名，並可搭配其他樂器共同演出。演出風格不限，報名者須為可自行安排赴當地演出之藝術家。</span></li></ul>' },
+        s3: { title: '三、報名方式', body: '<ul class="oc-kv"><li><span class="oc-kv__key">報名期間</span><span class="oc-kv__val">2026 年 10 月 20 日起至 2026 年 11 月 1 日</span></li><li><span class="oc-kv__key">報名方式</span><span class="oc-kv__val">填寫線上表單，表單將於近期開放</span></li><li><span class="oc-kv__key">應繳交資料</span><span class="oc-kv__val"><ul class="oc-bullets"><li>基本資料：姓名、E-Mail、聯絡方式、所在城市</li><li>作品／演出 Demo：20–30 分鐘純音樂檔（將上傳至街聲作為 PR 宣傳素材），並附上影片檔案，須能清楚呈現整段作品所使用之樂器與發聲方式</li><li>希望參與場次：台北／台中／高雄</li></ul></span></li><li><span class="oc-kv__key">報名費</span><span class="oc-kv__val">新台幣 1,000 元（含三場巡演通用 ALL PASS 及工作坊參與資格）</span></li></ul>' },
+        s4: { title: '四、甄選方式', body: '<ul class="oc-kv"><li><span class="oc-kv__key">評選方式</span><span class="oc-kv__val">由 HATAKEN、SAKAGUCHI、MADZINE 三位主理人共同評選，評分標準為完成度、聲音設計、模組使用比例</span></li><li><span class="oc-kv__key">公布方式與時間</span><span class="oc-kv__val">11/16（一）以 MADZINE 粉專公告，並以 E-Mail 發送入選通知</span></li></ul>' },
+        s5: { title: '五、入選權益與義務', body: '<ul class="oc-bullets"><li>完成報名繳費者，無論是否入選，均即可獲得 ALL PASS（含三場巡演演出＋工作坊參與資格）</li><li>入選者可登台共同演出，並須配合演出前彩排、宣傳素材拍攝與提供等相關事宜</li></ul>' },
+        s6: { title: '六、活動場次與地點', body: '<ul class="oc-kv"><li><span class="oc-kv__key">2027/2/20（六）台北</span><span class="oc-kv__val">空總國家文化基地</span></li><li><span class="oc-kv__key">2027/2/24（三）台中</span><span class="oc-kv__val">The Pillars 柱</span></li><li><span class="oc-kv__key">2027/2/26（五）高雄</span><span class="oc-kv__val">LIVE WAREHOUSE 小庫</span></li></ul>' },
+        s7: { title: '七、票券資訊', body: '<ul class="oc-kv"><li><span class="oc-kv__key">演出票價</span><span class="oc-kv__val">預售 800 元，現場票 1,000 元</span></li><li><span class="oc-kv__key">售票平台</span><span class="oc-kv__val">活動上架中</span></li></ul>' },
+        s8: { title: '八、聯絡窗口', body: '<ul class="oc-kv"><li><span class="oc-kv__key">電子郵件</span><span class="oc-kv__val"><a href="mailto:madzinetw@gmail.com">madzinetw@gmail.com</a>（MADZINE）</span></li></ul>' },
+        s9: { title: '九、其他注意事項', body: '<h3 class="oc-sub">（一）報名資格限制</h3><ul class="oc-bullets"><li>報名者須年滿 18 歲，未滿 18 歲者須經法定代理人（監護人）同意後方可報名。</li><li>報名者須為可自行安排交通並赴指定場次演出之個人或團體，主辦單位不提供交通、住宿補助。</li><li>入選者須全程配合該場次之彩排及演出流程，無法配合者視同放棄資格，由備取藝術家遞補。</li><li>報名資料如有造假、冒名或重複報名等情事，主辦單位有權取消其參賽資格。</li></ul><h3 class="oc-sub">（二）肖像授權與影像使用</h3><ul class="oc-bullets"><li>報名者同意主辦單位及協辦單位於本活動期間（含報名、彩排、演出、工作坊）拍攝之照片、影片、錄音等素材，主辦單位得無償使用於本活動及後續之宣傳、紀錄、社群媒體、新聞稿、官方網站等用途，不限使用地區及次數。</li><li>前項影像之著作財產權歸主辦單位所有，報名者放棄主張任何形式之報酬或費用。</li><li>報名者於 Open Call 階段所提供之演出 Demo 影音檔案，主辦單位得將其用於街聲（StreetVoice）等合作平台之 Playlist 宣傳曝光，報名者同意授權前述用途。</li><li>若報名者對影像使用範圍有特殊疑慮，請於報名時另行書面告知，主辦單位將個別評估。</li></ul><h3 class="oc-sub">（三）活動取消或異動政策</h3><ul class="oc-bullets"><li>如遇不可抗力因素（如天災、疫情、政府法令限制等），主辦單位得取消、延期或變更場地、場次內容，並將盡速以 E-Mail 或官方管道通知已報名者。</li><li>如因前項因素導致活動取消，已繳交之報名費將依實際情況辦理退費或轉為下期活動抵用，詳細辦法屆時另行公告。</li><li>主辦單位保有依報名與甄選狀況調整徵選名額、場次內容及工作坊形式之權利，異動時將公告於官方宣傳管道。</li><li>入選藝術家如因個人因素無法於演出前完成彩排或如期演出，須提前告知主辦單位，以利安排備取遞補；未告知擅自缺席者，主辦單位保留追究相關責任之權利。</li></ul>' },
+        credits: '活動企劃：熊也　／　視覺：<a href="https://www.instagram.com/xinhsin/" target="_blank" rel="noopener">@xinhsin</a>　／　<a href="https://www.patreon.com/madzinetw/posts/171658751" target="_blank" rel="noopener">Patreon 原文</a>'
       },
       brand: {
         tagline: '台灣聲音設計師，現居東京'
@@ -544,7 +552,7 @@ const I18N = {
           desc: 'Collaboration inquiries and social links'
         },
         opencall: {
-          desc: 'Calls for submissions and collaboration'
+          desc: '2026 Taiwan Tour call for artists'
         }
       },
       software: {
@@ -966,16 +974,24 @@ const I18N = {
       },
       opencall: {
         title: 'Open Call',
-        desc: 'Calls for submissions and collaboration',
-        status: {
-          title: 'Current Status',
-          body: 'There is no open call at the moment. The theme, eligibility and deadline of the next call will be announced here.'
+        desc: 'HATAKEN × SAKAGUCHI × MADZINE 2026 Taiwan Tour — Call for Artists',
+        facts: {
+          dates: { label: 'Tour dates', value: '20 Feb 2027 Taipei · 24 Feb Taichung · 26 Feb Kaohsiung' },
+          slots: { label: 'Places', value: '6 in total, 2 per city' },
+          period: { label: 'Application period', value: '20 Oct – 1 Nov 2026' },
+          fee: { label: 'Application fee', value: 'NT$1,000, includes a three-show ALL PASS and the workshop' },
+          announce: { label: 'Results', value: 'Mon 16 Nov 2026' }
         },
-        inquiry: {
-          title: 'Inquiries',
-          body: 'For collaboration proposals or questions about upcoming calls, please get in touch by email.',
-          email: 'Email'
-        }
+        s1: { title: '1. About the Tour', body: '<p>HATAKEN and SAKAGUCHI, organisers of TFoM, are joining MADZINE for a Taiwan tour with performances and workshops in Taipei, Taichung and Kaohsiung. Local artists are invited to apply through this open call. Each selected artist performs a 30-minute set.</p><ul class="oc-kv"><li><span class="oc-kv__key">Tour dates</span><span class="oc-kv__val">Sat 20 Feb 2027 Taipei, Wed 24 Feb Taichung, Fri 26 Feb Kaohsiung</span></li><li><span class="oc-kv__key">Line-up</span><span class="oc-kv__val">TFoM organisers HATAKEN and SAKAGUCHI, MADZINE, and the artists selected through this open call (two per city)</span></li></ul>' },
+        s2: { title: '2. Places and Eligibility', body: '<ul class="oc-kv"><li><span class="oc-kv__key">Places</span><span class="oc-kv__val">6 in total (2 each in Taipei, Taichung and Kaohsiung)</span></li><li><span class="oc-kv__key">Who can apply</span><span class="oc-kv__val">Primarily artists working with modular synthesizers. Artists running software modular systems such as VCV Rack on a computer or iPad are also welcome, and other instruments may be combined in the performance. Any style is welcome. Applicants must be able to arrange their own travel to the venue.</span></li></ul>' },
+        s3: { title: '3. How to Apply', body: '<ul class="oc-kv"><li><span class="oc-kv__key">Application period</span><span class="oc-kv__val">20 October to 1 November 2026</span></li><li><span class="oc-kv__key">How</span><span class="oc-kv__val">Online application form, opening soon</span></li><li><span class="oc-kv__key">What to submit</span><span class="oc-kv__val"><ul class="oc-bullets"><li>Basic information: name, email, contact details, city of residence</li><li>Demo of your work or performance: a 20–30 minute audio-only recording (to be uploaded to StreetVoice as promotional material), plus a video that clearly shows the instruments and sound sources used throughout the piece</li><li>Preferred show: Taipei, Taichung or Kaohsiung</li></ul></span></li><li><span class="oc-kv__key">Application fee</span><span class="oc-kv__val">NT$1,000 (includes an ALL PASS valid for all three tour shows and workshop participation)</span></li></ul>' },
+        s4: { title: '4. Selection', body: '<ul class="oc-kv"><li><span class="oc-kv__key">Review</span><span class="oc-kv__val">Applications are reviewed jointly by HATAKEN, SAKAGUCHI and MADZINE. Criteria: completeness, sound design, and the proportion of modular synthesis used</span></li><li><span class="oc-kv__key">Announcement</span><span class="oc-kv__val">Mon 16 Nov 2026 on the MADZINE Facebook page, with selected artists notified by email</span></li></ul>' },
+        s5: { title: '5. Rights and Obligations of Selected Artists', body: '<ul class="oc-bullets"><li>Everyone who completes registration and payment receives an ALL PASS (all three tour shows plus workshop participation), whether or not selected</li><li>Selected artists perform on stage alongside the line-up and are expected to attend the pre-show rehearsal and to cooperate with promotional material shoots and submissions</li></ul>' },
+        s6: { title: '6. Dates and Venues', body: '<ul class="oc-kv"><li><span class="oc-kv__key">Sat 20 Feb 2027, Taipei</span><span class="oc-kv__val">Taiwan Contemporary Culture Lab (C-LAB)</span></li><li><span class="oc-kv__key">Wed 24 Feb 2027, Taichung</span><span class="oc-kv__val">The Pillars</span></li><li><span class="oc-kv__key">Fri 26 Feb 2027, Kaohsiung</span><span class="oc-kv__val">LIVE WAREHOUSE (small hall)</span></li></ul>' },
+        s7: { title: '7. Tickets', body: '<ul class="oc-kv"><li><span class="oc-kv__key">Prices</span><span class="oc-kv__val">Advance NT$800, door NT$1,000</span></li><li><span class="oc-kv__key">Ticketing platform</span><span class="oc-kv__val">To be announced</span></li></ul>' },
+        s8: { title: '8. Contact', body: '<ul class="oc-kv"><li><span class="oc-kv__key">Email</span><span class="oc-kv__val"><a href="mailto:madzinetw@gmail.com">madzinetw@gmail.com</a> (MADZINE)</span></li></ul>' },
+        s9: { title: '9. Terms and Conditions', body: '<h3 class="oc-sub">(1) Eligibility</h3><ul class="oc-bullets"><li>Applicants must be at least 18 years old. Applicants under 18 may apply only with the consent of a legal guardian.</li><li>Applicants, whether individuals or groups, must arrange their own transport to the assigned show. The organiser does not provide travel or accommodation support.</li><li>Selected artists must take part in the full rehearsal and performance schedule of their show. Those unable to do so forfeit their place, which passes to an alternate artist.</li><li>The organiser may disqualify any application found to contain false information, impersonation or duplicate submissions.</li></ul><h3 class="oc-sub">(2) Image Rights and Use of Recordings</h3><ul class="oc-bullets"><li>Applicants agree that photographs, video and audio recorded by the organiser and co-organisers during the event (including registration, rehearsals, performances and workshops) may be used free of charge for the promotion and documentation of this and future events, on social media, in press releases and on official websites, without limit on region or number of uses.</li><li>Copyright in such material belongs to the organiser. Applicants waive any claim to remuneration or fees of any kind.</li><li>Demo audio and video submitted at the open call stage may be used by the organiser for playlist promotion on partner platforms such as StreetVoice. Applicants consent to this use.</li><li>Applicants with specific concerns about the scope of image use should notify the organiser separately in writing when applying. Each case will be assessed individually.</li></ul><h3 class="oc-sub">(3) Cancellation and Changes</h3><ul class="oc-bullets"><li>In the event of force majeure (natural disaster, epidemic, government restrictions and the like), the organiser may cancel, postpone or change the venue or programme, and will notify registered applicants as soon as possible by email or through official channels.</li><li>If the event is cancelled for such reasons, application fees already paid will be refunded or credited toward a future event as circumstances allow. Details will be announced at that time.</li><li>The organiser reserves the right to adjust the number of places, the programme and the workshop format according to applications and selection. Changes will be announced through official channels.</li><li>Selected artists who, for personal reasons, cannot complete the rehearsal or perform as scheduled must inform the organiser in advance so that an alternate can be arranged. The organiser reserves the right to pursue liability for unannounced absence.</li></ul>' },
+        credits: 'Event planning: 熊也 　/　 Visual: <a href="https://www.instagram.com/xinhsin/" target="_blank" rel="noopener">@xinhsin</a> 　/　 <a href="https://www.patreon.com/madzinetw/posts/171658751" target="_blank" rel="noopener">Original post on Patreon</a>'
       },
       brand: {
         tagline: 'Taiwanese Sound Designer based in Tokyo'
@@ -1054,7 +1070,7 @@ const I18N = {
           desc: 'コラボレーションのお問い合わせとソーシャルリンク'
         },
         opencall: {
-          desc: '公募とコラボレーションの募集'
+          desc: '2026 Taiwan Tour アーティスト公募'
         }
       },
       software: {
@@ -1476,16 +1492,24 @@ const I18N = {
       },
       opencall: {
         title: 'Open Call',
-        desc: '公募とコラボレーションの募集',
-        status: {
-          title: '現在の状況',
-          body: '現在募集中の公募はありません。次回の公募のテーマ、応募資格、締切はこちらでお知らせします。'
+        desc: 'HATAKEN × SAKAGUCHI × MADZINE 2026 Taiwan Tour 出演アーティスト公募',
+        facts: {
+          dates: { label: 'ツアー日程', value: '2027/2/20 台北 · 2/24 台中 · 2/26 高雄' },
+          slots: { label: '募集人数', value: '計 6 名、各都市 2 名' },
+          period: { label: '応募期間', value: '2026/10/20 – 11/1' },
+          fee: { label: '応募費', value: '1,000 台湾ドル、3 公演 ALL PASS とワークショップを含む' },
+          announce: { label: '結果発表', value: '2026/11/16（月）' }
         },
-        inquiry: {
-          title: 'お問い合わせ',
-          body: 'コラボレーションのご提案や今後の公募についてのご質問は、メールでお気軽にご連絡ください。',
-          email: 'メール'
-        }
+        s1: { title: '一、イベント概要', body: '<p>TFoM 主宰の HATAKEN、SAKAGUCHI が MADZINE とともに台湾ツアーを行い、台北・台中・高雄の 3 都市でライブとワークショップを開催します。あわせて各地のアーティストを公募し、選出されたアーティストは 30 分のライブを行います。</p><ul class="oc-kv"><li><span class="oc-kv__key">ツアー日程</span><span class="oc-kv__val">2027/2/20（土）台北、2/24（水）台中、2/26（金）高雄</span></li><li><span class="oc-kv__key">出演</span><span class="oc-kv__val">TFoM 主宰 HATAKEN、SAKAGUCHI、MADZINE、および本公募で選出されたアーティスト（各都市 2 名）</span></li></ul>' },
+        s2: { title: '二、募集人数と対象', body: '<ul class="oc-kv"><li><span class="oc-kv__key">募集人数</span><span class="oc-kv__val">計 6 名（台北・台中・高雄 各 2 名）</span></li><li><span class="oc-kv__key">対象</span><span class="oc-kv__val">モジュラーシンセサイザーで制作するアーティストを中心に、PC や iPad で VCV Rack などのソフトウェアモジュラーを使用するアーティストも歓迎します。他の楽器との共演も可。ジャンル不問。会場までの移動を自身で手配できる方に限ります。</span></li></ul>' },
+        s3: { title: '三、応募方法', body: '<ul class="oc-kv"><li><span class="oc-kv__key">応募期間</span><span class="oc-kv__val">2026 年 10 月 20 日から 2026 年 11 月 1 日まで</span></li><li><span class="oc-kv__key">応募方法</span><span class="oc-kv__val">オンラインフォームに記入（フォームは近日公開）</span></li><li><span class="oc-kv__key">提出資料</span><span class="oc-kv__val"><ul class="oc-bullets"><li>基本情報：氏名、メールアドレス、連絡先、居住都市</li><li>作品・ライブのデモ：20〜30 分の音源（PR 素材として StreetVoice にアップロードされます）と、作品全体で使用している楽器と発音方法がはっきり分かる映像</li><li>希望する公演：台北／台中／高雄</li></ul></span></li><li><span class="oc-kv__key">応募費</span><span class="oc-kv__val">1,000 台湾ドル（3 公演共通の ALL PASS とワークショップ参加資格を含む）</span></li></ul>' },
+        s4: { title: '四、審査方法', body: '<ul class="oc-kv"><li><span class="oc-kv__key">審査</span><span class="oc-kv__val">HATAKEN、SAKAGUCHI、MADZINE の 3 名による共同審査。評価基準は完成度、サウンドデザイン、モジュラーの使用比率</span></li><li><span class="oc-kv__key">発表</span><span class="oc-kv__val">2026 年 11 月 16 日（月）に MADZINE の Facebook ページで発表し、選出者にはメールで通知します</span></li></ul>' },
+        s5: { title: '五、選出者の権利と義務', body: '<ul class="oc-bullets"><li>応募と支払いを完了した方は、選出の有無にかかわらず ALL PASS（3 公演の観覧とワークショップ参加資格）を取得できます</li><li>選出者は出演者とともにステージに立ち、公演前のリハーサル、宣伝素材の撮影・提供などに協力していただきます</li></ul>' },
+        s6: { title: '六、公演日程と会場', body: '<ul class="oc-kv"><li><span class="oc-kv__key">2027/2/20（土）台北</span><span class="oc-kv__val">空總國家文化基地（C-LAB）</span></li><li><span class="oc-kv__key">2027/2/24（水）台中</span><span class="oc-kv__val">The Pillars 柱</span></li><li><span class="oc-kv__key">2027/2/26（金）高雄</span><span class="oc-kv__val">LIVE WAREHOUSE 小庫</span></li></ul>' },
+        s7: { title: '七、チケット', body: '<ul class="oc-kv"><li><span class="oc-kv__key">料金</span><span class="oc-kv__val">前売 800 台湾ドル、当日 1,000 台湾ドル</span></li><li><span class="oc-kv__key">販売プラットフォーム</span><span class="oc-kv__val">準備中</span></li></ul>' },
+        s8: { title: '八、お問い合わせ', body: '<ul class="oc-kv"><li><span class="oc-kv__key">メール</span><span class="oc-kv__val"><a href="mailto:madzinetw@gmail.com">madzinetw@gmail.com</a>（MADZINE）</span></li></ul>' },
+        s9: { title: '九、注意事項', body: '<h3 class="oc-sub">（一）応募資格</h3><ul class="oc-bullets"><li>応募者は 18 歳以上であること。18 歳未満の方は法定代理人（保護者）の同意を得た上で応募してください。</li><li>個人・グループを問わず、指定公演の会場まで自身で交通を手配できること。主催者は交通費・宿泊費を負担しません。</li><li>選出者は当該公演のリハーサルと本番の進行にすべて参加すること。参加できない場合は辞退とみなし、補欠アーティストが繰り上がります。</li><li>応募内容に虚偽、なりすまし、重複応募などがあった場合、主催者は資格を取り消すことがあります。</li></ul><h3 class="oc-sub">（二）肖像権と映像の使用</h3><ul class="oc-bullets"><li>応募者は、本イベント期間中（応募、リハーサル、公演、ワークショップを含む）に主催者および共催者が撮影した写真、映像、録音を、主催者が本イベントおよび今後の宣伝、記録、SNS、プレスリリース、公式サイトなどに、地域や回数の制限なく無償で使用することに同意するものとします。</li><li>前項の素材の著作財産権は主催者に帰属し、応募者はいかなる形式の報酬・費用も請求しません。</li><li>応募時に提出されたデモの音源・映像は、StreetVoice などの提携プラットフォームのプレイリストでの宣伝に使用されることがあり、応募者はこれに同意するものとします。</li><li>映像の使用範囲について特別な懸念がある場合は、応募時に別途書面でお知らせください。個別に検討します。</li></ul><h3 class="oc-sub">（三）中止・変更について</h3><ul class="oc-bullets"><li>天災、感染症、法令による制限などの不可抗力により、主催者はイベントの中止、延期、会場や内容の変更を行うことがあります。その場合は応募者にメールまたは公式チャンネルで速やかに通知します。</li><li>前項の理由でイベントが中止となった場合、お支払いいただいた応募費は状況に応じて返金、または次回イベントへの充当とし、詳細は改めて告知します。</li><li>主催者は応募・審査状況に応じて募集人数、公演内容、ワークショップの形式を調整する権利を有し、変更は公式チャンネルで告知します。</li><li>選出アーティストが個人的な事情でリハーサルや本番に参加できない場合は、補欠の手配のため事前に主催者へ連絡してください。連絡なく欠席した場合、主催者は責任を追及する権利を留保します。</li></ul>' },
+        credits: '企画：熊也　／　ビジュアル：<a href="https://www.instagram.com/xinhsin/" target="_blank" rel="noopener">@xinhsin</a>　／　<a href="https://www.patreon.com/madzinetw/posts/171658751" target="_blank" rel="noopener">Patreon の原文</a>'
       },
       brand: {
         tagline: '東京在住の台湾人サウンドデザイナー'
