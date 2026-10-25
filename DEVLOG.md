@@ -2,6 +2,14 @@
 
 ## 2026-10-25
 
+### 軟體介紹頁手機版 hero 裁切治本（16 頁）
+
+- 使用者 iPhone 截圖：modularfighters.html 標題「Modular」上緣被切掉、hero 背景截圖透在「Web」與日文說明文字底下
+- 根因：16 個軟體介紹頁共用的 `.bg-hero { height: 50vh; overflow: hidden; align-items: flex-end }`，手機 Safari 可視高約 660px 時 hero 只有 330px，而內容（返回 + 兩行大標 + 標語 + 平台 + 說明）量到 366px，從上緣溢出 36px 被裁；文字區又剛好落在背景圖透出的位置。桌機 1280×800 hero 400px、內容 311–366px 不受影響
+- 修法：各頁既有 `@media (max-width: 768px)` 區塊加 `.bg-hero { height: auto; min-height: 50vh; }`，hero 隨內容長高、背景圖與漸層跟著覆蓋整塊。不改字級、不改漸層。16 頁以腳本一次插入（anyani / artist-talk-translator / complexrhythmer / decapyramid / edgy / honki / jazzarchitect / mado / modularfighters / oscbounce / sessionguide / vav / visionmod / visual-feedback-machine / watchnext / work-mu）
+- 驗證：無頭 Chromium 390×660、390×844、1280×800 三尺寸 × 16 頁日文深色，內容皆未超出 hero、無橫向溢出；桌機 hero 高度維持 50vh
+- 本 session 網路政策擋 madzine.work，線上版本無法直接 curl 驗證，以 GitHub Actions 部署成功為準
+
 ### Open Call 頁加入海報與動態海報影片；手機版底部導覽治本
 
 - 使用者提供三張海報（視覺 @xinhsin）與一支 4 秒動態海報影片。海報存 `assets/images/opencall/poster_1..3.jpg`（原尺寸 1144×1430 / 834×1040，JPEG q86 重壓）；影片原檔 720×900、150fps、無音軌，以 ffmpeg 轉 30fps h264 yuv420p faststart 存 `assets/video/opencall_poster.mp4`（615 KB），首幀另存 `poster_video_frame.jpg` 當 `<video poster>`
