@@ -85,6 +85,62 @@
       border-radius: var(--radius-sm);
     }
 
+    /* ── Artists ── */
+    .oc-artists { margin-bottom: var(--space-12); }
+    .oc-artist { margin-bottom: var(--space-12); }
+    .oc-artist:last-child { margin-bottom: 0; }
+    .oc-artist__name {
+      font-family: var(--font-display);
+      font-size: var(--text-lg);
+      font-weight: var(--weight-light);
+      letter-spacing: var(--tracking-wide);
+      color: var(--text-primary);
+      margin: 0 0 var(--space-1);
+    }
+    .oc-artist__role {
+      font-size: var(--text-sm);
+      letter-spacing: var(--tracking-wider);
+      color: var(--text-tertiary);
+      margin: 0 0 var(--space-4);
+    }
+    .oc-artist__bio {
+      font-size: var(--text-base);
+      color: var(--text-secondary);
+      line-height: var(--leading-relaxed);
+      margin: 0 0 var(--space-4);
+    }
+    .oc-artist__links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2) var(--space-6);
+      margin-bottom: var(--space-6);
+      font-size: var(--text-sm);
+      letter-spacing: var(--tracking-wide);
+    }
+    .oc-artist__links a { color: var(--color-primary); text-decoration: none; }
+    .oc-artist__links a:hover { color: var(--text-primary); }
+    .oc-artist__caption {
+      font-size: var(--text-sm);
+      color: var(--text-tertiary);
+      margin: var(--space-2) 0 0;
+    }
+    .video-frame {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-default);
+      overflow: hidden;
+      background: var(--surface-sunken);
+    }
+    .video-frame iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
     /* ── Key facts ── */
     .oc-facts {
       display: grid;
@@ -196,6 +252,36 @@
           <div class="oc-fact"><dt class="oc-fact__label" data-i18n="opencall.facts.fee.label">報名費</dt><dd class="oc-fact__value" data-i18n="opencall.facts.fee.value">NT$1,000，含三場 ALL PASS 與工作坊</dd></div>
           <div class="oc-fact"><dt class="oc-fact__label" data-i18n="opencall.facts.announce.label">結果公布</dt><dd class="oc-fact__value" data-i18n="opencall.facts.announce.value">2026/11/16（一）</dd></div>
         </dl>
+
+        <section class="oc-artists">
+          <h2 class="oc-section__title" data-i18n="opencall.artists.title">出演藝術家</h2>
+          <article class="oc-artist">
+            <h3 class="oc-artist__name" data-i18n="opencall.artists.hataken.name">HATAKEN</h3>
+            <p class="oc-artist__role" data-i18n="opencall.artists.hataken.role">Tokyo Festival of Modular 共同創辦人</p>
+            <p class="oc-artist__bio" data-i18n="opencall.artists.hataken.bio">以東京為據點的模組合成器演奏者與電子音樂製作人。1990 年代起活躍於北美、歐洲與亞洲的音樂節和俱樂部，從早期的古董類比合成器演出一路走向模組合成器，被譽為日本模組合成器的推廣者。曾與 Greg Hunter 組成 Wåveshåper、與 SUGIZO 以 SUGIZO × HATAKEN 名義合作，並在 Boom Festival 2012 完成七小時不間斷演出。2013 年共同創辦 Tokyo Festival of Modular（TFoM），在當時尚無模組場景的東京打造孕育新一代模組藝術家與樂迷的平台；2024 年起 TFoM 與 Kansai Festival of Modular 整併為 Festival of Modular（FoM）。近年持續於 DOMMUNE、Modular Commune（北京）等活動演出與授課。</p>
+            <div class="oc-artist__links"><a href="https://hataken.info/" target="_blank" rel="noopener">Official site</a><a href="https://www.youtube.com/@KenHata" target="_blank" rel="noopener">YouTube</a><a href="https://soundcloud.com/hataken" target="_blank" rel="noopener">SoundCloud</a><a href="https://x.com/Hataken_synthes" target="_blank" rel="noopener">X</a></div>
+            <div class="video-frame">
+              <iframe src="https://www.youtube.com/embed/P5J1JC9RhE0?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1"
+                      title="HATAKEN" loading="lazy"
+                      allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowfullscreen></iframe>
+            </div>
+            <p class="oc-artist__caption" data-i18n="opencall.artists.hataken.video">HATAKEN at Modular Commune 24（北京，2024）</p>
+          </article>
+          <article class="oc-artist">
+            <h3 class="oc-artist__name" data-i18n="opencall.artists.sakaguchi.name">Masayoshi Sakaguchi</h3>
+            <p class="oc-artist__role" data-i18n="opencall.artists.sakaguchi.role">Festival of Modular 總籌</p>
+            <p class="oc-artist__bio" data-i18n="opencall.artists.sakaguchi.bio">以關西為據點的模組合成器即興演奏者與 DJ，風格在 industrial、noise、drone、ambient 與 minimal techno 之間自由穿梭。歷經二十年的音樂與聲音研究後，以模組合成器作為創作 IDM、ambient、glitch 與取樣操作的核心樂器。出於對硬體合成器的熱情，於日本各地舉辦工作坊與討論型活動。2019 年創辦 Kansai Festival of Modular（KFoM），2024 年接手 Tokyo Festival of Modular 並將兩者整合為 Festival of Modular（FoM），擔任總籌；2025 年於 EXPO 2025 大阪・關西萬博策劃 Festival of Modular 演出。另主辦 DIY 戶外音樂節 BonDisco，曾參與瀨戶內國際藝術祭 2019 與岡山藝術交流 2022。</p>
+            <div class="oc-artist__links"><a href="https://tfom.info/" target="_blank" rel="noopener">Festival of Modular</a><a href="https://ra.co/dj/masayoshisakaguchi" target="_blank" rel="noopener">Resident Advisor</a><a href="https://x.com/kguchi6" target="_blank" rel="noopener">X</a></div>
+            <div class="video-frame">
+              <iframe src="https://www.youtube.com/embed/Z17ov9iTGGU?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1"
+                      title="Masayoshi Sakaguchi" loading="lazy"
+                      allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowfullscreen></iframe>
+            </div>
+            <p class="oc-artist__caption" data-i18n="opencall.artists.sakaguchi.video">Masayoshi Sakaguchi Live at NOON Osaka</p>
+          </article>
+        </section>
 
         <article class="oc-section">
           <h2 class="oc-section__title" data-i18n="opencall.s1.title">一、活動簡介</h2>

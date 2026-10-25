@@ -9,6 +9,14 @@
 - 驗證（無頭）：自己選 HATAKEN，AUTO 配線算分 20 → 狀態列 26、對手扣 13；自己選 OSC、CPU 對手抽到 HATAKEN 時，原始分 26 × 難度 0.6 = 16 → 收到 21；對手非 HATAKEN 時 60 → 36 不乘
 - 說明頁**不寫**這件事（v1.1.6 曾加一段三語說明，v1.1.7 依使用者裁示移除：倍率是隱藏設定，不讓玩家知道）
 
+### Open Call 頁加入 HATAKEN / Masayoshi Sakaguchi 藝術家介紹與 YouTube 影片
+
+- 位置：重點五格之後、「一、活動簡介」之前，獨立區塊「出演藝術家」，不佔用原辦法的一～九編號。每位：名字、身分一行、介紹、連結列、16:9 YouTube iframe（`loading="lazy"`，參數同站內 `.video-frame` 慣例）、影片說明
+- **資料來源與限制**：本 session 網路政策擋 tfom.info / hataken.info / kfom.info / youtube.com（WebFetch 與 curl 皆 ENOTFOUND / 403），無法讀 Festival of Modular 官網原文。介紹依 WebSearch 回傳的 FoM 官網（tfom.info/hataken、tfom.info/masayoshi-sakaguchi-2025、kfom.info）、hataken.info、RA、MODULARHABIT 2026 頁面摘要改寫，三語為本次撰寫，**非官網逐字稿**。HATAKEN 現職寫「TFoM 共同創辦人」而非「主辦人」：FoM 2024 公告已將 TFoM / KFoM 名稱退役並由 Sakaguchi 總籌 FoM
+- **影片為能查到的最近一支，非「最新」**：HATAKEN = `P5J1JC9RhE0`「HATAKEN at Modular Commune 24」（北京 2024-11）；Sakaguchi = `Z17ov9iTGGU`「Masayoshi Sakaguchi Live at NOON Osaka」（約 2020，搜尋查不到更新的公開影片；FoM 2025 SUPER DOMMUNE 直播存檔可能有但未能確認 ID）。影片 ID 來自搜尋結果標題，本機無法連 YouTube 驗證。換片只需改 `open-call.html` 兩個 iframe src 與三語 `opencall.artists.*.video` 說明
+- 連結：HATAKEN → hataken.info / YouTube @KenHata / SoundCloud / X；Sakaguchi → tfom.info / RA / X
+- 驗證：三語 key 解析、無頭 Chromium 1280 與 390（YouTube 以 route 截斷）無錯誤無溢出
+
 ### 軟體介紹頁手機版 hero 裁切治本（16 頁）
 
 - 使用者 iPhone 截圖：modularfighters.html 標題「Modular」上緣被切掉、hero 背景截圖透在「Web」與日文說明文字底下
