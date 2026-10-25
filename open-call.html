@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MADZINE — Open Call</title>
+  <meta name="description" content="MADZINE 徵件與合作邀請">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .bottom-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) var(--space-6);
+      border-top: 1px solid var(--border-default);
+      font-size: var(--text-sm);
+    }
+    .bottom-bar__copyright { color: var(--text-tertiary); }
+    .bottom-bar__nav { display: flex; align-items: center; gap: var(--space-6); }
+    .bottom-bar__nav a { color: var(--text-secondary); text-decoration: none; transition: color var(--duration-normal) var(--ease-default); }
+    .bottom-bar__nav a:hover { color: var(--color-primary); }
+    .bottom-bar__controls { display: flex; align-items: center; gap: var(--space-4); }
+    .section__title { color: #FF6B6B; }
+    .opencall-block {
+      margin-bottom: var(--space-12);
+    }
+    .opencall-body {
+      font-size: var(--text-base);
+      color: var(--text-secondary);
+      line-height: 1.7;
+      margin: 0 0 var(--space-4);
+    }
+  </style>
+</head>
+<body>
+
+
+  <main>
+    <section class="section">
+      <div class="container container--narrow">
+        <div class="section__header">
+          <h1 class="section__title" data-i18n="opencall.title">Open Call</h1>
+          <p class="section__subtitle" data-i18n="opencall.desc">徵件與合作邀請</p>
+        </div>
+
+        <div class="opencall-block">
+          <h2 class="contact-section__title" data-i18n="opencall.status.title">目前狀態</h2>
+          <p class="opencall-body" data-i18n="opencall.status.body">目前沒有進行中的徵件。下一波徵件的主題、資格與截止日期會在這裡公告。</p>
+        </div>
+
+        <div class="opencall-block">
+          <h2 class="contact-section__title" data-i18n="opencall.inquiry.title">洽詢</h2>
+          <p class="opencall-body" data-i18n="opencall.inquiry.body">若有合作提案或想提前了解徵件內容，歡迎來信。</p>
+          <a href="mailto:madzinetw@gmail.com" class="contact-link">madzinetw@gmail.com</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Bottom Bar -->
+  <div class="bottom-bar">
+    <span class="bottom-bar__copyright" data-i18n="footer.copyright">&copy; 2025 MADZINE. 保留所有權利。</span>
+    <nav class="bottom-bar__nav">
+      <a href="index.html" data-i18n="nav.home">首頁</a>
+      <a href="software.html" data-i18n="nav.software">軟體</a>
+      <a href="works.html" data-i18n="nav.works">作品</a>
+      <a href="contact.html" data-i18n="nav.contact">聯絡</a>
+      <a href="open-call.html" data-i18n="nav.opencall">Open Call</a>
+    </nav>
+    <div class="bottom-bar__controls">
+      <div class="lang-switcher">
+        <button class="lang-btn" data-lang="zh-TW" onclick="I18N.setLang('zh-TW')">中</button>
+        <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
+        <button class="lang-btn" data-lang="ja" onclick="I18N.setLang('ja')">JP</button>
+      </div>
+      <button id="mode-toggle" class="mode-toggle" aria-label="切換深色模式">☽</button>
+    </div>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

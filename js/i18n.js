@@ -11,7 +11,8 @@ const I18N = {
         home: '首頁',
         works: '作品',
         software: '軟體',
-        contact: '聯絡'
+        contact: '聯絡',
+        opencall: 'Open Call'
       },
       hero: {
         title: 'MADZINE',
@@ -31,6 +32,9 @@ const I18N = {
         },
         contact: {
           desc: '合作洽談與社群連結'
+        },
+        opencall: {
+          desc: '徵件與合作邀請'
         }
       },
       software: {
@@ -450,6 +454,19 @@ const I18N = {
           bio: 'MADZINE 是一位旅居歐洲與日本、來自台灣高雄的多媒體藝術家。他透過自然、電子、聲學和數位元素的即興和平衡進行創作。藝術生涯始於東京和柏林，延伸到歐洲和日本的多個展覽和駐地計劃。聲音設計的教育經驗超過十年，並成為Soundfreak 模組合成器品牌的推薦人。此外，他於 2025 年開始進行程式開發，目前已開發了十數種個人專用的音像程式與三十幾種數位模組合成器。'
         }
       },
+      opencall: {
+        title: 'Open Call',
+        desc: '徵件與合作邀請',
+        status: {
+          title: '目前狀態',
+          body: '目前沒有進行中的徵件。下一波徵件的主題、資格與截止日期會在這裡公告。'
+        },
+        inquiry: {
+          title: '洽詢',
+          body: '若有合作提案或想提前了解徵件內容，歡迎來信。',
+          email: '電子郵件'
+        }
+      },
       brand: {
         tagline: '台灣聲音設計師，現居東京'
       },
@@ -504,7 +521,8 @@ const I18N = {
         home: 'Home',
         works: 'Works',
         software: 'Software',
-        contact: 'Contact'
+        contact: 'Contact',
+        opencall: 'Open Call'
       },
       hero: {
         title: 'MADZINE',
@@ -524,6 +542,9 @@ const I18N = {
         },
         contact: {
           desc: 'Collaboration inquiries and social links'
+        },
+        opencall: {
+          desc: 'Calls for submissions and collaboration'
         }
       },
       software: {
@@ -943,6 +964,19 @@ const I18N = {
           bio: 'MADZINE is a multimedia artist from Kaohsiung, Taiwan, based between Europe and Japan. He creates through improvisation and balance of natural, electronic, acoustic, and digital elements. His artistic career began in Tokyo and Berlin, extending to numerous exhibitions and residency programs across Europe and Japan. With over a decade of experience in sound design education, he serves as an endorsed artist for the Soundfreak modular synthesizer brand. Additionally, he began software development in 2025, and has since developed more than a dozen custom audiovisual applications and over thirty digital modular synthesizers.'
         }
       },
+      opencall: {
+        title: 'Open Call',
+        desc: 'Calls for submissions and collaboration',
+        status: {
+          title: 'Current Status',
+          body: 'There is no open call at the moment. The theme, eligibility and deadline of the next call will be announced here.'
+        },
+        inquiry: {
+          title: 'Inquiries',
+          body: 'For collaboration proposals or questions about upcoming calls, please get in touch by email.',
+          email: 'Email'
+        }
+      },
       brand: {
         tagline: 'Taiwanese Sound Designer based in Tokyo'
       },
@@ -997,7 +1031,8 @@ const I18N = {
         home: 'ホーム',
         works: '作品',
         software: 'ソフトウェア',
-        contact: 'お問い合わせ'
+        contact: 'お問い合わせ',
+        opencall: 'Open Call'
       },
       hero: {
         title: 'MADZINE',
@@ -1017,6 +1052,9 @@ const I18N = {
         },
         contact: {
           desc: 'コラボレーションのお問い合わせとソーシャルリンク'
+        },
+        opencall: {
+          desc: '公募とコラボレーションの募集'
         }
       },
       software: {
@@ -1434,6 +1472,19 @@ const I18N = {
         about: {
           title: 'About',
           bio: 'MADZINEは台湾・高雄出身、ヨーロッパと日本を拠点とするメディアアーティスト。自然・電子・音響・デジタルの要素を即興的にバランスさせ制作する。東京とベルリンでキャリアを始め、欧州と日本で展覧会やレジデンスを展開。サウンドデザインの教育経験は10年以上、Soundfreakモジュラーシンセの推薦アーティスト。2025年よりソフトウェア開発を開始し、十数種の音像アプリケーションと30種以上のデジタルモジュールを開発している。'
+        }
+      },
+      opencall: {
+        title: 'Open Call',
+        desc: '公募とコラボレーションの募集',
+        status: {
+          title: '現在の状況',
+          body: '現在募集中の公募はありません。次回の公募のテーマ、応募資格、締切はこちらでお知らせします。'
+        },
+        inquiry: {
+          title: 'お問い合わせ',
+          body: 'コラボレーションのご提案や今後の公募についてのご質問は、メールでお気軽にご連絡ください。',
+          email: 'メール'
         }
       },
       brand: {

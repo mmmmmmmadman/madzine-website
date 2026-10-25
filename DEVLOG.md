@@ -1,5 +1,14 @@
 # MADZINE Website 開發紀錄
 
+## 2026-10-25
+
+### 新增第四個分頁 Open Call
+
+- 新增 `open-call.html`（結構複製 contact.html：標題、目前狀態、洽詢 + 電子郵件）。目前文案為「尚無進行中的徵件」的占位內容，待使用者提供實際徵件主題、資格、截止日期後替換
+- `index.html` 下半部由三欄改四欄，第四欄連到 Open Call；640px 以下維持直式堆疊
+- 全站 35 個頁面的底部導覽列在「聯絡」後新增 Open Call 連結（research-jazzarchitect 三頁為寫死英文導覽，同步補 `Open Call`）
+- `js/i18n.js` 三語新增 `nav.opencall`、`section.opencall.desc`、`opencall.*`（title / desc / status / inquiry）；標籤三語皆用 Open Call
+
 ## 2026-10-24
 
 ### Modular Fighters：新增角色 HATAKEN、Z_Hyper，官網入口頁
@@ -253,6 +262,7 @@ visual-feedback-machine-app.html  VFM Web 應用程式
 artist-talk-translator.html       ATT 介紹頁
 artist-talk-translator-app.html   ATT Web 應用程式
 contact.html            聯絡
+open-call.html          Open Call（徵件公告）
 js/i18n.js              三語翻譯（zh-TW / en / ja）
 js/main.js              共用功能（深色模式、語言切換）
 css/tokens.css          設計 token（顏色、字體、間距）
