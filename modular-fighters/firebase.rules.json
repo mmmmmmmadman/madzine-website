@@ -1,0 +1,25 @@
+{
+  "rules": {
+    "mf": {
+      "queue": {
+        ".read": true,
+        "$qid": {
+          ".write": true,
+          ".validate": "newData.hasChildren(['name', 'char', 'room', 't']) && newData.child('name').isString() && newData.child('name').val().length <= 12 && newData.child('room').isString() && newData.child('room').val().length == 4"
+        }
+      },
+      "matches": {
+        ".read": true,
+        "$mid": { ".write": true }
+      },
+      "leaderboard": {
+        ".read": true,
+        ".indexOn": ["wins"],
+        "$key": {
+          ".write": true,
+          ".validate": "newData.hasChildren(['name', 'wins', 'losses']) && newData.child('name').isString() && newData.child('name').val().length <= 12 && newData.child('wins').isNumber() && newData.child('losses').isNumber()"
+        }
+      }
+    }
+  }
+}

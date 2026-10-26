@@ -8,13 +8,13 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Modular Fighters">
-<link rel="manifest" href="manifest.webmanifest?v=20261025c">
+<link rel="manifest" href="manifest.webmanifest?v=20261026a">
 <title>Modular Fighters</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400&family=Noto+Sans+JP:wght@300&display=swap" rel="stylesheet">
 <!-- ?v= on the local css / js: bump the date on every change so Safari does not keep the old files -->
-<link rel="stylesheet" href="mf-patch-ui.css?v=20261025c">
+<link rel="stylesheet" href="mf-patch-ui.css?v=20261026a">
 <script>
   // Apply the saved theme before the first paint. Dark is the default for this game;
   // html[data-theme="light"] is the white theme. Same key as the toggle below (mf_theme).
@@ -205,6 +205,44 @@ button:disabled{opacity:.4;cursor:default}
 html[lang="ja"] .cpurow button{font-size:17px;letter-spacing:0;white-space:nowrap}   /* むずかしい on one line at 375px */
 .joinrow{display:flex;gap:8px;width:100%;max-width:320px}
 .joinrow button{flex:1 1 0;min-height:60px;font-size:24px;letter-spacing:.16em}
+/* RANDOM MATCH (wide) + LEADERBOARD (narrow) */
+.onlinerow #btn-online{flex:3 1 0;letter-spacing:.1em;font-size:22px}
+.onlinerow #btn-board{flex:2 1 0;letter-spacing:.06em;font-size:18px;line-height:1.1;padding:0 6px}
+.onlinerow button.on{border-color:var(--acc);color:var(--acc-text)}
+/* leaderboard */
+.board{width:100%;max-width:320px;display:flex;flex-direction:column;gap:4px}
+.brow{
+  display:flex;align-items:center;gap:10px;
+  min-height:40px;padding:0 10px;
+  border:1px solid var(--line);border-radius:8px;background:var(--elev);
+  font-size:18px;letter-spacing:.04em;
+}
+.brow.me{border-color:var(--acc)}
+.brow .rk{flex:0 0 32px;color:var(--fg3);text-align:right}
+.brow .nm{flex:1 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--fg)}
+.brow .wl{flex:0 0 auto;color:var(--fg2);font-size:16px;letter-spacing:.02em}
+.brow .wl b{font-weight:300;color:var(--acc-text)}
+/* player name sheet + match prompt (same card as the help sheet) */
+#namesheet,#matchprompt{
+  position:fixed;left:0;top:0;right:0;bottom:0;
+  padding:calc(28px + env(safe-area-inset-top,0px)) 16px calc(16px + env(safe-area-inset-bottom,0px));
+  display:flex;align-items:center;justify-content:center;
+  background:var(--backdrop);
+  z-index:70;
+}
+#namesheet[hidden],#matchprompt[hidden],#mp-btns[hidden]{display:none}
+#name-input{
+  width:100%;min-height:52px;
+  font-family:var(--font-body);font-weight:300;
+  font-size:24px;letter-spacing:.06em;text-align:center;
+  color:var(--fg);background:var(--input-bg);border:1px solid var(--line);border-radius:10px;
+  outline:none;padding:0 12px;
+}
+#name-input:focus{border-color:var(--acc)}
+.namecur{flex:1 1 auto;min-width:0;align-self:center;font-size:18px;letter-spacing:.06em;color:var(--fg);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.textbtn.pri{background:var(--acc);border-color:var(--acc);color:var(--on-acc)}
+.mp-title{margin:0;font-size:24px;font-weight:300;letter-spacing:.1em;line-height:30px;color:var(--acc-text)}
+#status .q{color:var(--acc-text)}
 #code{
   flex:0 0 118px;min-height:60px;
   font-family:var(--font-body);font-weight:300;
@@ -437,16 +475,17 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     column-gap:40px;row-gap:8px;align-items:center;justify-items:center;
     max-width:760px;margin-left:auto;margin-right:auto;
   }
-  #home .pane{grid-template-rows:repeat(6,auto)}
+  #home .pane{grid-template-rows:repeat(7,auto)}
   #home .title{grid-area:1/1/4/2;align-self:end;margin:0}
-  #home .sub{grid-area:4/1/7/2;align-self:start;margin:0}
-  #home .ver{grid-area:4/1/7/2;align-self:start;margin:26px 0 0}   /* same cell, one line under the tagline */
+  #home .sub{grid-area:4/1/8/2;align-self:start;margin:0}
+  #home .ver{grid-area:4/1/8/2;align-self:start;margin:26px 0 0}   /* same cell, one line under the tagline */
   #btn-cpu{grid-area:1/2/2/3}
   #cpurow{grid-area:2/2/3/3;margin-top:0}
-  #btn-create{grid-area:3/2/4/3}
-  #home .joinrow{grid-area:4/2/5/3}
-  #btn-help{grid-area:5/2/6/3}
-  #home-msg{grid-area:6/2/7/3}
+  #home .onlinerow{grid-area:3/2/4/3}
+  #btn-create{grid-area:4/2/5/3}
+  #home .joinrow:not(.onlinerow){grid-area:5/2/6/3}
+  #btn-help{grid-area:6/2/7/3}
+  #home-msg{grid-area:7/2/8/3}
   /* setup: character tiles (2 x 2, smaller previews) left; background, START and BACK right */
   #setup .pane{grid-template-rows:repeat(6,auto)}
   #setup .lbl:nth-of-type(1){grid-area:1/1/2/2;margin:0}
@@ -480,12 +519,13 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
   }
   /* KO overlay: result left, downloads / REMATCH / HOME right */
   #overlay{padding:16px calc(16px + env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) calc(16px + env(safe-area-inset-left,0px))}
-  #overlay .pane{grid-template-rows:repeat(3,auto)}
+  #overlay .pane{grid-template-rows:repeat(4,auto)}
   #ov-title{grid-area:1/1/3/2;align-self:end;margin:0;font-size:48px}
-  #ov-sub{grid-area:3/1/4/2;align-self:start;margin:0}
+  #ov-sub{grid-area:3/1/5/2;align-self:start;margin:0}
   #dlrow{grid-area:1/2/2/3}
   #btn-rematch{grid-area:2/2/3/3}
-  #btn-home{grid-area:3/2/4/3}
+  #btn-ov-board{grid-area:3/2/4/3}
+  #btn-home{grid-area:4/2/5/3}
   /* help sheet: the 60px top padding was for the "?" button, which no longer shows; the card
      takes the height instead and the language / HUE row steps aside while the sheet is open */
   #helpsheet{padding-top:calc(28px + env(safe-area-inset-top,0px))}
@@ -500,12 +540,16 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     <div class="pane">
     <h1 class="title">MODULAR <b>FIGHTERS</b></h1>
     <p class="sub" data-i18n="tagline">PATCH. SEND. KNOCK OUT.</p>
-    <p class="ver" id="ver">v1.1.7</p>
+    <p class="ver" id="ver">v1.1.8</p>
     <button id="btn-cpu" class="big pri" type="button" data-i18n="vsCpu">VS CPU</button>
     <div id="cpurow" class="cpurow" role="group" aria-label="CPU difficulty">
       <button id="cpu-easy" type="button" data-cpu="easy" data-i18n="cpuEasy">EASY</button>
       <button id="cpu-normal" type="button" data-cpu="normal" data-i18n="cpuNormal">NORMAL</button>
       <button id="cpu-hard" type="button" data-cpu="hard" data-i18n="cpuHard">HARD</button>
+    </div>
+    <div class="joinrow onlinerow">
+      <button id="btn-online" type="button" data-i18n="randomMatch">RANDOM MATCH</button>
+      <button id="btn-board" type="button" data-i18n="leaderboard">LEADERBOARD</button>
     </div>
     <button id="btn-create" class="big" type="button" data-i18n="createRoom">CREATE ROOM</button>
     <div class="joinrow">
@@ -573,6 +617,15 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     </div>
   </section>
 
+  <section id="board" class="screen center">
+    <div class="pane">
+    <p class="sub" data-i18n="boardTitle">LEADERBOARD</p>
+    <div id="board-list" class="board"></div>
+    <div id="board-msg" class="msg" role="status"></div>
+    <button id="btn-board-back" class="big" type="button" data-i18n="back">BACK</button>
+    </div>
+  </section>
+
   <section id="match" class="screen">
     <div id="fight"></div>
     <div id="status">
@@ -591,6 +644,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
         <a id="dl-foe" class="dlbtn dlp" href="#" download="modular-fighters-foe.png" data-i18n="downloadFoe">DOWNLOAD FOE PATCH</a>
       </div>
       <button id="btn-rematch" class="big pri" type="button" data-i18n="rematch">REMATCH</button>
+      <button id="btn-ov-board" class="big" type="button" data-i18n="leaderboard" hidden>LEADERBOARD</button>
       <button id="btn-home" class="big" type="button" data-i18n="home">HOME</button>
       </div>
     </div>
@@ -621,6 +675,11 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     <p class="sheet-text" data-i18n="helpCpu"></p>
     <p class="sheet-text" data-i18n="helpModules"></p>
     <p class="sheet-text" data-i18n="helpHue"></p>
+    <p class="sheet-label" data-i18n="nameLabel">PLAYER NAME</p>
+    <div class="seg">
+      <span id="help-name" class="namecur"></span>
+      <button id="btn-name-edit" class="textbtn" type="button" data-i18n="changeName">CHANGE</button>
+    </div>
     <p class="sheet-label" data-i18n="langLabel">LANGUAGE</p>
     <div id="lang-seg" class="seg"></div>
     <p class="sheet-label" data-i18n="themeLabel">BACKGROUND</p>
@@ -636,17 +695,44 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
   </div>
 </div>
 
+<div id="namesheet" hidden>
+  <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="name-title">
+    <div class="sheet-head">
+      <h2 id="name-title" data-i18n="playerName">PLAYER NAME</h2>
+    </div>
+    <p class="sheet-text" data-i18n="nameHint"></p>
+    <input id="name-input" type="text" maxlength="12" autocomplete="nickname" spellcheck="false" aria-label="player name">
+    <div class="seg">
+      <button id="name-cancel" class="textbtn" type="button" data-i18n="cancel">CANCEL</button>
+      <button id="name-ok" class="textbtn" type="button" data-i18n="ok">OK</button>
+    </div>
+  </div>
+</div>
+
+<div id="matchprompt" hidden>
+  <div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="mp-title">
+    <h2 id="mp-title" class="mp-title"></h2>
+    <p id="mp-sub" class="sheet-text"></p>
+    <div class="seg" id="mp-btns">
+      <button id="mp-keep" class="textbtn" type="button" data-i18n="keepCpu">KEEP PLAYING CPU</button>
+      <button id="mp-fight" class="textbtn pri" type="button" data-i18n="fightNow">FIGHT</button>
+    </div>
+  </div>
+</div>
+
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-<script src="mf-audio.js?v=20261025c"></script>
-<script src="mf-patch-ui.js?v=20261025c"></script>
-<script src="mf-fight.js?v=20261025c"></script>
-<script src="mf-net.js?v=20261025c"></script>
+<script src="mf-audio.js?v=20261026a"></script>
+<script src="mf-patch-ui.js?v=20261026a"></script>
+<script src="mf-fight.js?v=20261026a"></script>
+<script src="mf-net.js?v=20261026a"></script>
+<script src="mf-firebase-config.js?v=20261026a"></script>
+<script src="mf-online.js?v=20261026a"></script>
 <script>
 (function () {
   'use strict';
 
   var $ = function (id) { return document.getElementById(id); };
-  var screens = { home: $('home'), setup: $('setup'), room: $('room'), match: $('match') };
+  var screens = { home: $('home'), setup: $('setup'), room: $('room'), board: $('board'), match: $('match') };
   var setupNote = $('setup-note'), noteEl = $('note'), roomWait = $('room-wait');
   var overlay = $('overlay'), ovTitle = $('ov-title'), ovSub = $('ov-sub'), dl = $('dl');
   var dlRow = $('dlrow'), dlMe = $('dl-me'), dlFoe = $('dl-foe');
@@ -722,6 +808,29 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       cpuNormal: '普通',
       cpuHard: '困難',
       helpModules: '模組：VCO/LFO、四軌混音器、低通濾波器、波形摺疊、立體聲延遲、ADSR、AR、五步音序器、手繪調變。',
+      randomMatch: '隨機對戰',
+      leaderboard: '排行榜',
+      boardTitle: '排行榜',
+      boardEmpty: '還沒有人上榜。',
+      boardLoading: '讀取中',
+      winsLosses: '{a} 勝 {b} 敗',
+      playerName: '玩家名稱',
+      nameHint: '排行榜和對手看到的名字，最多 12 個字。',
+      nameLabel: '玩家名稱',
+      changeName: '更改',
+      ok: '確定',
+      queued: '排隊中',
+      foundFoe: '找到對手：{a}',
+      askLeave: '要離開目前這場，和對方對戰嗎？',
+      fightNow: '對戰',
+      keepCpu: '繼續打電腦',
+      waitingFoe: '等待對方確認',
+      foeDeclined: '對方沒有接受，繼續排隊。',
+      youDeclined: '已讓給下一位，繼續排隊。',
+      foeGone: '對方離開了，繼續排隊。',
+      err_online_off: '線上功能尚未設定。',
+      err_online_load: '線上服務載入失敗，請檢查連線。',
+      err_online_net: '線上服務連線失敗。',
       helpHue: '色相圈（首頁右上角）：拖外圈改主色，在中央上下拖改飽和度。',
       langLabel: '語言',
       themeLabel: '背景',
@@ -794,6 +903,29 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       cpuNormal: 'NORMAL',
       cpuHard: 'HARD',
       helpModules: 'Modules: VCO/LFO, 4-channel mixer, low-pass filter, wavefolder, stereo delay, ADSR, AR, 5-step sequencer, draw modulator.',
+      randomMatch: 'RANDOM MATCH',
+      leaderboard: 'LEADERBOARD',
+      boardTitle: 'LEADERBOARD',
+      boardEmpty: 'Nobody on the board yet.',
+      boardLoading: 'LOADING',
+      winsLosses: '{a} W {b} L',
+      playerName: 'PLAYER NAME',
+      nameHint: 'Shown on the leaderboard and to your opponent, up to 12 characters.',
+      nameLabel: 'PLAYER NAME',
+      changeName: 'CHANGE',
+      ok: 'OK',
+      queued: 'IN QUEUE',
+      foundFoe: 'Opponent found: {a}',
+      askLeave: 'Leave this match and fight them?',
+      fightNow: 'FIGHT',
+      keepCpu: 'KEEP PLAYING CPU',
+      waitingFoe: 'Waiting for the opponent to confirm',
+      foeDeclined: 'The opponent passed. Still in the queue.',
+      youDeclined: 'Passed to the next player. Still in the queue.',
+      foeGone: 'The opponent left. Still in the queue.',
+      err_online_off: 'Online play is not set up yet.',
+      err_online_load: 'The online service failed to load. Check your connection.',
+      err_online_net: 'Could not reach the online service.',
       helpHue: 'Hue ring (top right of the home screen): drag the outer ring to change the main colour; drag up or down in the centre to change the saturation.',
       langLabel: 'LANGUAGE',
       themeLabel: 'BACKGROUND',
@@ -866,6 +998,29 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       cpuNormal: 'ふつう',
       cpuHard: 'むずかしい',
       helpModules: 'モジュール：VCO/LFO、4ch ミキサー、ローパスフィルター、ウェーブフォルダー、ステレオディレイ、ADSR、AR、5ステップシーケンサー、手描きモジュレーター。',
+      randomMatch: 'ランダム対戦',
+      leaderboard: 'ランキング',
+      boardTitle: 'ランキング',
+      boardEmpty: 'まだ誰も載っていません。',
+      boardLoading: '読み込み中',
+      winsLosses: '{a} 勝 {b} 敗',
+      playerName: 'プレイヤー名',
+      nameHint: 'ランキングと対戦相手に表示される名前です。12 文字まで。',
+      nameLabel: 'プレイヤー名',
+      changeName: '変更',
+      ok: 'OK',
+      queued: '待機中',
+      foundFoe: '対戦相手が見つかりました：{a}',
+      askLeave: '今の試合をやめて、この相手と対戦しますか？',
+      fightNow: '対戦する',
+      keepCpu: 'CPU と続ける',
+      waitingFoe: '相手の確認を待っています',
+      foeDeclined: '相手が見送りました。待機を続けます。',
+      youDeclined: '次の人に譲りました。待機を続けます。',
+      foeGone: '相手が退出しました。待機を続けます。',
+      err_online_off: 'オンライン機能はまだ設定されていません。',
+      err_online_load: 'オンラインサービスを読み込めませんでした。接続を確認してください。',
+      err_online_net: 'オンラインサービスに接続できません。',
       helpHue: '色相リング（ホーム画面の右上）：外側のリングをドラッグするとメインカラー、中央を上下にドラッグすると彩度が変わります。',
       langLabel: '言語',
       themeLabel: '背景',
@@ -876,7 +1031,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       creditCode: 'プログラム：MADZINE'
     }
   };
-  var MF_VERSION = '1.1.7';   // shown under the tagline; +0.0.1 on EVERY push (user rule 2026-10-22), with the ?v= on the css / js links
+  var MF_VERSION = '1.1.8';   // shown under the tagline; +0.0.1 on EVERY push (user rule 2026-10-22), with the ?v= on the css / js links
   $('ver').textContent = 'v' + MF_VERSION;
   var LANG_KEY = 'mf_lang';
   var THEME_KEY = 'mf_theme';
@@ -905,6 +1060,17 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
   // ---------- state ----------
   var mode = null;            // "cpu" | "net" | null
   var roomCode = null;
+  // online: queued = in the random-match queue (playing the CPU meanwhile); online = this net
+  // match came from the queue (names on the bars, result to the leaderboard)
+  var queued = false;
+  var online = false;
+  var onlineRoom = null;      // the PeerJS room we host while queued
+  var foeName = null;
+  var resultSent = false;
+  var NAME_KEY = 'mf_name';
+  function loadName() { try { return String(window.localStorage.getItem(NAME_KEY) || '').slice(0, 12); } catch (e) { return ''; } }
+  function saveName(v) { try { window.localStorage.setItem(NAME_KEY, v); } catch (e) { /* ignore */ } }
+  var myName = loadName();
   var inMatch = false;
   var ended = false;
   var mounted = false;
@@ -1024,7 +1190,8 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
   }
   function roomLabel() { return t('room') + ' ' + (roomCode || '----'); }
   function updateStatus() {
-    stMode.textContent = mode === 'net' ? roomLabel() : t('vsCpu');
+    if (mode === 'net') stMode.textContent = online && foeName ? foeName : roomLabel();
+    else stMode.innerHTML = (queued ? '<span class="q">' + t('queued') + '</span>&nbsp;&nbsp;' : '') + t('vsCpu');
     stPower.innerHTML = '<b>' + t('you') + '</b> ' + (lastPower.me == null ? '-' : '<span class="acc">' + lastPower.me + '</span>') +
       '&nbsp;&nbsp;<b>' + t('foe') + '</b> ' + (lastPower.foe == null ? '-' : lastPower.foe);
   }
@@ -1049,6 +1216,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     CHAR_IDS.forEach(function (id) { $('tile-' + id).classList.toggle('sel', myChar === id); });
   }
   function applySetup() {
+    MFFight.setNames(mode === 'net' ? { me: myName, foe: foeName } : null);
     MFFight.setSides({ me: 'left', meChar: myChar, foeChar: foeChar || otherChar(myChar) });
     MFFight.setBackground(bgEl);
   }
@@ -1183,6 +1351,9 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     ovSub.textContent = mode === 'net' ? roomLabel() : t('vsCpu');
     homeMsg.textContent = homeMsgKey ? t(homeMsgKey) : '';
     $('bg-name').textContent = bgState.name ? bgState.name : t(bgState.key);
+    $('help-name').textContent = myName || '-';
+    if (matchPrompt && !matchPrompt.hidden) renderPrompt();
+    if (screens.board.classList.contains('on') && boardRows) renderBoard(boardRows);
   }
 
   // ---------- theme (dark default / light) ----------
@@ -1502,6 +1673,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     ended = false;
     lastPower = { me: null, foe: null };
     lastSent = { me: null, foe: null };
+    resultSent = false;
     revokeRec();
     overlay.classList.remove('on');
     MFFight.reset();
@@ -1520,6 +1692,10 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     MFFight.cpu.stop();
     MFPatchUI.setEnabled(false);
     if (mode === 'net') MFNet.send({ t: 'ko', winner: winner });
+    if (mode === 'net' && online && myName && !resultSent) {
+      resultSent = true;
+      MFOnline.reportResult({ name: myName, won: winner === 'me' }).catch(function () {});
+    }
     showResult(winner === 'me');
     renderPatchImages();
     MFAudio.stopRecording().then(function (blob) {
@@ -1542,12 +1718,14 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     ovKey = win ? 'youWin' : 'youLose';
     ovTitle.textContent = t(ovKey);
     ovTitle.classList.toggle('win', win);
-    ovSub.textContent = mode === 'net' ? roomLabel() : t('vsCpu');
+    ovSub.textContent = mode === 'net' ? (online && foeName ? foeName : roomLabel()) : t('vsCpu');
     btnRematch.style.display = '';
+    $('btn-ov-board').hidden = !(mode === 'net' && online);
     overlay.classList.add('on');
   }
   function showLeft() {
     ended = true;
+    $('btn-ov-board').hidden = !online;
     MFAudio.stop();            // me, foe and preview
     MFFight.cpu.stop();
     MFPatchUI.setEnabled(false);
@@ -1575,6 +1753,8 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     mode = null;
     roomCode = null;
     helloSent = false; helloGot = false; foeChar = null;
+    leaveQueue();
+    online = false; foeName = null;
     exitFullscreen();
     show('home');
   }
@@ -1583,7 +1763,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
   function sendHello() {
     if (helloSent) return;
     helloSent = true;
-    MFNet.send({ t: 'hello', char: myChar });
+    MFNet.send({ t: 'hello', char: myChar, name: myName || '' });
   }
   function maybeStartNet() {
     if (mode !== 'net' || inMatch) return;
@@ -1593,6 +1773,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
   function onHello(data) {
     // Both players may pick the same character; each sees themself on the left.
     foeChar = validChar(data && data.char);
+    if (data && typeof data.name === 'string' && data.name) foeName = data.name.slice(0, 12);
     helloGot = true;
     setWait('ready');
     maybeStartNet();
@@ -1635,6 +1816,174 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     // {t:"hp"} is ignored: both sides apply attacks locally and symmetrically
   }
 
+  // ---------- online: random match queue ----------
+  var matchPrompt = $('matchprompt'), mpTitle = $('mp-title'), mpSub = $('mp-sub'), mpBtns = $('mp-btns');
+  var pendingFoe = null;      // {foeName, foeChar, host} while the prompt is up / waiting for the other side
+  var promptWaiting = false;
+  function renderPrompt() {
+    if (!pendingFoe) return;
+    mpTitle.textContent = fmt('foundFoe', pendingFoe.foeName || '?', '');
+    mpSub.textContent = promptWaiting ? t('waitingFoe') : t('askLeave');
+    mpBtns.hidden = promptWaiting;
+  }
+  function openPrompt(d) { pendingFoe = d; promptWaiting = false; renderPrompt(); matchPrompt.hidden = false; }
+  function closePrompt() { matchPrompt.hidden = true; pendingFoe = null; promptWaiting = false; }
+  $('mp-fight').addEventListener('click', function () {
+    if (!pendingFoe) return;
+    promptWaiting = true; renderPrompt();
+    MFOnline.accept();
+  });
+  $('mp-keep').addEventListener('click', function () {
+    if (!pendingFoe) return;
+    MFOnline.decline();
+  });
+  function onOnline(type, d) {
+    if (type === 'matched') { if (queued) openPrompt(d); return; }
+    if (type === 'match_cancelled') {
+      closePrompt();
+      if (queued) showNote(t(d && d.foeGone ? 'foeGone' : (d && d.byMe ? 'youDeclined' : 'foeDeclined')));
+      return;
+    }
+    if (type === 'start') { closePrompt(); startOnlineMatch(d); return; }
+    if (type === 'error') {
+      closePrompt();
+      if (queued) { leaveQueue(); showNote(t(errKey(d))); updateStatus(); }
+      return;
+    }
+  }
+  // enter the queue: host a PeerJS room now (the opponent joins it when both accept),
+  // register in the queue; the CPU match keeps running meanwhile
+  function enterQueue() {
+    queued = true;
+    updateStatus();
+    MFNet.create(onNet).then(function (code) {
+      if (!queued) return;
+      onlineRoom = code;
+      return MFOnline.enqueue({ name: myName, char: myChar, room: code }, onOnline);
+    }).catch(function (err) {
+      if (!queued) return;
+      leaveQueue();
+      showNote(t(errKey(err && err.message)));
+      updateStatus();
+    });
+  }
+  function leaveQueue() {
+    if (!queued && !pendingFoe) return;
+    queued = false;
+    closePrompt();
+    MFOnline.dequeue();
+    if (mode !== 'net') MFNet.leave();
+    onlineRoom = null;
+  }
+  // both accepted: drop the CPU match and run the queue's room as a normal net match
+  function startOnlineMatch(d) {
+    queued = false;
+    MFOnline.dequeue();
+    MFFight.cpu.stop();
+    MFAudio.stop();
+    inMatch = false; ended = false;
+    overlay.classList.remove('on');
+    revokeRec();
+    mode = 'net';
+    online = true;
+    foeName = d.foeName || null;
+    foeChar = validChar(d.foeChar);
+    roomCode = d.room;
+    helloSent = false; helloGot = false;
+    $('room-code').textContent = d.room;
+    show('room');
+    if (d.host) {
+      // our hosted room is already open; the opponent joins it
+      setWait('waiting');
+    } else {
+      MFNet.leave();
+      joinRoom(d.room);
+    }
+  }
+
+  // ---------- player name ----------
+  var nameSheet = $('namesheet'), nameInput = $('name-input');
+  var nameNext = null;
+  function openName(next) {
+    nameNext = next || null;
+    nameInput.value = myName;
+    nameSheet.hidden = false;
+    setTimeout(function () { try { nameInput.focus(); } catch (e) { /* ignore */ } }, 50);
+  }
+  function closeName() { nameSheet.hidden = true; nameNext = null; }
+  function commitName() {
+    var v = nameInput.value.replace(/\s+/g, ' ').trim().slice(0, 12);
+    if (!v) { nameInput.focus(); return; }
+    myName = v; saveName(v);
+    $('help-name').textContent = v;
+    var next = nameNext;
+    closeName();
+    if (next) next();
+  }
+  $('name-ok').addEventListener('click', commitName);
+  $('name-cancel').addEventListener('click', closeName);
+  nameInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); commitName(); } });
+  nameInput.addEventListener('input', function () {   // leading spaces would eat the 12 characters
+    var v = nameInput.value.replace(/^\s+/, '');
+    if (v !== nameInput.value) nameInput.value = v;
+  });
+  $('btn-name-edit').addEventListener('click', function () { openName(null); });
+  $('help-name').textContent = myName || '-';
+
+  // ---------- leaderboard ----------
+  var boardRows = [];
+  function renderBoard(rows) {
+    var list = $('board-list');
+    list.innerHTML = '';
+    rows.forEach(function (r, i) {
+      var row = document.createElement('div');
+      row.className = 'brow' + (myName && r.name === myName ? ' me' : '');
+      var rk = document.createElement('span'); rk.className = 'rk'; rk.textContent = String(i + 1);
+      var nm = document.createElement('span'); nm.className = 'nm'; nm.textContent = r.name;
+      var wl = document.createElement('span'); wl.className = 'wl';
+      wl.innerHTML = fmt('winsLosses', '<b>' + r.wins + '</b>', String(r.losses));
+      row.appendChild(rk); row.appendChild(nm); row.appendChild(wl);
+      list.appendChild(row);
+    });
+    $('board-msg').textContent = rows.length ? '' : t('boardEmpty');
+  }
+  var boardFrom = 'home';
+  function openBoard(from) {
+    boardFrom = from || 'home';
+    boardRows = [];
+    renderBoard([]);
+    $('board-msg').textContent = t('boardLoading');
+    show('board');
+    MFOnline.leaderboard(50).then(function (rows) {
+      if (!screens.board.classList.contains('on')) return;
+      boardRows = rows;
+      renderBoard(rows);
+    }).catch(function (err) {
+      if (!screens.board.classList.contains('on')) return;
+      $('board-msg').textContent = t(errKey(err && err.message));
+    });
+  }
+  $('btn-board').addEventListener('click', function () { openBoard('home'); });
+  $('btn-ov-board').addEventListener('click', function () { openBoard('overlay'); });
+  $('btn-board-back').addEventListener('click', function () {
+    show(boardFrom === 'overlay' ? 'match' : 'home');
+  });
+
+  // RANDOM MATCH: name first, then the usual setup, then a CPU match + the queue
+  $('btn-online').addEventListener('click', function () {
+    setMsg(null);
+    if (!MFOnline.configured()) { setMsg('err_online_off'); return; }
+    var go = function () {
+      MFAudio.init().catch(function () { setMsg('err_audio'); });
+      MFNet.leave();
+      mode = 'cpu';
+      roomCode = null;
+      online = false; foeName = null;
+      openSetup(function () { startMatch(); enterQueue(); });
+    };
+    if (myName) go(); else openName(go);
+  });
+
   // ---------- home buttons ----------
   $('btn-cpu').addEventListener('click', function () {
     setMsg(null);
@@ -1674,6 +2023,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     mode = null;
     roomCode = null;
     helloSent = false; helloGot = false; foeChar = null;
+    online = false; foeName = null;
     show('home');
   });
 

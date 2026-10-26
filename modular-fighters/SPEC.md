@@ -20,6 +20,9 @@ Files (one owner each):
 - mf-patch-ui.js + mf-patch-ui.css — module panel UI (owner: ui agent)
 - mf-fight.js       — fight scene + game rules + CPU opponent (owner: fight agent)
 - mf-net.js         — PeerJS room networking (owner: net agent)
+- mf-online.js      — Firebase Realtime Database: random-match queue + leaderboard (owner: online agent)
+- mf-firebase-config.js — window.MF_FIREBASE_CONFIG (paste from the Firebase console; databaseURL empty = online off)
+- firebase.rules.json   — the database rules to paste into the Firebase console
 All scripts are plain ES5/ES2017 browser globals (no modules), each exposes ONE global object named below.
 
 ## Patch data model (JSON, serialisable, sent over network)
@@ -114,6 +117,7 @@ window.MFPatchUI
   Buttons "AUTO" and "SEND" are inside the panel footer.
 
 window.MFFight
+  .setNames({me, foe}) — names drawn on the HP bars instead of YOU / FOE (online matches); null = YOU / FOE
   .setBand(px) — px > 0: only the top px of the canvas are uncovered (the panel lies over the rest); bars, status
      and K.O. lay out in that strip, the figures stand on the canvas floor below it. 0 = whole canvas (default).
   .mount(containerEl)  — draws two fighters (canvas), two HP bars (100 each) with names, round timer optional.
@@ -124,6 +128,20 @@ window.MFFight
   .onKO(callback(winner))
   .cpu: {start(onAttack(patch)), stop()} — CPU opponent: every 6-12 s builds a random patch via MFAudio.randomModules + a random-cable generator (score 5..60) and calls onAttack(patch)
 
+window.MFOnline  (Firebase compat SDK 10.14.1 loaded from gstatic on first use; nothing else touches it)
+  .configured() -> bool; .init() -> Promise
+  .enqueue({name, char, room}, onEvent) -> Promise<qid>   room = the 4-char PeerJS room this player already hosts
+  .dequeue(); .accept(); .decline()
+  .reportResult({name, won}) -> Promise      one call per finished online match, each side reports itself
+  .leaderboard(limit) -> Promise<[{name, wins, losses}]>  wins desc, then win rate
+  onEvent(type, data): "matched" {foeName, foeChar, host} | "start" {room, host, foeName, foeChar}
+     | "match_cancelled" {byMe, foeGone} | "error" "online_off" | "online_load" | "online_net"
+  Data under mf/: queue/<qid> {name, char, room, t, match?} (removed on disconnect), matches/<mid>
+     {a, b, aName, bName, aChar, bChar, room, t, accept:{qid:true}, declined?}, leaderboard/<key> {name, wins, losses, t}.
+  Matchmaking: the OLDEST waiting entry pairs itself with the next one (transaction on that entry's
+  `match`), both answer within 20 s; two accepts -> "start" (a hosts the PeerJS room, b joins).
+  A decline / timeout sends the decliner to the end of the queue; the other stays where it is.
+
 window.MFNet  (copy architecture from ../sessionguide-app.html: PeerJS 1.5.4 from unpkg, host = state authority, 4-char room code, PREFIX namespacing, reconnect handling)
   .create(onEvent) -> Promise<code>
   .join(code, onEvent) -> Promise
@@ -132,7 +150,14 @@ window.MFNet  (copy architecture from ../sessionguide-app.html: PeerJS 1.5.4 fro
   onEvent(type, data): "peer_joined" | "peer_left" | "msg" | "error"
 
 ## Game flow (index.html integrator)
-1. Home: title, "VS CPU", "CREATE ROOM", "JOIN ROOM (code)". Any click -> MFAudio.init() (starts recording).
+1. Home: title, "VS CPU", "RANDOM MATCH" + "LEADERBOARD", "CREATE ROOM", "JOIN ROOM (code)". Any click -> MFAudio.init() (starts recording).
+   RANDOM MATCH (2026-10-26): asks for a player name once (localStorage mf_name, 12 chars, editable in the help
+   sheet), then the usual setup, then a CPU match starts AND the player enters the queue (MFNet.create hosts a room,
+   MFOnline.enqueue registers it; status line shows IN QUEUE). "matched" -> prompt "Opponent found: NAME, leave this
+   match?" FIGHT = accept, KEEP PLAYING CPU = decline (back of the queue). "start" -> the CPU match is dropped, the
+   room screen shows, the host waits for the guest (who joins the room); hello carries {char, name}; names go on the
+   HP bars (MFFight.setNames) and the status line. KO in an online match -> MFOnline.reportResult (each side its own)
+   and a LEADERBOARD button on the overlay. HOME leaves the queue. CPU matches never count.
 2. Match: MFPatchUI shows randomModules(10). SEND -> patch=getPatch(); power=score(patch); if power>0: MFAudio.play("me",patch); MFFight.attack("me",power); MFNet.send(attack). Always: setModules(randomModules(10)).
    AUTO -> MFPatchUI.setPatch(autoPatch(panel modules)): only wires the panel; the player presses SEND (user rule 2026-10-16).
    AUTO is locked for 10 s after each new module set, with a countdown on the button (user rule 2026-10-16).

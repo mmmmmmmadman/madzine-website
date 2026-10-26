@@ -401,6 +401,13 @@
   var band = 0;
   function setBand(px) { band = Math.max(0, Math.round(+px || 0)); }
 
+  // player names on the HP bars (online matches); null / '' = YOU / FOE
+  var names = { me: null, foe: null };
+  function setNames(o) {
+    names.me = o && o.me ? String(o.me).slice(0, 12) : null;
+    names.foe = o && o.foe ? String(o.foe).slice(0, 12) : null;
+  }
+
   function resize() {
     if (!container || !canvas) return;
     var r = container.getBoundingClientRect();
@@ -624,7 +631,7 @@
   function drawBar(x, y, w, side, alignRight, inside) {
     var c = ctx;
     var who = whoAt(side);
-    var name = who === 'me' ? 'YOU' : 'FOE';
+    var name = names[who] || (who === 'me' ? 'YOU' : 'FOE');
     var v = hp[who] / MAX_HP;
     var col = SIDES[side].color;
     if (v < 0.3) col = COLOR_BAR_LOW;
@@ -1073,6 +1080,7 @@
   // ---------------------------------------------------------------- export
   window.MFFight = {
     setBand: setBand,
+    setNames: setNames,
     mount: mount,
     attack: attack,
     getHP: getHP,
