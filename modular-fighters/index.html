@@ -8,13 +8,13 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Modular Fighters">
-<link rel="manifest" href="manifest.webmanifest?v=20261027a">
+<link rel="manifest" href="manifest.webmanifest?v=20261027b">
 <title>Modular Fighters</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400&family=Noto+Sans+JP:wght@300&display=swap" rel="stylesheet">
 <!-- ?v= on the local css / js: bump the date on every change so Safari does not keep the old files -->
-<link rel="stylesheet" href="mf-patch-ui.css?v=20261027a">
+<link rel="stylesheet" href="mf-patch-ui.css?v=20261027b">
 <script>
   // Apply the saved theme before the first paint. Dark is the default for this game;
   // html[data-theme="light"] is the white theme. Same key as the toggle below (mf_theme).
@@ -540,7 +540,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     <div class="pane">
     <h1 class="title">MODULAR <b>FIGHTERS</b></h1>
     <p class="sub" data-i18n="tagline">PATCH. SEND. KNOCK OUT.</p>
-    <p class="ver" id="ver">v1.1.9</p>
+    <p class="ver" id="ver">v1.2.0</p>
     <button id="btn-cpu" class="big pri" type="button" data-i18n="vsCpu">VS CPU</button>
     <div id="cpurow" class="cpurow" role="group" aria-label="CPU difficulty">
       <button id="cpu-easy" type="button" data-cpu="easy" data-i18n="cpuEasy">EASY</button>
@@ -721,12 +721,12 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
 </div>
 
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-<script src="mf-audio.js?v=20261027a"></script>
-<script src="mf-patch-ui.js?v=20261027a"></script>
-<script src="mf-fight.js?v=20261027a"></script>
-<script src="mf-net.js?v=20261027a"></script>
-<script src="mf-firebase-config.js?v=20261027a"></script>
-<script src="mf-online.js?v=20261027a"></script>
+<script src="mf-audio.js?v=20261027b"></script>
+<script src="mf-patch-ui.js?v=20261027b"></script>
+<script src="mf-fight.js?v=20261027b"></script>
+<script src="mf-net.js?v=20261027b"></script>
+<script src="mf-firebase-config.js?v=20261027b"></script>
+<script src="mf-online.js?v=20261027b"></script>
 <script>
 (function () {
   'use strict';
@@ -815,7 +815,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       boardLoading: '讀取中',
       winsLosses: '{a} 勝 {b} 敗',
       playerName: '玩家名稱',
-      nameHint: '排行榜和對手看到的名字，最多 12 個字。',
+      nameHint: '排行榜和對手看到的名字，最多 12 個字。換一個名字就是從零開始的新紀錄。',
       nameLabel: '玩家名稱',
       changeName: '更改',
       ok: '確定',
@@ -910,7 +910,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       boardLoading: 'LOADING',
       winsLosses: '{a} W {b} L',
       playerName: 'PLAYER NAME',
-      nameHint: 'Shown on the leaderboard and to your opponent, up to 12 characters.',
+      nameHint: 'Shown on the leaderboard and to your opponent, up to 12 characters. A different name starts a fresh record.',
       nameLabel: 'PLAYER NAME',
       changeName: 'CHANGE',
       ok: 'OK',
@@ -1005,7 +1005,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       boardLoading: '読み込み中',
       winsLosses: '{a} 勝 {b} 敗',
       playerName: 'プレイヤー名',
-      nameHint: 'ランキングと対戦相手に表示される名前です。12 文字まで。',
+      nameHint: 'ランキングと対戦相手に表示される名前です。12 文字まで。名前を変えると記録は新しく始まります。',
       nameLabel: 'プレイヤー名',
       changeName: '変更',
       ok: 'OK',
@@ -1031,7 +1031,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       creditCode: 'プログラム：MADZINE'
     }
   };
-  var MF_VERSION = '1.1.9';   // shown under the tagline; +0.0.1 on EVERY push (user rule 2026-10-22), with the ?v= on the css / js links
+  var MF_VERSION = '1.2.0';   // shown under the tagline; +0.0.1 on EVERY push (user rule 2026-10-22), with the ?v= on the css / js links
   $('ver').textContent = 'v' + MF_VERSION;
   var LANG_KEY = 'mf_lang';
   var THEME_KEY = 'mf_theme';
@@ -1981,7 +1981,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       online = false; foeName = null;
       openSetup(function () { startMatch(); enterQueue(); });
     };
-    if (myName) go(); else openName(go);
+    openName(go);   // asked every time (v1.2.0): the saved name is prefilled, a new name starts a fresh leaderboard record
   });
 
   // ---------- home buttons ----------

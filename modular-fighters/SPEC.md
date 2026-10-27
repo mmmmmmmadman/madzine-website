@@ -138,8 +138,10 @@ window.MFOnline  (Firebase compat SDK 10.14.1 loaded from gstatic on first use; 
      | "match_cancelled" {byMe, foeGone} | "error" "online_off" | "online_load" | "online_net"
   Data under mf/: queue/<qid> {name, char, room, t, match?} (removed on disconnect), matches/<mid>
      {a, b, aName, bName, aChar, bChar, room, t, accept:{qid:true}, declined?}, leaderboard/<key> {name, wins, losses, t}.
-  Matchmaking: the OLDEST waiting entry pairs itself with the next one (transaction on that entry's
-  `match`), both answer within 20 s; two accepts -> "start" (a hosts the PeerJS room, b joins).
+  Matchmaking: the OLDEST waiting entry writes the match record FIRST, then pairs itself with the next one
+  (transaction on that entry's `match`; a lost race deletes the record; one pair() in flight at a time), both
+  answer within 20 s; two accepts -> "start" (a hosts the PeerJS room, b joins). The other side reads the record
+  the moment its `match` lands, so the record must already exist (v1.2.0 fix; retries 4x1.5 s before giving up).
   A decline / timeout sends the decliner to the end of the queue; the other stays where it is.
 
 window.MFNet  (copy architecture from ../sessionguide-app.html: PeerJS 1.5.4 from unpkg, host = state authority, 4-char room code, PREFIX namespacing, reconnect handling)
@@ -151,8 +153,8 @@ window.MFNet  (copy architecture from ../sessionguide-app.html: PeerJS 1.5.4 fro
 
 ## Game flow (index.html integrator)
 1. Home: title, "VS CPU", "RANDOM MATCH" + "LEADERBOARD", "CREATE ROOM", "JOIN ROOM (code)". Any click -> MFAudio.init() (starts recording).
-   RANDOM MATCH (2026-10-26): asks for a player name once (localStorage mf_name, 12 chars, editable in the help
-   sheet), then the usual setup, then a CPU match starts AND the player enters the queue (MFNet.create hosts a room,
+   RANDOM MATCH (2026-10-26): asks for a player name EVERY time (v1.2.0; prefilled from localStorage mf_name, 12 chars,
+   also editable in the help sheet; a different name = a fresh leaderboard record since the key is the name), then the usual setup, then a CPU match starts AND the player enters the queue (MFNet.create hosts a room,
    MFOnline.enqueue registers it; status line shows IN QUEUE). "matched" -> prompt "Opponent found: NAME, leave this
    match?" FIGHT = accept, KEEP PLAYING CPU = decline (back of the queue). "start" -> the CPU match is dropped, the
    room screen shows, the host waits for the guest (who joins the room); hello carries {char, name}; names go on the

@@ -22,7 +22,7 @@
 - 角色六個（2026-10-24）：osc、tatata5 原圖面右；moddict、mad、hataken、zhyper 原圖面左。**任一角色可站左或右**：自己永遠左、對手永遠右；原圖面向與站位不同時在去背階段水平鏡像（2026-10-21 使用者裁示，取代舊「不鏡像、選角決定左右」）。CPU 對手＝其他五個隨機；連線兩人可選同角色。來源是下載資料夾的「X motion.mp4」2100×2100，轉 600×600 12fps h264
 
 ## 目前狀態（全部已 commit 並 push）
-- 版本 v1.1.9（2026-10-27 填入 Firebase databaseURL，線上功能正式開啟、實機未驗；2026-10-26 隨機對戰＋玩家名稱＋排行榜；2026-10-25 HATAKEN 攻擊力 1.3 倍，**隱藏設定、說明頁不寫**；2026-10-24 加 HATAKEN、Z_Hyper 兩角色，共六個）。最新 commit 見 git log：2026-10-22 橫向版面定案與 iPhone Safari 三個實機問題（`31daf78`…），2026-10-21 四角色＋鏡像（`768c54d`、`192710f`），更早見 DEVLOG。
+- 版本 v1.2.0（2026-10-27 配對握手順序治本：match 記錄先寫再搶對方；名字每次都問；2026-10-27 填入 Firebase databaseURL；2026-10-26 隨機對戰＋玩家名稱＋排行榜；2026-10-25 HATAKEN 攻擊力 1.3 倍，**隱藏設定、說明頁不寫**；2026-10-24 加 HATAKEN、Z_Hyper 兩角色，共六個）。最新 commit 見 git log：2026-10-22 橫向版面定案與 iPhone Safari 三個實機問題（`31daf78`…），2026-10-21 四角色＋鏡像（`768c54d`、`192710f`），更早見 DEVLOG。
 - 工作樹乾淨。
 
 ## 已落地的使用者需求（全部保留，禁改）
@@ -54,7 +54,7 @@
 - 參考既有 token 與主題切換（WHITE／BLACK）與 HUE 色圈，新圖要能在兩個主題下成立，或由使用者裁示是否保留 HUE。
 
 ## 未驗證項目（全部只在無頭瀏覽器測過）
-- 真實兩台裝置連線對戰；**隨機對戰整條（排隊、配對提示、雙方接受、開戰、排行榜寫入）只用假的 MFOnline／MFNet 測過流程，Firebase 真資料庫完全未測**
+- 真實兩台裝置連線對戰；隨機對戰 v1.1.9 實機第一次測到「一方看到提示、另一方沒看到」（握手順序 bug，v1.2.0 治本，以記憶體假 Firebase 伺服器模擬三種延遲 × 接受／拒絕／三人 全過），**v1.2.0 兩台實機尚未重測**
 - 真實 iPhone／iPad Safari：多點、安全區、加入主畫面後的全螢幕、iPad 往下滑退出全螢幕是否已被擋住。13 mini 上的橫向觸控、語言鈕、直式 footer 已由使用者實機確認
 - 真實相機／相簿匯入背景
 - 分頁隱藏時 CPU 閒置攻擊的跳過策略
@@ -68,7 +68,7 @@
 - 更早的引擎測試腳本在 Mac 的 session scratchpad（`/private/tmp/claude-501/-Users-madzine/d4051934-7722-4a2a-87f6-4df4805f8dc3/scratchpad/`，**可能已清空**）：`run.mjs`（引擎 33 項）、`run-preview.mjs`（21 項）、`vca-run.mjs`（15 項）、`mf-mp3-page.mjs`（整頁打到 KO 兩次＋MP3 檢查）、`mf-multitouch-test.mjs`、`mf-cpu-test.mjs`、`mf-hue-test.mjs`。若已清空，依 SPEC.md 的 API 重寫。
 - 禁止啟動 GUI app 或截圖使用者螢幕；使用者在桌面瀏覽器自己玩。
 
-## 線上功能的 Firebase 設定（2026-10-26 新增；2026-10-27 已填 `databaseURL`（專案 `modular-fighters`、asia-southeast1），**規則是否已 Publish 與兩台裝置實測尚未確認**，雲端 session 網路擋 firebasedatabase.app 無法從這邊驗）
+## 線上功能的 Firebase 設定（2026-10-26 新增；2026-10-27 已填 `databaseURL`（專案 `modular-fighters`、asia-southeast1），規則已發布但目前是**臨時全開**（`.read`/`.write` 皆 true，手機上貼不了完整規則），有電腦時把 `firebase.rules.json` 貼回去；雲端 session 網路擋 firebasedatabase.app 無法從這邊驗）
 1. https://console.firebase.google.com 建專案（Analytics 可關）。
 2. 左側「Build → Realtime Database → Create database」，地區選近的（asia-southeast1），安全模式先選 locked mode。
 3. 進該資料庫的「Rules」分頁，把 `modular-fighters/firebase.rules.json` 的內容整個貼上、Publish。

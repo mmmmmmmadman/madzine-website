@@ -2,6 +2,14 @@
 
 ## 2026-10-27
 
+### Modular Fighters v1.2.0：配對握手順序治本、名字每次都問
+
+- 使用者兩台實機第一次測：一方看到「找到對手」並按對戰，另一方完全沒收到提示。根因在 `mf-online.js` 的 `pair()` 順序：最早的玩家先用 transaction 搶第二位的 `match` 欄位，**之後**才寫 `mf/matches/<mid>` 記錄。第二位的自身條目監聽在 `match` 一落地就去讀記錄，讀到空的就當配對已死、把自己的 `match` 清掉回到等待，於是永遠不會跳提示；第一位則卡在「等待對方確認」。修法：記錄先寫、再搶人、搶輸就刪記錄；`openMatch` 讀不到記錄改為每 1.5 秒重試 4 次才放棄；讀到已有 `declined` 的記錄直接回等待不跳提示
+- 模擬時順便找到兩個相鄰問題一起修：(1) 搶到第二位後、自己還沒標記前，隊伍監聽會再觸發，第一位會再去搶第三位，第三位先看到提示又立刻被取消，加 `pairing` 旗標一次只允許一筆配對進行中；(2) 拒絕者立刻刪掉記錄，對方若還沒開始讀就只讀到空的，改為 6 秒後才刪
+- 驗證：寫了記憶體版 Firebase 伺服器模擬（`scratchpad/fb/sim.mjs`，支援 set / update / transaction / on / once / onDisconnect，每個 client 自己的延遲），跑兩份真的 `mf-online.js`。舊版在對等延遲與第二位較快的情況重現使用者症狀，新版在三組延遲 × 接受／拒絕再排隊／三人同時排隊全部通過。**兩台實機尚未重測**
+- 名字：原本輸入過一次就不再問。使用者要每次都確認，改為每次按「隨機對戰」都開名字視窗（預填上次名字）；說明文字加一句「換一個名字就是從零開始的新紀錄」（排行榜以名字為 key，本來就如此）
+- 規則現況：手機上貼不了完整 `firebase.rules.json`，使用者先把預設兩個 `false` 改 `true` 發布（整庫全開、無格式檢查），有電腦時再貼完整規則
+
 ### Modular Fighters v1.1.9：填入 Firebase 資料庫網址
 
 - 使用者在 Firebase 建好專案 `modular-fighters`、Realtime Database 在 asia-southeast1（RTDB 只有美國中部 / 比利時 / 新加坡三區可選，台灣只有 Firestore 才有）。`mf-firebase-config.js` 填入 `databaseURL` 與 `projectId`；apiKey / appId 留空，這個遊戲沒用 Firebase Auth，Realtime Database 只靠 databaseURL 就能初始化

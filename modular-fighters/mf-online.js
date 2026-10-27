@@ -10,9 +10,9 @@
      matches/<mid>      { a, b, aName, bName, aChar, bChar, room, t, accept: {<qid>: true}, declined?: qid }
      leaderboard/<key>  { name, wins, losses, t }
 
-   Matchmaking: every queued client watches the queue; the OLDEST waiting entry pairs itself
-   with the next one (a transaction on that entry's `match` field wins or loses the race),
-   writes the match and marks both entries. Both sides then get "matched", answer with
+   Matchmaking: every queued client watches the queue; the OLDEST waiting entry writes a match
+   record, then pairs itself with the next one (a transaction on that entry's `match` field wins
+   or loses the race; a lost race deletes the record) and marks its own entry. Both sides then get "matched", answer with
    accept() / decline(); two accepts -> "start" (a = host of the PeerJS room, b joins it).
 
    Exposes window.MFOnline:
@@ -47,6 +47,8 @@
   var match = null;             // { id, a, b, room, foeId, foeName, foeChar, host }
   var answerTimer = 0;
   var session = 0;
+  var pairing = false;         // a pair() in flight: the queue watcher must not start a second one
+  var DECLINE_KEEP_MS = 6000;   // a declined match record stays this long so the other side can still read it
 
   function cfg() { return window.MF_FIREBASE_CONFIG || null; }
   function configured() { var c = cfg(); return !!(c && c.databaseURL); }
@@ -114,28 +116,34 @@
         if (v && !v.match && v.room) list.push({ id: ch.key, t: v.t || 0, name: v.name || '', char: v.char || 'osc', room: v.room });
       });
       list.sort(function (a, b) { return (a.t - b.t) || (a.id < b.id ? -1 : 1); });
-      if (list.length >= 2 && list[0].id === me.id) pair(list[1], mySession);
+      if (list.length >= 2 && list[0].id === me.id && !pairing) pair(list[1], mySession);
     };
     queueRef.on('value', queueCb);
   }
-  // the oldest waiting player pairs with the next one; the transaction on the other entry decides the race
+  // the oldest waiting player pairs with the next one; the transaction on the other entry decides the race.
+  // The match record is written BEFORE the claim: the other side's own-entry listener fires the moment
+  // its `match` field lands and reads the record right away, so it has to be there already (v1.2.0 fix:
+  // claiming first left the other player reading an empty record, dropping the field, and never prompted).
   function pair(other, mySession) {
+    pairing = true;
     var mid = db.ref('mf/matches').push().key;
-    db.ref('mf/queue/' + other.id).transaction(function (cur) {
-      if (!cur || cur.match) return;      // gone or already taken: abort
-      cur.match = mid;
-      return cur;
-    }).then(function (res) {
-      if (mySession !== session || !me || state !== 'waiting') return;
-      if (!res.committed) return;
-      var v = res.snapshot.val();
-      if (!v || v.match !== mid) return;
-      var rec = { a: me.id, b: other.id, aName: me.name, bName: other.name, aChar: me.char, bChar: other.char, room: me.room, t: ts() };
-      var upd = {};
-      upd['mf/matches/' + mid] = rec;
-      upd['mf/queue/' + me.id + '/match'] = mid;
-      return db.ref().update(upd);
-    }).catch(function () { /* the queue watcher will try again */ });
+    var rec = { a: me.id, b: other.id, aName: me.name, bName: other.name, aChar: me.char, bChar: other.char, room: me.room, t: ts() };
+    db.ref('mf/matches/' + mid).set(rec).then(function () {
+      if (mySession !== session || !me || state !== 'waiting') { db.ref('mf/matches/' + mid).remove(); return; }
+      return db.ref('mf/queue/' + other.id).transaction(function (cur) {
+        if (!cur || cur.match) return;      // gone or already taken: abort
+        cur.match = mid;
+        return cur;
+      }).then(function (res) {
+        var v = res.committed ? res.snapshot.val() : null;
+        if (!v || v.match !== mid || mySession !== session || !me || state !== 'waiting') {
+          db.ref('mf/matches/' + mid).remove();
+          return;
+        }
+        return me.ref.child('match').set(mid);
+      });
+    }).catch(function () { db.ref('mf/matches/' + mid).remove(); /* the queue watcher will try again */ })
+      .then(function () { pairing = false; }, function () { pairing = false; });
   }
   function watchMine(mySession) {
     mineCb = function (snap) {
@@ -146,25 +154,34 @@
     };
     me.ref.on('value', mineCb);
   }
+  var OPEN_RETRY_MS = 1500, OPEN_TRIES = 4;
   function openMatch(mid, mySession) {
     state = 'matched';
-    db.ref('mf/matches/' + mid).once('value').then(function (snap) {
-      if (mySession !== session || state !== 'matched') return;
-      var m = snap.val();
-      if (!m || !m.a || !m.b) { clearMatchField(); state = 'waiting'; return; }
-      var host = m.a === me.id;
-      match = { id: mid, a: m.a, b: m.b, room: m.room, host: host,
-        foeId: host ? m.b : m.a, foeName: host ? (m.bName || '') : (m.aName || ''), foeChar: host ? (m.bChar || 'osc') : (m.aChar || 'osc') };
-      matchRef = db.ref('mf/matches/' + mid);
-      matchCb = function (s) { onMatchValue(s.val(), mySession); };
-      matchRef.on('value', matchCb);
-      foeRef = db.ref('mf/queue/' + match.foeId);
-      foeCb = function (s) { if (mySession === session && match && !s.exists()) cancelled(false, true, mySession); };
-      foeRef.on('value', foeCb);
-      clearTimeout(answerTimer);
-      answerTimer = setTimeout(function () { if (mySession === session && state === 'matched') decline(); }, ANSWER_MS);
-      emit('matched', { foeName: match.foeName, foeChar: match.foeChar, host: host });
-    });
+    var tries = 0;
+    (function read() {
+      db.ref('mf/matches/' + mid).once('value').then(function (snap) {
+        if (mySession !== session || state !== 'matched') return;
+        var m = snap.val();
+        if (!m || !m.a || !m.b) {
+          // not replicated yet (or the pairer gave up): retry a few times before treating it as dead
+          if (++tries < OPEN_TRIES) { setTimeout(function () { if (mySession === session && state === 'matched') read(); }, OPEN_RETRY_MS); return; }
+          clearMatchField(); state = 'waiting'; return;
+        }
+        if (m.declined) { clearMatchField(); state = 'waiting'; return; }   // answered before we even saw it
+        var host = m.a === me.id;
+        match = { id: mid, a: m.a, b: m.b, room: m.room, host: host,
+          foeId: host ? m.b : m.a, foeName: host ? (m.bName || '') : (m.aName || ''), foeChar: host ? (m.bChar || 'osc') : (m.aChar || 'osc') };
+        matchRef = db.ref('mf/matches/' + mid);
+        matchCb = function (s) { onMatchValue(s.val(), mySession); };
+        matchRef.on('value', matchCb);
+        foeRef = db.ref('mf/queue/' + match.foeId);
+        foeCb = function (s) { if (mySession === session && match && !s.exists()) cancelled(false, true, mySession); };
+        foeRef.on('value', foeCb);
+        clearTimeout(answerTimer);
+        answerTimer = setTimeout(function () { if (mySession === session && state === 'matched') decline(); }, ANSWER_MS);
+        emit('matched', { foeName: match.foeName, foeChar: match.foeChar, host: host });
+      }).catch(function () { if (mySession === session && state === 'matched') { clearMatchField(); state = 'waiting'; } });
+    })();
   }
   function onMatchValue(m, mySession) {
     if (mySession !== session || !match) return;
@@ -195,7 +212,7 @@
       me.ref.off('value', mineCb);
       me.ref.onDisconnect().cancel();
       me.ref.remove();
-      db.ref('mf/matches/' + m.id).remove();
+      setTimeout(function () { db.ref('mf/matches/' + m.id).remove(); }, DECLINE_KEEP_MS);
       state = 'waiting';
       addEntry(mySession).catch(function () { emit('error', 'online_net'); });
     } else {
@@ -232,7 +249,7 @@
       me.ref.remove();
     }
     if (match) db.ref('mf/matches/' + match.id).remove();
-    match = null; me = null;
+    match = null; me = null; pairing = false;
     state = 'idle';
   }
   function dequeue() {
