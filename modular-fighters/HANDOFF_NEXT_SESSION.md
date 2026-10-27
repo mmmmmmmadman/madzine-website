@@ -22,7 +22,7 @@
 - 角色六個（2026-10-24）：osc、tatata5 原圖面右；moddict、mad、hataken、zhyper 原圖面左。**任一角色可站左或右**：自己永遠左、對手永遠右；原圖面向與站位不同時在去背階段水平鏡像（2026-10-21 使用者裁示，取代舊「不鏡像、選角決定左右」）。CPU 對手＝其他五個隨機；連線兩人可選同角色。來源是下載資料夾的「X motion.mp4」2100×2100，轉 600×600 12fps h264
 
 ## 目前狀態（全部已 commit 並 push）
-- 版本 v1.1.8（2026-10-26 隨機對戰＋玩家名稱＋排行榜，Firebase 設定待填；2026-10-25 HATAKEN 攻擊力 1.3 倍，**隱藏設定、說明頁不寫**；2026-10-24 加 HATAKEN、Z_Hyper 兩角色，共六個）。最新 commit 見 git log：2026-10-22 橫向版面定案與 iPhone Safari 三個實機問題（`31daf78`…），2026-10-21 四角色＋鏡像（`768c54d`、`192710f`），更早見 DEVLOG。
+- 版本 v1.1.9（2026-10-27 填入 Firebase databaseURL，線上功能正式開啟、實機未驗；2026-10-26 隨機對戰＋玩家名稱＋排行榜；2026-10-25 HATAKEN 攻擊力 1.3 倍，**隱藏設定、說明頁不寫**；2026-10-24 加 HATAKEN、Z_Hyper 兩角色，共六個）。最新 commit 見 git log：2026-10-22 橫向版面定案與 iPhone Safari 三個實機問題（`31daf78`…），2026-10-21 四角色＋鏡像（`768c54d`、`192710f`），更早見 DEVLOG。
 - 工作樹乾淨。
 
 ## 已落地的使用者需求（全部保留，禁改）
@@ -68,11 +68,13 @@
 - 更早的引擎測試腳本在 Mac 的 session scratchpad（`/private/tmp/claude-501/-Users-madzine/d4051934-7722-4a2a-87f6-4df4805f8dc3/scratchpad/`，**可能已清空**）：`run.mjs`（引擎 33 項）、`run-preview.mjs`（21 項）、`vca-run.mjs`（15 項）、`mf-mp3-page.mjs`（整頁打到 KO 兩次＋MP3 檢查）、`mf-multitouch-test.mjs`、`mf-cpu-test.mjs`、`mf-hue-test.mjs`。若已清空，依 SPEC.md 的 API 重寫。
 - 禁止啟動 GUI app 或截圖使用者螢幕；使用者在桌面瀏覽器自己玩。
 
-## 線上功能的 Firebase 設定（2026-10-26 新增，**尚未填設定值、尚未實機驗證**）
+## 線上功能的 Firebase 設定（2026-10-26 新增；2026-10-27 已填 `databaseURL`（專案 `modular-fighters`、asia-southeast1），**規則是否已 Publish 與兩台裝置實測尚未確認**，雲端 session 網路擋 firebasedatabase.app 無法從這邊驗）
 1. https://console.firebase.google.com 建專案（Analytics 可關）。
 2. 左側「Build → Realtime Database → Create database」，地區選近的（asia-southeast1），安全模式先選 locked mode。
 3. 進該資料庫的「Rules」分頁，把 `modular-fighters/firebase.rules.json` 的內容整個貼上、Publish。
-4. 「Project settings（齒輪）→ Your apps → 新增 Web app（</>）」，不勾 Hosting，註冊後會顯示 `firebaseConfig`，把 apiKey / authDomain / databaseURL / projectId / appId 五個值貼進 `modular-fighters/mf-firebase-config.js`。
+4. 「Project settings（齒輪）→ Your apps → 新增 Web app（</>）」，不勾 Hosting，註冊後會顯示 `firebaseConfig`，只需要 `databaseURL`（已填）；apiKey / appId 只有加 Auth 或 Analytics 才用得到，可留空。
+   - Realtime Database 只有 us-central1 / europe-west1 / asia-southeast1 三區，沒有台灣（asia-east1 是 Firestore 才有），所以選新加坡。
+   - 規則有沒有生效的快速檢查：瀏覽器開 `https://modular-fighters-default-rtdb.asia-southeast1.firebasedatabase.app/mf/leaderboard.json`，回 `null` 代表規則已 Publish 可讀；回 `Permission denied` 代表還是 locked mode，要再貼一次規則。
 5. push 後在兩台裝置各按「隨機對戰」實測；排行榜在首頁與 KO 畫面都有入口。
 - 沒有登入機制：名字不驗證身分，同名共用一筆戰績；規則只擋格式。這個規模可接受，使用者已知。
 - 排行榜只算隨機對戰的真人戰（勝場排序、同勝場看勝率）；房號對戰與電腦戰不計。

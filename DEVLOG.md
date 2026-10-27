@@ -1,5 +1,12 @@
 # MADZINE Website 開發紀錄
 
+## 2026-10-27
+
+### Modular Fighters v1.1.9：填入 Firebase 資料庫網址
+
+- 使用者在 Firebase 建好專案 `modular-fighters`、Realtime Database 在 asia-southeast1（RTDB 只有美國中部 / 比利時 / 新加坡三區可選，台灣只有 Firestore 才有）。`mf-firebase-config.js` 填入 `databaseURL` 與 `projectId`；apiKey / appId 留空，這個遊戲沒用 Firebase Auth，Realtime Database 只靠 databaseURL 就能初始化
+- 本 session 網路政策擋 `firebasedatabase.app`，無法從這邊確認規則是否已 Publish；使用者開 `…/mf/leaderboard.json` 回 `null` 即為可讀，回 `Permission denied` 表示仍是 locked mode。兩台裝置的隨機對戰與排行榜實測待做
+
 ## 2026-10-26
 
 ### Modular Fighters v1.1.8：隨機對戰（排隊、自動配對、等候時打電腦）、玩家名稱、排行榜
