@@ -6,6 +6,7 @@
 
 - 使用者：遊戲常玩到一半不能接線，或留一條線的殘影。根因在 `mf-patch-ui.js` 拉線的結束監聽掛在**起點接孔元素**上（pointerup / pointercancel 都在 `srcEl`），而 SEND 之後 `freshModules()` → `setModules()` → `rebuild()` 會把整排模組重建；手指還按著線時接孔被移除，瀏覽器不會把 pointerup 送給已不在 DOM 的元素，`drag` 永遠不歸零：之後 `onJackDown` 一律 `return`（不能再接線），虛線 `tempPath` 留在 SVG（殘影），`redraw` 每幀又去查已不存在的接孔。修法：(1) 三個監聽改掛 `window` capture phase、以 pointerId 比對，不依附接孔存活；(2) `rebuild()` 開頭 `abortDrag()`；(3) `updateTemp` 找不到起點接孔就 abort；(4) 同一個 pointerId 再次按下視為上一筆已結束，自我修復；(5) 保險：最後一根手指離開（`touchend` / `touchcancel` 且 `touches` 為 0）、`blur`、分頁隱藏都結束手上的線
 - 驗證：`scratchpad/stuckdrag.mjs`（CDP 觸控）：正常拉線 1 條；拉線中呼叫 `setModules` 重建後 temp 0 / dragging 0，放手後可再接新線；`final.mjs` 五種橫向尺寸線端誤差 0、零錯誤
+- 同日使用者回報：完整 `firebase.rules.json` 已從電腦貼上發布（`mf/leaderboard.json` 可讀、其他路徑 Permission denied），且排行榜已有 MADZINE 1 勝 / TEST 1 敗兩筆（同一場的雙方回報），代表 v1.2.1 的隨機對戰整條含 PeerJS 連線與 KO 回報**已在兩台手機實測通過**
 
 ### Modular Fighters v1.2.1：隨機對戰房間畫面去掉房號、連線階段與逾時
 

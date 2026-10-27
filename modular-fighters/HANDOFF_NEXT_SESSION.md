@@ -54,7 +54,7 @@
 - 參考既有 token 與主題切換（WHITE／BLACK）與 HUE 色圈，新圖要能在兩個主題下成立，或由使用者裁示是否保留 HUE。
 
 ## 未驗證項目（全部只在無頭瀏覽器測過）
-- 真實兩台裝置連線對戰；隨機對戰 v1.1.9 實機第一次測到「一方看到提示、另一方沒看到」（握手順序 bug，v1.2.0 治本，以記憶體假 Firebase 伺服器模擬三種延遲 × 接受／拒絕／三人 全過），v1.2.0 實機重測：雙方都收到提示並接受，但停在房間畫面（PeerJS 連線未建立或 hello 未到）；v1.2.1 加了階段顯示與逾時，**兩台實機 PeerJS 連線（含手動房號模式）從未驗證成功過**，下一步看停在哪個階段
+- 真實兩台裝置連線對戰；隨機對戰 v1.1.9 實機第一次測到「一方看到提示、另一方沒看到」（握手順序 bug，v1.2.0 治本，以記憶體假 Firebase 伺服器模擬三種延遲 × 接受／拒絕／三人 全過），v1.2.1 實機：隨機對戰整條（排隊、配對、雙方接受、PeerJS 連線、對戰、KO、排行榜寫入）**已在兩台手機實測通過**（2026-10-27 排行榜出現 MADZINE 1 勝 / TEST 1 敗，同一場的兩筆回報）。v1.2.0 停在房間畫面那次的原因未查明，v1.2.1 的重試與 40 秒逾時保留
 - 真實 iPhone／iPad Safari：多點、安全區、加入主畫面後的全螢幕、iPad 往下滑退出全螢幕是否已被擋住。13 mini 上的橫向觸控、語言鈕、直式 footer 已由使用者實機確認
 - 真實相機／相簿匯入背景
 - 分頁隱藏時 CPU 閒置攻擊的跳過策略
@@ -68,7 +68,7 @@
 - 更早的引擎測試腳本在 Mac 的 session scratchpad（`/private/tmp/claude-501/-Users-madzine/d4051934-7722-4a2a-87f6-4df4805f8dc3/scratchpad/`，**可能已清空**）：`run.mjs`（引擎 33 項）、`run-preview.mjs`（21 項）、`vca-run.mjs`（15 項）、`mf-mp3-page.mjs`（整頁打到 KO 兩次＋MP3 檢查）、`mf-multitouch-test.mjs`、`mf-cpu-test.mjs`、`mf-hue-test.mjs`。若已清空，依 SPEC.md 的 API 重寫。
 - 禁止啟動 GUI app 或截圖使用者螢幕；使用者在桌面瀏覽器自己玩。
 
-## 線上功能的 Firebase 設定（2026-10-26 新增；2026-10-27 已填 `databaseURL`（專案 `modular-fighters`、asia-southeast1），規則已發布但目前是**臨時全開**（`.read`/`.write` 皆 true，手機上貼不了完整規則），有電腦時把 `firebase.rules.json` 貼回去；雲端 session 網路擋 firebasedatabase.app 無法從這邊驗）
+## 線上功能的 Firebase 設定（2026-10-26 新增；2026-10-27 已填 `databaseURL`（專案 `modular-fighters`、asia-southeast1），完整規則 `firebase.rules.json` 已於 2026-10-27 從電腦貼上發布並驗證（`mf/leaderboard.json` 可讀、`foo.json` Permission denied）；雲端 session 網路擋 firebasedatabase.app 無法從這邊驗）
 1. https://console.firebase.google.com 建專案（Analytics 可關）。
 2. 左側「Build → Realtime Database → Create database」，地區選近的（asia-southeast1），安全模式先選 locked mode。
 3. 進該資料庫的「Rules」分頁，把 `modular-fighters/firebase.rules.json` 的內容整個貼上、Publish。
