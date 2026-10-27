@@ -33,6 +33,15 @@
 - 三語新增 23 個字串；手機直式首頁高度實測未超出 844；橫向首頁格數改 7 列
 - 驗證：以假的 MFOnline／MFNet 跑完整流程（未設定提示、名字輸入、排隊狀態、配對提示、拒絕回隊、接受後等待、開戰、名字上 HP 條、KO 回報、排行榜列表、返回）零錯誤；全畫面五尺寸 sweep 零錯誤。**Firebase 真資料庫與兩台裝置實測尚未做**（本 session 網路擋 gstatic，且設定值未填）
 
+## 2026-10-27
+
+### Open Call 頁接上報名表單
+
+- 使用者提供 Google 表單連結（去掉 `usp` / `pli` / `authuser` 參數後存 `…/viewform`）
+- 重點五格下方新增置中「前往報名表單」按鈕（`.launch-btn`，樣式自 honki.html 複製，本頁行內 CSS；三語 `opencall.facts.apply`：前往報名表單 / Apply now / 応募フォームへ）
+- 「三、報名方式」的「填寫線上表單，表單將於近期開放」三語改為連結文字 + 「Google 表單，另開新視窗」說明；`open-call.html` 的 zh fallback 同步
+- 售票平台仍為「上架中」，待連結
+
 ## 2026-10-25
 
 ### Modular Fighters v1.1.5：HATAKEN 攻擊力 1.3 倍
