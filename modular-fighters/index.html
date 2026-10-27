@@ -8,13 +8,13 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Modular Fighters">
-<link rel="manifest" href="manifest.webmanifest?v=20261027b">
+<link rel="manifest" href="manifest.webmanifest?v=20261027c">
 <title>Modular Fighters</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400&family=Noto+Sans+JP:wght@300&display=swap" rel="stylesheet">
 <!-- ?v= on the local css / js: bump the date on every change so Safari does not keep the old files -->
-<link rel="stylesheet" href="mf-patch-ui.css?v=20261027b">
+<link rel="stylesheet" href="mf-patch-ui.css?v=20261027c">
 <script>
   // Apply the saved theme before the first paint. Dark is the default for this game;
   // html[data-theme="light"] is the white theme. Same key as the toggle below (mf_theme).
@@ -261,6 +261,7 @@ html[lang="ja"] .cpurow button{font-size:17px;letter-spacing:0;white-space:nowra
   margin:8px 0 2px;
 }
 .wait{font-size:18px;letter-spacing:.16em;color:var(--fg2);margin:0 0 20px}
+.roomfoe{font-size:44px;line-height:1.1;letter-spacing:.08em;color:var(--acc);margin:8px 0 10px;max-width:320px;overflow-wrap:anywhere}
 
 /* ---------- setup ---------- */
 #setup .pane{gap:10px}
@@ -540,7 +541,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     <div class="pane">
     <h1 class="title">MODULAR <b>FIGHTERS</b></h1>
     <p class="sub" data-i18n="tagline">PATCH. SEND. KNOCK OUT.</p>
-    <p class="ver" id="ver">v1.2.0</p>
+    <p class="ver" id="ver">v1.2.1</p>
     <button id="btn-cpu" class="big pri" type="button" data-i18n="vsCpu">VS CPU</button>
     <div id="cpurow" class="cpurow" role="group" aria-label="CPU difficulty">
       <button id="cpu-easy" type="button" data-cpu="easy" data-i18n="cpuEasy">EASY</button>
@@ -610,8 +611,9 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
 
   <section id="room" class="screen center">
     <div class="pane">
-    <p class="sub" data-i18n="roomCode">ROOM CODE</p>
+    <p class="sub" id="room-sub" data-i18n="roomCode">ROOM CODE</p>
     <div id="room-code" class="roomcode">----</div>
+    <div id="room-foe" class="roomfoe" hidden>?</div>
     <p id="room-wait" class="wait">WAITING FOR OPPONENT</p>
     <button id="btn-cancel" class="big" type="button" data-i18n="cancel">CANCEL</button>
     </div>
@@ -721,12 +723,12 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
 </div>
 
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-<script src="mf-audio.js?v=20261027b"></script>
-<script src="mf-patch-ui.js?v=20261027b"></script>
-<script src="mf-fight.js?v=20261027b"></script>
-<script src="mf-net.js?v=20261027b"></script>
-<script src="mf-firebase-config.js?v=20261027b"></script>
-<script src="mf-online.js?v=20261027b"></script>
+<script src="mf-audio.js?v=20261027c"></script>
+<script src="mf-patch-ui.js?v=20261027c"></script>
+<script src="mf-fight.js?v=20261027c"></script>
+<script src="mf-net.js?v=20261027c"></script>
+<script src="mf-firebase-config.js?v=20261027c"></script>
+<script src="mf-online.js?v=20261027c"></script>
 <script>
 (function () {
   'use strict';
@@ -771,6 +773,9 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       joining: '加入中',
       connected: '對手已連線',
       ready: '對手已就緒',
+      connecting: '連線中',
+      opponentLabel: '對手',
+      err_online_peer: '連不上對手，請再試一次。',
       you: '你',
       foe: '對手',
       room: '房間',
@@ -866,6 +871,9 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       joining: 'JOINING',
       connected: 'OPPONENT CONNECTED',
       ready: 'OPPONENT READY',
+      connecting: 'CONNECTING',
+      opponentLabel: 'OPPONENT',
+      err_online_peer: 'Could not connect to the opponent. Try again.',
       you: 'YOU',
       foe: 'FOE',
       room: 'ROOM',
@@ -961,6 +969,9 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       joining: '参加中',
       connected: '相手が接続しました',
       ready: '相手の準備完了',
+      connecting: '接続中',
+      opponentLabel: '対戦相手',
+      err_online_peer: '相手に接続できません。もう一度お試しください。',
       you: 'あなた',
       foe: '相手',
       room: 'ルーム',
@@ -1031,7 +1042,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       creditCode: 'プログラム：MADZINE'
     }
   };
-  var MF_VERSION = '1.2.0';   // shown under the tagline; +0.0.1 on EVERY push (user rule 2026-10-22), with the ?v= on the css / js links
+  var MF_VERSION = '1.2.1';   // shown under the tagline; +0.0.1 on EVERY push (user rule 2026-10-22), with the ?v= on the css / js links
   $('ver').textContent = 'v' + MF_VERSION;
   var LANG_KEY = 'mf_lang';
   var THEME_KEY = 'mf_theme';
@@ -1666,6 +1677,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     MFFight.onKO(onKO);
   }
   function startMatch() {
+    clearOnlineTimer();
     show('match');
     ensureMounted();
     applySetup();
@@ -1741,6 +1753,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     startMatch();
   }
   function goHome() {
+    clearOnlineTimer();
     inMatch = false;
     ended = false;
     MFFight.cpu.stop();
@@ -1781,6 +1794,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
   function onNet(type, data) {
     if (type === 'peer_joined') {
       if (mode === 'net' && !inMatch) {
+        if (online) { clearOnlineTimer(); }
         setWait('connected');
         sendHello();
         maybeStartNet();
@@ -1794,7 +1808,9 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       return;
     }
     if (type === 'error') {
+      if (online && onlineJoining) return;        // joinOnline retries / fails on the promise
       if (mode === 'net' && !inMatch) {
+        clearOnlineTimer();
         MFNet.leave();
         mode = null;
         show('home');
@@ -1890,15 +1906,52 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     foeChar = validChar(d.foeChar);
     roomCode = d.room;
     helloSent = false; helloGot = false;
-    $('room-code').textContent = d.room;
+    roomScreenMode(true);
     show('room');
+    armOnlineTimer();
     if (d.host) {
-      // our hosted room is already open; the opponent joins it
-      setWait('waiting');
+      // our hosted room is already open; the opponent joins it (it may already be attached)
+      if (MFNet.connected) { setWait('connected'); sendHello(); maybeStartNet(); }
+      else setWait('connecting');
     } else {
       MFNet.leave();
-      joinRoom(d.room);
+      joinOnline(d.room, 0);
     }
+  }
+  // the whole handshake (peer connection + hello both ways) must finish within this, or we give up
+  var ONLINE_CONNECT_MS = 40000, ONLINE_JOIN_TRIES = 3;
+  var onlineTimer = 0, onlineJoining = false;
+  function clearOnlineTimer() { clearTimeout(onlineTimer); onlineTimer = 0; onlineJoining = false; }
+  function armOnlineTimer() {
+    clearTimeout(onlineTimer);
+    onlineTimer = setTimeout(function () { onlineTimer = 0; onlineFail('online_peer'); }, ONLINE_CONNECT_MS);
+  }
+  function onlineFail(key) {
+    if (mode !== 'net' || inMatch) return;
+    clearOnlineTimer();
+    MFNet.leave();
+    mode = null; roomCode = null;
+    helloSent = false; helloGot = false; foeChar = null;
+    online = false; foeName = null;
+    show('home');
+    setMsg(errKey(key));
+  }
+  // guest side of a random match: the host's room is already open, so a failed attempt is retried
+  function joinOnline(code, attempt) {
+    onlineJoining = true;
+    setWait('connecting');
+    MFNet.join(code, onNet).then(function () {
+      onlineJoining = false;
+      if (mode !== 'net' || !online) return;
+      setWait('connected');
+      sendHello();
+      maybeStartNet();
+    }).catch(function (err) {
+      onlineJoining = false;
+      if (mode !== 'net' || !online || inMatch) return;
+      if (attempt + 1 < ONLINE_JOIN_TRIES) { setTimeout(function () { if (mode === 'net' && online && !inMatch) joinOnline(code, attempt + 1); }, 1000); return; }
+      onlineFail(err && err.message === 'network' ? 'network' : 'online_peer');
+    });
   }
 
   // ---------- player name ----------
@@ -2002,7 +2055,15 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     openSetup(function () { createRoom(); });
   });
 
+  // the room screen: a code to share (manual rooms) or the opponent's name (random match, v1.2.1)
+  function roomScreenMode(isOnline) {
+    $('room-sub').textContent = t(isOnline ? 'opponentLabel' : 'roomCode');
+    $('room-code').hidden = !!isOnline;
+    $('room-foe').hidden = !isOnline;
+    if (isOnline) $('room-foe').textContent = foeName || '?';
+  }
   function createRoom() {
+    roomScreenMode(false);
     $('room-code').textContent = '----';
     setWait('waiting');
     show('room');
@@ -2019,6 +2080,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
   }
 
   $('btn-cancel').addEventListener('click', function () {
+    clearOnlineTimer();
     MFNet.leave();
     mode = null;
     roomCode = null;
@@ -2049,6 +2111,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
   });
 
   function joinRoom(code) {
+    roomScreenMode(false);
     $('room-code').textContent = code;
     setWait('joining');
     show('room');

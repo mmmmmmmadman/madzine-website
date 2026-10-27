@@ -157,7 +157,9 @@ window.MFNet  (copy architecture from ../sessionguide-app.html: PeerJS 1.5.4 fro
    also editable in the help sheet; a different name = a fresh leaderboard record since the key is the name), then the usual setup, then a CPU match starts AND the player enters the queue (MFNet.create hosts a room,
    MFOnline.enqueue registers it; status line shows IN QUEUE). "matched" -> prompt "Opponent found: NAME, leave this
    match?" FIGHT = accept, KEEP PLAYING CPU = decline (back of the queue). "start" -> the CPU match is dropped, the
-   room screen shows, the host waits for the guest (who joins the room); hello carries {char, name}; names go on the
+   room screen shows WITHOUT a code (v1.2.1: "OPPONENT" + the foe name + a stage line CONNECTING / OPPONENT CONNECTED /
+   OPPONENT READY), the host waits for the guest (who joins the room, up to 3 attempts); the whole handshake has a 40 s
+   limit, after which both go home with err_online_peer. hello carries {char, name}; names go on the
    HP bars (MFFight.setNames) and the status line. KO in an online match -> MFOnline.reportResult (each side its own)
    and a LEADERBOARD button on the overlay. HOME leaves the queue. CPU matches never count.
 2. Match: MFPatchUI shows randomModules(10). SEND -> patch=getPatch(); power=score(patch); if power>0: MFAudio.play("me",patch); MFFight.attack("me",power); MFNet.send(attack). Always: setModules(randomModules(10)).
