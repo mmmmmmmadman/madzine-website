@@ -888,9 +888,12 @@
     tempPath = svg('path', { 'class': 'mfp-cable-temp', stroke: col }, svgEl);
     drag = { id: e.pointerId, from: fromEnd, src: srcEl, target: null };
     cap(srcEl, e.pointerId);
-    srcEl.addEventListener('pointermove', onDragMove);
-    srcEl.addEventListener('pointerup', onDragEnd);
-    srcEl.addEventListener('pointercancel', onDragEnd);
+    // listeners on window (capture phase), keyed by pointerId, not on the jack: a panel rebuild
+    // (SEND / AUTO firing mid-drag) removes the jack, and a pointerup aimed at a removed element
+    // never arrives -> the drag stayed open forever (no new cables, a dashed ghost line). v1.2.2
+    window.addEventListener('pointermove', onDragMove, true);
+    window.addEventListener('pointerup', onDragEnd, true);
+    window.addEventListener('pointercancel', onDragEnd, true);
     onDragMove(e);
     requestAnimationFrame(autoScrollTick);
   }
@@ -963,8 +966,10 @@
   }
   function updateTemp(cx, cy) {
     drag.cx = cx; drag.cy = cy;
+    var fromJack = jackEls[key(drag.from.mod, drag.from.port)];
+    if (!fromJack || !tempPath) { abortDrag(); return; }
     var rr = root.getBoundingClientRect();
-    var a = jackCenter(jackEls[key(drag.from.mod, drag.from.port)], rr, scrollEl.getBoundingClientRect());
+    var a = jackCenter(fromJack, rr, scrollEl.getBoundingClientRect());
     var b = { x: cx - rr.left, y: cy - rr.top };
     var t = jackUnder(cx, cy);
     if (t && t.getAttribute('data-dir') !== 'in') t = null;
@@ -976,13 +981,39 @@
     }
     tempPath.setAttribute('d', cablePath(a, b, rr.height));
   }
+  // safety nets for a pointerup that never reaches us (iOS gesture takeover, tab switch):
+  // the last finger leaving the screen, or the page losing focus, ends any held cable
+  window.addEventListener('touchend', lastTouchGone, true);
+  window.addEventListener('touchcancel', lastTouchGone, true);
+  window.addEventListener('blur', function () { if (drag) abortDrag(); });
+  document.addEventListener('visibilitychange', function () { if (document.hidden && drag) abortDrag(); });
+  function lastTouchGone(e) {
+    if (!drag || (e.touches && e.touches.length)) return;
+    setTimeout(function () { if (drag) abortDrag(); }, 0);   // after the pointerup of the same gesture, if any
+  }
+  // tear the drag state down without dropping the cable anywhere (rebuild, lost jack)
+  function abortDrag() {
+    if (!drag) return;
+    var d = drag;
+    drag = null;
+    window.removeEventListener('pointermove', onDragMove, true);
+    window.removeEventListener('pointerup', onDragEnd, true);
+    window.removeEventListener('pointercancel', onDragEnd, true);
+    if (tempPath && tempPath.parentNode) tempPath.parentNode.removeChild(tempPath);
+    tempPath = null;
+    if (svgEl) svgEl.classList.remove('mfp-dragging');
+    if (csvgEl) csvgEl.classList.remove('mfp-dragging');
+    if (d.target) d.target.classList.remove('mfp-target');
+    // a cable picked up from an input and never put down is gone; tell the engine
+    if (d.removed) { queueRedraw(); emitChange(); }
+  }
   function onDragEnd(e) {
     if (!drag || e.pointerId !== drag.id) return;
     var d = drag;
     drag = null;
-    d.src.removeEventListener('pointermove', onDragMove);
-    d.src.removeEventListener('pointerup', onDragEnd);
-    d.src.removeEventListener('pointercancel', onDragEnd);
+    window.removeEventListener('pointermove', onDragMove, true);
+    window.removeEventListener('pointerup', onDragEnd, true);
+    window.removeEventListener('pointercancel', onDragEnd, true);
     if (tempPath && tempPath.parentNode) tempPath.parentNode.removeChild(tempPath);
     tempPath = null;
     svgEl.classList.remove('mfp-dragging');
@@ -990,6 +1021,8 @@
     var t = e.type === 'pointerup' ? jackUnder(e.clientX, e.clientY) : null;
     if (d.target) d.target.classList.remove('mfp-target');
     var changed = d.removed || false;
+    // the source jack is gone (panel rebuilt under the finger): nothing to connect from
+    if (!jackEls[key(d.from.mod, d.from.port)]) t = null;
     if (t && t.getAttribute('data-dir') === 'in') {
       var to = { mod: t.getAttribute('data-mod'), port: t.getAttribute('data-port') };
       // one cable per input: replace whatever was there
@@ -1002,6 +1035,8 @@
   }
 
   function onJackDown(e) {
+    // the same pointer pressing again means the previous drag ended without us seeing it: self-heal
+    if (drag && e.pointerId === drag.id) abortDrag();
     if (!enabled || e.button > 0 || drag) return;    // one cable in the air at a time; other fingers are free
     e.preventDefault();
     e.stopPropagation();
@@ -1050,6 +1085,7 @@
 
   /* ---------- build ---------- */
   function rebuild() {
+    abortDrag();                     // the jack under a held cable is about to disappear
     railEl.innerHTML = '';
     footEl.innerHTML = '';
     jackEls = {};

@@ -2,6 +2,11 @@
 
 ## 2026-10-27
 
+### Modular Fighters v1.2.2：接線卡住／殘影線治本
+
+- 使用者：遊戲常玩到一半不能接線，或留一條線的殘影。根因在 `mf-patch-ui.js` 拉線的結束監聽掛在**起點接孔元素**上（pointerup / pointercancel 都在 `srcEl`），而 SEND 之後 `freshModules()` → `setModules()` → `rebuild()` 會把整排模組重建；手指還按著線時接孔被移除，瀏覽器不會把 pointerup 送給已不在 DOM 的元素，`drag` 永遠不歸零：之後 `onJackDown` 一律 `return`（不能再接線），虛線 `tempPath` 留在 SVG（殘影），`redraw` 每幀又去查已不存在的接孔。修法：(1) 三個監聽改掛 `window` capture phase、以 pointerId 比對，不依附接孔存活；(2) `rebuild()` 開頭 `abortDrag()`；(3) `updateTemp` 找不到起點接孔就 abort；(4) 同一個 pointerId 再次按下視為上一筆已結束，自我修復；(5) 保險：最後一根手指離開（`touchend` / `touchcancel` 且 `touches` 為 0）、`blur`、分頁隱藏都結束手上的線
+- 驗證：`scratchpad/stuckdrag.mjs`（CDP 觸控）：正常拉線 1 條；拉線中呼叫 `setModules` 重建後 temp 0 / dragging 0，放手後可再接新線；`final.mjs` 五種橫向尺寸線端誤差 0、零錯誤
+
 ### Modular Fighters v1.2.1：隨機對戰房間畫面去掉房號、連線階段與逾時
 
 - 使用者 v1.2.0 實機：雙方都跳提示並接受，但畫面停在房間編號不開打。隨機對戰本來就不該讓玩家看到房號（房號是手動房間模式的東西），`startOnlineMatch` 改走 `roomScreenMode(true)`：標題「對手」、大字顯示對手名字、下方一行連線階段（連線中 / 對手已連線 / 對手已就緒），手動建房與加入維持房號顯示
