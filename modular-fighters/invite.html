@@ -8,7 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400&family=Noto+Sans+JP:wght@300&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="mf-patch-ui.css?v=20261028a">
+<link rel="stylesheet" href="mf-patch-ui.css?v=20261028b">
 <style>
 :root{
   --font-body:"Barlow Condensed","Noto Sans JP",system-ui,sans-serif;
@@ -133,9 +133,9 @@ a{color:var(--acc-text)}
   <div id="done" class="done hidden" data-i18n="done"></div>
 </div>
 
-<script src="mf-firebase-config.js?v=20261028a"></script>
-<script src="mf-characters.js?v=20261028a"></script>
-<script src="mf-patch-ui.js?v=20261028a"></script>
+<script src="mf-firebase-config.js?v=20261028b"></script>
+<script src="mf-characters.js?v=20261028b"></script>
+<script src="mf-patch-ui.js?v=20261028b"></script>
 <script>
 (function () {
   'use strict';
@@ -152,7 +152,7 @@ a{color:var(--acc-text)}
       artNote: '絵の仕様：正方形、白い背景に黒い線。静止画 PNG か 1〜3 秒のループ動画。ゲーム側で白を透明にして線に色を付けます。',
       favHelp: 'このキャラクターで対戦するとき、毎回配られる 10 モジュールに必ず入るものです。下のパネルは実際のゲームのモジュールで、触って試せます。',
       demoNote: '↑ 実際のパネル。接続して音は出ませんが、つまみや配線の感触は本番と同じです。',
-      specialHelp: 'ひとつだけ選んでください。数値は MADZINE 側で調整することがあります。',
+      specialHelp: 'ひとつだけ選んでください。数値は MADZINE 側で調整することがあります。特殊能力と得意モジュールはゲーム内には表示されません（秘密の個性です）。',
       moduleHelp: '自分だけのモジュールを作れます。既存モジュールの改造（例：「FOLD をもっと激しく」）なら早く実装できます。まったく新しい音の仕組みは相談のうえで作ります。',
       mName: 'モジュール名', mBase: 'ベースにする既存モジュール（なければ「新規」）', mIns: '入力ジャック', mOuts: '出力ジャック', mKnobs: 'つまみ',
       mDesc: 'どんな音・動きをするか（自由に）', mSketch: 'スケッチ（任意・写真でOK）', pickSketch: '画像を選ぶ', clearSketch: '外す',
@@ -169,7 +169,7 @@ a{color:var(--acc-text)}
       artNote: '圖的規格：正方形、白底黑線。靜態 PNG 或 1 到 3 秒的循環短片。遊戲會把白色去背、幫線條上色。',
       favHelp: '用這個角色對戰時，每次發的 10 個模組一定會有這些。下面的面板是遊戲裡真正的模組，可以動手試。',
       demoNote: '↑ 真正的面板。接線不會出聲，但旋鈕和接線手感和正式對戰一樣。',
-      specialHelp: '只能選一項。數值 MADZINE 可能會微調。',
+      specialHelp: '只能選一項。數值 MADZINE 可能會微調。特殊能力和慣用模組在遊戲裡不會顯示，是隱藏的個性。',
       moduleHelp: '可以設計一個只有你有的模組。改既有模組（例如「FOLD 但折得更兇」）最快能做出來；全新的聲音機制會再跟你討論。',
       mName: '模組名稱', mBase: '以哪個既有模組為基礎（沒有就選「全新」）', mIns: '輸入接孔', mOuts: '輸出接孔', mKnobs: '旋鈕',
       mDesc: '它的聲音或行為是什麼（自由描述）', mSketch: '草圖（選填，拍照即可）', pickSketch: '選圖片', clearSketch: '移除',
@@ -186,7 +186,7 @@ a{color:var(--acc-text)}
       artNote: 'Artwork: square, black line art on white. A still PNG or a 1–3 s loop. The game keys out the white and colours the lines.',
       favHelp: 'Guaranteed in every deal of 10 modules when you fight as this character. The panel below is the real game panel; try it.',
       demoNote: '↑ The real panel. Cables are silent here, but knobs and patching feel exactly like a match.',
-      specialHelp: 'Pick one. MADZINE may tune the numbers.',
+      specialHelp: 'Pick one. MADZINE may tune the numbers. Specials and favourites are never shown in the game: they are hidden traits.',
       moduleHelp: 'Design a module only you have. A variant of an existing module (e.g. “FOLD but harder”) is quick to build; a brand-new sound engine is discussed first.',
       mName: 'Module name', mBase: 'Based on which existing module (or “new”)', mIns: 'Input jacks', mOuts: 'Output jacks', mKnobs: 'Knobs',
       mDesc: 'What it sounds like / does (free text)', mSketch: 'Sketch (optional, a photo is fine)', pickSketch: 'Choose image', clearSketch: 'Remove',

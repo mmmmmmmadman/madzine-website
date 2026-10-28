@@ -212,12 +212,11 @@ Language: UI labels English only (short caps), to keep scope small.
 ## Characters, favourites, specials, registration (v1.2.3, 2026-10-28)
 - Roster = `mf-characters.js` (`window.MF_CHARACTERS`, data not code): {id, name, src (.mp4 loop or .png still),
   facing, by, favorites[<=3 module types], special (MF_SPECIALS key | null), module (signature module | null)}.
-  index.html builds the setup tiles from it (caption line = special + favourites, in the current language);
+  index.html builds the setup tiles from it (picture + name ONLY: traits are never shown in the game, user rule);
   mf-fight.js builds CHARS from it (fallback: the original six). A .png source is keyed once and bobs like a video.
 - Favourites: `MFAudio.randomModules(n, guarantee)` places the guaranteed types at random slots, then applies the
   VCO / LPF-or-MIXVCA rules to the remaining slots. The CPU gets its own character's favourites (`cpu.start(cb, {guarantee})`).
-- Specials (MF_SPECIAL_RULES): power = attack x1.3 (was the hidden HATAKEN rule; now a data field and SHOWN on the tile,
-  user decision 2026-10-28); fav2 = each favourite twice; hp120 = MFFight.setMaxHp per side (set in applySetup before
+- Specials (MF_SPECIAL_RULES): power = attack x1.3 (the HATAKEN rule, now a data field; still hidden like every trait); fav2 = each favourite twice; hp120 = MFFight.setMaxHp per side (set in applySetup before
   reset); auto6 = MFPatchUI.setAutoLockMs(6000); deal11 = 11 modules after the first SEND of the match (`sentThisMatch`).
   A network foe applies its own special on its side (power is multiplied before sending; HP is read from its char in hello).
 - invite.html: `?char=<id>` = invite for an existing character (hero + favourites + special + optional signature-module

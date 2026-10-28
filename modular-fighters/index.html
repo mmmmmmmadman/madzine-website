@@ -8,13 +8,13 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Modular Fighters">
-<link rel="manifest" href="manifest.webmanifest?v=20261028a">
+<link rel="manifest" href="manifest.webmanifest?v=20261028b">
 <title>Modular Fighters</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400&family=Noto+Sans+JP:wght@300&display=swap" rel="stylesheet">
 <!-- ?v= on the local css / js: bump the date on every change so Safari does not keep the old files -->
-<link rel="stylesheet" href="mf-patch-ui.css?v=20261028a">
+<link rel="stylesheet" href="mf-patch-ui.css?v=20261028b">
 <script>
   // Apply the saved theme before the first paint. Dark is the default for this game;
   // html[data-theme="light"] is the white theme. Same key as the toggle below (mf_theme).
@@ -281,7 +281,6 @@ html[lang="ja"] .cpurow button{font-size:17px;letter-spacing:0;white-space:nowra
   border-radius:8px;background:#fff;object-fit:cover;pointer-events:none;
 }
 .tile span{font-size:20px;letter-spacing:.16em;color:var(--fg)}
-.tile small{font-size:14px;letter-spacing:.04em;line-height:1.15;color:var(--fg2);text-align:center;max-width:140px}
 .tile img{display:block;width:100%;max-width:140px;aspect-ratio:1/1;max-height:140px;border-radius:8px;background:#fff;object-fit:cover;pointer-events:none}
 .tile.sel span{color:var(--acc-text)}
 .bgrow{display:flex;gap:8px;width:100%;max-width:320px}
@@ -543,7 +542,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     <div class="pane">
     <h1 class="title">MODULAR <b>FIGHTERS</b></h1>
     <p class="sub" data-i18n="tagline">PATCH. SEND. KNOCK OUT.</p>
-    <p class="ver" id="ver">v1.2.3</p>
+    <p class="ver" id="ver">v1.2.4</p>
     <button id="btn-cpu" class="big pri" type="button" data-i18n="vsCpu">VS CPU</button>
     <div id="cpurow" class="cpurow" role="group" aria-label="CPU difficulty">
       <button id="cpu-easy" type="button" data-cpu="easy" data-i18n="cpuEasy">EASY</button>
@@ -702,13 +701,13 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
 </div>
 
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-<script src="mf-audio.js?v=20261028a"></script>
-<script src="mf-patch-ui.js?v=20261028a"></script>
-<script src="mf-characters.js?v=20261028a"></script>
-<script src="mf-fight.js?v=20261028a"></script>
-<script src="mf-net.js?v=20261028a"></script>
-<script src="mf-firebase-config.js?v=20261028a"></script>
-<script src="mf-online.js?v=20261028a"></script>
+<script src="mf-audio.js?v=20261028b"></script>
+<script src="mf-patch-ui.js?v=20261028b"></script>
+<script src="mf-characters.js?v=20261028b"></script>
+<script src="mf-fight.js?v=20261028b"></script>
+<script src="mf-net.js?v=20261028b"></script>
+<script src="mf-firebase-config.js?v=20261028b"></script>
+<script src="mf-online.js?v=20261028b"></script>
 <script>
 (function () {
   'use strict';
@@ -1028,7 +1027,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       creditCode: 'プログラム：MADZINE'
     }
   };
-  var MF_VERSION = '1.2.3';   // shown under the tagline; +0.0.1 on EVERY push (user rule 2026-10-22), with the ?v= on the css / js links
+  var MF_VERSION = '1.2.4';   // shown under the tagline; +0.0.1 on EVERY push (user rule 2026-10-22), with the ?v= on the css / js links
   $('ver').textContent = 'v' + MF_VERSION;
   var LANG_KEY = 'mf_lang';
   var THEME_KEY = 'mf_theme';
@@ -1105,14 +1104,8 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
   // where the attack is produced: fire() for me, the CPU callback for a CPU foe; a network foe sends
   // its multiplied power. Power may then exceed 100 (up to 130); damage and speed follow it.
   function charPower(c, p) { return Math.round(p * (charSpecial(c) === 'power' ? SPECIAL_RULES.power || 1.3 : 1)); }
-  // the special + favourites line under a tile, in the current language
-  function charCaption(c) {
-    var d = charDef(c); if (!d) return '';
-    var parts = [];
-    if (d.special && window.MF_SPECIALS && window.MF_SPECIALS[d.special]) parts.push(window.MF_SPECIALS[d.special][lang] || window.MF_SPECIALS[d.special].en);
-    if (d.favorites && d.favorites.length) parts.push(d.favorites.join(' · '));
-    return parts.join(' / ');
-  }
+  // Character traits (special ability, favourite modules) are NEVER shown in the game (user rule
+  // 2026-10-28, reaffirming 2026-10-25): players notice the favourites from the deals themselves.
   function buildTiles() {
     var box = $('tiles');
     box.innerHTML = '';
@@ -1127,12 +1120,11 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       else { m.alt = ''; }
       b.appendChild(m);
       var sp = document.createElement('span'); sp.textContent = d.name; b.appendChild(sp);
-      var cap = document.createElement('small'); cap.className = 'cap'; cap.textContent = charCaption(d.id); b.appendChild(cap);
       b.addEventListener('click', function () { setChar(d.id); });
       box.appendChild(b);
     });
   }
-  function refreshTileCaptions() { CHAR_LIST.forEach(function (d) { var el = $('tile-' + d.id); if (el) el.querySelector('.cap').textContent = charCaption(d.id); }); }
+
   var myChar = 'osc';           // one of CHAR_IDS
   var foeChar = null;
   var bgEl = null;              // HTMLImageElement | HTMLVideoElement | null (local only)
@@ -1381,7 +1373,6 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     for (var j = 0; j < phs.length; j++) phs[j].setAttribute('placeholder', t(phs[j].getAttribute('data-i18n-ph')));
     var arias = document.querySelectorAll('[data-i18n-aria]');
     for (var k = 0; k < arias.length; k++) arias[k].setAttribute('aria-label', t(arias[k].getAttribute('data-i18n-aria')));
-    if (typeof refreshTileCaptions === 'function') refreshTileCaptions();
     langButtons.forEach(function (it) {
       it.btn.classList.toggle('selected', it.code === lang);
       it.btn.setAttribute('aria-pressed', it.code === lang ? 'true' : 'false');

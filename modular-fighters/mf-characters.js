@@ -13,7 +13,7 @@
      by         credit (shown on the invite page and in the help sheet)
      favorites  up to 3 module types guaranteed in every deal for this character
                 (VCO MIXVCA LPF FOLD DELAY ADSR AR SEQ5 DRAW)
-     special    one of MF_SPECIALS keys or null
+     special    one of MF_SPECIALS keys or null (never shown in the game: hidden traits, user rule)
      module     signature module (null until one is designed and built):
                 { type: <existing type>, label: 'NAME', params: {...preset / range overrides} }
    ========================================================= */
