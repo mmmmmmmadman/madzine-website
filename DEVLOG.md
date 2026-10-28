@@ -2,6 +2,10 @@
 
 ## 2026-10-28
 
+### HONKI 頁嵌入 YouTube 介紹影片
+
+- `honki.html` 右欄最上方加 16:9 YouTube iframe（KbNffVZgaTQ，教學影片），樣式與 iframe 參數自 visionmod.html 的 `.video-frame` 複製（本頁行內 CSS）；截圖、App Store 按鈕、手冊、技術資訊位置不變
+
 ### Open Call 報名截止延至 11/10
 
 - 使用者裁示報名期間改為 2026/10/20 – 11/10（原 11/1）。改動 9 處：`js/i18n.js` 三語 `opencall.facts.period.value` 與 `opencall.s3.body` 報名期間列、`open-call.html` 的 zh fallback 兩處與 `<meta name="description">`
