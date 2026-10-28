@@ -1,5 +1,18 @@
 # MADZINE Website 開發紀錄
 
+## 2026-10-28
+
+### Modular Fighters v1.2.3：角色登記系統（名冊資料檔、慣用模組、特殊能力、邀請頁、審核頁）
+
+- 使用者要讓日本朋友登記自己的角色（慣用模組、特殊能力、專用模組），也要有一套東西發給現有六位角色本人。設計拍板（照預設）：登記走自家頁面寫 Firebase、素材另外用 LINE／email 給 MADZINE 人工轉檔；特殊能力公開顯示；慣用模組最多三種每種保證出現一個；邀請頁日文優先；六位全部發
+- **名冊改成資料**：新檔 `mf-characters.js`（`MF_CHARACTERS` 六筆 + `MF_SPECIALS` 五種能力三語標籤 + `MF_SPECIAL_RULES` 數值）。`index.html` 選角格改為啟動時從名冊生成（格子下方多一行能力＋慣用模組，跟語言切換）；`mf-fight.js` 的 CHARS 從名冊建，`src` 為 .png 時走 `Image`、只去背一次、沿用既有的上下浮動；`CHAR_POWER` 刪除，改讀 `special === 'power'`
+- **慣用模組**：`MFAudio.randomModules(n, guarantee)` 先把保證的型別放進隨機位置，VCO／LPF-or-MIXVCA 規則只動剩餘位置；CPU 對手也拿自己角色的慣用模組（`cpu.start(cb, {guarantee})`）
+- **特殊能力**：power ×1.3（原 HATAKEN 隱藏規則，**現在公開顯示在選角格**，使用者 10-28 裁示推翻 10-25 的隱藏規則）、fav2 慣用模組各兩個、hp120（`MFFight.setMaxHp` 每側獨立，在 `applySetup` 內 `reset()` 之前設）、auto6（`MFPatchUI.setAutoLockMs`）、deal11（本場第一次 SEND 之後每組 11 個，`sentThisMatch` 旗標）
+- **`invite.html`**：`?char=<id>` 是給既有角色本人的邀請（角色動畫＋名字、慣用模組九張卡＋真的遊戲面板可以摸、特殊能力單選、專用模組設計：名稱／基礎模組／接孔旋鈕數／描述／草圖拍照上傳，前端縮到 900px JPEG、超過約 380KB 自動降畫質）；不帶參數是新角色登記（多角色名、署名、面向）。日文預設，可切中英。送出寫 `mf/submissions`（append-only），無 Google 表單
+- **`review.html`**：列出提交（預設每角色最新一筆、舊的淡化），草圖預覽，「複製角色設定」產生可直接貼進 `mf-characters.js` 的一行；新角色有「素材已收到」勾選（只存本機）。`firebase.rules.json` 加 `submissions` 節點（只能新增不能改、欄位長度驗證），**需要重新到 Firebase 主控台貼一次規則**
+- `INVITE_LINKS.md`：六位的專屬連結、新角色連結、審核頁網址、日文轉發短文、收件後的落地步驟。說明頁加「登記自己的角色」連結
+- 驗證：node 單測發牌 300 次（保證型別必在、重複型別數量正確、VCO 規則維持）；無頭：名冊生成 10 格含標題行、TESTO（fav2）每種慣用模組 ≥2、HPGUY 血量 120、AUTOGUY 鎖定剩 5.1 秒、DEALGUY 首組 10 送出後 11、HATAKEN 原始 20 → 26、日文切換標題行變「攻撃力 ×1.3」；邀請頁：日文載入、九個模組面板、第四個慣用模組被拒、草圖 1600×1200 PNG → 12KB JPEG、送出內容欄位正確、新角色模式缺名字被擋、390 寬無橫向溢出；`final.mjs` 橫向五尺寸、`online.mjs` 線上流程皆零錯誤。**實機與真 Firebase 寫入未測**
+
 ## 2026-10-27
 
 ### Modular Fighters v1.2.2：接線卡住／殘影線治本

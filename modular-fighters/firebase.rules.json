@@ -10,14 +10,45 @@
       },
       "matches": {
         ".read": true,
-        "$mid": { ".write": true }
+        "$mid": {
+          ".write": true
+        }
       },
       "leaderboard": {
         ".read": true,
-        ".indexOn": ["wins"],
+        ".indexOn": [
+          "wins"
+        ],
         "$key": {
           ".write": true,
           ".validate": "newData.hasChildren(['name', 'wins', 'losses']) && newData.child('name').isString() && newData.child('name').val().length <= 12 && newData.child('wins').isNumber() && newData.child('losses').isNumber()"
+        }
+      },
+      "submissions": {
+        ".read": true,
+        ".indexOn": [
+          "t"
+        ],
+        "$sid": {
+          ".write": "!data.exists()",
+          ".validate": "newData.hasChildren(['kind', 'name', 't']) && newData.child('kind').isString() && (newData.child('kind').val() == 'invite' || newData.child('kind').val() == 'new') && newData.child('name').isString() && newData.child('name').val().length <= 12 && newData.child('t').isNumber()",
+          "by": {
+            ".validate": "newData.isString() && newData.val().length <= 40"
+          },
+          "contact": {
+            ".validate": "newData.isString() && newData.val().length <= 80"
+          },
+          "module": {
+            "desc": {
+              ".validate": "newData.isString() && newData.val().length <= 1500"
+            },
+            "sketch": {
+              ".validate": "newData.isString() && newData.val().length <= 420000"
+            },
+            "name": {
+              ".validate": "newData.isString() && newData.val().length <= 16"
+            }
+          }
         }
       }
     }

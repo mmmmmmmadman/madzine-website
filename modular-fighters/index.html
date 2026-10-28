@@ -8,13 +8,13 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Modular Fighters">
-<link rel="manifest" href="manifest.webmanifest?v=20261027d">
+<link rel="manifest" href="manifest.webmanifest?v=20261028a">
 <title>Modular Fighters</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400&family=Noto+Sans+JP:wght@300&display=swap" rel="stylesheet">
 <!-- ?v= on the local css / js: bump the date on every change so Safari does not keep the old files -->
-<link rel="stylesheet" href="mf-patch-ui.css?v=20261027d">
+<link rel="stylesheet" href="mf-patch-ui.css?v=20261028a">
 <script>
   // Apply the saved theme before the first paint. Dark is the default for this game;
   // html[data-theme="light"] is the white theme. Same key as the toggle below (mf_theme).
@@ -281,6 +281,8 @@ html[lang="ja"] .cpurow button{font-size:17px;letter-spacing:0;white-space:nowra
   border-radius:8px;background:#fff;object-fit:cover;pointer-events:none;
 }
 .tile span{font-size:20px;letter-spacing:.16em;color:var(--fg)}
+.tile small{font-size:14px;letter-spacing:.04em;line-height:1.15;color:var(--fg2);text-align:center;max-width:140px}
+.tile img{display:block;width:100%;max-width:140px;aspect-ratio:1/1;max-height:140px;border-radius:8px;background:#fff;object-fit:cover;pointer-events:none}
 .tile.sel span{color:var(--acc-text)}
 .bgrow{display:flex;gap:8px;width:100%;max-width:320px}
 .bgrow button{flex:1 1 0;min-height:52px;font-size:17px;letter-spacing:.1em;line-height:1.1;padding:4px}
@@ -492,7 +494,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
   #setup .lbl:nth-of-type(1){grid-area:1/1/2/2;margin:0}
   #setup .tiles{grid-area:2/1/7/2;align-self:start;max-width:260px}
   #setup .tile{max-width:124px}
-  #setup .tile video{max-width:100px;max-height:100px}
+  #setup .tile video,#setup .tile img{max-width:100px;max-height:100px}
   #setup .lbl:nth-of-type(2){grid-area:1/2/2/3;margin:0}
   #setup .bgrow{grid-area:2/2/3/3}
   #setup .thumb{grid-area:3/2/4/3}
@@ -541,7 +543,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     <div class="pane">
     <h1 class="title">MODULAR <b>FIGHTERS</b></h1>
     <p class="sub" data-i18n="tagline">PATCH. SEND. KNOCK OUT.</p>
-    <p class="ver" id="ver">v1.2.2</p>
+    <p class="ver" id="ver">v1.2.3</p>
     <button id="btn-cpu" class="big pri" type="button" data-i18n="vsCpu">VS CPU</button>
     <div id="cpurow" class="cpurow" role="group" aria-label="CPU difficulty">
       <button id="cpu-easy" type="button" data-cpu="easy" data-i18n="cpuEasy">EASY</button>
@@ -565,32 +567,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
   <section id="setup" class="screen center">
     <div class="pane">
     <p class="lbl" data-i18n="character">CHARACTER</p>
-    <div class="tiles">
-      <button id="tile-osc" class="tile sel" type="button" data-char="osc">
-        <video src="assets/osc.mp4" muted loop playsinline autoplay preload="auto" aria-hidden="true"></video>
-        <span>OSC</span>
-      </button>
-      <button id="tile-moddict" class="tile" type="button" data-char="moddict">
-        <video src="assets/moddict.mp4" muted loop playsinline autoplay preload="auto" aria-hidden="true"></video>
-        <span>MODDICT</span>
-      </button>
-      <button id="tile-tatata5" class="tile" type="button" data-char="tatata5">
-        <video src="assets/tatata5.mp4" muted loop playsinline autoplay preload="auto" aria-hidden="true"></video>
-        <span>TATATA5</span>
-      </button>
-      <button id="tile-mad" class="tile" type="button" data-char="mad">
-        <video src="assets/mad.mp4" muted loop playsinline autoplay preload="auto" aria-hidden="true"></video>
-        <span>MAD</span>
-      </button>
-      <button id="tile-hataken" class="tile" type="button" data-char="hataken">
-        <video src="assets/hataken.mp4" muted loop playsinline autoplay preload="auto" aria-hidden="true"></video>
-        <span>HATAKEN</span>
-      </button>
-      <button id="tile-zhyper" class="tile" type="button" data-char="zhyper">
-        <video src="assets/zhyper.mp4" muted loop playsinline autoplay preload="auto" aria-hidden="true"></video>
-        <span>Z_Hyper</span>
-      </button>
-    </div>
+    <div class="tiles" id="tiles"><!-- one .tile per MF_CHARACTERS entry, built at start-up --></div>
     <p class="lbl" data-i18n="background">BACKGROUND</p>
     <div class="bgrow">
       <button id="bg-take" type="button" data-i18n="takePhoto">TAKE PHOTO</button>
@@ -677,6 +654,8 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     <p class="sheet-text" data-i18n="helpCpu"></p>
     <p class="sheet-text" data-i18n="helpModules"></p>
     <p class="sheet-text" data-i18n="helpHue"></p>
+    <p class="sheet-label" data-i18n="registerLabel">YOUR OWN CHARACTER</p>
+    <p class="sheet-text"><a id="invite-link" href="invite.html" target="_blank" rel="noopener" data-i18n="registerLink">Register a character</a></p>
     <p class="sheet-label" data-i18n="nameLabel">PLAYER NAME</p>
     <div class="seg">
       <span id="help-name" class="namecur"></span>
@@ -723,12 +702,13 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
 </div>
 
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
-<script src="mf-audio.js?v=20261027d"></script>
-<script src="mf-patch-ui.js?v=20261027d"></script>
-<script src="mf-fight.js?v=20261027d"></script>
-<script src="mf-net.js?v=20261027d"></script>
-<script src="mf-firebase-config.js?v=20261027d"></script>
-<script src="mf-online.js?v=20261027d"></script>
+<script src="mf-audio.js?v=20261028a"></script>
+<script src="mf-patch-ui.js?v=20261028a"></script>
+<script src="mf-characters.js?v=20261028a"></script>
+<script src="mf-fight.js?v=20261028a"></script>
+<script src="mf-net.js?v=20261028a"></script>
+<script src="mf-firebase-config.js?v=20261028a"></script>
+<script src="mf-online.js?v=20261028a"></script>
 <script>
 (function () {
   'use strict';
@@ -822,6 +802,8 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       playerName: '玩家名稱',
       nameHint: '排行榜和對手看到的名字，最多 12 個字。換一個名字就是從零開始的新紀錄。',
       nameLabel: '玩家名稱',
+      registerLabel: '登記自己的角色',
+      registerLink: '前往角色登記頁（慣用模組、特殊能力、專用模組）',
       changeName: '更改',
       ok: '確定',
       queued: '排隊中',
@@ -920,6 +902,8 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       playerName: 'PLAYER NAME',
       nameHint: 'Shown on the leaderboard and to your opponent, up to 12 characters. A different name starts a fresh record.',
       nameLabel: 'PLAYER NAME',
+      registerLabel: 'YOUR OWN CHARACTER',
+      registerLink: 'Open the registration page (favourite modules, special ability, signature module)',
       changeName: 'CHANGE',
       ok: 'OK',
       queued: 'IN QUEUE',
@@ -1018,6 +1002,8 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       playerName: 'プレイヤー名',
       nameHint: 'ランキングと対戦相手に表示される名前です。12 文字まで。名前を変えると記録は新しく始まります。',
       nameLabel: 'プレイヤー名',
+      registerLabel: '自分のキャラクターを登録',
+      registerLink: '登録ページへ（得意モジュール・特殊能力・専用モジュール）',
       changeName: '変更',
       ok: 'OK',
       queued: '待機中',
@@ -1042,7 +1028,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       creditCode: 'プログラム：MADZINE'
     }
   };
-  var MF_VERSION = '1.2.2';   // shown under the tagline; +0.0.1 on EVERY push (user rule 2026-10-22), with the ?v= on the css / js links
+  var MF_VERSION = '1.2.3';   // shown under the tagline; +0.0.1 on EVERY push (user rule 2026-10-22), with the ?v= on the css / js links
   $('ver').textContent = 'v' + MF_VERSION;
   var LANG_KEY = 'mf_lang';
   var THEME_KEY = 'mf_theme';
@@ -1101,12 +1087,52 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
 
   // ---------- setup state (character + local background) ----------
   // Characters: any character can stand on either side (you are always LEFT, the opponent RIGHT).
-  var CHAR_IDS = ['osc', 'moddict', 'tatata5', 'mad', 'hataken', 'zhyper'];
-  // attack power multiplier per character (user rule 2026-10-25: HATAKEN hits 1.3x). Applied where
-  // the attack is produced: fire() for me, the CPU callback for a CPU foe; a network foe sends
+  // the roster and the special-ability table live in mf-characters.js
+  var CHAR_LIST = window.MF_CHARACTERS || [];
+  var CHAR_IDS = CHAR_LIST.map(function (c) { return c.id; });
+  var SPECIAL_RULES = window.MF_SPECIAL_RULES || {};
+  function charDef(c) { for (var i = 0; i < CHAR_LIST.length; i++) if (CHAR_LIST[i].id === c) return CHAR_LIST[i]; return null; }
+  function charSpecial(c) { var d = charDef(c); return d && d.special ? d.special : null; }
+  // favourite module types guaranteed in each deal (fav2: two of each)
+  function charFavorites(c) {
+    var d = charDef(c), favs = d && d.favorites ? d.favorites.slice(0, 3) : [];
+    return charSpecial(c) === 'fav2' ? favs.concat(favs) : favs;
+  }
+  function charHp(c) { return charSpecial(c) === 'hp120' ? SPECIAL_RULES.hp120 || 120 : 100; }
+  function charAutoMs(c) { return charSpecial(c) === 'auto6' ? SPECIAL_RULES.auto6 || 6000 : 0; }
+  function charDeal(c, afterSend) { return charSpecial(c) === 'deal11' && afterSend ? SPECIAL_RULES.deal11 || 11 : 10; }
+  // attack power multiplier (user rule 2026-10-25: HATAKEN hits 1.3x; now the "power" special). Applied
+  // where the attack is produced: fire() for me, the CPU callback for a CPU foe; a network foe sends
   // its multiplied power. Power may then exceed 100 (up to 130); damage and speed follow it.
-  var CHAR_POWER = { hataken: 1.3 };
-  function charPower(c, p) { return Math.round(p * (CHAR_POWER[c] || 1)); }
+  function charPower(c, p) { return Math.round(p * (charSpecial(c) === 'power' ? SPECIAL_RULES.power || 1.3 : 1)); }
+  // the special + favourites line under a tile, in the current language
+  function charCaption(c) {
+    var d = charDef(c); if (!d) return '';
+    var parts = [];
+    if (d.special && window.MF_SPECIALS && window.MF_SPECIALS[d.special]) parts.push(window.MF_SPECIALS[d.special][lang] || window.MF_SPECIALS[d.special].en);
+    if (d.favorites && d.favorites.length) parts.push(d.favorites.join(' · '));
+    return parts.join(' / ');
+  }
+  function buildTiles() {
+    var box = $('tiles');
+    box.innerHTML = '';
+    CHAR_LIST.forEach(function (d) {
+      var b = document.createElement('button');
+      b.id = 'tile-' + d.id; b.className = 'tile'; b.type = 'button'; b.setAttribute('data-char', d.id);
+      var still = /\.(png|jpe?g|webp)$/i.test(d.src);
+      var m = document.createElement(still ? 'img' : 'video');
+      m.src = d.src; m.setAttribute('aria-hidden', 'true');
+      if (!still) { m.muted = true; m.loop = true; m.playsInline = true; m.autoplay = true; m.preload = 'auto';
+        m.setAttribute('muted', ''); m.setAttribute('loop', ''); m.setAttribute('playsinline', ''); m.setAttribute('autoplay', ''); }
+      else { m.alt = ''; }
+      b.appendChild(m);
+      var sp = document.createElement('span'); sp.textContent = d.name; b.appendChild(sp);
+      var cap = document.createElement('small'); cap.className = 'cap'; cap.textContent = charCaption(d.id); b.appendChild(cap);
+      b.addEventListener('click', function () { setChar(d.id); });
+      box.appendChild(b);
+    });
+  }
+  function refreshTileCaptions() { CHAR_LIST.forEach(function (d) { var el = $('tile-' + d.id); if (el) el.querySelector('.cap').textContent = charCaption(d.id); }); }
   var myChar = 'osc';           // one of CHAR_IDS
   var foeChar = null;
   var bgEl = null;              // HTMLImageElement | HTMLVideoElement | null (local only)
@@ -1211,8 +1237,9 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     bgState.key = key; bgState.name = name || null;
     $('bg-name').textContent = name ? name : t(key);
   }
+  var sentThisMatch = false;   // deal11: 11 modules only after the first send of the match
   function freshModules() {
-    currentModules = MFAudio.randomModules(10);
+    currentModules = MFAudio.randomModules(charDeal(myChar, sentThisMatch), charFavorites(myChar));
     MFPatchUI.setModules(currentModules);
     MFAudio.stop('preview');   // the new panel has no cables yet
   }
@@ -1227,8 +1254,11 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     CHAR_IDS.forEach(function (id) { $('tile-' + id).classList.toggle('sel', myChar === id); });
   }
   function applySetup() {
+    var fc = foeChar || otherChar(myChar);
     MFFight.setNames(mode === 'net' ? { me: myName, foe: foeName } : null);
-    MFFight.setSides({ me: 'left', meChar: myChar, foeChar: foeChar || otherChar(myChar) });
+    MFFight.setSides({ me: 'left', meChar: myChar, foeChar: fc });
+    MFFight.setMaxHp({ me: charHp(myChar), foe: charHp(fc) });   // before reset(), which fills HP from it
+    MFPatchUI.setAutoLockMs(charAutoMs(myChar));
     MFFight.setBackground(bgEl);
   }
   function showNote(text) {
@@ -1351,6 +1381,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     for (var j = 0; j < phs.length; j++) phs[j].setAttribute('placeholder', t(phs[j].getAttribute('data-i18n-ph')));
     var arias = document.querySelectorAll('[data-i18n-aria]');
     for (var k = 0; k < arias.length; k++) arias[k].setAttribute('aria-label', t(arias[k].getAttribute('data-i18n-aria')));
+    if (typeof refreshTileCaptions === 'function') refreshTileCaptions();
     langButtons.forEach(function (it) {
       it.btn.classList.toggle('selected', it.code === lang);
       it.btn.setAttribute('aria-pressed', it.code === lang ? 'true' : 'false');
@@ -1641,6 +1672,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
       if (mode === 'net') MFNet.send({ t: 'attack', patch: patch, power: power });
       if (mode === 'cpu') MFFight.cpu.notifyUserAttack();   // the CPU only ever answers a user attack
     }
+    sentThisMatch = true;
     freshModules();
   }
   function incoming(patch, power) {
@@ -1690,9 +1722,10 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
     overlay.classList.remove('on');
     MFFight.reset();
     MFPatchUI.setEnabled(true);
+    sentThisMatch = false;
     freshModules();
     updateStatus();
-    if (mode === 'cpu') MFFight.cpu.start(function (patch, power) { incoming(patch, charPower(foeChar, power)); });
+    if (mode === 'cpu') MFFight.cpu.start(function (patch, power) { incoming(patch, charPower(foeChar, power)); }, { guarantee: charFavorites(foeChar) });
   }
   function restartRecording() {
     MFAudio.init().catch(function () {});
@@ -2131,9 +2164,7 @@ html[lang="ja"] .dlbtn.dlp{flex-basis:100%;font-size:18px;letter-spacing:0}   /*
   }
 
   // ---------- setup screen ----------
-  CHAR_IDS.forEach(function (id) {
-    $('tile-' + id).addEventListener('click', function () { setChar(id); });
-  });
+  buildTiles();
   $('bg-take').addEventListener('click', function () { $('bg-file-take').click(); });
   $('bg-import').addEventListener('click', function () { $('bg-file-import').click(); });
   $('bg-none').addEventListener('click', function () { clearBackground(); });

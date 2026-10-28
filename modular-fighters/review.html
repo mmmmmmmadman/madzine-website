@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="zh-Hant" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Modular Fighters — 登記審核</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400&family=Noto+Sans+JP:wght@300&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#121212;--elev:#1c1c1c;--line:#303030;--fg:#f2f2f2;--fg2:#a8a8a8;--acc:#e8846c;--on-acc:#121212}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Barlow Condensed","Noto Sans JP",system-ui,sans-serif;font-weight:300;line-height:1.5}
+.wrap{max-width:900px;margin:0 auto;padding:24px 16px 80px}
+h1{font-weight:300;font-size:30px;letter-spacing:.14em;margin:0 0 6px}
+p{margin:0 0 10px;font-size:16px;color:var(--fg2)}
+.card{border:1px solid var(--line);border-radius:12px;background:var(--elev);padding:14px 16px;margin:0 0 14px}
+.card.old{opacity:.5}
+.head{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+.head .n{font-size:24px;letter-spacing:.12em}
+.head .k{font-size:14px;letter-spacing:.14em;color:var(--acc);border:1px solid var(--acc);border-radius:6px;padding:0 6px}
+.head .t{font-size:14px;color:var(--fg2);margin-left:auto}
+dl{display:grid;grid-template-columns:140px 1fr;gap:4px 12px;margin:10px 0;font-size:16px}
+dt{color:var(--fg2)}
+dd{margin:0;white-space:pre-wrap;word-break:break-word}
+img.sk{max-width:280px;max-height:280px;background:#fff;border-radius:8px;border:1px solid var(--line);display:block}
+pre{background:#0c0c0c;border:1px solid var(--line);border-radius:8px;padding:10px;font-size:14px;overflow:auto;margin:8px 0}
+button{font-family:inherit;font-weight:300;color:var(--fg);background:var(--elev);border:1px solid var(--line);border-radius:8px;padding:0 12px;min-height:40px;font-size:16px;letter-spacing:.08em;cursor:pointer}
+button.sel{border-color:var(--acc);color:var(--acc)}
+label.chk{display:inline-flex;gap:8px;align-items:center;font-size:16px;cursor:pointer}
+label.chk input{width:20px;height:20px;accent-color:var(--acc)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:8px}
+.msg{color:var(--acc);min-height:24px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>登記審核</h1>
+  <p>每筆是 invite.html 送來的一次提交（最新在前，同一角色較舊的淡化）。「複製角色設定」會產生可直接貼進 <code>mf-characters.js</code> 的一行；專用模組的設計內容要另外看。素材是否收到只記在這台瀏覽器。</p>
+  <div class="row"><button id="reload">重新讀取</button><label class="chk"><input id="latest" type="checkbox" checked> 只看每個角色最新一筆</label></div>
+  <div class="msg" id="msg"></div>
+  <div id="list"></div>
+</div>
+<script src="mf-firebase-config.js?v=20261028a"></script>
+<script src="mf-characters.js?v=20261028a"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var SDK = ['https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js', 'https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js'];
+  function load(src) { return new Promise(function (res, rej) { var s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = function () { rej(new Error('load')); }; document.head.appendChild(s); }); }
+  function db() {
+    var cfg = window.MF_FIREBASE_CONFIG;
+    if (!cfg || !cfg.databaseURL) return Promise.reject(new Error('off'));
+    var p = window.firebase ? Promise.resolve() : load(SDK[0]).then(function () { return load(SDK[1]); });
+    return p.then(function () { if (!firebase.apps.length) firebase.initializeApp(cfg); return firebase.database(); });
+  }
+  var GOT_KEY = 'mf_review_art';
+  function gotArt() { try { return JSON.parse(localStorage.getItem(GOT_KEY) || '{}'); } catch (e) { return {}; } }
+  function setGot(id, v) { var g = gotArt(); if (v) g[id] = 1; else delete g[id]; try { localStorage.setItem(GOT_KEY, JSON.stringify(g)); } catch (e) {} }
+  function slug(s) { return String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 16) || 'newchar'; }
+  function entryLine(r) {
+    var id = r.char || slug(r.name);
+    var o = { id: id, name: r.name || '', src: 'assets/' + id + '.mp4', facing: r.facing === -1 ? -1 : 1, by: r.by || '', favorites: r.favorites || [], special: r.special || null, module: null };
+    return '  ' + JSON.stringify(o).replace(/"([a-z]+)":/g, '$1: ').replace(/,/g, ', ') + ',';
+  }
+  function fmt(ts) { var d = new Date(ts); return d.toLocaleString('zh-TW', { hour12: false }); }
+  function render(rows) {
+    var list = $('list'); list.innerHTML = '';
+    var latestOnly = $('latest').checked, seen = {};
+    rows.forEach(function (r) {
+      var key = r.char || ('new:' + slug(r.name));
+      var old = !!seen[key]; seen[key] = true;
+      if (latestOnly && old) return;
+      var c = document.createElement('div'); c.className = 'card' + (old ? ' old' : '');
+      var head = document.createElement('div'); head.className = 'head';
+      head.innerHTML = '<span class="n"></span><span class="k"></span><span class="t"></span>';
+      head.querySelector('.n').textContent = r.name || '(無名)';
+      head.querySelector('.k').textContent = r.kind === 'invite' ? '既有角色 ' + r.char : '新角色';
+      head.querySelector('.t').textContent = fmt(r.t) + (r.lang ? ' · ' + r.lang : '');
+      c.appendChild(head);
+      var dl = document.createElement('dl');
+      function add(k, v) { if (v == null || v === '') return; var dt = document.createElement('dt'); dt.textContent = k; var dd = document.createElement('dd'); if (v instanceof Node) dd.appendChild(v); else dd.textContent = v; dl.appendChild(dt); dl.appendChild(dd); }
+      add('署名', r.by);
+      add('面向', r.facing === -1 ? '左' : (r.facing === 1 ? '右' : '未選'));
+      add('慣用模組', (r.favorites || []).join(' · ') || '（無）');
+      add('特殊能力', r.special ? (window.MF_SPECIALS[r.special] ? window.MF_SPECIALS[r.special].zh : r.special) : '（無）');
+      if (r.module) {
+        var m = r.module;
+        add('專用模組', (m.name || '(未命名)') + '　基礎：' + (m.base || '全新') + '　輸入 ' + m.ins + ' / 輸出 ' + m.outs + ' / 旋鈕 ' + m.knobs);
+        add('描述', m.desc || '');
+        if (m.sketch) { var im = document.createElement('img'); im.className = 'sk'; im.src = m.sketch; add('草圖', im); }
+      }
+      add('聯絡', r.contact);
+      c.appendChild(dl);
+      var pre = document.createElement('pre'); pre.textContent = entryLine(r); c.appendChild(pre);
+      var row = document.createElement('div'); row.className = 'row';
+      var copy = document.createElement('button'); copy.textContent = '複製角色設定';
+      copy.addEventListener('click', function () { navigator.clipboard.writeText(pre.textContent).then(function () { copy.textContent = '已複製'; setTimeout(function () { copy.textContent = '複製角色設定'; }, 1500); }); });
+      row.appendChild(copy);
+      if (r.kind === 'new') {
+        var lab = document.createElement('label'); lab.className = 'chk';
+        var ck = document.createElement('input'); ck.type = 'checkbox'; ck.checked = !!gotArt()[key];
+        ck.addEventListener('change', function () { setGot(key, ck.checked); });
+        lab.appendChild(ck); lab.appendChild(document.createTextNode('素材已收到'));
+        row.appendChild(lab);
+      }
+      c.appendChild(row);
+      list.appendChild(c);
+    });
+    if (!list.children.length) $('msg').textContent = '還沒有任何提交。';
+  }
+  var cache = [];
+  function reload() {
+    $('msg').textContent = '讀取中…';
+    db().then(function (d) { return d.ref('mf/submissions').orderByChild('t').once('value'); }).then(function (snap) {
+      cache = [];
+      snap.forEach(function (ch) { var v = ch.val(); if (v) { v._id = ch.key; cache.push(v); } });
+      cache.sort(function (a, b) { return (b.t || 0) - (a.t || 0); });
+      $('msg').textContent = cache.length + ' 筆';
+      render(cache);
+    }).catch(function (e) { $('msg').textContent = e && e.message === 'off' ? '線上功能尚未設定。' : '讀取失敗：' + (e && e.message); });
+  }
+  $('reload').addEventListener('click', reload);
+  $('latest').addEventListener('change', function () { render(cache); });
+  reload();
+})();
+</script>
+</body>
+</html>

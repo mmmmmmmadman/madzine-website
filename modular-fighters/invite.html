@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="ja" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Modular Fighters — キャラクター登録</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400&family=Noto+Sans+JP:wght@300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="mf-patch-ui.css?v=20261028a">
+<style>
+:root{
+  --font-body:"Barlow Condensed","Noto Sans JP",system-ui,sans-serif;
+  --bg:#121212;--elev:#1c1c1c;--panel:#232323;--line:#303030;--stroke:#7a7a7a;
+  --fg:#f2f2f2;--fg2:#a8a8a8;--fg3:#6e6e6e;
+  --acc:#e8846c;--acc-text:#e8846c;--acc-dim:#6b4a41;--acc-glow:#ff9c80;--on-acc:#121212;--input-bg:#161616;
+  --err:#dc5a5a;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg)}
+body{font-family:var(--font-body);font-weight:300;-webkit-text-size-adjust:100%;line-height:1.5}
+.wrap{max-width:720px;margin:0 auto;padding:28px 16px 80px}
+h1{font-weight:300;font-size:34px;letter-spacing:.14em;margin:0 0 4px;line-height:1.1}
+h1 small{display:block;font-size:18px;letter-spacing:.2em;color:var(--fg2)}
+h2{font-weight:300;font-size:24px;letter-spacing:.12em;margin:36px 0 10px;padding-top:14px;border-top:1px solid var(--line)}
+p{margin:0 0 10px;font-size:17px;color:var(--fg)}
+p.dim{color:var(--fg2);font-size:16px}
+.langrow{display:flex;gap:8px;margin:0 0 20px}
+button,.btn{font-family:var(--font-body);font-weight:300;color:var(--fg);background:var(--elev);border:1px solid var(--line);border-radius:10px;margin:0;padding:0 14px;min-height:44px;font-size:18px;letter-spacing:.1em;cursor:pointer}
+button.sel,.btn.sel{border-color:var(--acc);color:var(--acc-text)}
+button.pri{background:var(--acc);border-color:var(--acc);color:var(--on-acc);font-size:22px;letter-spacing:.16em;min-height:60px;width:100%}
+button:disabled{opacity:.5;cursor:default}
+.hero{display:flex;gap:16px;align-items:center;margin:8px 0 6px}
+.hero .pic{width:120px;height:120px;border-radius:12px;background:#fff;object-fit:cover;flex:0 0 auto}
+.hero .who{font-size:30px;letter-spacing:.14em}
+.hero .by{font-size:16px;color:var(--fg2)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+label.card{display:flex;gap:10px;align-items:flex-start;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--elev);cursor:pointer;min-height:44px}
+label.card input{width:22px;height:22px;margin:2px 0 0;accent-color:var(--acc);flex:0 0 auto}
+label.card.sel{border-color:var(--acc)}
+label.card .t{font-size:19px;letter-spacing:.12em}
+label.card .d{font-size:15px;color:var(--fg2);line-height:1.35}
+.demo{margin:12px 0 4px;height:290px;position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line)}
+.demo .mfp{height:100%}
+.demo .mfp-foot{display:none}   /* no AUTO / SEND / OUT on the demo panel */
+input[type=text],input[type=number],textarea{font-family:var(--font-body);font-weight:300;font-size:18px;color:var(--fg);background:var(--input-bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;min-height:44px}
+textarea{min-height:120px;resize:vertical;line-height:1.45}
+input:focus,textarea:focus{outline:none;border-color:var(--acc)}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 12px}
+.row>*{flex:1 1 160px}
+.field{margin:0 0 14px}
+.field .lbl{font-size:15px;letter-spacing:.12em;color:var(--fg2);margin:0 0 6px}
+.num{display:flex;gap:8px;align-items:center}
+.num button{width:44px;padding:0;font-size:24px}
+.num span{min-width:32px;text-align:center;font-size:22px}
+.sk{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.sk img{width:120px;height:120px;object-fit:contain;background:#fff;border-radius:10px;border:1px solid var(--line)}
+.msg{min-height:24px;font-size:17px;color:var(--acc-text);margin:10px 0}
+.msg.err{color:var(--err)}
+.done{border:1px solid var(--acc);border-radius:12px;padding:18px;font-size:19px;margin-top:16px}
+.hidden{display:none !important}
+a{color:var(--acc-text)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="langrow">
+    <button type="button" data-lang="ja">日本語</button>
+    <button type="button" data-lang="zh">中文</button>
+    <button type="button" data-lang="en">EN</button>
+  </div>
+  <h1>MODULAR FIGHTERS <small data-i18n="sub">キャラクター登録</small></h1>
+
+  <div class="hero" id="hero">
+    <video id="hero-video" class="pic" muted loop playsinline autoplay aria-hidden="true"></video>
+    <div><div class="who" id="hero-name"></div><div class="by" id="hero-by"></div></div>
+  </div>
+  <p id="intro" data-i18n="introInvite"></p>
+  <p class="dim" data-i18n="introHow"></p>
+
+  <!-- new character only -->
+  <div id="newblock" class="hidden">
+    <h2 data-i18n="hNew"></h2>
+    <div class="row">
+      <div class="field"><div class="lbl" data-i18n="fName"></div><input id="f-name" type="text" maxlength="12" autocomplete="off"></div>
+      <div class="field"><div class="lbl" data-i18n="fBy"></div><input id="f-by" type="text" maxlength="40" autocomplete="off"></div>
+    </div>
+    <div class="field"><div class="lbl" data-i18n="fFacing"></div>
+      <div class="row">
+        <button type="button" class="facing" data-facing="1" data-i18n="faceRight"></button>
+        <button type="button" class="facing" data-facing="-1" data-i18n="faceLeft"></button>
+      </div>
+    </div>
+    <p class="dim" data-i18n="artNote"></p>
+  </div>
+
+  <h2 data-i18n="hFav"></h2>
+  <p data-i18n="favHelp"></p>
+  <div class="demo" id="demo"></div>
+  <p class="dim" data-i18n="demoNote"></p>
+  <div class="grid" id="favgrid"></div>
+  <div class="msg" id="favmsg"></div>
+
+  <h2 data-i18n="hSpecial"></h2>
+  <p data-i18n="specialHelp"></p>
+  <div class="grid" id="specgrid"></div>
+
+  <h2 data-i18n="hModule"></h2>
+  <p data-i18n="moduleHelp"></p>
+  <div class="field"><div class="lbl" data-i18n="mName"></div><input id="m-name" type="text" maxlength="16" autocomplete="off"></div>
+  <div class="field"><div class="lbl" data-i18n="mBase"></div><div class="grid" id="basegrid"></div></div>
+  <div class="row">
+    <div class="field"><div class="lbl" data-i18n="mIns"></div><div class="num" data-num="ins"><button type="button" data-d="-1">−</button><span>1</span><button type="button" data-d="1">+</button></div></div>
+    <div class="field"><div class="lbl" data-i18n="mOuts"></div><div class="num" data-num="outs"><button type="button" data-d="-1">−</button><span>1</span><button type="button" data-d="1">+</button></div></div>
+    <div class="field"><div class="lbl" data-i18n="mKnobs"></div><div class="num" data-num="knobs"><button type="button" data-d="-1">−</button><span>2</span><button type="button" data-d="1">+</button></div></div>
+  </div>
+  <div class="field"><div class="lbl" data-i18n="mDesc"></div><textarea id="m-desc" maxlength="1500"></textarea></div>
+  <div class="field"><div class="lbl" data-i18n="mSketch"></div>
+    <div class="sk">
+      <button type="button" id="sk-btn" data-i18n="pickSketch"></button>
+      <input id="sk-file" type="file" accept="image/*" hidden>
+      <img id="sk-img" class="hidden" alt="">
+      <button type="button" id="sk-clear" class="hidden" data-i18n="clearSketch"></button>
+    </div>
+  </div>
+
+  <h2 data-i18n="hContact"></h2>
+  <div class="field"><div class="lbl" data-i18n="fContact"></div><input id="f-contact" type="text" maxlength="80" autocomplete="off"></div>
+
+  <div class="msg" id="msg"></div>
+  <button type="button" class="pri" id="send" data-i18n="send"></button>
+  <div id="done" class="done hidden" data-i18n="done"></div>
+</div>
+
+<script src="mf-firebase-config.js?v=20261028a"></script>
+<script src="mf-characters.js?v=20261028a"></script>
+<script src="mf-patch-ui.js?v=20261028a"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var TYPES = ['VCO', 'MIXVCA', 'LPF', 'FOLD', 'DELAY', 'ADSR', 'AR', 'SEQ5', 'DRAW'];
+  var SPECIALS = ['power', 'fav2', 'hp120', 'auto6', 'deal11'];
+  var S = {
+    ja: {
+      sub: 'キャラクター登録', hNew: '新しいキャラクター', hFav: '得意モジュール（3つまで）', hSpecial: '特殊能力（1つ）', hModule: '専用モジュールの設計（任意）', hContact: '連絡先',
+      introInvite: 'あなたのキャラクターがゲームに出ています。得意なモジュールと特殊能力を選び、よければ専用モジュールのアイデアも教えてください。',
+      introNew: '自分のキャラクターを Modular Fighters に登録できます。名前と得意モジュール、特殊能力を選んでください。絵（正方形・白地に黒い線）は LINE かメールで MADZINE へ送ってください。',
+      introHow: '送信すると MADZINE が確認してゲームに反映します。何度でも送り直せます（最新のものを採用します）。',
+      fName: 'キャラクター名（12 文字まで）', fBy: 'あなたの名前 / IG', fFacing: '絵の向き', faceRight: '右を向いている', faceLeft: '左を向いている',
+      artNote: '絵の仕様：正方形、白い背景に黒い線。静止画 PNG か 1〜3 秒のループ動画。ゲーム側で白を透明にして線に色を付けます。',
+      favHelp: 'このキャラクターで対戦するとき、毎回配られる 10 モジュールに必ず入るものです。下のパネルは実際のゲームのモジュールで、触って試せます。',
+      demoNote: '↑ 実際のパネル。接続して音は出ませんが、つまみや配線の感触は本番と同じです。',
+      specialHelp: 'ひとつだけ選んでください。数値は MADZINE 側で調整することがあります。',
+      moduleHelp: '自分だけのモジュールを作れます。既存モジュールの改造（例：「FOLD をもっと激しく」）なら早く実装できます。まったく新しい音の仕組みは相談のうえで作ります。',
+      mName: 'モジュール名', mBase: 'ベースにする既存モジュール（なければ「新規」）', mIns: '入力ジャック', mOuts: '出力ジャック', mKnobs: 'つまみ',
+      mDesc: 'どんな音・動きをするか（自由に）', mSketch: 'スケッチ（任意・写真でOK）', pickSketch: '画像を選ぶ', clearSketch: '外す',
+      fContact: 'LINE / IG / メールなど（任意）', send: '送信', done: '送信しました。ありがとうございます！反映されたらお知らせします。',
+      baseNew: '新規', none: 'なし', errFav: '得意モジュールは 3 つまでです。', errName: 'キャラクター名を入力してください。', errNet: '送信できませんでした。通信を確認してもう一度。', errOff: 'オンライン機能が設定されていません。', sending: '送信中…',
+      d_VCO: '発振器。のこぎり・矩形・三角の 3 出力。FM と同期入力つき。', d_MIXVCA: '4 チャンネルのミキサー＋VCA。各チャンネルに CV 入力。', d_LPF: 'ローパスフィルター。カットオフ CV 入力。', d_FOLD: 'ウェーブフォルダー。音を折り曲げて倍音を足す。', d_DELAY: 'ステレオディレイ。時間を CV で揺らせる。', d_ADSR: 'エンベロープ。ゲート入力。', d_AR: 'アタック／リリースの短いエンベロープ。トリガー入力。', d_SEQ5: '5 ステップのシーケンサー。CV とゲート出力。', d_DRAW: '指で描く CV。描いた形がループで出る。'
+    },
+    zh: {
+      sub: '角色登記', hNew: '新角色', hFav: '慣用模組（最多三種）', hSpecial: '特殊能力（一項）', hModule: '專用模組設計（選填）', hContact: '聯絡方式',
+      introInvite: '你的角色已經在遊戲裡。請選慣用模組和特殊能力，有想法的話也可以設計一個專用模組。',
+      introNew: '你可以把自己的角色登記進 Modular Fighters。填名字、選慣用模組和特殊能力；角色圖（正方形、白底黑線）請用 LINE 或 email 傳給 MADZINE。',
+      introHow: '送出後由 MADZINE 確認再放進遊戲。可以重複送，以最新一筆為準。',
+      fName: '角色名稱（12 字內）', fBy: '你的名字 / IG', fFacing: '圖的面向', faceRight: '面向右', faceLeft: '面向左',
+      artNote: '圖的規格：正方形、白底黑線。靜態 PNG 或 1 到 3 秒的循環短片。遊戲會把白色去背、幫線條上色。',
+      favHelp: '用這個角色對戰時，每次發的 10 個模組一定會有這些。下面的面板是遊戲裡真正的模組，可以動手試。',
+      demoNote: '↑ 真正的面板。接線不會出聲，但旋鈕和接線手感和正式對戰一樣。',
+      specialHelp: '只能選一項。數值 MADZINE 可能會微調。',
+      moduleHelp: '可以設計一個只有你有的模組。改既有模組（例如「FOLD 但折得更兇」）最快能做出來；全新的聲音機制會再跟你討論。',
+      mName: '模組名稱', mBase: '以哪個既有模組為基礎（沒有就選「全新」）', mIns: '輸入接孔', mOuts: '輸出接孔', mKnobs: '旋鈕',
+      mDesc: '它的聲音或行為是什麼（自由描述）', mSketch: '草圖（選填，拍照即可）', pickSketch: '選圖片', clearSketch: '移除',
+      fContact: 'LINE / IG / email 等（選填）', send: '送出', done: '已送出，謝謝！放進遊戲後會通知你。',
+      baseNew: '全新', none: '不選', errFav: '慣用模組最多三種。', errName: '請填角色名稱。', errNet: '送不出去，請檢查網路再試一次。', errOff: '線上功能尚未設定。', sending: '送出中…',
+      d_VCO: '振盪器。鋸齒、方波、三角三個輸出，有 FM 與 sync 輸入。', d_MIXVCA: '四軌混音器加 VCA，每軌有 CV 輸入。', d_LPF: '低通濾波器，cutoff 有 CV 輸入。', d_FOLD: '波形摺疊器，把聲音折出泛音。', d_DELAY: '立體聲延遲，時間可用 CV 調變。', d_ADSR: '包絡線，gate 輸入。', d_AR: 'attack / release 短包絡，trigger 輸入。', d_SEQ5: '五步序列器，CV 與 gate 輸出。', d_DRAW: '用手指畫 CV，畫出的形狀循環輸出。'
+    },
+    en: {
+      sub: 'CHARACTER REGISTRATION', hNew: 'NEW CHARACTER', hFav: 'FAVOURITE MODULES (UP TO 3)', hSpecial: 'SPECIAL ABILITY (ONE)', hModule: 'SIGNATURE MODULE (OPTIONAL)', hContact: 'CONTACT',
+      introInvite: 'Your character is in the game. Pick favourite modules and a special ability, and if you like, design a signature module.',
+      introNew: 'Register your own character for Modular Fighters: a name, favourite modules and a special ability. Send the drawing (square, black lines on white) to MADZINE by LINE or email.',
+      introHow: 'MADZINE reviews each submission before it goes into the game. You can send again; the latest one counts.',
+      fName: 'Character name (max 12)', fBy: 'Your name / IG', fFacing: 'Which way the drawing faces', faceRight: 'Faces right', faceLeft: 'Faces left',
+      artNote: 'Artwork: square, black line art on white. A still PNG or a 1–3 s loop. The game keys out the white and colours the lines.',
+      favHelp: 'Guaranteed in every deal of 10 modules when you fight as this character. The panel below is the real game panel; try it.',
+      demoNote: '↑ The real panel. Cables are silent here, but knobs and patching feel exactly like a match.',
+      specialHelp: 'Pick one. MADZINE may tune the numbers.',
+      moduleHelp: 'Design a module only you have. A variant of an existing module (e.g. “FOLD but harder”) is quick to build; a brand-new sound engine is discussed first.',
+      mName: 'Module name', mBase: 'Based on which existing module (or “new”)', mIns: 'Input jacks', mOuts: 'Output jacks', mKnobs: 'Knobs',
+      mDesc: 'What it sounds like / does (free text)', mSketch: 'Sketch (optional, a photo is fine)', pickSketch: 'Choose image', clearSketch: 'Remove',
+      fContact: 'LINE / IG / email (optional)', send: 'SEND', done: 'Sent, thank you! You will hear from MADZINE once it is in the game.',
+      baseNew: 'New', none: 'None', errFav: 'Up to 3 favourite modules.', errName: 'Please enter a character name.', errNet: 'Could not send. Check the connection and try again.', errOff: 'Online features are not set up.', sending: 'Sending…',
+      d_VCO: 'Oscillator: saw, square, triangle outs; FM and sync inputs.', d_MIXVCA: 'Four-channel mixer + VCA with a CV input per channel.', d_LPF: 'Low-pass filter with a cutoff CV input.', d_FOLD: 'Wavefolder: folds the signal into harmonics.', d_DELAY: 'Stereo delay; time can be modulated by CV.', d_ADSR: 'Envelope with a gate input.', d_AR: 'Short attack / release envelope, trigger input.', d_SEQ5: 'Five-step sequencer with CV and gate outs.', d_DRAW: 'Draw a CV shape with your finger; it loops.'
+    }
+  };
+  var lang = 'ja';
+  function t(k) { return (S[lang] && S[lang][k]) || S.en[k] || k; }
+  function specialLabel(k) { var m = window.MF_SPECIALS && window.MF_SPECIALS[k]; return m ? (m[lang] || m.en) : k; }
+
+  // ?char=<id> -> invite mode for an existing character; otherwise a new registration
+  var params = new URLSearchParams(location.search);
+  var charId = (params.get('char') || '').toLowerCase();
+  var chars = window.MF_CHARACTERS || [];
+  var def = null;
+  for (var i = 0; i < chars.length; i++) if (chars[i].id === charId) def = chars[i];
+  var invite = !!def;
+  var st = { favs: [], special: null, base: null, ins: 1, outs: 1, knobs: 2, facing: 0, sketch: null };
+
+  function applyLang() {
+    document.documentElement.lang = lang === 'zh' ? 'zh-Hant' : lang;
+    var els = document.querySelectorAll('[data-i18n]');
+    for (var k = 0; k < els.length; k++) els[k].textContent = t(els[k].getAttribute('data-i18n'));
+    $('intro').textContent = t(invite ? 'introInvite' : 'introNew');
+    document.querySelectorAll('.langrow button').forEach(function (b) { b.classList.toggle('sel', b.getAttribute('data-lang') === lang); });
+    buildFav(); buildSpec(); buildBase();
+    try { localStorage.setItem('mf_invite_lang', lang); } catch (e) {}
+  }
+  document.querySelectorAll('.langrow button').forEach(function (b) {
+    b.addEventListener('click', function () { lang = b.getAttribute('data-lang'); applyLang(); });
+  });
+  try { var saved = localStorage.getItem('mf_invite_lang'); if (saved && S[saved]) lang = saved; } catch (e) {}
+
+  // hero
+  if (invite) {
+    $('hero-video').src = def.src; $('hero-name').textContent = def.name; $('hero-by').textContent = def.by || '';
+  } else {
+    $('hero').classList.add('hidden'); $('newblock').classList.remove('hidden');
+  }
+
+  function card(container, id, title, desc, checked, onToggle, radio) {
+    var l = document.createElement('label'); l.className = 'card' + (checked ? ' sel' : '');
+    var inp = document.createElement('input'); inp.type = radio ? 'radio' : 'checkbox'; inp.checked = !!checked; if (radio) inp.name = radio;
+    var box = document.createElement('div');
+    var tt = document.createElement('div'); tt.className = 't'; tt.textContent = title;
+    var dd = document.createElement('div'); dd.className = 'd'; dd.textContent = desc || '';
+    box.appendChild(tt); if (desc) box.appendChild(dd);
+    l.appendChild(inp); l.appendChild(box);
+    inp.addEventListener('change', function () { onToggle(id, inp.checked); });
+    container.appendChild(l);
+    return l;
+  }
+  function buildFav() {
+    var g = $('favgrid'); g.innerHTML = '';
+    TYPES.forEach(function (ty) {
+      card(g, ty, ty, t('d_' + ty), st.favs.indexOf(ty) >= 0, function (id, on) {
+        if (on) { if (st.favs.length >= 3) { $('favmsg').textContent = t('errFav'); $('favmsg').className = 'msg err'; buildFav(); return; } st.favs.push(id); }
+        else st.favs = st.favs.filter(function (x) { return x !== id; });
+        $('favmsg').textContent = ''; buildFav();
+      });
+    });
+  }
+  function buildSpec() {
+    var g = $('specgrid'); g.innerHTML = '';
+    card(g, null, t('none'), '', st.special === null, function () { st.special = null; buildSpec(); }, 'special');
+    SPECIALS.forEach(function (k) {
+      card(g, k, specialLabel(k), '', st.special === k, function (id) { st.special = id; buildSpec(); }, 'special');
+    });
+  }
+  function buildBase() {
+    var g = $('basegrid'); g.innerHTML = '';
+    card(g, null, t('baseNew'), '', st.base === null, function () { st.base = null; buildBase(); }, 'base');
+    TYPES.forEach(function (ty) { card(g, ty, ty, '', st.base === ty, function (id) { st.base = id; buildBase(); }, 'base'); });
+  }
+  document.querySelectorAll('.num').forEach(function (n) {
+    var key = n.getAttribute('data-num'), span = n.querySelector('span');
+    n.querySelectorAll('button').forEach(function (b) {
+      b.addEventListener('click', function () { st[key] = Math.max(0, Math.min(6, st[key] + Number(b.getAttribute('data-d')))); span.textContent = st[key]; });
+    });
+  });
+  document.querySelectorAll('.facing').forEach(function (b) {
+    b.addEventListener('click', function () { st.facing = Number(b.getAttribute('data-facing')); document.querySelectorAll('.facing').forEach(function (x) { x.classList.toggle('sel', x === b); }); });
+  });
+
+  // sketch: resized client-side to <= 900px and JPEG q0.8 so it fits the database comfortably
+  $('sk-btn').addEventListener('click', function () { $('sk-file').click(); });
+  $('sk-clear').addEventListener('click', function () { st.sketch = null; $('sk-img').classList.add('hidden'); $('sk-clear').classList.add('hidden'); $('sk-file').value = ''; });
+  $('sk-file').addEventListener('change', function () {
+    var f = $('sk-file').files && $('sk-file').files[0]; if (!f) return;
+    var img = new Image(), url = URL.createObjectURL(f);
+    img.onload = function () {
+      var max = 900, w = img.naturalWidth, h = img.naturalHeight, s = Math.min(1, max / Math.max(w, h));
+      var c = document.createElement('canvas'); c.width = Math.round(w * s); c.height = Math.round(h * s);
+      var x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(img, 0, 0, c.width, c.height);
+      var q = 0.8, data = c.toDataURL('image/jpeg', q);
+      while (data.length > 380000 && q > 0.3) { q -= 0.1; data = c.toDataURL('image/jpeg', q); }
+      st.sketch = data; $('sk-img').src = data; $('sk-img').classList.remove('hidden'); $('sk-clear').classList.remove('hidden');
+      URL.revokeObjectURL(url);
+    };
+    img.src = url;
+  });
+
+  // the live panel: all nine modules, no engine, no AUTO / SEND
+  try {
+    window.MFPatchUI.mount($('demo'), { onSubmit: function () {}, onAuto: function () {} });
+    window.MFPatchUI.setModules(TYPES.map(function (ty, i) { return { id: 'd' + i, type: ty, params: {} }; }));
+    window.MFPatchUI.setEnabled(true);
+  } catch (e) { $('demo').classList.add('hidden'); }
+
+  // submit -> mf/submissions (append-only, see firebase.rules.json)
+  var SDK = ['https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js', 'https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js'];
+  function load(src) { return new Promise(function (res, rej) { var s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = function () { rej(new Error('load')); }; document.head.appendChild(s); }); }
+  function db() {
+    var cfg = window.MF_FIREBASE_CONFIG;
+    if (!cfg || !cfg.databaseURL) return Promise.reject(new Error('off'));
+    var p = window.firebase ? Promise.resolve() : load(SDK[0]).then(function () { return load(SDK[1]); });
+    return p.then(function () { if (!firebase.apps.length) firebase.initializeApp(cfg); return firebase.database(); });
+  }
+  function setMsg(key, err) { $('msg').textContent = key ? t(key) : ''; $('msg').className = 'msg' + (err ? ' err' : ''); }
+  $('send').addEventListener('click', function () {
+    var rec = {
+      kind: invite ? 'invite' : 'new', char: invite ? def.id : null,
+      name: invite ? def.name : $('f-name').value.replace(/\s+/g, ' ').trim().slice(0, 12),
+      by: invite ? (def.by || '') : $('f-by').value.trim().slice(0, 40),
+      facing: invite ? def.facing : (st.facing || 0),
+      favorites: st.favs.slice(0, 3), special: st.special,
+      module: ($('m-name').value.trim() || $('m-desc').value.trim() || st.sketch) ? {
+        name: $('m-name').value.trim().slice(0, 16), base: st.base, ins: st.ins, outs: st.outs, knobs: st.knobs,
+        desc: $('m-desc').value.trim().slice(0, 1500), sketch: st.sketch || null
+      } : null,
+      contact: $('f-contact').value.trim().slice(0, 80), lang: lang, ua: navigator.userAgent.slice(0, 120), t: Date.now()
+    };
+    if (!rec.name) { setMsg('errName', true); return; }
+    $('send').disabled = true; setMsg('sending');
+    db().then(function (d) { return d.ref('mf/submissions').push(rec); }).then(function () {
+      setMsg(null); $('send').classList.add('hidden'); $('done').classList.remove('hidden');
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }).catch(function (e) {
+      $('send').disabled = false;
+      setMsg(e && e.message === 'off' ? 'errOff' : 'errNet', true);
+    });
+  });
+  applyLang();
+})();
+</script>
+</body>
+</html>

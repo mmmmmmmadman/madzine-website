@@ -53,14 +53,13 @@
   var T_FALL = 700;    // ms, KO fall
 
   // Character table. facing = native facing of the drawing (1 = right, -1 = left); mirrored when needed.
-  var CHARS = {
-    osc:     { name: 'osc',     src: 'assets/osc.mp4',     facing: 1 },
-    tatata5: { name: 'tatata5', src: 'assets/tatata5.mp4', facing: 1 },
-    moddict: { name: 'moddict', src: 'assets/moddict.mp4', facing: -1 },
-    mad:     { name: 'mad',     src: 'assets/mad.mp4',     facing: -1 },
-    hataken: { name: 'hataken', src: 'assets/hataken.mp4', facing: -1 },
-    zhyper:  { name: 'zhyper',  src: 'assets/zhyper.mp4',  facing: -1 }
-  };
+  // the roster lives in mf-characters.js (window.MF_CHARACTERS); this is the fallback
+  var CHARS = {};
+  (window.MF_CHARACTERS || [
+    { id: 'osc', src: 'assets/osc.mp4', facing: 1 }, { id: 'moddict', src: 'assets/moddict.mp4', facing: -1 },
+    { id: 'tatata5', src: 'assets/tatata5.mp4', facing: 1 }, { id: 'mad', src: 'assets/mad.mp4', facing: -1 },
+    { id: 'hataken', src: 'assets/hataken.mp4', facing: -1 }, { id: 'zhyper', src: 'assets/zhyper.mp4', facing: -1 }
+  ]).forEach(function (c) { CHARS[c.id] = { name: c.id, src: c.src, facing: c.facing === -1 ? -1 : 1 }; });
   var SIDES = {
     left: { name: 'osc', src: 'assets/osc.mp4', color: COLOR_LEFT, facing: 1, native: 1 },
     right: { name: 'moddict', src: 'assets/moddict.mp4', color: COLOR_RIGHT, facing: -1, native: -1 }
@@ -77,6 +76,7 @@
   var startTime = 0;
 
   var hp = { me: MAX_HP, foe: MAX_HP };
+  var maxHp = { me: MAX_HP, foe: MAX_HP };   // per side (a character's special may raise it)
   var dead = null;          // "me" | "foe" | null
   var koFired = false;
   var koCallbacks = [];
@@ -148,6 +148,16 @@
     document.addEventListener('keydown', once, true);
   }
 
+  // a still drawing (.png / .jpg) is keyed once and bobs like the videos do
+  function makeSource(src) {
+    if (/\.(png|jpe?g|webp)(\?.*)?$/i.test(String(src))) {
+      var im = new Image();
+      im.decoding = 'async';
+      im.src = src;
+      return im;
+    }
+    return makeVideo(src);
+  }
   function makeVideo(src) {
     var v = document.createElement('video');
     v.muted = true;
@@ -194,7 +204,7 @@
       ext: null   // running union of the per-frame boxes (keyed px); stable anchor across the loop
     };
     fighters[side] = f;
-    setFighterSource(side, makeVideo(def.src));
+    setFighterSource(side, makeSource(def.src));
     return f;
   }
 
@@ -228,7 +238,8 @@
 
   function sourceKey(src) {
     if (src.tagName === 'VIDEO') return src.currentTime;
-    return now(); // non-video sources: re-key every frame
+    if (src.tagName === 'IMG') return 1;   // a still: keyed once (lastKey resets on source / colour change)
+    return now(); // canvas / bitmap sources: re-key every frame
   }
 
   function parseRGB(col) {
@@ -338,7 +349,7 @@
     if (f) {
       f.name = def.name;
       f.mirror = def.facing !== f.facing;
-      setFighterSource(side, makeVideo(def.src));
+      setFighterSource(side, makeSource(def.src));
     }
   }
 
@@ -493,7 +504,7 @@
   function getHP() { return { me: hp.me, foe: hp.foe }; }
 
   function reset() {
-    hp.me = MAX_HP; hp.foe = MAX_HP;
+    hp.me = maxHp.me; hp.foe = maxHp.foe;
     dead = null; koFired = false; koAt = 0;
     queue.length = 0; current = null;
     shakes.me = 0; shakes.foe = 0;
@@ -632,7 +643,7 @@
     var c = ctx;
     var who = whoAt(side);
     var name = names[who] || (who === 'me' ? 'YOU' : 'FOE');
-    var v = hp[who] / MAX_HP;
+    var v = hp[who] / maxHp[who];
     var col = SIDES[side].color;
     if (v < 0.3) col = COLOR_BAR_LOW;
 
@@ -891,7 +902,7 @@
   function buildPatch() {
     var mods;
     try {
-      mods = hasAudio() ? window.MFAudio.randomModules(10) : null;
+      mods = hasAudio() ? window.MFAudio.randomModules(cpuDeal, cpuGuarantee) : null;
     } catch (e) { mods = null; }
     if (!mods || !mods.length) mods = fallbackModules();
     // ensure every module has params object
@@ -1063,10 +1074,14 @@
     cpuTimer = setTimeout(cpuRespond, 1500 + Math.random() * 1500);
   }
 
-  function cpuStart(onAttack) {
+  // opts: { guarantee: [types] (the CPU character's favourites), deal: modules per patch }
+  var cpuGuarantee = null, cpuDeal = 10;
+  function cpuStart(onAttack, opts) {
     cpuStop();
     cpuRunning = true;
     cpuCallback = typeof onAttack === 'function' ? onAttack : null;
+    cpuGuarantee = opts && opts.guarantee && opts.guarantee.length ? opts.guarantee.slice() : null;
+    cpuDeal = opts && opts.deal ? opts.deal : 10;
     idleArm();
   }
 
@@ -1080,6 +1095,7 @@
   // ---------------------------------------------------------------- export
   window.MFFight = {
     setBand: setBand,
+    setMaxHp: function (m) { maxHp.me = (m && m.me) || MAX_HP; maxHp.foe = (m && m.foe) || MAX_HP; },
     setNames: setNames,
     mount: mount,
     attack: attack,

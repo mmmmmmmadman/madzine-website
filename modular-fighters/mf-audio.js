@@ -1387,16 +1387,27 @@
     idSeq++;
     return { id: 'm' + idSeq.toString(36) + Math.floor(Math.random() * 1296).toString(36), type: type, params: randomParams(type) };
   }
-  function randomModules(n) {
+  // guarantee: module types that must appear (a character's favourites; repeats = that many copies),
+  // placed at random slots; the VCO / mixer-or-filter rules then act on the remaining slots only
+  function randomModules(n, guarantee) {
     n = Math.round(clamp(num(n, 10), 1, 32));
     var types = [], i;
     for (i = 0; i < n; i++) types.push(pickType());
-    if (types.indexOf('VCO') < 0) types[Math.floor(Math.random() * n)] = 'VCO';
+    var fixed = {};
+    var want = (guarantee || []).filter(function (t) { return TYPES[t]; }).slice(0, n);
+    if (want.length) {
+      var slots = [];
+      for (i = 0; i < n; i++) slots.push(i);
+      for (i = slots.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var tmp = slots[i]; slots[i] = slots[j]; slots[j] = tmp; }
+      for (i = 0; i < want.length; i++) { types[slots[i]] = want[i]; fixed[slots[i]] = true; }
+    }
+    var free = [];
+    for (i = 0; i < n; i++) if (!fixed[i]) free.push(i);
+    if (types.indexOf('VCO') < 0 && free.length) types[free[Math.floor(Math.random() * free.length)]] = 'VCO';
     if (n > 1 && types.indexOf('MIXVCA') < 0 && types.indexOf('LPF') < 0) {
       var vcoCount = types.filter(function (t) { return t === 'VCO'; }).length;
-      var cand = [];
-      for (i = 0; i < n; i++) if (types[i] !== 'VCO' || vcoCount > 1) cand.push(i);
-      types[cand[Math.floor(Math.random() * cand.length)]] = Math.random() < 0.5 ? 'LPF' : 'MIXVCA';
+      var cand = free.filter(function (k) { return types[k] !== 'VCO' || vcoCount > 1; });
+      if (cand.length) types[cand[Math.floor(Math.random() * cand.length)]] = Math.random() < 0.5 ? 'LPF' : 'MIXVCA';
     }
     return types.map(makeModule);
   }

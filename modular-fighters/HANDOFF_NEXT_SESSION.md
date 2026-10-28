@@ -18,11 +18,12 @@
 - `mf-patch-ui.js` + `mf-patch-ui.css`：`window.MFPatchUI` 模組面板（旋鈕、接線、SEQ5、DRAW、示波器、AUTO 鎖定、滑桿、多點、配線圖 PNG）
 - `mf-fight.js`：`window.MFFight` 上半場（角色影片、HP、攻擊動畫、CPU 對手與閒置攻擊、KO）
 - `mf-net.js`：`window.MFNet` PeerJS 1.5.4 房間碼（前綴 mf-、4 碼、2 人、host 權威）
+- `mf-characters.js`：角色名冊（資料不是程式）。加角色＝加一行＋一個素材檔。`invite.html`（登記頁，日文優先）、`review.html`（審核頁，複製成名冊一行）、`INVITE_LINKS.md`（每位角色的專屬連結與收件流程）
 - `mf-online.js`：`window.MFOnline` Firebase Realtime Database（隨機對戰排隊、自動配對、排行榜；SDK 第一次用才載入）。設定在 `mf-firebase-config.js`（`databaseURL` 空＝線上功能關閉），資料庫規則在 `firebase.rules.json`
 - 角色六個（2026-10-24）：osc、tatata5 原圖面右；moddict、mad、hataken、zhyper 原圖面左。**任一角色可站左或右**：自己永遠左、對手永遠右；原圖面向與站位不同時在去背階段水平鏡像（2026-10-21 使用者裁示，取代舊「不鏡像、選角決定左右」）。CPU 對手＝其他五個隨機；連線兩人可選同角色。來源是下載資料夾的「X motion.mp4」2100×2100，轉 600×600 12fps h264
 
 ## 目前狀態（全部已 commit 並 push）
-- 版本 v1.2.2（2026-10-27 拉線監聽改掛 window、rebuild 時 abortDrag，修「玩到一半不能接線／殘影線」；v1.2.1（2026-10-27 隨機對戰房間畫面不顯示房號、改顯示對手名與連線階段，加入方重試 3 次、整體 40 秒逾時回首頁；v1.2.0 配對握手順序治本：match 記錄先寫再搶對方；名字每次都問；2026-10-27 填入 Firebase databaseURL；2026-10-26 隨機對戰＋玩家名稱＋排行榜；2026-10-25 HATAKEN 攻擊力 1.3 倍，**隱藏設定、說明頁不寫**；2026-10-24 加 HATAKEN、Z_Hyper 兩角色，共六個）。最新 commit 見 git log：2026-10-22 橫向版面定案與 iPhone Safari 三個實機問題（`31daf78`…），2026-10-21 四角色＋鏡像（`768c54d`、`192710f`），更早見 DEVLOG。
+- 版本 v1.2.3（2026-10-28 角色登記系統：`mf-characters.js` 名冊資料檔、慣用模組保證發牌、五種特殊能力、`invite.html` 邀請／登記頁、`review.html` 審核頁、`INVITE_LINKS.md` 連結表；HATAKEN ×1.3 改為資料欄位並**公開顯示在選角格**（使用者 2026-10-28 裁示，推翻 10-25 的隱藏規則）；v1.2.2（2026-10-27 拉線監聽改掛 window、rebuild 時 abortDrag，修「玩到一半不能接線／殘影線」；v1.2.1（2026-10-27 隨機對戰房間畫面不顯示房號、改顯示對手名與連線階段，加入方重試 3 次、整體 40 秒逾時回首頁；v1.2.0 配對握手順序治本：match 記錄先寫再搶對方；名字每次都問；2026-10-27 填入 Firebase databaseURL；2026-10-26 隨機對戰＋玩家名稱＋排行榜；2026-10-25 HATAKEN 攻擊力 1.3 倍，**隱藏設定、說明頁不寫**；2026-10-24 加 HATAKEN、Z_Hyper 兩角色，共六個）。最新 commit 見 git log：2026-10-22 橫向版面定案與 iPhone Safari 三個實機問題（`31daf78`…），2026-10-21 四角色＋鏡像（`768c54d`、`192710f`），更早見 DEVLOG。
 - 工作樹乾淨。
 
 ## 已落地的使用者需求（全部保留，禁改）

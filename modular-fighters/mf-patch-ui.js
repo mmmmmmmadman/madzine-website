@@ -15,7 +15,8 @@
   var MOD_CHROME = 10;       // module border 2 + horizontal padding 8
   // ADSR / AR are wider than the other envelope-free modules: their oscilloscope strip needs the width
   var HP = { VCO: 9, MIXVCA: 14, MIX4: 14, LPF: 12, FOLD: 9, DELAY: 11, ADSR: 12, AR: 7, SEQ5: 12, DRAW: 10 };
-  var AUTO_LOCK_MS = 10000;  // AUTO is locked this long after every new module set
+  var AUTO_LOCK_MS = 10000;  // AUTO is locked this long after every new module set (default)
+  var autoLockMs = AUTO_LOCK_MS; // per match: a character's special may shorten it (setAutoLockMs)
   var SCOPE_SECS = 2, SCOPE_N = 200;   // oscilloscope history: 2 s, one point per 10 ms
   // engine clamps (mf-audio.js), used by the UI-side fallback clock
   var SEQ_RATE = [0.1, 30], DRAW_RATE = [0.05, 20];
@@ -687,11 +688,11 @@
     if (autoBtn.__secs !== secs) { autoBtn.__secs = secs; autoBtn.__num.textContent = String(secs); }
     if (reduceMotion === null) reduceMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
     // remaining share of the lockout; reduced motion: whole-second steps only
-    var frac = (reduceMotion ? secs : rem) / (AUTO_LOCK_MS / 1000);
+    var frac = (reduceMotion ? secs : rem) / (autoLockMs / 1000);
     autoBtn.style.setProperty('--mfp-lock', clamp(frac, 0, 1).toFixed(4));
   }
   function startAutoLock() {
-    lockUntil = performance.now() + AUTO_LOCK_MS;
+    lockUntil = performance.now() + autoLockMs;
     if (autoBtn) { autoBtn.__locked = null; autoBtn.__secs = null; }
     paintLock();
     kick();
@@ -1614,6 +1615,7 @@
     setEnabled: setEnabled,
     setScale: setScale,                    // 0.4..1: short landscape scales the row + footer (transform)
     autoLockRemaining: autoLockRemaining,    // seconds left of the AUTO lockout (0 = AUTO usable)
+    setAutoLockMs: function (ms) { autoLockMs = ms > 0 ? ms : AUTO_LOCK_MS; },
     renderPatchImage: renderPatchImage      // (patch, {theme, title}) -> Promise<Blob image/png>
   };
 })();

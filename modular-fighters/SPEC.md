@@ -208,3 +208,21 @@ Language: UI labels English only (short caps), to keep scope small.
 - Multitouch: every interaction owns one pointerId with `setPointerCapture` on its own element and ignores other pointers' move/up — cable drag (`drag.id`), knob, SEQ5 sweep, DRAW stroke, scroll bar (`hgrab.id`). A second finger landing on a widget that is already held is ignored. One cable can be in the air at a time; other fingers are free for the bar, knobs, etc.
 - Cable held while the row scrolls: `redraw()` re-aims the temporary cable from the stored finger position (`drag.cx/cy`), so the source end follows the scrolled jack (clamped to the visible case edge when off screen) and the drop target is hit-tested at the finger's current client coordinates.
 - Verified headless (390x844, synthetic multi-point touch via CDP): swipe on a module keeps `scrollLeft = 0`; cable drag with finger 1 while finger 2 drags the bar to the end lands the cable on an input jack of the last module; knob drag + bar drag at once both apply; tap on the track jumps; bar hidden at 2400px width and back at 390px; wheel deltaX scrolls and the thumb follows; zero console errors. Not tested on a real touch device.
+
+## Characters, favourites, specials, registration (v1.2.3, 2026-10-28)
+- Roster = `mf-characters.js` (`window.MF_CHARACTERS`, data not code): {id, name, src (.mp4 loop or .png still),
+  facing, by, favorites[<=3 module types], special (MF_SPECIALS key | null), module (signature module | null)}.
+  index.html builds the setup tiles from it (caption line = special + favourites, in the current language);
+  mf-fight.js builds CHARS from it (fallback: the original six). A .png source is keyed once and bobs like a video.
+- Favourites: `MFAudio.randomModules(n, guarantee)` places the guaranteed types at random slots, then applies the
+  VCO / LPF-or-MIXVCA rules to the remaining slots. The CPU gets its own character's favourites (`cpu.start(cb, {guarantee})`).
+- Specials (MF_SPECIAL_RULES): power = attack x1.3 (was the hidden HATAKEN rule; now a data field and SHOWN on the tile,
+  user decision 2026-10-28); fav2 = each favourite twice; hp120 = MFFight.setMaxHp per side (set in applySetup before
+  reset); auto6 = MFPatchUI.setAutoLockMs(6000); deal11 = 11 modules after the first SEND of the match (`sentThisMatch`).
+  A network foe applies its own special on its side (power is multiplied before sending; HP is read from its char in hello).
+- invite.html: `?char=<id>` = invite for an existing character (hero + favourites + special + optional signature-module
+  design with sketch); no param = new-character registration (name, credit, facing; artwork sent to MADZINE off-line).
+  Japanese first, zh / en switch. Writes one record to `mf/submissions` (append-only; sketch = JPEG data URL <= ~380 KB).
+- review.html: lists submissions newest first (latest per character by default), copy button -> one mf-characters.js line.
+- INVITE_LINKS.md: the per-character links + the hand-off steps.
+
