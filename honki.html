@@ -58,6 +58,21 @@
       flex-direction: column;
       gap: var(--space-8);
     }
+    .video-frame {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-default);
+      overflow: hidden;
+    }
+    .video-frame iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
     .col-right > img {
       width: 100%;
       border-radius: var(--radius-sm);
@@ -225,6 +240,12 @@
           </div>
 
           <div class="col-right">
+            <div class="video-frame">
+              <iframe src="https://www.youtube.com/embed/KbNffVZgaTQ?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1"
+                      title="HONKI"
+                      allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowfullscreen></iframe>
+            </div>
             <img id="main-image" src="assets/images/software/HONKI_1.png" alt="HONKI MAIN">
             <p class="shot-caption" id="shot-caption" data-i18n="apps.honki.captions.main">MAIN：phrase 編輯器與段落串接</p>
             <div class="thumb-strip">
