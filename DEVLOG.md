@@ -2,6 +2,13 @@
 
 ## 2026-10-28
 
+### Open Call 報名截止延至 11/10
+
+- 使用者裁示報名期間改為 2026/10/20 – 11/10（原 11/1）。改動 9 處：`js/i18n.js` 三語 `opencall.facts.period.value` 與 `opencall.s3.body` 報名期間列、`open-call.html` 的 zh fallback 兩處與 `<meta name="description">`
+- 結果公布 11/16 未動；Patreon 原文與 Google 表單上的日期需使用者自行同步
+
+## 2026-10-28
+
 ### Modular Fighters v1.2.3：角色登記系統（名冊資料檔、慣用模組、特殊能力、邀請頁、審核頁）
 
 - 使用者要讓日本朋友登記自己的角色（慣用模組、特殊能力、專用模組），也要有一套東西發給現有六位角色本人。設計拍板（照預設）：登記走自家頁面寫 Firebase、素材另外用 LINE／email 給 MADZINE 人工轉檔；特殊能力公開顯示；慣用模組最多三種每種保證出現一個；邀請頁日文優先；六位全部發
