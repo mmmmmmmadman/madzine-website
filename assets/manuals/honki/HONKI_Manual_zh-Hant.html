@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>HONKI 使用手冊 v1.4.29</title>
+<title>HONKI 使用手冊 v1.4.30</title>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root { --accent: #F27455; }
@@ -118,7 +118,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <header>
   <div class="brand"><a href="https://madzine.work" style="color:inherit;text-decoration:none">MADZINE</a></div>
   <h1>HONKI</h1>
-  <div class="sub">使用手冊 — v1.4.29 — 繁體中文</div>
+  <div class="sub">使用手冊 — v1.4.30 — 繁體中文</div>
   <div class="langs"><a href="HONKI_Manual_en.html">English</a> <a href="HONKI_Manual_ja.html">日本語</a> <a href="HONKI_Manual_zh-Hant.html" class="cur">繁體中文</a></div>
 </header>
 
@@ -147,7 +147,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <!-- ============================================================ -->
 <h2 id="overview">1. 總覽</h2>
 
-<p>HONKI 是 iPad 上的八軌樂句產生器與音源系統。一個 pattern 有 8 個 track，每個 track 各有 8 個 segment 記憶槽。</p>
+<p>HONKI 是 iPad 與 Mac 上的八軌樂句產生器與音源系統。Mac 版需要 Apple 晶片與 macOS 14 以上。本手冊的操作說明以 iPad 為準，Mac 版不同之處在各章另外註明。一個 pattern 有 8 個 track，每個 track 各有 8 個 segment 記憶槽。</p>
 
 <div class="fig"><img src="img/tabs.png" alt="六個分頁按鈕"></div>
 <div class="cap">頂列的六個分頁按鈕：MAIN、VOICE、MIXER、UTILITY、PERFORM、VISUAL。圖中 MAIN 為目前分頁。</div>
@@ -449,7 +449,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">DECAY</td><td>目前 track 的 DECAY，與 MAIN 相同。</td></tr>
 <tr><td class="k">CLEAR</td><td>清除目前 segment 的音色記憶。</td></tr>
 <tr><td class="k">SAVE</td><td>將目前面板參數（含和聲設定）存入 segment 記憶。</td></tr>
-<tr><td class="k">DRUM KIT</td><td>編輯中的 track 音源為 SAMPLE 時顯示在 SAVE 右側，按下開啟 SAVE、LOAD、DELETE 選單。鼓組是 TRACK 5 至 8 的整套 MULTI 設定：MULTI 開關、pad 數、每個已載入 pad 的音檔與 pad 參數。SAVE 會要求輸入名稱（預設為「Kit」加日期時間），名稱已存在時自動加上編號；音檔會複製到鼓組資料夾，原始檔案搬走也不影響。LOAD 列出鼓組與儲存時間，最前面是內建的 Acoustic 鼓組，唯讀、不能刪除。載入時 TRACK 5 至 8 切到 SAMPLE、清空 pad、開啟 MULTI，再載入鼓組的 pad。DELETE 經確認後刪除鼓組與其音檔。LOAD 與 DELETE 不必先 SAVE 就能開啟清單，沒有可列出的鼓組時顯示「No kits」。鼓組存在裝置的 Documents / DrumKits，可在「檔案」app 看到，不屬於專案的一部分。</td></tr>
+<tr><td class="k">DRUM KIT</td><td>編輯中的 track 音源為 SAMPLE 時顯示在 SAVE 右側，按下開啟 SAVE、LOAD、DELETE 選單。鼓組是 TRACK 5 至 8 的整套 MULTI 設定：MULTI 開關、pad 數、每個已載入 pad 的音檔與 pad 參數。SAVE 會要求輸入名稱（預設為「Kit」加日期時間），名稱已存在時自動加上編號；音檔會複製到鼓組資料夾，原始檔案搬走也不影響。LOAD 列出鼓組與儲存時間，最前面是內建的 Acoustic 鼓組，唯讀、不能刪除。載入時 TRACK 5 至 8 切到 SAMPLE、清空 pad、開啟 MULTI，再載入鼓組的 pad。DELETE 經確認後刪除鼓組與其音檔。LOAD 與 DELETE 不必先 SAVE 就能開啟清單，沒有可列出的鼓組時顯示「No kits」。鼓組在 iPad 存於 Documents / DrumKits，可在「檔案」app 看到；在 Mac 存於錄音資料夾內的 DrumKits（尚未選錄音資料夾時存在 app 內部）。鼓組不屬於專案的一部分。</td></tr>
 </table>
 <div class="fig"><img src="img/drumkit_menu.png" alt="DRUM KIT 選單"></div>
 <div class="cap">DRUM KIT 選單：標題 TRACKS 5-8，以及 SAVE、LOAD、DELETE。LOAD 與 DELETE 會展開已存鼓組的清單。</div>
@@ -798,7 +798,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">MAPPING</td><td>開啟對應面板。只在選取單一控件時可用；在畫布上點兩下控件也可開啟。</td></tr>
 <tr><td class="k">DELETE</td><td>兩段式：按一下變為「DELETE?」，2 秒內再按一下才刪除選取的控件。</td></tr>
 <tr><td class="k">UNDO / REDO</td><td>版面編輯專用，32 步。</td></tr>
-<tr><td class="k">TEMPLATE</td><td>內建版面三個：SEGMENT VOICE、SENDS、MIXER。MIXER 模板每軌由下而上：SOLO、MUTE、LEVEL 推桿（綁 LEVEL FOLLOW，控制 MIXER 頁當下選的 bus）、BUS 四段旋鈕（MASTER / A1 / A2 / A3，轉動吸附、雙擊回 MASTER，與 MIXER 頁同步）、INT/EXT 旋鈕。「SAVE CURRENT LAYOUT」先彈出命名面板，預填 USER n，可改名（去頭尾空白、轉大寫，留空用預填名），SAVE 儲存，CANCEL 或點面板外取消。「MANAGE USER TEMPLATES」可重新命名或刪除使用者版面，刪除需再確認。</td></tr>
+<tr><td class="k">TEMPLATE</td><td>內建版面三個：SEGMENT VOICE、SENDS、MIXER。MIXER 模板每軌由下而上：SOLO、MUTE、LEVEL 推桿（綁 LEVEL FOLLOW，控制 MIXER 頁當下選的 bus）、BUS 四段旋鈕（MASTER / A1 / A2 / A3，轉動吸附、雙擊回 MASTER，與 MIXER 頁同步）、INT/EXT 旋鈕。「SAVE CURRENT LAYOUT」先彈出命名面板，預填 USER n，可改名（去頭尾空白、轉大寫，留空用預填名），SAVE 儲存，CANCEL 或點面板外取消。「MANAGE USER TEMPLATES」可重新命名或刪除使用者版面，刪除需再確認。SENDS 模板的三列標籤為「n DELAY」、「n REVERB」、「n FX CHAIN」；舊版面中的「n TEXTURE」標籤在載入時改為「n FX CHAIN」，指派不變。</td></tr>
 <tr><td class="k">SNAP GRID</td><td>格線吸附開關。</td></tr>
 <tr><td class="k">CONTROLS / MAPPINGS</td><td>EDIT 模式工具列顯示畫布上的控件數與對應數。</td></tr>
 <tr><td class="k">選取與拖曳</td><td>點控件加入或取消選取，可多選；拖曳移動位置，多選時整組移動。</td></tr>
@@ -817,7 +817,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">DIRECTIONS</td><td>四方向模式的 PAD 改為 UP、DOWN、LEFT、RIGHT 四列，每個方向一個對應，再指定一次會取代前一個，未指定顯示 EMPTY。每列有 CLEAR DIRECTION、REVERSE RANGE 與範圍條。</td></tr>
 <tr><td class="k">TWO AXIS / FOUR WAY</td><td>切換 PAD 模式。該 PAD 已有對應時，第一下顯示確認字樣，2 秒內再點一下才切換。切換會清除該 PAD 的全部對應，可用 UNDO 復原；名稱保留。切到 FOUR WAY 時值回到中心、回彈開啟；切回 TWO AXIS 時回彈關閉。</td></tr>
 <tr><td class="k">MIDI OUT</td><td>OFF / ON、CHANNEL、CC / NOTE；PAD 為 MIDI OUT X / Y 兩組。從 SETUP 的 CV / MIDI 選定的 MIDI 輸出裝置送出；NOTE 模式送 note on / off。SETUP 的 MIDI CONTROL 列出所有 PERFORM MIDI OUT，可 CLEAR 或 CLEAR ALL。</td></tr>
-<tr><td class="k">目標分組</td><td>MIXER、VOICE、SEGMENT、FX、GLOBAL、CHROMA、PARTICLE、MESH、FEEDBACK。分組下方為 T1 至 T8 軌道鈕，全域分組時軌道鈕灰顯。已在同一控件使用過的目標有標記。GLOBAL 分組另有：UN-SOLO ALL、MULTI（只在 MAIN 頁顯示時作用）、GRID SINGLE、PREVIOUS PAGE / NEXT PAGE（到頭不循環）、PREVIOUS SLOT / NEXT SLOT 與 PREVIOUS BANK / NEXT BANK（實際切換專案槽，到頭不循環）、PREVIOUS PROGRAM / NEXT PROGRAM。VOICE 分組另有 TRACK DELAY 與 TRACK DELAY SYNC。MIXER 分組另有鼓軌各 lane 的 MUTE。</td></tr>
+<tr><td class="k">目標分組</td><td>MIXER、VOICE、SEGMENT、FX、GLOBAL、CHROMA、PARTICLE、MESH、FEEDBACK。分組下方為 T1 至 T8 軌道鈕，全域分組時軌道鈕灰顯。已在同一控件使用過的目標有標記。GLOBAL 分組另有：UN-SOLO ALL、MULTI（只在 MAIN 頁顯示時作用）、GRID SINGLE、PREVIOUS PAGE / NEXT PAGE（到頭不循環）、PREVIOUS SLOT / NEXT SLOT 與 PREVIOUS BANK / NEXT BANK（實際切換專案槽，到頭不循環）、PREVIOUS PROGRAM / NEXT PROGRAM。VOICE 分組另有 TRACK DELAY 與 TRACK DELAY SYNC。MIXER 分組另有鼓軌各 lane 的 MUTE。第三組 send 的目標名稱為 FX CHAIN：MIXER 分組每軌的 SEND FX CHAIN、FX 分組的 FX CHAIN RETURN 與 FX CHAIN PRE/POST、LOOPER 的 LOOPER SEND FX CHAIN（舊版顯示為 TEXTURE，指派不受影響）。</td></tr>
 <tr><td class="k">MIXER 分組</td><td>每軌：MUTE、SOLO、A1 至 A3 LEVEL、LEVEL、LEVEL FOLLOW、MIX、PAN、旁鏈量、三個效果送出、FILTER、BUS（連續四段，綁到 KNOB 時旋鈕自動變四段顯示）、BUS MASTER / BUS A1 / BUS A2 / BUS A3（按鈕型，觸發即選該 bus；綁在 BUTTON 上時亮暗反映 MIXER 頁目前選的 bus）。</td></tr>
 <tr><td class="k">FX 分組</td><td>DELAY、REVERB、FX CHAIN（RETURN）、FX CHAIN 1、FX CHAIN 2、FX CHAIN 3 與 PRE / POST。每個 FX CHAIN 位置含三種效果的參數、MIX，以及 EFFECT、FREEZE、HOLD。EFFECT 每觸發一次換成下一種效果，順序為 GRANULAR、KARPLUS、GLITCH；HOLD 在按住時作用。</td></tr>
 </table>
@@ -968,7 +968,8 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <div class="cap">四個站列右側的 RANDOM 鈕、GLIDE TIME 標題，以及 HOURS、MINUTES、SECONDS 三支橫桿。截圖為舊版畫面，現行版面以下方文字為準。</div>
 <p>RANDOM 與 GLIDE TIME 在頁面上段、四個站列的右側，MIX 條旁邊。兩者作用於整個 VISUAL 頁，不受任何站開關影響。</p>
 <table>
-<tr><td class="k">RANDOM</td><td>把已開啟的站的所有連續參數各自隨機設到範圍內的值；MIX 條與 GLIDE TIME 不動，關閉的站不處理。WARP DEPTH 也會抽（各站合計不超過 0.3），WARP SPEED 不抽。BRIGHTNESS 抽 1 至 4。FEEDBACK 的 SMOOTH 與 BRIGHT 各自上限 0.5，兩者合計不超過 0.3。MESH 開啟且使用內建模型時，RANDOM 也會立即換成另一個內建模型；載入的 .obj 模型不會被換掉。只改基底值，MOTION 與 MOD ROUTE 的值維持不變。RANDOM 可由 MIDI 控制器觸發：開啟 LEARN，點 RANDOM，再按控制器。也可放進 PERFORM 頁作為按鍵型控制，在 GLOBAL 群組的 VISUAL RANDOM。MOD ROUTE 也能觸發 RANDOM：MOD 模式下點 VISUAL 頁或 PERFORM 工具列的 RANDOM，開啟 MOD ROUTE 面板，有 OFF 與 15 個來源，AMOUNT 位置顯示「TRIGGER &gt;= 5V」；來源由下往上越過 5V 時觸發一次。此設定屬於全 app。</td></tr>
+<tr><td class="k">RANDOM</td><td>把已開啟的站的所有連續參數各自隨機設到 RANGE 設定的區間內；MIX 條、WARP SPEED 與 GLIDE TIME 不動，關閉的站不處理。預設區間與加入 RANGE 前 RANDOM 的抽值範圍相同，例如各站 BRIGHTNESS 為 1 至 4，FEEDBACK 的 SMOOTH 與 BRIGHT 各 0 至 0.3，四站 WARP DEPTH 各 0 至 0.3。SMOOTH、BRIGHT 與 WARP DEPTH 的區間上限最高 0.3；無論區間怎麼設，SMOOTH 加 BRIGHT 不超過 0.3，四站 WARP DEPTH 合計不超過 0.3。MESH 開啟且使用內建模型時，RANDOM 也會立即換成另一個內建模型；載入的 .obj 模型不會被換掉。只改基底值，MOTION 與 MOD ROUTE 的值維持不變。PERFORM 工具列與 PERFORM VISUAL 視窗的 RANDOM 用同一組區間。RANDOM 可由 MIDI 控制器觸發：開啟 LEARN，點 RANDOM，再按控制器。也可放進 PERFORM 頁作為按鍵型控制，在 GLOBAL 群組的 VISUAL RANDOM。MOD ROUTE 也能觸發 RANDOM：MOD 模式下點 VISUAL 頁或 PERFORM 工具列的 RANDOM，開啟 MOD ROUTE 面板，有 OFF 與 15 個來源，AMOUNT 位置顯示「TRIGGER &gt;= 5V」；來源由下往上越過 5V 時觸發一次。此設定屬於全 app。</td></tr>
+<tr><td class="k">RANGE</td><td>VISUAL 頁 RANDOM 右側的開關，設定每個參數被 RANDOM 抽值的區間。開啟後，會被 RANDOM 抽的橫桿在原位置改為區間桿，桿面寫參數名與「下限 - 上限」；MIX、WARP SPEED 等不被抽的橫桿不變。CHROMASCOPE 的 LEVEL 1 至 8 改為 8 支直向區間桿，可一指橫掃。拖曳時依按下位置離下限或上限哪一端較近，只移動那一端，且不會越過另一端。點兩下回到預設區間。再按 RANGE 離開，橫桿恢復原本的操作。區間存在裝置上，與其他 VISUAL 參數相同，不隨 bank、專案或 SETUP PRESET。RANGE 只在 VISUAL 頁，PERFORM VISUAL 視窗沒有；RANGE 本身不能指派 MIDI 或 PERFORM。開啟 RANGE 時 GLIDE TIME 標題移到時間格上方。</td></tr>
 <tr><td class="k">GLIDE TIME</td><td>MINUTES（0 至 999）與 SECONDS（0 至 59）兩格。橫向拖曳設值；點一下不拖曳可用鍵盤輸入數字。總時間為兩者相加。參數在這段時間內從目前值平滑滑到隨機值，滑動中 GLIDE TIME 顯示倒數；MESH 模型則立即切換。MOD ROUTE、MIDI Learn 與 PERFORM 頁控制的是總秒數，最長 86400 秒。</td></tr>
 <tr><td class="k">WARP SPEED</td><td>0 至 1，預設 1，即原本的 MAX SPEED。RANDOM 不改變此值。</td></tr>
 </table>
@@ -983,7 +984,8 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <h3>外接螢幕</h3>
 <ul>
 <li>以 USB-C 或 AirPlay 鏡像連接後，外接螢幕顯示影像輸出，不需要停在 VISUAL 分頁。</li>
-<li>檔案與相簿選擇器仍在 iPad 上顯示。</li>
+<li>Mac 上接第二台螢幕時，自動在該螢幕開一個全螢幕視窗顯示影像輸出，不接受滑鼠與鍵盤，不需要停在 VISUAL 分頁。螢幕拔除時視窗自動關閉。</li>
+<li>iPad 接外接螢幕時，檔案與相簿選擇器仍在 iPad 上顯示。</li>
 <li>第一次使用相機時系統會詢問相機權限。</li>
 </ul>
 
@@ -1033,7 +1035,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">CLOCK IN</td><td>SOURCE：INT / MIDI / CV。DIV MULT：/4、/2、x1、x2、x4，只在使用外部來源時可用。CV INPUT 選聲道，SIGNAL 顯示訊號，STATUS 顯示狀態。BPM 20 至 300。MIDI 時脈為 24 PPQN，2 秒無訊號視為中斷。SOURCE 為 CV 時另有 RESET IN 列：播放中收到脈衝時，播放位置回到開頭。</td></tr>
 <tr><td class="k">TRANSPORT</td><td>只在 SOURCE 為 MIDI 時顯示。ANY SOURCE（預設）接受所有已啟用 MIDI 輸入送來的 start、stop、continue；CLOCK ONLY 只接受送時脈的那台裝置。</td></tr>
 <tr><td class="k">跟隨外部時脈</td><td>sequencer 靠微調播放速率跟上收到的 MIDI 時脈，播放位置不會跳動。BPM 顯示收到的速度，但專案 BPM 不會被改寫也不會存檔；SOURCE 切回 INT 後恢復原本的 BPM。</td></tr>
-<tr><td class="k">CLOCK OUT</td><td>CHANNEL、OUT DIV、OUT WIDTH（毫秒）。CLOCK OUT 與 RESET OUT 跟隨主 transport。</td></tr>
+<tr><td class="k">CLOCK OUT</td><td>CHANNEL、OUT DIV、OUT WIDTH（毫秒）。iPad 版的 CLOCK OUT 與 RESET OUT 跟隨主 transport。</td></tr>
 <tr><td class="k">RESET OUT</td><td>CHANNEL 與 OUT WIDTH（1 至 50 毫秒，預設 10）。以下情況送出一個脈衝：從停止按 PLAY（含 MIDI Start）、按 RESET 或 PERFORM 的 RESET、收到 RESET IN、播放中收到 MIDI Start。停止時為 0 V。只用這台裝置上的 CV 設定。</td></tr>
 <tr><td class="k">MIDI CLOCK OUT</td><td>OFF / ON。沒有 MIDI 輸出裝置時灰顯。</td></tr>
 </table>
@@ -1048,7 +1050,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <table>
 <tr><td class="k">CURRENTLY LEARNING</td><td>顯示等待中的 MIDI Learn 目標，等待中有 CANCEL 鈕。</td></tr>
 <tr><td class="k">MIDI INPUT DEVICES</td><td>MIDI 輸入裝置清單，可多選。</td></tr>
-<tr><td class="k">MIDI BINDINGS</td><td>已綁定清單。每項可設 MODE（LATCH / MOMENTARY）、TAKEOVER（JUMP / PICKUP）、SCALE（LINEAR / EXP / LOG）、MIN 與 MAX（0 至 100%，每步 10%），可用 REMOVE 單項刪除。標題列有 ALL PICK UP（全部設為 PICKUP）與 CLEAR ALL。PICKUP 以參數的目前值為接手基準。清單為全 app 共用，不隨專案槽切換。</td></tr>
+<tr><td class="k">MIDI BINDINGS</td><td>已綁定清單。每項可設 MODE（LATCH / MOMENTARY）、TAKEOVER（JUMP / PICKUP）、SCALE（LINEAR / EXP / LOG）、MIN 與 MAX（0 至 100%，每步 10%），可用 REMOVE 單項刪除。標題列有 ALL PICK UP（全部設為 PICKUP）與 CLEAR ALL。PICKUP 以參數的目前值為接手基準。清單為全 app 共用，不隨專案槽切換。第三組 send 在清單中顯示為「Track N — Send FX Chain」、「FX Chain — Return」、「Looper — Send FX Chain」。</td></tr>
 <tr><td class="k">PAGE NAVIGATION</td><td>PREVIOUS PAGE 與 NEXT PAGE 兩列，未指定時顯示 NOT ASSIGNED。按 LEARN 後 10 秒內送出 CC 或 Note 完成指定，等待中可 CANCEL，已指定可 REMOVE。換頁到頭不循環。</td></tr>
 <tr><td class="k">PERFORM MIDI OUT</td><td>列出 PERFORM 控件的 MIDI OUT 設定，可 CLEAR 單項或 CLEAR ALL。</td></tr>
 </table>
@@ -1067,7 +1069,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <div class="cap">SETUP 的 SYSTEM 分頁：RECORDING TRACKS 的 16 個開關與 ALL ON、ALL OFF、LOAD DEFAULT、SAVE DEFAULT，下方顯示預估寫入量與 VIDEO RECORDING 的兩個開關。</div>
 
 <table>
-<tr><td class="k">RECORDING LOCATION</td><td>固定為 Documents/Recordings，檔案 app 路徑「On My iPad / HONKI / Recordings」。Sessions 為分軌錄音，Samples 為取樣錄音。</td></tr>
+<tr><td class="k">RECORDING LOCATION</td><td>固定為 Documents/Recordings，檔案 app 路徑「On My iPad / HONKI / Recordings」。Sessions 為分軌錄音，Samples 為取樣錄音。以上為 iPad。Mac 版此列為 RECORDING FOLDER：顯示目前資料夾的完整路徑（未設定時為 NOT SET），CHOOSE 選擇資料夾，RESET 清除設定。Mac 沒有預設錄音資料夾，尚未選擇時按錄音會先跳出選擇資料夾視窗，取消就不錄音。</td></tr>
 <tr><td class="k">RECORDING TRACKS</td><td>選擇分軌錄音要寫入的項目，見第 14 章。</td></tr>
 <tr><td class="k">VIDEO RECORDING</td><td>錄音時同時錄影的兩個開關，見第 14 章。</td></tr>
 <tr><td class="k">GENERATE VELOCITY</td><td>每軌一條 1 至 127 的範圍條，設定自動產生的力度範圍，另有 RESET。預設範圍 80 至 110 時強拍會加重，可超出上限；範圍改過之後，強拍落在範圍的上段，不超出上限。</td></tr>
@@ -1157,9 +1159,9 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">RECORDING TRACKS</td><td>在 SETUP 的 SYSTEM 分頁選擇要寫入的項目，共 16 個開關：TRACK 1 至 8、MASTER、EXTERNAL INPUT、AUX 1、AUX 2、AUX 3、DELAY、REVERB、FX CHAIN。出廠預設為 TRACK 1 至 8、MASTER 與 EXTERNAL INPUT 開啟。另有 ALL ON、ALL OFF、LOAD DEFAULT、SAVE DEFAULT。選擇隨專案儲存；專案沒有記錄時使用 SAVE DEFAULT 存下的預設。錄音中不可更改。下方顯示預估的每分鐘寫入量。全部關閉時顯示「Nothing selected. Recording is unavailable.」，此時選 Y 只會播放。</td></tr>
 <tr><td class="k">檔案</td><td>WAV（32 位元浮點）：track1 至 track4 單聲道、track5 至 track8 立體聲、master 立體聲；aux1 至 aux3 單聲道；delay 與 reverb 立體聲，為效果回送訊號，取點在主 FILTER 與 MASTER VOLUME 之前。EXTERNAL INPUT 開啟時，有外部輸入路由的軌另存 trackN_ext.wav。track 的取樣點為 fader 後。</td></tr>
 <tr><td class="k">VIDEO RECORDING</td><td>SETUP 的 SYSTEM 分頁有 RECORD APP SCREEN 與 RECORD VISUAL OUTPUT 兩個開關，預設皆為 OFF。設定存在裝置上，不隨專案。錄音中不可更改。錄影隨錄音開始與結束，影片存在同一個 session 資料夾。</td></tr>
-<tr><td class="k">AppScreen.mp4</td><td>RECORD APP SCREEN 開啟時錄下 app 畫面，不使用麥克風。開始時系統會出現同意對話框；拒絕不影響錄音。</td></tr>
+<tr><td class="k">AppScreen.mp4</td><td>RECORD APP SCREEN 開啟時錄下 app 畫面，不使用麥克風。開始時系統會出現同意對話框；拒絕不影響錄音。app 畫面錄影只有 iPad 版；Mac 版只錄 VISUAL 輸出。</td></tr>
 <tr><td class="k">VisualOutput.mp4</td><td>RECORD VISUAL OUTPUT 開啟時錄下 VISUAL 的輸出畫面：H.264、1280 x 720、30 fps，等比縮放並補黑邊，附 MASTER 聲音（AAC 192 kbps）。影像引擎未啟動時會自動啟動。VISUAL 為 OFF 時不錄。失敗時在同一資料夾寫入 VisualOutput.error.txt。</td></tr>
-<tr><td class="k">位置</td><td>Recordings/Sessions/日期-時間/。同一秒內重複時加上 -2、-3。iPad 從檔案 app 的 On My iPad / HONKI / Recordings 取得。</td></tr>
+<tr><td class="k">位置</td><td>Recordings/Sessions/日期-時間/。同一秒內重複時加上 -2、-3。iPad 從檔案 app 的 On My iPad / HONKI / Recordings 取得。Mac 存在 SETUP 選定的錄音資料夾內的 Sessions。</td></tr>
 <tr><td class="k">檔頭</td><td>每 100 毫秒更新，中斷時檔案仍可讀。</td></tr>
 </table>
 
@@ -1174,7 +1176,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <!-- ============================================================ -->
 <h2 id="shortcuts">15. 快捷鍵</h2>
 
-<p>需外接鍵盤。SETUP 的 KEYBOARD 分頁指派的按鍵會取代同一個鍵的內建快捷鍵。</p>
+<p>iPad 需外接鍵盤。SETUP 的 KEYBOARD 分頁指派的按鍵會取代同一個鍵的內建快捷鍵。</p>
 <table>
 <tr><td class="k">1 至 6</td><td>切換分頁。編輯覆蓋層開啟時改為切換 TRACK 1 至 4 與 DRUMS。</td></tr>
 <tr><td class="k">Space</td><td>播放 / 停止，含錄音確認。</td></tr>
@@ -1186,7 +1188,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 </table>
 <p>觸控：樂句編輯覆蓋層向下滑超過 80pt 關閉。</p>
 
-<footer>MADZINE — HONKI v1.4.29</footer>
+<footer>MADZINE — HONKI v1.4.30</footer>
 </main>
 </div>
 <script>

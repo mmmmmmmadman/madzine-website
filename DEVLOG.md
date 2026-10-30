@@ -7,6 +7,7 @@
 - 三語使用手冊由 1.4.9 更新到 1.4.29（來源：HONKI/appstore/whats_new_1_4_10 到 1_4_29 三語更新說明 + DEVLOG）。改對應章節而非附 changelog；錨點 id 不變；圖片未換，畫面已不同的圖說加註「截圖為舊版畫面」（UTILITY、SEQUENCER、LFO、PERFORM 總圖 / 工具列 / 側面板、VISUAL 總圖 / SOURCE / RANDOM）。SETUP 新增 KEYBOARD 小節；MIDI Learn 加「1.4.10 至 1.4.29 新增的可指定目標」
 - `js/i18n.js` 三語 `apps.honki.intro` 由 6 段改 7 段（新增 PERFORM 側欄六分頁 GRID / TRACK / VOICE / SEND / EFFECT / LOOPER 一段；側欄名稱以 HONKI/PerformStore.swift 為準），補 SYNC LOOP、MAGAZINE、鼓墊 LOOP / GATE、Acoustic 鼓組、TRACK DELAY + SYNC、send DELAY 磁帶滑音、PERFORM MIDI OUT、鍵盤指派、INPUT COMP、CLOCK / RESET OUT；`apps.honki.desc` 與 `platform` 改 iPad / macOS，honki.html 中文 fallback、meta description、hero 平台標籤同步
 - 技術資訊「平台」改 iPad / macOS（Mac 版 1.4.30 已送 Mac App Store 審核，尚未上架）
+- 補記：說明書再更新到 1.4.30（VISUAL RANGE 區間桿、RANDOM 區間規則、TEXTURE 改名 FX CHAIN、Mac 版差異：外接螢幕自動全螢幕、RECORDING FOLDER、DrumKits 位置、只錄 VISUAL 輸出、Mac 需 Apple 晶片 + macOS 14）。Mac 相關內容依原始碼寫成，Mac App Store 版未實機確認
 - 右欄影片由一支增為三支（KbNffVZgaTQ、kay0Gn6wab8、hKxXm-aJbAQ），同 `.video-frame` 疊放
 
 ## 2026-10-28

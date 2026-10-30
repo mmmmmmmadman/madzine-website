@@ -118,7 +118,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <header>
   <div class="brand"><a href="https://madzine.work" style="color:inherit;text-decoration:none">MADZINE</a></div>
   <h1>HONKI</h1>
-  <div class="sub">取扱説明書 — v1.4.29 — 日本語</div>
+  <div class="sub">取扱説明書 — v1.4.30 — 日本語</div>
   <div class="langs"><a href="HONKI_Manual_en.html">English</a> <a href="HONKI_Manual_ja.html" class="cur">日本語</a> <a href="HONKI_Manual_zh-Hant.html">繁體中文</a></div>
 </header>
 
@@ -147,7 +147,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <!-- ============================================================ -->
 <h2 id="overview">1. 概要</h2>
 
-<p>HONKI は iPad 上で動作する 8 トラックのフレーズジェネレーターと音源システムです。1 つのパターンは 8 トラックで構成され、各トラックに 8 個のセグメントメモリスロットがあります。</p>
+<p>HONKI は iPad と Mac で動作する 8 トラックのフレーズジェネレーターと音源システムです。Mac 版には Apple シリコンと macOS 14 以降が必要です。このマニュアルは iPad 版を基準に説明しています。Mac 版で異なる点は各章に記載しています。1 つのパターンは 8 トラックで構成され、各トラックに 8 個のセグメントメモリスロットがあります。</p>
 
 <div class="fig"><img src="img/tabs.png" alt="6 つのページボタン"></div>
 <div class="cap">トップバーの 6 つのページボタン：MAIN、VOICE、MIXER、UTILITY、PERFORM、VISUAL。図では MAIN が現在のページです。</div>
@@ -449,7 +449,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">DECAY</td><td>現在のトラックの DECAY で、MAIN と同じです。</td></tr>
 <tr><td class="k">CLEAR</td><td>現在のセグメントの音色メモリを消去します。</td></tr>
 <tr><td class="k">SAVE</td><td>現在のパネルのパラメータ（ハーモニー設定を含む）をセグメントメモリに保存します。</td></tr>
-<tr><td class="k">DRUM KIT</td><td>編集中のトラックの音源が SAMPLE のとき、SAVE の右に表示されます。押すと SAVE、LOAD、DELETE のメニューが開きます。ドラムキットは TRACK 5 から 8 の MULTI 設定一式で、MULTI のオン / オフ、パッド数、読み込み済みの各パッドのオーディオファイルとパッドパラメータを含みます。SAVE では名前を入力し（初期値は「Kit」と日時）、同じ名前があるときは自動で番号が付きます。オーディオファイルはキットのフォルダにコピーされるため、元のファイルを移動してもキットはそのまま使えます。LOAD には保存日時とともにキットが並び、先頭は内蔵の Acoustic キットで、読み取り専用のため削除できません。読み込むと TRACK 5 から 8 が SAMPLE に切り替わり、パッドが消去され、MULTI が有効になってキットのパッドが読み込まれます。DELETE は確認のうえでキットとそのオーディオファイルを削除します。LOAD と DELETE は先に SAVE しなくても一覧を開けます。一覧に出すものがないときは「No kits」と表示されます。キットは端末の Documents / DrumKits に保存され、「ファイル」アプリで確認できます。プロジェクトの一部ではありません。</td></tr>
+<tr><td class="k">DRUM KIT</td><td>編集中のトラックの音源が SAMPLE のとき、SAVE の右に表示されます。押すと SAVE、LOAD、DELETE のメニューが開きます。ドラムキットは TRACK 5 から 8 の MULTI 設定一式で、MULTI のオン / オフ、パッド数、読み込み済みの各パッドのオーディオファイルとパッドパラメータを含みます。SAVE では名前を入力し（初期値は「Kit」と日時）、同じ名前があるときは自動で番号が付きます。オーディオファイルはキットのフォルダにコピーされるため、元のファイルを移動してもキットはそのまま使えます。LOAD には保存日時とともにキットが並び、先頭は内蔵の Acoustic キットで、読み取り専用のため削除できません。読み込むと TRACK 5 から 8 が SAMPLE に切り替わり、パッドが消去され、MULTI が有効になってキットのパッドが読み込まれます。DELETE は確認のうえでキットとそのオーディオファイルを削除します。LOAD と DELETE は先に SAVE しなくても一覧を開けます。一覧に出すものがないときは「No kits」と表示されます。キットは iPad では Documents / DrumKits に保存され、「ファイル」アプリで確認できます。Mac では録音フォルダ内の DrumKits に保存されます（録音フォルダを選んでいないときはアプリ内部に保存されます）。キットはプロジェクトの一部ではありません。</td></tr>
 </table>
 <div class="fig"><img src="img/drumkit_menu.png" alt="DRUM KIT メニュー"></div>
 <div class="cap">DRUM KIT メニュー：見出しの TRACKS 5-8、SAVE、LOAD、DELETE。LOAD と DELETE は保存済みキットの一覧を開きます。</div>
@@ -798,7 +798,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">MAPPING</td><td>マッピングパネルを開きます。コントロールを 1 つだけ選択しているときに使用できます。キャンバス上でコントロールをダブルタップしても開きます。</td></tr>
 <tr><td class="k">DELETE</td><td>2 段階式です。1 回押すと「DELETE?」に変わり、2 秒以内にもう一度押すと選択中のコントロールを削除します。</td></tr>
 <tr><td class="k">UNDO / REDO</td><td>レイアウト編集専用、32 ステップ。</td></tr>
-<tr><td class="k">TEMPLATE</td><td>内蔵レイアウトは 3 つ：SEGMENT VOICE、SENDS、MIXER。MIXER テンプレートは各トラックに下から順に、SOLO、MUTE、LEVEL フェーダー（LEVEL FOLLOW に割り当て済みで、MIXER ページで現在選択中のバスを操作）、4 段の BUS ノブ（MASTER / A1 / A2 / A3。回すと段に吸着し、ダブルタップで MASTER に戻り、MIXER ページと同期）、INT/EXT ノブが並びます。「SAVE CURRENT LAYOUT」は、まず USER n があらかじめ入った名前入力パネルを開きます。名前は変更でき（前後の空白を除き、英字は大文字に変換。空のままなら初期の名前を使用）、SAVE で保存、CANCEL またはパネル外のタップで取り消します。「MANAGE USER TEMPLATES」でユーザーレイアウトの名前変更と削除ができ、削除には確認が必要です。</td></tr>
+<tr><td class="k">TEMPLATE</td><td>内蔵レイアウトは 3 つ：SEGMENT VOICE、SENDS、MIXER。MIXER テンプレートは各トラックに下から順に、SOLO、MUTE、LEVEL フェーダー（LEVEL FOLLOW に割り当て済みで、MIXER ページで現在選択中のバスを操作）、4 段の BUS ノブ（MASTER / A1 / A2 / A3。回すと段に吸着し、ダブルタップで MASTER に戻り、MIXER ページと同期）、INT/EXT ノブが並びます。「SAVE CURRENT LAYOUT」は、まず USER n があらかじめ入った名前入力パネルを開きます。名前は変更でき（前後の空白を除き、英字は大文字に変換。空のままなら初期の名前を使用）、SAVE で保存、CANCEL またはパネル外のタップで取り消します。「MANAGE USER TEMPLATES」でユーザーレイアウトの名前変更と削除ができ、削除には確認が必要です。SENDS テンプレートの 3 行のラベルは「n DELAY」「n REVERB」「n FX CHAIN」です。旧レイアウトの「n TEXTURE」のラベルは読み込み時に「n FX CHAIN」に変わり、割り当てはそのままです。</td></tr>
 <tr><td class="k">SNAP GRID</td><td>グリッド吸着のスイッチです。</td></tr>
 <tr><td class="k">CONTROLS / MAPPINGS</td><td>EDIT モードのツールバーに、キャンバス上のコントロール数とマッピング数が表示されます。</td></tr>
 <tr><td class="k">選択とドラッグ</td><td>コントロールをタップして選択に追加または解除します。複数選択できます。ドラッグで位置を移動し、複数選択のときはまとめて移動します。</td></tr>
@@ -817,7 +817,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">DIRECTIONS</td><td>4 方向モードの PAD では UP、DOWN、LEFT、RIGHT の 4 行になり、方向ごとにマッピングは 1 つです。もう一度割り当てると前のものが置き換わり、未割り当ては EMPTY と表示されます。各行に CLEAR DIRECTION、REVERSE RANGE、範囲バーがあります。</td></tr>
 <tr><td class="k">TWO AXIS / FOUR WAY</td><td>PAD のモードを切り替えます。その PAD にマッピングがある場合、1 回目のタップで確認の表示になり、2 秒以内にもう一度タップすると切り替わります。切り替えるとその PAD のマッピングはすべて消去され、UNDO で戻せます。名前は保持されます。FOUR WAY に切り替えると値は中心に戻り、戻りがオンになります。TWO AXIS に戻すと戻りはオフになります。</td></tr>
 <tr><td class="k">MIDI OUT</td><td>OFF / ON、CHANNEL、CC / NOTE。PAD には MIDI OUT X / Y の 2 組があります。SETUP の CV / MIDI で選んだ MIDI 出力デバイスから送られ、NOTE モードでは note on / off を送ります。SETUP の MIDI CONTROL にすべての PERFORM MIDI OUT が一覧され、CLEAR と CLEAR ALL ができます。</td></tr>
-<tr><td class="k">ターゲットのグループ</td><td>MIXER、VOICE、SEGMENT、FX、GLOBAL、CHROMA、PARTICLE、MESH、FEEDBACK。グループの下に T1 から T8 のトラックボタンがあり、グローバルなグループではグレー表示になります。同じコントロールで使用済みのターゲットには印が付きます。GLOBAL グループには UN-SOLO ALL、MULTI（MAIN ページ表示中のみ働く）、GRID SINGLE、PREVIOUS PAGE / NEXT PAGE（端で折り返さない）、PREVIOUS SLOT / NEXT SLOT と PREVIOUS BANK / NEXT BANK（実際にプロジェクトスロットを切り替え、端で折り返さない）、PREVIOUS PROGRAM / NEXT PROGRAM もあります。VOICE グループには TRACK DELAY と TRACK DELAY SYNC、MIXER グループにはドラムの各レーンの MUTE もあります。</td></tr>
+<tr><td class="k">ターゲットのグループ</td><td>MIXER、VOICE、SEGMENT、FX、GLOBAL、CHROMA、PARTICLE、MESH、FEEDBACK。グループの下に T1 から T8 のトラックボタンがあり、グローバルなグループではグレー表示になります。同じコントロールで使用済みのターゲットには印が付きます。GLOBAL グループには UN-SOLO ALL、MULTI（MAIN ページ表示中のみ働く）、GRID SINGLE、PREVIOUS PAGE / NEXT PAGE（端で折り返さない）、PREVIOUS SLOT / NEXT SLOT と PREVIOUS BANK / NEXT BANK（実際にプロジェクトスロットを切り替え、端で折り返さない）、PREVIOUS PROGRAM / NEXT PROGRAM もあります。VOICE グループには TRACK DELAY と TRACK DELAY SYNC、MIXER グループにはドラムの各レーンの MUTE もあります。3 つ目のセンドの割り当て先の名前は FX CHAIN です。MIXER グループの各トラックの SEND FX CHAIN、FX グループの FX CHAIN RETURN と FX CHAIN PRE/POST、LOOPER の LOOPER SEND FX CHAIN（以前のバージョンでは TEXTURE と表示。既存の割り当ては影響を受けません）。</td></tr>
 <tr><td class="k">MIXER グループ</td><td>トラックごとに：MUTE、SOLO、A1 から A3 LEVEL、LEVEL、LEVEL FOLLOW、MIX、PAN、サイドチェイン量、3 つのエフェクトセンド、FILTER、BUS（連続値の 4 段。KNOB に割り当てるとノブが自動的に 4 段表示になります）、BUS MASTER / BUS A1 / BUS A2 / BUS A3（ボタン型。トリガーするとそのバスを選択し、BUTTON に割り当てたときの点灯は MIXER ページで現在選択中のバスを反映します）。</td></tr>
 <tr><td class="k">FX グループ</td><td>DELAY、REVERB、FX CHAIN（RETURN）、FX CHAIN 1、FX CHAIN 2、FX CHAIN 3、PRE / POST。各 FX CHAIN ポジションには 3 種類のエフェクトのパラメータ、MIX、および EFFECT、FREEZE、HOLD が含まれます。EFFECT はトリガーされるたびに次のエフェクトに切り替わり、順序は GRANULAR、KARPLUS、GLITCH です。HOLD は押している間だけ作用します。</td></tr>
 </table>
@@ -968,7 +968,8 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <div class="cap">4 つのステーション列の右にある RANDOM ボタン、GLIDE TIME の見出し、HOURS、MINUTES、SECONDS の 3 本のバー。画像は旧バージョンの画面です。現在のレイアウトは下の説明を参照してください。</div>
 <p>RANDOM と GLIDE TIME はページ上段、4 つのステーション列の右、MIX バーの隣にあります。どちらも VISUAL ページ全体に働き、ステーションのオン・オフには関係なく使えます。</p>
 <table>
-<tr><td class="k">RANDOM</td><td>オンになっているステーションの連続パラメータをすべて、それぞれの範囲内のランダムな値にします。MIX バーと GLIDE TIME は変わらず、オフのステーションは対象外です。WARP DEPTH もランダムになり（ステーションの合計で 0.3 以下）、WARP SPEED は変わりません。BRIGHTNESS は 1 から 4 の範囲です。FEEDBACK の SMOOTH と BRIGHT はそれぞれ上限 0.5、2 つの合計で 0.3 以下です。MESH がオンで内蔵モデルを使っているときは、別の内蔵モデルにも即座に切り替わります。読み込んだ .obj モデルは置き換えられません。変わるのはベース値だけで、MOTION と MOD ROUTE の値はそのままです。RANDOM は MIDI コントローラーから押せます：LEARN をオンにし、RANDOM をタップしてからコントローラーを操作します。PERFORM ページにもボタン型のコントロールとして置けます（GLOBAL グループの VISUAL RANDOM）。MOD ROUTE からも RANDOM を起動できます。MOD モードで VISUAL ページまたは PERFORM のツールバーの RANDOM をタップすると、OFF と 15 のソースを持つ MOD ROUTE パネルが開き、AMOUNT の位置に「TRIGGER &gt;= 5V」と表示されます。ソースが下から 5 V を超えるたびに 1 回起動します。この設定はアプリ全体で共通です。</td></tr>
+<tr><td class="k">RANDOM</td><td>オンになっているステーションの連続パラメータをすべて、RANGE で設定した区間内のランダムな値にします。MIX バー、WARP SPEED、GLIDE TIME は変わらず、オフのステーションは対象外です。区間の初期値は RANGE 追加前の RANDOM の範囲と同じで、たとえば各ステーションの BRIGHTNESS は 1 から 4、FEEDBACK の SMOOTH と BRIGHT はそれぞれ 0 から 0.3、4 つのステーションの WARP DEPTH はそれぞれ 0 から 0.3 です。SMOOTH、BRIGHT、WARP DEPTH の区間の上限は最大 0.3 です。区間をどう設定しても、SMOOTH と BRIGHT の合計は 0.3 以下、4 つの WARP DEPTH の合計は 0.3 以下になります。MESH がオンで内蔵モデルを使っているときは、別の内蔵モデルにも即座に切り替わります。読み込んだ .obj モデルは置き換えられません。変わるのはベース値だけで、MOTION と MOD ROUTE の値はそのままです。PERFORM のツールバーと PERFORM VISUAL ウィンドウの RANDOM も同じ区間を使います。RANDOM は MIDI コントローラーから押せます：LEARN をオンにし、RANDOM をタップしてからコントローラーを操作します。PERFORM ページにもボタン型のコントロールとして置けます（GLOBAL グループの VISUAL RANDOM）。MOD ROUTE からも RANDOM を起動できます。MOD モードで VISUAL ページまたは PERFORM のツールバーの RANDOM をタップすると、OFF と 15 のソースを持つ MOD ROUTE パネルが開き、AMOUNT の位置に「TRIGGER &gt;= 5V」と表示されます。ソースが下から 5 V を超えるたびに 1 回起動します。この設定はアプリ全体で共通です。</td></tr>
+<tr><td class="k">RANGE</td><td>VISUAL ページの RANDOM の右にあるスイッチで、各パラメータが RANDOM で選ばれる区間を設定します。オンにすると、RANDOM の対象になるバーがその場で区間バーに変わり、バーの面にパラメータ名と「下限 - 上限」が表示されます。MIX や WARP SPEED など RANDOM の対象でないバーは変わりません。CHROMASCOPE の LEVEL 1 から 8 は 8 本の縦の区間バーになり、1 本の指で横になぞって設定できます。ドラッグすると、押した位置に近い方の端だけが動き、もう一方の端を越えません。ダブルタップで初期の区間に戻ります。もう一度 RANGE を押すと終了し、バーは元の操作に戻ります。区間はほかの VISUAL パラメータと同じく端末側に保存され、バンク、プロジェクト、SETUP PRESET には含まれません。RANGE は VISUAL ページだけにあり、PERFORM VISUAL ウィンドウにはありません。RANGE 自体は MIDI や PERFORM に割り当てできません。RANGE があるときは、GLIDE TIME の見出しは時間のセルの上に表示されます。</td></tr>
 <tr><td class="k">GLIDE TIME</td><td>MINUTES（0 から 999）と SECONDS（0 から 59）の 2 つのセル。横にドラッグして値を決めます。ドラッグせずにタップすると、キーボードで数値を入力できます。合計は 2 つの和です。パラメータは現在の値からランダムな値へこの時間をかけて滑らかに移り、その間 GLIDE TIME にはカウントダウンが表示されます。MESH のモデルは即座に切り替わります。MOD ROUTE、MIDI Learn、PERFORM ページが扱うのは合計の秒数で、最大 86400 秒です。</td></tr>
 <tr><td class="k">WARP SPEED</td><td>0 から 1、初期値 1。以前の MAX SPEED です。RANDOM では変わりません。</td></tr>
 </table>
@@ -983,7 +984,8 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <h3>外部ディスプレイ</h3>
 <ul>
 <li>USB-C または AirPlay ミラーリングで接続すると、外部ディスプレイに映像出力が表示されます。VISUAL ページに留まる必要はありません。</li>
-<li>ファイルと写真ライブラリの選択画面は iPad 側に表示されます。</li>
+<li>Mac では 2 台目のディスプレイを接続すると、そのディスプレイに映像出力の全画面ウインドウが自動で開きます。このウインドウはマウスとキーボードを受け付けません。VISUAL ページに留まる必要はありません。ディスプレイを外すと自動で閉じます。</li>
+<li>iPad に外部ディスプレイを接続しているときも、ファイルと写真ライブラリの選択画面は iPad 側に表示されます。</li>
 <li>初めてカメラを使うとき、システムがカメラの使用許可を求めます。</li>
 </ul>
 
@@ -1033,7 +1035,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">CLOCK IN</td><td>SOURCE：INT / MIDI / CV。DIV MULT：/4、/2、x1、x2、x4 で、外部ソース使用時のみ使用できます。CV INPUT でチャンネルを選び、SIGNAL に信号、STATUS に状態が表示されます。BPM 20 から 300。MIDI クロックは 24 PPQN で、2 秒間信号がないと途切れたとみなします。SOURCE が CV のときは RESET IN の行もあります。再生中にパルスを受けると再生位置が先頭に戻ります。</td></tr>
 <tr><td class="k">TRANSPORT</td><td>SOURCE が MIDI のときだけ表示されます。ANY SOURCE（初期値）は有効なすべての MIDI 入力からのスタート、ストップ、コンティニューを受け付けます。CLOCK ONLY はクロックを送っているデバイスからだけ受け付けます。</td></tr>
 <tr><td class="k">外部クロックへの追従</td><td>シーケンサーは再生速度を細かく調整して受信中の MIDI クロックに追従し、再生位置が飛ぶことはありません。BPM 表示には受信中のテンポが出ますが、プロジェクトの BPM は書き換えられず保存もされません。SOURCE を INT に戻すと元の BPM に戻ります。</td></tr>
-<tr><td class="k">CLOCK OUT</td><td>CHANNEL、OUT DIV、OUT WIDTH（ミリ秒）。CLOCK OUT と RESET OUT はメインのトランスポートに従います。</td></tr>
+<tr><td class="k">CLOCK OUT</td><td>CHANNEL、OUT DIV、OUT WIDTH（ミリ秒）。iPad 版の CLOCK OUT と RESET OUT はメインのトランスポートに従います。</td></tr>
 <tr><td class="k">RESET OUT</td><td>CHANNEL と OUT WIDTH（1 から 50 ミリ秒、初期値 10）。次のときにパルスを 1 つ出力します：停止中からの PLAY（MIDI Start を含む）、RESET ボタンまたは PERFORM の RESET、RESET IN の受信、再生中の MIDI Start。停止中は 0 V です。この端末の CV 設定だけを使います。</td></tr>
 <tr><td class="k">MIDI CLOCK OUT</td><td>OFF / ON。MIDI 出力デバイスがないときはグレー表示になります。</td></tr>
 </table>
@@ -1048,7 +1050,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <table>
 <tr><td class="k">CURRENTLY LEARNING</td><td>待機中の MIDI Learn のターゲットを表示します。待機中は CANCEL ボタンがあります。</td></tr>
 <tr><td class="k">MIDI INPUT DEVICES</td><td>MIDI 入力デバイスの一覧で、複数選択できます。</td></tr>
-<tr><td class="k">MIDI BINDINGS</td><td>割り当て済みの一覧です。各項目で MODE（LATCH / MOMENTARY）、TAKEOVER（JUMP / PICKUP）、SCALE（LINEAR / EXP / LOG）、MIN と MAX（0 から 100%、10% 刻み）を設定でき、REMOVE で個別に削除できます。見出しに ALL PICK UP（すべてを PICKUP にする）と CLEAR ALL があります。PICKUP はパラメータの現在値を基準に引き継ぎます。一覧はアプリ全体で共通で、プロジェクトスロットによって変わりません。</td></tr>
+<tr><td class="k">MIDI BINDINGS</td><td>割り当て済みの一覧です。各項目で MODE（LATCH / MOMENTARY）、TAKEOVER（JUMP / PICKUP）、SCALE（LINEAR / EXP / LOG）、MIN と MAX（0 から 100%、10% 刻み）を設定でき、REMOVE で個別に削除できます。見出しに ALL PICK UP（すべてを PICKUP にする）と CLEAR ALL があります。PICKUP はパラメータの現在値を基準に引き継ぎます。一覧はアプリ全体で共通で、プロジェクトスロットによって変わりません。3 つ目のセンドは一覧に「Track N — Send FX Chain」「FX Chain — Return」「Looper — Send FX Chain」と表示されます。</td></tr>
 <tr><td class="k">PAGE NAVIGATION</td><td>PREVIOUS PAGE と NEXT PAGE の 2 行で、未設定のときは NOT ASSIGNED と表示されます。LEARN を押して 10 秒以内に CC または Note を送ると設定され、待機中は CANCEL、設定済みは REMOVE で削除できます。ページは端で折り返しません。</td></tr>
 <tr><td class="k">PERFORM MIDI OUT</td><td>PERFORM のコントロールの MIDI OUT 設定を一覧し、項目ごとの CLEAR と CLEAR ALL ができます。</td></tr>
 </table>
@@ -1067,7 +1069,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <div class="cap">SETUP の SYSTEM タブ。RECORDING TRACKS の 16 個のスイッチと ALL ON、ALL OFF、LOAD DEFAULT、SAVE DEFAULT。下に推定書き込み量と VIDEO RECORDING の 2 つのスイッチ。</div>
 
 <table>
-<tr><td class="k">RECORDING LOCATION</td><td>Documents/Recordings に固定です。ファイルアプリでのパスは「On My iPad / HONKI / Recordings」。Sessions はマルチトラック録音、Samples はサンプル録音です。</td></tr>
+<tr><td class="k">RECORDING LOCATION</td><td>Documents/Recordings に固定です。ファイルアプリでのパスは「On My iPad / HONKI / Recordings」。Sessions はマルチトラック録音、Samples はサンプル録音です。以上は iPad の場合です。Mac 版ではこの行は RECORDING FOLDER で、現在のフォルダのフルパス（未設定のときは NOT SET）を表示し、CHOOSE でフォルダを選び、RESET で設定を消去します。Mac には録音フォルダの初期値がなく、未設定のまま録音しようとすると先にフォルダの選択画面が開き、キャンセルすると録音しません。</td></tr>
 <tr><td class="k">RECORDING TRACKS</td><td>マルチトラック録音で書き出す項目を選びます。第 14 章を参照してください。</td></tr>
 <tr><td class="k">VIDEO RECORDING</td><td>録音と同時に録画する 2 つのスイッチです。第 14 章を参照してください。</td></tr>
 <tr><td class="k">GENERATE VELOCITY</td><td>トラックごとに 1 から 127 の範囲バーがあり、自動生成のベロシティ範囲を設定します。RESET もあります。初期範囲 80 から 110 では強拍が強調され、最大値を超えることがあります。範囲を変更すると、強拍は範囲の上側に収まり、最大値を超えません。</td></tr>
@@ -1157,9 +1159,9 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">RECORDING TRACKS</td><td>SETUP の SYSTEM タブで、書き出す項目を 16 個のスイッチで選びます：TRACK 1 から 8、MASTER、EXTERNAL INPUT、AUX 1、AUX 2、AUX 3、DELAY、REVERB、FX CHAIN。出荷時は TRACK 1 から 8、MASTER、EXTERNAL INPUT がオンです。ALL ON、ALL OFF、LOAD DEFAULT、SAVE DEFAULT もあります。選択はプロジェクトとともに保存されます。プロジェクトに記録がない場合は、SAVE DEFAULT で保存した既定値を使います。録音中は変更できません。下に 1 分あたりの書き込み量の目安が表示されます。すべてオフのときは「Nothing selected. Recording is unavailable.」と表示され、Y を選んでも再生のみになります。</td></tr>
 <tr><td class="k">ファイル</td><td>WAV（32 ビット浮動小数点）：track1 から track4 はモノラル、track5 から track8 はステレオ、master はステレオ。aux1 から aux3 はモノラル。delay と reverb はステレオで、エフェクトリターンの信号です。取り出し点はマスター FILTER と MASTER VOLUME の前です。EXTERNAL INPUT がオンのとき、外部入力のルーティングがあるトラックは trackN_ext.wav も保存します。トラックの取り出し点はフェーダー後です。</td></tr>
 <tr><td class="k">VIDEO RECORDING</td><td>SETUP の SYSTEM タブに RECORD APP SCREEN と RECORD VISUAL OUTPUT の 2 つのスイッチがあり、初期値はどちらも OFF です。設定はデバイスに保存され、プロジェクトには含まれません。録音中は変更できません。録画は録音と同時に始まり、同時に終わります。動画は同じセッションフォルダに保存されます。</td></tr>
-<tr><td class="k">AppScreen.mp4</td><td>RECORD APP SCREEN がオンのとき、アプリの画面を録画します。マイクは使いません。開始時にシステムの同意ダイアログが表示されます。拒否しても録音には影響しません。</td></tr>
+<tr><td class="k">AppScreen.mp4</td><td>RECORD APP SCREEN がオンのとき、アプリの画面を録画します。マイクは使いません。開始時にシステムの同意ダイアログが表示されます。拒否しても録音には影響しません。アプリ画面の録画は iPad 版だけです。Mac 版で録画できるのは VISUAL の出力だけです。</td></tr>
 <tr><td class="k">VisualOutput.mp4</td><td>RECORD VISUAL OUTPUT がオンのとき、VISUAL の出力画面を録画します：H.264、1280 x 720、30 fps、縦横比を保って縮小し黒帯を加え、MASTER の音声（AAC 192 kbps）付きです。映像エンジンが起動していないときは自動で起動します。VISUAL が OFF のときは録画しません。失敗したときは同じフォルダに VisualOutput.error.txt が書き出されます。</td></tr>
-<tr><td class="k">場所</td><td>Recordings/Sessions/日付-時刻/。同じ秒に重複したときは -2、-3 が付きます。iPad ではファイルアプリの On My iPad / HONKI / Recordings から取得します。</td></tr>
+<tr><td class="k">場所</td><td>Recordings/Sessions/日付-時刻/。同じ秒に重複したときは -2、-3 が付きます。iPad ではファイルアプリの On My iPad / HONKI / Recordings から取得します。Mac では SETUP で選んだ録音フォルダ内の Sessions に保存されます。</td></tr>
 <tr><td class="k">ヘッダー</td><td>100 ミリ秒ごとに更新され、中断してもファイルは読み込めます。</td></tr>
 </table>
 
@@ -1174,7 +1176,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <!-- ============================================================ -->
 <h2 id="shortcuts">15. ショートカット</h2>
 
-<p>外部キーボードが必要です。SETUP の KEYBOARD タブで割り当てたキーは、同じキーの内蔵ショートカットに優先します。</p>
+<p>iPad では外部キーボードが必要です。SETUP の KEYBOARD タブで割り当てたキーは、同じキーの内蔵ショートカットに優先します。</p>
 <table>
 <tr><td class="k">1 から 6</td><td>タブを切り替えます。編集オーバーレイが開いているときは TRACK 1 から 4 と DRUMS の切り替えになります。</td></tr>
 <tr><td class="k">Space</td><td>再生 / 停止。録音の確認を含みます。</td></tr>
@@ -1186,7 +1188,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 </table>
 <p>タッチ：フレーズ編集オーバーレイを下へ 80pt を超えてスワイプすると閉じます。</p>
 
-<footer>MADZINE — HONKI v1.4.29</footer>
+<footer>MADZINE — HONKI v1.4.30</footer>
 </main>
 </div>
 <script>
