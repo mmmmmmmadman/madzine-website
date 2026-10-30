@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MADZINE — HONKI</title>
-  <meta name="description" content="iPad 8 軌 sequencer 與音源工作站，六個分頁涵蓋音源、混音、調變、表演控件與影像">
+  <meta name="description" content="iPad 與 macOS 的 8 軌 sequencer 與音源工作站，六個分頁涵蓋音源、混音、調變、表演控件與影像">
   <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/style.css">
   <style>
@@ -225,7 +225,7 @@
         <span data-i18n="common.back">返回</span>
       </a>
       <h1>HONKI</h1>
-      <p class="card__tag">iPad</p>
+      <p class="card__tag">iPad / macOS</p>
       <p data-i18n="apps.honki.subtitle">8 軌 sequencer 與音源工作站</p>
     </div>
   </div>
@@ -236,12 +236,24 @@
         <div class="two-col">
           <div class="col-text">
             <h2 data-i18n="common.intro">功能介紹</h2>
-            <p class="intro-text" data-i18n-html="apps.honki.intro">HONKI 是 iPad 上的 8 軌 sequencer 與音源工作站。每個 pattern 有 8 軌，1 至 4 軌為旋律軌、5 至 8 軌為鼓軌，每軌 8 個段落，可依序或隨機串接。介面分為 MAIN、VOICE、MIXER、UTILITY、PERFORM、VISUAL 六個分頁。<br><br>每軌音源四選一：SYNTH 為 wavetable 振盪器；SAMPLE 支援切片、多取樣鼓組、即時錄音與粒子合成；PHYSICAL 為共振器模型；AU 可載入 Audio Unit 樂器，並以 8 個 MACRO 旋鈕控制。<br><br>MIXER 有 8 個聲道條，每軌具三段 EQ、壓縮器與旁鏈、濾波器，以及 DELAY、REVERB、TEXTURE 三組 send。TEXTURE 為粒子合成 send 效果，MASTER FX 可串接 Audio Unit 效果器。<br><br>UTILITY 有 8 段包絡 SEQUENCER、6 個 LFO 與 4 個 OUTPUT，OUTPUT 可經音訊介面輸出 CV。PERFORM 可自訂旋鈕、按鈕、推桿與 XY PAD 作為表演控件，長按控件可開啟 MOD ROUTE，將 SEQUENCER、LFO 與包絡即時疊加到參數上。<br><br>VISUAL 以攝影機、照片或影片為來源，經 CHROMASCOPE、PARTICLE、MESH、FEEDBACK 四個效果站處理，由音訊驅動，並可輸出到外接螢幕。控件支援 MIDI Learn 對應外部控制器；錄音可將 8 軌 stem 與 master 輸出為 WAV 檔。</p>
+            <p class="intro-text" data-i18n-html="apps.honki.intro">HONKI 是 iPad 與 macOS 上的 8 軌 sequencer 與音源工作站。每個 pattern 有 8 軌，1 至 4 軌為旋律軌、5 至 8 軌為鼓軌，每軌 8 個段落，可依序或隨機串接。每個段落可記住自己的音源設定，切換段落時音色一起切換。旋律軌有 TRACK DELAY，可將整軌的觸發延後 0 至 500 ms，開啟 SYNC 則改以 1/64 至 1 BAR 的拍值延後，MIDI OUT 與 CV OUT 一併延後。介面分為 MAIN、VOICE、MIXER、UTILITY、PERFORM、VISUAL 六個分頁。<br><br>每軌音源四選一：SYNTH 為 wavetable 振盪器；SAMPLE 支援切片、多取樣鼓組、即時錄音與粒子合成，SYNC LOOP 模式讓取樣循環跟隨 BPM 而不改變音高，每軌另有 8 格 MAGAZINE 可在演出中切換取樣；PHYSICAL 為共振器模型；AU 可載入 Audio Unit 樂器，並以 8 個 MACRO 旋鈕控制。鼓軌的 MULTI 鼓墊可選 LOOP 或 GATE 觸發模式，鼓組內建 Acoustic 套組，鼓編輯器每條 lane 可獨立靜音。<br><br>MIXER 有 8 個聲道條，每軌具三段 EQ、壓縮器與旁鏈、濾波器，以及 DELAY、REVERB、TEXTURE 三組 send。TEXTURE 為粒子合成 send 效果；DELAY 的 TIME 旋鈕轉動時以磁帶式滑音改變音高，不會跳變。MASTER FX 可串接 Audio Unit 效果器。<br><br>UTILITY 有 8 段包絡 SEQUENCER、6 個 LFO 與 4 個 OUTPUT，OUTPUT 可經音訊介面輸出 CV。PERFORM 可自訂旋鈕、按鈕、推桿與 XY PAD 作為表演控件，長按控件可開啟 MOD ROUTE，將 SEQUENCER、LFO 與包絡即時疊加到參數上。同一個控件可同時送出 MIDI OUT，設定頻道與 CC 或 NOTE 後，操作內部參數的同時也驅動外部裝置。<br><br>PERFORM 右側固定欄有 GRID、TRACK、VOICE、SEND、EFFECT、LOOPER 六個分頁：GRID 為格狀觸發面；TRACK 為 8 軌的 LOCK、DENSITY、DECAY 推桿；VOICE 以推桿編輯所選軌的音源參數；SEND 為 8 軌的 send 與 aux bus 推桿；EFFECT 為效果器與 FX CHAIN 參數；LOOPER 可錄下 1、2、4 或 8 小節的 master 輸出，對 loop 做三段 EQ，並以 LIVE / LOOP 交叉推桿切換。側欄所有控件都可由 PERFORM 與 MIDI 指派。SETUP 可將實體鍵盤的任一按鍵指派到與 PERFORM MAPPING 相同的功能清單，含上一頁 / 下一頁切換，每個指派可選 MOMENTARY 或 LATCH。<br><br>UTILITY 的 SEQUENCER 曲線與 LFO 波形可直接徒手繪製，手繪 LFO 可加上 S&H / T&H 分段取樣。每軌 DECAY 包絡可作為 MOD ROUTE 調變來源。MIXER 每軌可送往 MASTER 或 A1 至 A3 三組 aux bus，各自對應音訊介面的實體輸出。SYNTH 振盪器直接以 wavetable 發聲，POSITION 最左為純正弦。<br><br>VISUAL 以攝影機、照片或影片為來源，經 CHROMASCOPE、PARTICLE、MESH、FEEDBACK 四個效果站處理，由音訊驅動，並可輸出到外接螢幕。控件支援 MIDI Learn 對應外部控制器；錄音可將 8 軌 stem 與 master 輸出為 WAV 檔。外部音訊可送進各軌，INPUT COMP 用來對齊外部輸入的回送延遲；CV 可輸出 CLOCK OUT 與 RESET OUT 脈衝，也可跟隨外部 CV clock 與 RESET IN。</p>
           </div>
 
           <div class="col-right">
             <div class="video-frame">
               <iframe src="https://www.youtube.com/embed/KbNffVZgaTQ?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1"
+                      title="HONKI"
+                      allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowfullscreen></iframe>
+            </div>
+            <div class="video-frame">
+              <iframe src="https://www.youtube.com/embed/kay0Gn6wab8?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1"
+                      title="HONKI"
+                      allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowfullscreen></iframe>
+            </div>
+            <div class="video-frame">
+              <iframe src="https://www.youtube.com/embed/hKxXm-aJbAQ?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1"
                       title="HONKI"
                       allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                       allowfullscreen></iframe>
@@ -273,7 +285,7 @@
               <h2 data-i18n="common.tech">技術資訊</h2>
               <dl class="tech-table">
                 <dt data-i18n="common.platform">平台</dt>
-                <dd>iPad</dd>
+                <dd>iPad / macOS</dd>
                 <dt data-i18n="common.language">開發語言</dt>
                 <dd>Swift / SwiftUI</dd>
                 <dt>Audio</dt>
