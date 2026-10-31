@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#14110f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Oscilloscope">
+<link rel="manifest" href="oscilloscope.webmanifest">
 <title>Oscilloscope — MADZINE</title>
 <meta name="description" content="示波器與頻譜，3D 翻轉顯示波形與頻譜的對應">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -110,7 +115,8 @@ body {
   font-family: var(--f-body); font-weight: 300; font-size: 15px; line-height: 1.4;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
-  padding-block: 10px 14px;
+  padding-top: max(10px, env(safe-area-inset-top, 0px));
+  padding-bottom: max(14px, env(safe-area-inset-bottom, 0px));
   display: flex; flex-direction: column; gap: 10px; box-sizing: border-box;
   -webkit-font-smoothing: antialiased;
 }
@@ -171,6 +177,9 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .status:empty { display: none; }
 .status.warn { color: var(--danger); }
 
+#fsBtn .exit { display: none; }
+:fullscreen #fsBtn .enter, :-webkit-full-screen #fsBtn .enter { display: none; }
+:fullscreen #fsBtn .exit, :-webkit-full-screen #fsBtn .exit { display: block; }
 #huebtn { width: 44px; height: 44px; display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; }
 #huebtn:hover, #huebtn.open { background: var(--accent-soft); }
 #hueicon { display: block; width: 32px; height: 32px; pointer-events: none; }
@@ -216,6 +225,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
     <button class="pill" id="pill" hidden></button>
     <button class="ico big" id="micBtn" aria-pressed="false" aria-label="麥克風"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5.5" y="1.5" width="5" height="8" rx="2.5"/><path d="M3 7.5a5 5 0 0 0 10 0M8 12.5v2M5.5 14.5h5"/></svg></button>
     <button id="huebtn" type="button" aria-label="Hue" aria-haspopup="dialog" aria-controls="huepop" aria-expanded="false"><canvas id="hueicon" aria-hidden="true"></canvas></button>
+    <button class="ico big" id="fsBtn" aria-label="全螢幕" hidden><svg class="enter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg><svg class="exit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4v5H4M15 4v5h5M20 15h-5v5M4 15h5v5"/></svg></button>
     <button class="ico big" id="gearBtn" aria-expanded="false" aria-controls="menu" aria-label="設定"><svg viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd"><path d="M19.20 10.27 L22.51 10.59 L22.51 13.41 L19.20 13.73 L18.31 15.87 L20.43 18.43 L18.43 20.43 L15.87 18.31 L13.73 19.20 L13.41 22.51 L10.59 22.51 L10.27 19.20 L8.13 18.31 L5.57 20.43 L3.57 18.43 L5.69 15.87 L4.80 13.73 L1.49 13.41 L1.49 10.59 L4.80 10.27 L5.69 8.13 L3.57 5.57 L5.57 3.57 L8.13 5.69 L10.27 4.80 L10.59 1.49 L13.41 1.49 L13.73 4.80 L15.87 5.69 L18.43 3.57 L20.43 5.57 L18.31 8.13 Z M12 15.4a3.4 3.4 0 1 0 0-6.8a3.4 3.4 0 1 0 0 6.8Z"/></svg></button>
   </div>
   <div id="huepop" role="dialog" aria-label="Hue" hidden><canvas id="huewheel"></canvas></div>
@@ -252,6 +262,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
         <button class="btn" id="tLog" aria-pressed="true">對數頻率</button>
         <button class="btn" id="themeBtn">白底</button>
       </div>
+      <div class="status" id="fsHint"></div>
     </div>
   </div>
 </header>
@@ -916,6 +927,30 @@ $('#audioBtn').addEventListener('click', () => setAudible(!state.audible));
   const endHueDrag = () => { if (!hueZone) return; hueZone = null; OscHue.save(); };
   wheelCv.addEventListener('pointerup', endHueDrag); wheelCv.addEventListener('pointercancel', endHueDrag);
   drawIcon();
+}
+
+/* ---------------- full screen ---------------- */
+// Fullscreen API where the browser has it (desktop, Android, iPad). iPhone Safari has none: there, Add to Home
+// Screen opens the page standalone (= full screen) through the manifest + apple-mobile-web-app meta tags.
+{
+  const el = root, btn = $('#fsBtn'), hint = $('#fsHint');
+  const available = () => typeof (el.requestFullscreen || el.webkitRequestFullscreen) === 'function' && document.fullscreenEnabled !== false && document.webkitFullscreenEnabled !== false;
+  const active = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
+  const standalone = () => matchMedia('(display-mode: standalone), (display-mode: fullscreen)').matches || navigator.standalone === true;
+  const update = () => {
+    btn.hidden = !available() || (standalone() && !active());   // API fullscreen also matches display-mode: fullscreen
+    btn.setAttribute('aria-label', active() ? '離開全螢幕' : '全螢幕');
+    const ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    hint.textContent = (!available() && !standalone() && ios) ? '全螢幕：Safari 分享 → 加入主畫面，從主畫面開啟。' : '';
+  };
+  btn.addEventListener('click', () => {
+    try {
+      if (active()) { const fn = document.exitFullscreen || document.webkitExitFullscreen; const p = fn && fn.call(document); if (p && p.catch) p.catch(() => {}); }
+      else { const fn = el.requestFullscreen || el.webkitRequestFullscreen; const p = fn && fn.call(el, { navigationUI: 'hide' }); if (p && p.catch) p.catch(() => {}); }
+    } catch (e) {}
+  });
+  ['fullscreenchange', 'webkitfullscreenchange'].forEach(ev => document.addEventListener(ev, update));
+  update();
 }
 
 /* ---------------- theme ---------------- */

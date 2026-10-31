@@ -1,0 +1,10 @@
+{
+  "name": "Oscilloscope",
+  "short_name": "Oscilloscope",
+  "start_url": "./oscilloscope-app.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "background_color": "#14110f",
+  "theme_color": "#14110f"
+}
