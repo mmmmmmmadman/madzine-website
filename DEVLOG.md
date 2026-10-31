@@ -1,5 +1,16 @@
 # MADZINE Website 開發紀錄
 
+## 2026-10-31
+
+### 新增 Oscilloscope（Web 應用程式，無介紹頁）
+
+- software.html 清單最下方新增 Oscilloscope 一列（平台 Web，`data-preview="oscilloscope"`），`href` 直接連到應用程式本體 `oscilloscope-app.html`，依使用者指示不做介紹頁；預覽圖 `assets/images/software/Oscilloscope_1.png`
+- 新增 `oscilloscope-app.html`：單檔示波器 + 頻譜 + 3D Fourier Box。三軸為時間 / 頻率 / 振幅，波形在前平面，各頻率正弦分量依頻率排在深度上，起點牆面是頻譜；相機轉 90° 時波形面翻成頻譜面（分量側看即頻譜柱）。三個面板可左右 / 上下 / 田字排列、拖把手換位、加減號改大小、隱藏
+- 訊號：預設麥克風（載入即取用，瀏覽器需手勢時標題列提示點一下啟動）；另有音訊檔、正弦 / 方波 / 鋸齒 / 三角 / 和弦 / 噪音內建產生器（不需音訊權限）。分析用自寫 radix-2 FFT：1024 點矩形窗取觸發段落做分量（和即波形），2048 點 Hann 做頻譜 dB
+- 介面：表面只有標題列（麥克風開關、HUE 鈕、設定齒輪）與面板；所有設定收在齒輪選單。HUE 色相圈直接移植 `modular-fighters/index.html` 的 AnyAni hue.rs port（HSB 角色表、外圈拖色相、中央上下拖飽和度、S 0.30 / B 0.92 淡色環），強調色 / 互補色 / 分量漸層全部由同一套 HSB 角色產生；存 `osc_hue` / `osc_sat`
+- 主題：讀自身 `osc_theme`，無則沿用網站 `madzine-mode`，再無則跟系統；齒輪選單可切黑底 / 白底
+- `js/i18n.js` 三語新增 `apps.oscilloscope`（name / desc / platform）
+
 ## 2026-10-30
 
 ### HONKI 頁更新：說明書 1.4.29、介紹文字、平台 iPad / macOS、兩支新影片

@@ -255,6 +255,11 @@ const I18N = {
             multilang: '三語介面（中 / 日 / 英）'
           }
         },
+        oscilloscope: {
+          name: 'Oscilloscope',
+          desc: '示波器與頻譜，3D 翻轉顯示波形與頻譜的對應',
+          platform: 'Web'
+        },
         vfm: {
           name: 'Visual Feedback Machine',
           desc: '即時混沌音訊處理，Lorenz 吸引子、相機輪廓偵測與移動偵測',
@@ -779,6 +784,11 @@ const I18N = {
             multilang: 'Trilingual interface (Chinese / Japanese / English)'
           }
         },
+        oscilloscope: {
+          name: 'Oscilloscope',
+          desc: 'Oscilloscope and spectrum; a 3D flip shows how waveform and spectrum correspond',
+          platform: 'Web'
+        },
         vfm: {
           name: 'Visual Feedback Machine',
           desc: 'Real-time chaotic audio processing with Lorenz attractor, camera contour detection and motion detection',
@@ -1302,6 +1312,11 @@ const I18N = {
             theme: '黒背景／白背景のテーマと色相リング。キャラクター、HP バー、ケーブルが色相に追従',
             multilang: '3 言語インターフェース（中国語 / 日本語 / 英語）'
           }
+        },
+        oscilloscope: {
+          name: 'Oscilloscope',
+          desc: 'オシロスコープとスペクトラム、3D フリップで波形とスペクトラムの対応を表示',
+          platform: 'Web'
         },
         vfm: {
           name: 'Visual Feedback Machine',
