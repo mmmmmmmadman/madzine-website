@@ -181,14 +181,10 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 /* ---------- deck ---------- */
 .deck { flex: 1; min-height: 360px; display: flex; gap: 10px; min-width: 0; }
 .deck[data-mode="row"] { flex-direction: row; }
-.deck[data-mode="col"] { flex-direction: column; }
-.deck[data-mode="grid"] { display: grid; grid-template-columns: 1fr 1fr; grid-auto-rows: minmax(0, 1fr); }
-.deck[data-mode="grid"] .panel.span { grid-column: 1 / -1; }
 .panel {
   background: var(--panel); border: 1px solid var(--line); border-radius: 6px; display: flex; flex-direction: column;
-  min-width: 0; min-height: 0; flex: var(--w, 1) 1 0; position: relative; overflow: hidden;
+  min-width: 0; min-height: 0; flex: 1 1 0; position: relative; overflow: hidden;
 }
-.deck[data-mode="col"] .panel { min-height: 200px; }
 .panel.dragging { outline: 2px solid var(--accent); opacity: 0.85; }
 .panel.over { outline: 2px dashed var(--accent); }
 .ph { display: flex; align-items: center; gap: 8px; padding: 6px 8px 6px 6px; border-bottom: 1px solid var(--line); min-height: 38px; }
@@ -207,7 +203,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 
 
 @media (max-width: 760px) {
-  .deck[data-mode] { display: flex; flex-direction: column; }
+  .deck { flex-direction: column; }
   .deck .panel { min-height: 230px; flex: 1 1 auto; }
   .slider input[type=range] { width: 110px; }
 }
@@ -254,36 +250,13 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
         <button class="btn" id="tComp" aria-pressed="true">分量線</button>
         <button class="btn" id="tRecon" aria-pressed="true">分量和</button>
         <button class="btn" id="tLog" aria-pressed="true">對數頻率</button>
-      </div>
-    </div>
-    <div class="group">
-      <div class="eyebrow">Flip</div>
-      <div class="row">
-        <button class="btn" id="flipBtn">翻轉</button>
-        <button class="btn" id="autoBtn" aria-pressed="false">自動來回</button>
-        <div class="slider"><label for="theta">角度</label><input type="range" id="theta" min="0" max="90" value="0"><output id="thetaOut">0°</output></div>
-      </div>
-    </div>
-    <div class="group">
-      <div class="eyebrow">Layout</div>
-      <div class="row">
-        <div class="seg" id="modeSeg" role="group" aria-label="排列方式">
-          <button data-mode="row" aria-pressed="true">左右</button>
-          <button data-mode="col">上下</button>
-          <button data-mode="grid">田字</button>
-        </div>
-        <div class="seg" id="showSeg" role="group" aria-label="顯示面板">
-          <button data-show="scope" aria-pressed="true">示波器</button>
-          <button data-show="spec" aria-pressed="true">頻譜</button>
-          <button data-show="flip" aria-pressed="true">3D</button>
-        </div>
         <button class="btn" id="themeBtn">白底</button>
       </div>
     </div>
   </div>
 </header>
 
-<main class="deck" id="deck" data-mode="row">
+<main class="deck" id="deck">
   <section class="panel" data-id="scope">
     <header class="ph">
       <button class="ico grip" aria-label="拖曳換位置"><svg viewBox="0 0 10 14" fill="currentColor"><circle cx="2.5" cy="2" r="1.4"/><circle cx="7.5" cy="2" r="1.4"/><circle cx="2.5" cy="7" r="1.4"/><circle cx="7.5" cy="7" r="1.4"/><circle cx="2.5" cy="12" r="1.4"/><circle cx="7.5" cy="12" r="1.4"/></svg></button>
@@ -325,14 +298,14 @@ const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const state = {
   src: 'mic', freq: 220, gain: 0.6, audible: false,
   ygain: 1, K: 12, showComp: true, showRecon: true, logFreq: true,
-  theta: 0, thetaTarget: 0, auto: false, autoHold: 0,
-  layout: { mode: 'row', order: ['scope', 'spec', 'flip'], weights: { scope: 1, spec: 1, flip: 1.4 }, hidden: {} },
+  theta: 0, thetaTarget: 0,
+  layout: { order: ['scope', 'spec', 'flip'] },
 };
 const LS_KEY = 'osc_state_v1';
 try {
   const saved = JSON.parse(localStorage.getItem(LS_KEY) || 'null');
   if (saved && typeof saved === 'object') {
-    if (saved.layout && Array.isArray(saved.layout.order) && saved.layout.order.length === 3) state.layout = { ...state.layout, ...saved.layout };
+    if (saved.layout && Array.isArray(saved.layout.order) && saved.layout.order.length === 3 && ['scope', 'spec', 'flip'].every(k => saved.layout.order.includes(k))) state.layout.order = saved.layout.order.slice();
     for (const k of ['ygain', 'K', 'showComp', 'showRecon', 'logFreq', 'src', 'freq', 'gain']) if (k in saved) state[k] = saved[k];
     if (state.src === 'file') state.src = 'sine';
   }
@@ -340,7 +313,7 @@ try {
 function persist() {
   try {
     const { ygain, K, showComp, showRecon, logFreq, src, freq, gain, layout } = state;
-    localStorage.setItem(LS_KEY, JSON.stringify({ ygain, K, showComp, showRecon, logFreq, src, freq, gain, layout }));
+    localStorage.setItem(LS_KEY, JSON.stringify({ ygain, K, showComp, showRecon, logFreq, src, freq, gain, layout: { order: layout.order } }));
   } catch (e) {}
 }
 
@@ -368,16 +341,22 @@ class FFT {
     }
   }
 }
-const NBUF = 2048, NSEG = 1024;
-const fftSeg = new FFT(NSEG), fftSpec = new FFT(NBUF);
+// NBUF: analysis frame (8192 @ 48 kHz = 171 ms, 5.9 Hz bins). NSEG: the 1024-sample window the scope shows,
+// triggered inside the newest NSEG*2 samples of the frame.
+const NBUF = 8192, NSEG = 1024, SEARCH = NBUF - 2 * NSEG;
+const fftSpec = new FFT(NBUF);
 const timeBuf = new Float32Array(NBUF);
-const re1 = new Float32Array(NSEG), im1 = new Float32Array(NSEG);
 const re2 = new Float32Array(NBUF), im2 = new Float32Array(NBUF);
-const hann = new Float32Array(NBUF); for (let i = 0; i < NBUF; i++) hann[i] = 0.5 - 0.5 * Math.cos(TAU * i / NBUF);
-const mag = new Float32Array(NSEG / 2), pha = new Float32Array(NSEG / 2), wallMag = new Float32Array(NSEG / 2);
-const specDb = new Float32Array(NBUF / 2).fill(-120);
-let seg = new Float32Array(NSEG);
-let topK = [];
+// 4-term Blackman-Harris: sidelobes below -92 dB, so the skirt around a tone is the signal, not the window.
+// Coherent gain 0.35875 corrects a sinusoid's amplitude back to its true value.
+const BH_GAIN = 0.35875;
+const win = new Float32Array(NBUF);
+for (let i = 0; i < NBUF; i++) { const t = TAU * i / NBUF; win[i] = 0.35875 - 0.48829 * Math.cos(t) + 0.14128 * Math.cos(2 * t) - 0.01168 * Math.cos(3 * t); }
+const specDb = new Float32Array(NBUF / 2).fill(-120);   // smoothed, for display
+const instDb = new Float32Array(NBUF / 2).fill(-120);   // this frame, for peak picking
+let seg = new Float32Array(NSEG), prevSeg = new Float32Array(NSEG), havePrev = false;
+let segStart = SEARCH;        // index of seg[0] inside timeBuf
+let comps = [];               // [{ f, amp, ph, db }] sinusoidal components (peak-picked, interpolated)
 let sampleRate = 48000;
 
 /* ---------------- audio ---------------- */
@@ -504,33 +483,63 @@ function synthFill(buf) {
 }
 
 /* ---------------- analysis ---------------- */
+// Trigger: rising zero crossing with hysteresis (Schmitt band around 0), candidates in the newest 2*NSEG samples.
+// Among the candidates, pick the one whose following samples correlate best with the previous frame, so a complex
+// periodic waveform with several crossings per period does not jump between them.
+function findTrigger() {
+  const base = SEARCH;
+  if (state.src === 'noise') return base;
+  let pk = 0; for (let i = base; i < NBUF; i++) { const a = Math.abs(timeBuf[i]); if (a > pk) pk = a; }
+  const h = Math.max(0.003, 0.06 * pk);
+  const cands = []; let armed = false;
+  for (let i = base + 1; i < base + NSEG; i++) {
+    const v = timeBuf[i];
+    if (v < -h) armed = true;
+    else if (armed && v > 0 && timeBuf[i - 1] <= 0) { cands.push(i); armed = false; if (cands.length >= 64) break; }
+  }
+  if (!cands.length) return base;
+  if (!havePrev) return cands[0];
+  let best = cands[0], bestC = -Infinity;
+  for (const c of cands) { let acc = 0; for (let j = 0; j < 512; j += 2) acc += timeBuf[c + j] * prevSeg[j]; if (acc > bestC) { bestC = acc; best = c; } }
+  return best;
+}
 function analyze() {
   if (usesAudioGraph()) { analyser.getFloatTimeDomainData(timeBuf); sampleRate = ac.sampleRate; }
   else { synthFill(timeBuf); sampleRate = 48000; }
-  // trigger: rising zero crossing in first half (not for noise)
-  let t0 = 0;
-  if (state.src !== 'noise') {
-    for (let i = 1; i < NSEG; i++) if (timeBuf[i - 1] <= 0 && timeBuf[i] > 0 && timeBuf[i - 1] < -0.002) { t0 = i; break; }
-  }
-  for (let i = 0; i < NSEG; i++) { re1[i] = seg[i] = timeBuf[t0 + i]; im1[i] = 0; }
-  fftSeg.run(re1, im1);
-  const sc = 2 / NSEG;
-  for (let k = 1; k < NSEG / 2; k++) {
-    mag[k] = Math.hypot(re1[k], im1[k]) * sc; pha[k] = Math.atan2(im1[k], re1[k]);
-    wallMag[k] += (mag[k] - wallMag[k]) * 0.35;
-  }
-  const idx = []; for (let k = 1; k < NSEG / 2; k++) idx.push(k);
-  idx.sort((a, b) => mag[b] - mag[a]);
-  topK = idx.slice(0, state.K).filter(k => mag[k] > 1e-4).sort((a, b) => a - b);
-  // spectrum (hann, dB, smoothed)
-  for (let i = 0; i < NBUF; i++) { re2[i] = timeBuf[i] * hann[i]; im2[i] = 0; }
+  segStart = findTrigger();
+  prevSeg.set(seg); havePrev = true;
+  for (let i = 0; i < NSEG; i++) seg[i] = timeBuf[segStart + i];
+  // windowed FFT of the whole frame
+  for (let i = 0; i < NBUF; i++) { re2[i] = timeBuf[i] * win[i]; im2[i] = 0; }
   fftSpec.run(re2, im2);
-  const sc2 = 2 / (NBUF * 0.5);
+  const sc = 2 / (NBUF * BH_GAIN);
+  let maxDb = -200;
   for (let k = 0; k < NBUF / 2; k++) {
-    const db = 20 * Math.log10(Math.hypot(re2[k], im2[k]) * sc2 + 1e-7);
+    const db = 20 * Math.log10(Math.hypot(re2[k], im2[k]) * sc + 1e-9);
+    instDb[k] = db; if (k > 2 && db > maxDb) maxDb = db;
     specDb[k] += (db - specDb[k]) * 0.35;
   }
+  // Sinusoidal components: local maxima of the dB spectrum, each refined by quadratic interpolation of the
+  // three bins around the peak (frequency + amplitude), phase taken at the peak bin and moved to the true
+  // frequency through the window's linear phase (window centre at (N-1)/2).
+  const binHz = sampleRate / NBUF, kMin = Math.max(3, Math.ceil(freqMin / binHz)), kMax = Math.min(NBUF / 2 - 3, Math.floor(freqMax() / binHz));
+  const floor = Math.max(-90, maxDb - 66);
+  const found = [];
+  for (let k = kMin; k <= kMax; k++) {
+    const b = instDb[k];
+    if (b < floor) continue;
+    const a = instDb[k - 1], c = instDb[k + 1];
+    if (!(b > a && b >= c && b >= instDb[k - 2] && b >= instDb[k + 2])) continue;
+    const den = a - 2 * b + c, d = den ? 0.5 * (a - c) / den : 0;
+    const pkDb = b - 0.25 * (a - c) * d;
+    const ph = Math.atan2(im2[k], re2[k]) - Math.PI * d * (NBUF - 1) / NBUF;
+    found.push({ f: (k + d) * binHz, amp: Math.pow(10, pkDb / 20), ph, db: pkDb });
+  }
+  found.sort((x, y) => y.amp - x.amp);
+  comps = found.slice(0, state.K).sort((x, y) => x.f - y.f);
 }
+// value of the component sum at sample index n of the frame (0..NBUF)
+function reconAt(n) { let v = 0; const w = TAU / sampleRate; for (const c of comps) v += c.amp * Math.cos(w * c.f * n + c.ph); return v; }
 
 /* ---------------- colors ---------------- */
 let css = {};
@@ -556,7 +565,7 @@ function fpos(f) { // 0..1 along frequency axis
   if (state.logFreq) return Math.min(1, Math.max(0, Math.log(Math.max(f, lo) / lo) / Math.log(hi / lo)));
   return Math.min(1, Math.max(0, f / hi));
 }
-const binHue = k => OscHue.state.hue + 0.5 * fpos(k * sampleRate / NSEG);
+const compHue = f => OscHue.state.hue + 0.5 * fpos(f);
 
 /* ---------------- canvases ---------------- */
 const canv = { scope: $('#cScope'), spec: $('#cSpec'), flip: $('#cFlip') };
@@ -584,13 +593,12 @@ function drawScope() {
   ctx.stroke();
   ctx.strokeStyle = css.line; ctx.beginPath(); ctx.moveTo(padL, padT + gh / 2 + 0.5); ctx.lineTo(padL + gw, padT + gh / 2 + 0.5); ctx.moveTo(padL + gw / 2 + 0.5, padT); ctx.lineTo(padL + gw / 2 + 0.5, padT + gh); ctx.stroke();
   const yOf = v => padT + gh / 2 - Math.max(-1.08, Math.min(1.08, v * state.ygain)) * gh / 2;
-  // reconstruction from top-K bins
-  if (state.showRecon && topK.length) {
+  // sum of the sinusoidal components, over the same samples the trace shows
+  if (state.showRecon && comps.length) {
     ctx.strokeStyle = css.accent2; ctx.lineWidth = 1.2; ctx.globalAlpha = 0.9; ctx.setLineDash([4, 3]); ctx.beginPath();
     const M = 256;
     for (let i = 0; i <= M; i++) {
-      const n = i / M * NSEG; let v = 0;
-      for (const k of topK) v += mag[k] * Math.cos(TAU * k * n / NSEG + pha[k]);
+      const v = reconAt(segStart + i / M * (NSEG - 1));
       const x = padL + gw * i / M, y = yOf(v); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
     }
     ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
@@ -626,37 +634,42 @@ function drawSpec() {
   for (const f of ticks) { if (f > freqMax() || (state.logFreq && f < freqMin)) continue; ctx.fillText(fmtHz(f), xOf(f), H - 7); }
   ctx.textAlign = 'right';
   for (let db = dbMin + 12; db <= dbMax; db += 24) ctx.fillText(String(db), padL - 4, yOf(db) + 4);
-  // curve
-  const binHz = sampleRate / NBUF;
-  ctx.beginPath(); let started = false, x0 = padL;
+  // curve: one value per pixel column, the maximum of the bins that land in it, so narrow peaks at high
+  // frequencies are never skipped by the log axis
+  const binHz = sampleRate / NBUF, cols = Math.max(1, Math.round(gw));
+  const colMax = new Float32Array(cols).fill(-1000);
   for (let k = 1; k < NBUF / 2; k++) {
     const f = k * binHz; if (f > freqMax()) break; if (state.logFreq && f < freqMin) continue;
-    const x = xOf(f), y = yOf(specDb[k]);
-    if (!started) { x0 = x; ctx.moveTo(x, padT + gh); ctx.lineTo(x, y); started = true; } else ctx.lineTo(x, y);
+    const ci = Math.min(cols - 1, Math.floor(fpos(f) * (cols - 1)));
+    if (specDb[k] > colMax[ci]) colMax[ci] = specDb[k];
   }
-  const xEnd = xOf(freqMax());
-  ctx.lineTo(xEnd, padT + gh); ctx.closePath();
-  const g = ctx.createLinearGradient(0, padT, 0, padT + gh);
-  g.addColorStop(0, hueCol(OscHue.state.hue, 0.35)); g.addColorStop(1, hueCol(OscHue.state.hue, 0.03));
-  ctx.fillStyle = g; ctx.fill();
-  ctx.beginPath(); started = false;
-  for (let k = 1; k < NBUF / 2; k++) {
-    const f = k * binHz; if (f > freqMax()) break; if (state.logFreq && f < freqMin) continue;
-    const x = xOf(f), y = yOf(specDb[k]); started ? ctx.lineTo(x, y) : ctx.moveTo(x, y); started = true;
+  // fill in columns no bin reached (low frequencies on the log axis) by linear interpolation
+  let last = -1;
+  for (let ci = 0; ci < cols; ci++) {
+    if (colMax[ci] > -1000) { if (last >= 0 && ci - last > 1) { for (let t = last + 1; t < ci; t++) colMax[t] = colMax[last] + (colMax[ci] - colMax[last]) * (t - last) / (ci - last); } last = ci; }
   }
-  ctx.strokeStyle = css.accent; ctx.lineWidth = 1.5; ctx.lineJoin = 'round'; ctx.stroke();
-  // component markers (same bins as the 3D box)
-  // peak readout: max of the smoothed spectrum, parabolic interpolation between bins
-  let pk = 1; for (let k = 2; k < NBUF / 2 - 1; k++) if (specDb[k] > specDb[pk]) pk = k;
-  const a = specDb[pk - 1], b0 = specDb[pk], c0 = specDb[pk + 1], den = a - 2 * b0 + c0;
-  const peakF = specDb[pk] > -80 ? (pk + (den ? 0.5 * (a - c0) / den : 0)) * binHz : 0;
-  for (const k of topK) {
-    const f = k * sampleRate / NSEG; if (f < freqMin || f > freqMax()) continue;
-    const x = xOf(f), y = yOf(specDb[2 * k]);
-    ctx.fillStyle = hueCol(binHue(k)); ctx.beginPath(); ctx.arc(x, y, 3.2, 0, TAU); ctx.fill();
-    ctx.strokeStyle = hueCol(binHue(k), 0.35); ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, padT + gh); ctx.stroke();
+  const first = colMax.findIndex(v => v > -1000);
+  if (first >= 0) {
+    ctx.beginPath(); ctx.moveTo(padL + first, padT + gh);
+    for (let ci = first; ci <= last; ci++) ctx.lineTo(padL + ci, yOf(colMax[ci]));
+    ctx.lineTo(padL + last, padT + gh); ctx.closePath();
+    const g = ctx.createLinearGradient(0, padT, 0, padT + gh);
+    g.addColorStop(0, hueCol(OscHue.state.hue, 0.35)); g.addColorStop(1, hueCol(OscHue.state.hue, 0.03));
+    ctx.fillStyle = g; ctx.fill();
+    ctx.beginPath();
+    for (let ci = first; ci <= last; ci++) { const x = padL + ci, y = yOf(colMax[ci]); ci === first ? ctx.moveTo(x, y) : ctx.lineTo(x, y); }
+    ctx.strokeStyle = css.accent; ctx.lineWidth = 1.5; ctx.lineJoin = 'round'; ctx.stroke();
   }
-  $('#roSpec').innerHTML = peakF ? `peak <b>${Math.round(peakF)} Hz</b> ${noteName(peakF)} · ${(sampleRate / NBUF).toFixed(1)} Hz/bin` : `${(sampleRate / NBUF).toFixed(1)} Hz/bin`;
+  // component markers at their interpolated frequency / amplitude (same components as the 3D box)
+  for (const c of comps) {
+    if (c.f < freqMin || c.f > freqMax()) continue;
+    const x = xOf(c.f), y = yOf(c.db);
+    ctx.fillStyle = hueCol(compHue(c.f)); ctx.beginPath(); ctx.arc(x, y, 3.2, 0, TAU); ctx.fill();
+    ctx.strokeStyle = hueCol(compHue(c.f), 0.35); ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, padT + gh); ctx.stroke();
+  }
+  let top = null; for (const c of comps) if (!top || c.amp > top.amp) top = c;
+  const res = `${binHz.toFixed(1)} Hz/bin`;
+  $('#roSpec').innerHTML = top ? `peak <b>${top.f < 1000 ? top.f.toFixed(1) : Math.round(top.f)} Hz</b> ${noteName(top.f)} · ${res}` : res;
 }
 const NOTES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
 function noteName(f) { const n = Math.round(12 * Math.log2(f / 440)) + 57; return NOTES[((n % 12) + 12) % 12] + Math.floor(n / 12); }
@@ -674,7 +687,7 @@ function P(x, y, z) {
   const f = CAM / (CAM + z2);
   return [cx + x1 * f * S, cy - y2 * f * S, z2];
 }
-const zOfBin = k => ZLO + fpos(k * sampleRate / NSEG) * (ZHI - ZLO);
+const zOfF = f => ZLO + fpos(f) * (ZHI - ZLO);
 function drawFlip() {
   const c = canv.flip; if (c.width < 4) return;
   const [ctx, W, H] = begin(c);
@@ -717,23 +730,30 @@ function drawFlip() {
   title([-1, Y0 - 0.26, ZW - 0.1], [1, Y0 - 0.26, ZW - 0.1], 'TIME  ms', ct, css.accent);
   title([1.35, Y0, ZLO], [1.35, Y0, ZHI], 'FREQUENCY  Hz', st, css.accent2);
   title([-1.1, -1, ZW - 0.12], [-1.1, 1, ZW - 0.12], 'AMPLITUDE', 1, css.dim);
-  // spectrum wall at x = XWALL (start of time): filled magnitude over frequency
+  // spectrum wall at x = XWALL (start of time): linear amplitude of the smoothed spectrum over frequency,
+  // decimated to one point per small step of depth (max of the bins inside the step)
   const wallA = 0.25 + 0.75 * st;
   {
-    const pts = [P(XWALL, 0, ZLO)];
-    for (let k = 1; k < NSEG / 2; k++) { const f = k * sampleRate / NSEG; if (f > freqMax()) break; if (state.logFreq && f < freqMin) continue; pts.push(P(XWALL, yClamp(wallMag[k] * state.ygain), zOfBin(k))); }
+    const binHz = sampleRate / NBUF, pts = [P(XWALL, 0, ZLO)];
+    let zPrev = -10, acc = -1000;
+    for (let k = 1; k < NBUF / 2; k++) {
+      const f = k * binHz; if (f > freqMax()) break; if (state.logFreq && f < freqMin) continue;
+      const z = zOfF(f); if (specDb[k] > acc) acc = specDb[k];
+      if (z - zPrev >= 0.006) { pts.push(P(XWALL, yClamp(Math.pow(10, acc / 20) * state.ygain), z)); zPrev = z; acc = -1000; }
+    }
     pts.push(P(XWALL, 0, ZHI));
     ctx.globalAlpha = 0.22 * wallA; ctx.fillStyle = css.accent2; ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath(); ctx.fill(); ctx.globalAlpha = 1;
     line(pts.slice(1, -1), css.accent2, 1.2, wallA);
   }
   // components: sort far -> near for painter's order
   const M = 192;
-  if (state.showComp && topK.length) {
-    const order = topK.map(k => ({ k, d: P(0, 0, zOfBin(k))[2] })).sort((a, b) => b.d - a.d);
-    for (const { k } of order) {
-      const a = mag[k] * state.ygain, z = zOfBin(k), col = hueCol(binHue(k));
+  if (state.showComp && comps.length) {
+    const order = comps.map(c => ({ c, d: P(0, 0, zOfF(c.f))[2] })).sort((a, b) => b.d - a.d);
+    const w = TAU / sampleRate;
+    for (const { c } of order) {
+      const a = c.amp * state.ygain, z = zOfF(c.f), col = hueCol(compHue(c.f));
       const pts = [];
-      for (let i = 0; i <= M; i++) { const n = i / M * NSEG; pts.push(P(-1 + 2 * i / M, yClamp(a * Math.cos(TAU * k * n / NSEG + pha[k])), z)); }
+      for (let i = 0; i <= M; i++) { const n = segStart + i / M * (NSEG - 1); pts.push(P(-1 + 2 * i / M, yClamp(a * Math.cos(w * c.f * n + c.ph)), z)); }
       line(pts, col, 1.3, 0.55 + 0.4 * ct);
       // spectrum bar reading, grows as the box turns edge-on
       if (st > 0.2) { line([P(1, 0, z), P(1, yClamp(a), z)], col, 2.4, (st - 0.2) / 0.8); ctx.globalAlpha = (st - 0.2) / 0.8; ctx.fillStyle = col; const t = P(1, yClamp(a), z); ctx.beginPath(); ctx.arc(t[0], t[1], 2.6, 0, TAU); ctx.fill(); ctx.globalAlpha = 1; }
@@ -747,26 +767,15 @@ function drawFlip() {
     line(pts, css.accent, 1.9, 1);
   }
   const deg = Math.round(state.theta);
-  $('#roFlip').innerHTML = `<b>${deg}°</b> · ${topK.length} 個分量`;
+  $('#roFlip').innerHTML = `<b>${deg}°</b> · ${comps.length} 個分量`;
 }
 
 /* ---------------- flip animation ---------------- */
 let lastFrame = performance.now();
 function stepFlip(dt) {
-  if (state.auto) {
-    if (state.autoHold > 0) state.autoHold -= dt;
-    else if (Math.abs(state.theta - state.thetaTarget) < 0.5) { state.thetaTarget = state.thetaTarget > 45 ? 0 : 90; state.autoHold = 1.4; }
-  }
   const d = state.thetaTarget - state.theta;
-  if (Math.abs(d) < 0.05) state.theta = state.thetaTarget;
-  else if (reduceMotion) state.theta = state.thetaTarget;
-  else {
-    // smooth ease: critically damped approach, speed scaled so a full flip takes ~1.3 s
-    const rate = 1 - Math.exp(-dt * 4.2);
-    state.theta += d * rate;
-  }
-  const ui = $('#theta'); if (document.activeElement !== ui) ui.value = String(Math.round(state.theta));
-  $('#thetaOut').textContent = `${Math.round(state.theta)}°`;
+  if (Math.abs(d) < 0.05 || reduceMotion) state.theta = state.thetaTarget;
+  else state.theta += d * (1 - Math.exp(-dt * 4.2));   // eased approach, a full flip takes about 1.3 s
 }
 
 /* ---------------- main loop ---------------- */
@@ -774,9 +783,7 @@ function frame(now) {
   const dt = Math.min(0.1, (now - lastFrame) / 1000); lastFrame = now;
   if (!document.hidden) {
     readCss(); analyze(); stepFlip(dt);
-    if (!state.layout.hidden.scope) drawScope();
-    if (!state.layout.hidden.spec) drawSpec();
-    if (!state.layout.hidden.flip) drawFlip();
+    drawScope(); drawSpec(); drawFlip();
   }
   requestAnimationFrame(frame);
 }
@@ -806,18 +813,23 @@ syncSrcSeg();
 $('#srcSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; if (b.dataset.src === 'file' && state.src === 'file') { $('#fileIn').click(); return; } selectSource(b.dataset.src); });
 $('#audioBtn').addEventListener('click', () => setAudible(!state.audible));
 
-function doFlip() { state.auto = false; $('#autoBtn').setAttribute('aria-pressed', 'false'); state.thetaTarget = state.thetaTarget > 45 ? 0 : 90; }
-$('#flipBtn').addEventListener('click', doFlip);
-$('#autoBtn').addEventListener('click', () => { state.auto = !state.auto; $('#autoBtn').setAttribute('aria-pressed', String(state.auto)); if (state.auto) { state.autoHold = 0.3; } });
-$('#theta').addEventListener('input', e => { state.auto = false; $('#autoBtn').setAttribute('aria-pressed', 'false'); state.theta = state.thetaTarget = +e.target.value; });
-
-// drag on the 3D canvas also turns the box
+// 3D canvas: a tap flips between the waveform view (0°) and the spectrum view (90°); a horizontal drag scrubs the angle
 {
   let drag = null;
   const cv = canv.flip;
-  cv.addEventListener('pointerdown', e => { drag = { x: e.clientX, th: state.theta }; cv.setPointerCapture(e.pointerId); state.auto = false; $('#autoBtn').setAttribute('aria-pressed', 'false'); });
-  cv.addEventListener('pointermove', e => { if (!drag) return; const t = Math.max(0, Math.min(90, drag.th + (e.clientX - drag.x) * 0.35)); state.theta = state.thetaTarget = t; });
-  cv.addEventListener('pointerup', () => { drag = null; }); cv.addEventListener('pointercancel', () => { drag = null; });
+  cv.addEventListener('pointerdown', e => { drag = { x: e.clientX, th: state.theta, t: performance.now(), moved: false }; cv.setPointerCapture(e.pointerId); });
+  cv.addEventListener('pointermove', e => {
+    if (!drag) return;
+    const dx = e.clientX - drag.x; if (Math.abs(dx) > 6) drag.moved = true;
+    if (drag.moved) state.theta = state.thetaTarget = Math.max(0, Math.min(90, drag.th + dx * 0.35));
+  });
+  const end = e => {
+    if (!drag) return;
+    if (!drag.moved && performance.now() - drag.t < 500) state.thetaTarget = state.thetaTarget > 45 ? 0 : 90;
+    else if (drag.moved) state.thetaTarget = state.theta;
+    drag = null;
+  };
+  cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', () => { drag = null; });
 }
 
 /* ---------------- HUE wheel (port of modular-fighters/index.html, itself a port of AnyAni hue.rs) ---------------- */
@@ -903,20 +915,9 @@ $('#theta').addEventListener('input', e => { state.auto = false; $('#autoBtn').s
 const deck = $('#deck');
 const panels = Object.fromEntries($$('.panel').map(p => [p.dataset.id, p]));
 function applyLayout() {
-  const L = state.layout;
-  deck.dataset.mode = L.mode;
-  $$('#modeSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === L.mode)));
-  $$('#showSeg button').forEach(b => b.setAttribute('aria-pressed', String(!L.hidden[b.dataset.show])));
-  const visible = L.order.filter(id => !L.hidden[id]);
-  L.order.forEach((id, i) => {
-    const p = panels[id]; p.hidden = !!L.hidden[id]; p.style.order = i; p.style.setProperty('--w', L.weights[id] || 1);
-    p.classList.toggle('span', L.mode === 'grid' && visible.length % 2 === 1 && visible[visible.length - 1] === id);
-  });
-  if (L.mode === 'grid') { for (const id of visible) panels[id].style.flex = ''; }
+  state.layout.order.forEach((id, i) => { panels[id].style.order = i; });
   persist();
 }
-$('#modeSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; state.layout.mode = b.dataset.mode; applyLayout(); });
-$('#showSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; const id = b.dataset.show; const L = state.layout; L.hidden[id] = !L.hidden[id]; if (Object.values(panels).every(p => L.hidden[p.dataset.id])) L.hidden[id] = false; applyLayout(); });
 // pointer drag reorder via grip
 {
   let dragId = null;
