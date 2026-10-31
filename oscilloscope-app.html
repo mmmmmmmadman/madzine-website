@@ -679,6 +679,9 @@ const PITCH = 0.2, CAM = 6.2;
 const ZW = -1.32, ZLO = -1.0, ZHI = 1.1;   // waveform plane / frequency axis range (depth)
 const XWALL = -1.16;                       // spectrum wall at the start of time
 let proj = { th: 0, cx: 0, cy: 0, S: 1 };
+// the box normalises itself: the loudest of (waveform peak, strongest component) fills 0.9 of the height,
+// same factor for waveform, component sines and the spectrum wall so the edge-on sines still meet the wall
+let boxGain = 1;
 function P(x, y, z) {
   const { th, cx, cy, S } = proj;
   const c = Math.cos(th), s = Math.sin(th);
@@ -700,6 +703,11 @@ function drawFlip() {
     ctx.stroke(); ctx.globalAlpha = 1;
   };
   const yClamp = v => Math.max(-1.15, Math.min(1.15, v));
+  let pkW = 0; for (let i = 0; i < NSEG; i++) { const a = Math.abs(seg[i]); if (a > pkW) pkW = a; }
+  let pkC = 0; for (const c of comps) if (c.amp > pkC) pkC = c.amp;
+  const target = 0.9 / Math.max(pkW, pkC, 0.002);
+  boxGain += (target - boxGain) * (target < boxGain ? 0.5 : 0.08);   // fast when it gets louder, slow release
+  const bg = boxGain;
   const Y0 = -1.08; // floor
   // floor grid
   ctx.lineWidth = 1;
@@ -711,14 +719,16 @@ function drawFlip() {
   line([P(-1, 0, ZW), P(1, 0, ZW)], css.line, 1, 0.8 * ct + 0.2);
   // frequency ticks on the floor (right edge)
   ctx.font = fontD(13); ctx.fillStyle = css.dim; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  const fTicks = state.logFreq ? [50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000] : [2000, 4000, 8000, 12000, 16000, 20000];
+  const small = W < 560;
+  const fTicks = state.logFreq ? (small ? [100, 1000, 10000] : [50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000]) : (small ? [5000, 10000, 20000] : [2000, 4000, 8000, 12000, 16000, 20000]);
   ctx.globalAlpha = 0.25 + 0.75 * st;
   for (const f of fTicks) { if (f > freqMax()) continue; const z = ZLO + fpos(f) * (ZHI - ZLO); const p = P(1.0, Y0, z), q = P(1.06, Y0, z); line([p, q], css.dim, 1, 0.25 + 0.75 * st); const l = P(1.17, Y0, z); ctx.fillText(fmtHz(f), l[0], l[1]); }
   ctx.globalAlpha = 1;
   // time ticks along front edge
   const totalMs = NSEG / sampleRate * 1000;
   ctx.globalAlpha = 0.25 + 0.75 * ct;
-  for (let i = 0; i <= 4; i++) { const x = -1 + 2 * i / 4; const l = P(x, Y0 - 0.1, ZW - 0.1); ctx.fillText(`${(totalMs * i / 4).toFixed(1)}`, l[0], l[1]); }
+  const tN = small ? 2 : 4;
+  for (let i = 0; i <= tN; i++) { const x = -1 + 2 * i / tN; const l = P(x, Y0 - 0.1, ZW - 0.1); ctx.fillText(`${(totalMs * i / tN).toFixed(1)}`, l[0], l[1]); }
   ctx.globalAlpha = 1;
   // axis titles
   const title = (a, b, text, alpha, color) => {
@@ -739,11 +749,11 @@ function drawFlip() {
     for (let k = 1; k < NBUF / 2; k++) {
       const f = k * binHz; if (f > freqMax()) break; if (state.logFreq && f < freqMin) continue;
       const z = zOfF(f); if (specDb[k] > acc) acc = specDb[k];
-      if (z - zPrev >= 0.006) { pts.push(P(XWALL, yClamp(Math.pow(10, acc / 20) * state.ygain), z)); zPrev = z; acc = -1000; }
+      if (z - zPrev >= 0.006) { pts.push(P(XWALL, yClamp(Math.pow(10, acc / 20) * bg), z)); zPrev = z; acc = -1000; }
     }
     pts.push(P(XWALL, 0, ZHI));
-    ctx.globalAlpha = 0.22 * wallA; ctx.fillStyle = css.accent2; ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath(); ctx.fill(); ctx.globalAlpha = 1;
-    line(pts.slice(1, -1), css.accent2, 1.2, wallA);
+    ctx.globalAlpha = 0.38 * wallA; ctx.fillStyle = css.accent2; ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath(); ctx.fill(); ctx.globalAlpha = 1;
+    line(pts.slice(1, -1), css.accent2, 1.7, wallA);
   }
   // components: sort far -> near for painter's order
   const M = 192;
@@ -751,7 +761,7 @@ function drawFlip() {
     const order = comps.map(c => ({ c, d: P(0, 0, zOfF(c.f))[2] })).sort((a, b) => b.d - a.d);
     const w = TAU / sampleRate;
     for (const { c } of order) {
-      const a = c.amp * state.ygain, z = zOfF(c.f), col = hueCol(compHue(c.f));
+      const a = c.amp * bg, z = zOfF(c.f), col = hueCol(compHue(c.f));
       const pts = [];
       for (let i = 0; i <= M; i++) { const n = segStart + i / M * (NSEG - 1); pts.push(P(-1 + 2 * i / M, yClamp(a * Math.cos(w * c.f * n + c.ph)), z)); }
       line(pts, col, 1.3, 0.55 + 0.4 * ct);
@@ -762,7 +772,7 @@ function drawFlip() {
   // waveform plane (front at theta = 0)
   {
     const pts = [];
-    for (let i = 0; i <= M; i++) { const n = Math.min(NSEG - 1, Math.round(i / M * (NSEG - 1))); pts.push(P(-1 + 2 * i / M, yClamp(seg[n] * state.ygain), ZW)); }
+    for (let i = 0; i <= M; i++) { const n = Math.min(NSEG - 1, Math.round(i / M * (NSEG - 1))); pts.push(P(-1 + 2 * i / M, yClamp(seg[n] * bg), ZW)); }
     line(pts, css.accent, 3.6, 0.22);
     line(pts, css.accent, 1.9, 1);
   }
