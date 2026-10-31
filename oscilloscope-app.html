@@ -218,6 +218,16 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
   .deck .panel { min-height: 230px; flex: 1 1 auto; }
   .slider input[type=range] { width: 110px; }
 }
+/* locked = opened from the home screen or in API fullscreen: the page itself never scrolls, the three panels
+   share the screen (3D gets the most), and a finger on the 3D box only turns the box */
+html.locked, html.locked body { height: 100%; overflow: hidden; overscroll-behavior: none; }
+html.locked body { position: fixed; inset: 0; }
+html.locked .deck { min-height: 0; }
+html.locked .deck .panel { min-height: 0; flex: 1 1 0; }
+html.locked .deck .panel.flip { flex: 1.5 1 0; }
+html.locked .panel.flip canvas { touch-action: none; }
+html.locked .menu, html.locked #huepop { touch-action: pan-y; }
+
 @media (prefers-reduced-motion: reduce) { .btn, .seg button, .ico { transition: none; } }
 </style>
 
@@ -951,8 +961,11 @@ $('#audioBtn').addEventListener('click', () => setAudible(!state.audible));
       else { const fn = el.requestFullscreen || el.webkitRequestFullscreen; const p = fn && fn.call(el, { navigationUI: 'hide' }); if (p && p.catch) p.catch(() => {}); }
     } catch (e) {}
   });
-  ['fullscreenchange', 'webkitfullscreenchange'].forEach(ev => document.addEventListener(ev, update));
-  update();
+  const lock = () => { root.classList.toggle('locked', standalone() || active()); };
+  ['fullscreenchange', 'webkitfullscreenchange'].forEach(ev => document.addEventListener(ev, () => { update(); lock(); }));
+  matchMedia('(display-mode: standalone)').addEventListener('change', lock);
+  document.addEventListener('touchmove', e => { if (root.classList.contains('locked') && !e.target.closest('#menu, #huepop')) e.preventDefault(); }, { passive: false });
+  update(); lock();
 }
 
 /* ---------------- theme ---------------- */
