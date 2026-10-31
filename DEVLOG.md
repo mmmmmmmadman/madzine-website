@@ -19,6 +19,7 @@
 - 3D 盒子改自動正規化：以波形峰值與最強分量取大者撐到高度 0.9，波形 / 分量正弦 / 頻譜牆同一比例（翻轉到 90° 時側看的正弦仍與牆對齊）；原本用線性振幅直接畫，麥克風訊號約 -15 dB 時整面牆只剩一條線（使用者回報「立體圖少了頻譜」）。牆面填色 0.22 → 0.38、線寬 1.2 → 1.7；小畫布（寬 < 560）頻率刻度只標 100 / 1k / 10k、時間刻度三點
 - 3D 頻譜牆改為與 Spectrum 面板同一條曲線（使用者裁示「立體圖的頻譜應該要跟下方頻譜長得一樣」）：dB 刻度 -96..0 對應盒子全高、對數頻率沿深度、同色填色與線、同樣的分量圓點與垂直線。分量正弦線維持線性振幅（跟波形同比例，加總才等於波形），靠近 90° 淡出由牆接手；曾試過正弦線也用 dB 高度，高次諧波全跟基頻一樣大、整盒糊成一團，已撤回
 - 全螢幕：標題列加全螢幕鈕（44pt，有 Fullscreen API 且非主畫面模式才顯示；進入後圖示換成退出）。iPhone Safari 無此 API（WebKit bug 212934），改走「加入主畫面」：加 `oscilloscope.webmanifest`（display fullscreen）與 apple-mobile-web-app 三個 meta，body 上下 padding 吃 safe-area；齒輪 View 列在 iOS 非主畫面模式時顯示一行「分享 → 加入主畫面」提示。踩坑：進入 API 全螢幕後 `display-mode: fullscreen` 也成立，若以它判斷主畫面模式會把按鈕藏掉無法退出，改為有 fullscreenElement 時一律顯示
+- 離線使用：新增 `oscilloscope-sw.js`（Service Worker），註冊 scope 限定 `oscilloscope-app.html` 這一頁，網站其他頁不受控。安裝時預快取頁面、manifest、三個圖示；頁面與 manifest 走 network first、斷網退回快取（線上時更新照常抵達，不必每次改檔換版本號）；Google 字型與圖示走 cache first、背景更新。新增 `assets/icons/oscilloscope-{180,192,512}.png`（深底珊瑚波形，Canvas 產生），manifest 加 icons、頁面加 apple-touch-icon，加入主畫面有正式圖示。驗證：本機 http 伺服器 + 無頭 Chromium：第一次載入後快取含頁面、manifest、圖示與三個 woff2；`setOffline(true)` 重新整理仍載入並分析；software.html 的 controller 為 null
 - 齒輪選單刪除 Flip 與 Layout 兩組（翻轉改為點一下 3D 畫面、左右拖曳改角度；排列只剩拖把手換順序），黑底／白底鈕移到 View 列
 - 補記：面板標題列原有的換位箭頭、加減大小、隱藏、翻轉、全螢幕按鈕依使用者指示全部刪除，只留六點拖曳把手；手機寬度下那排按鈕會溢出被切掉。隱藏／叫回面板與翻轉仍在齒輪選單，3D 畫面左右拖也能轉
 

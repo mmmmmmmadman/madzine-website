@@ -9,6 +9,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Oscilloscope">
 <link rel="manifest" href="oscilloscope.webmanifest">
+<link rel="apple-touch-icon" href="assets/icons/oscilloscope-180.png">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/icons/oscilloscope-192.png">
 <title>Oscilloscope — MADZINE</title>
 <meta name="description" content="示波器與頻譜，3D 翻轉顯示波形與頻譜的對應">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -988,6 +990,12 @@ function applyLayout() {
 }
 applyLayout();
 readCss();
+
+/* ---------------- offline ---------------- */
+// first visit online caches the page, manifest, icons and fonts; later visits work without a network
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('oscilloscope-sw.js', { scope: 'oscilloscope-app.html' }).catch(() => {});
+}
 
 /* ---------------- gear menu / mic button ---------------- */
 const menu = $('#menu'), gear = $('#gearBtn');

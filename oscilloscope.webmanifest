@@ -6,5 +6,18 @@
   "display": "fullscreen",
   "orientation": "any",
   "background_color": "#14110f",
-  "theme_color": "#14110f"
+  "theme_color": "#14110f",
+  "icons": [
+    {
+      "src": "assets/icons/oscilloscope-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icons/oscilloscope-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
 }
