@@ -902,7 +902,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">PHOTOS / FILES</td><td>PHOTO 與 VIDEO 來源時顯示，從相簿或檔案載入。載入後顯示檔名。相片最長邊 1920；影片循環播放且靜音。</td></tr>
 <tr><td class="k">FLIP H / FLIP V</td><td>水平與垂直翻轉。</td></tr>
 <tr><td class="k">向左旋轉 / 向右旋轉</td><td>每按一次將來源逆時針或順時針旋轉 90 度。原本在這個位置的解析度顯示已移除。</td></tr>
-<tr><td class="k">站列</td><td>四個站 CHROMASCOPE、PARTICLE、MESH、FEEDBACK，拖曳左側把手改順序。ON / OFF 切換，預設只有 CHROMASCOPE 開；全部關閉時輸出原始來源。每個站另有 WARP DEPTH（0 至 2，預設 0），以光流位移扭曲畫面，作用在 MIX 之前。</td></tr>
+<tr><td class="k">站列</td><td>四個站 CHROMASCOPE、PARTICLE、MESH、FEEDBACK，拖曳左側把手改順序。ON / OFF 切換，預設只有 CHROMASCOPE 開；全部關閉時輸出原始來源。每個站另有 WARP DEPTH（0 至 2，預設 0），以光流位移扭曲畫面，作用在 MIX 之前；需要 WARP SPEED 大於 0 才有效。</td></tr>
 <tr><td class="k">MIX</td><td>0 至 1，預設 CHROMASCOPE 0.75，其餘 1。右上角顯示調變來源標記。四條 MIX 可以一指一次設定：從任一條 MIX 按下，往上或往下移到其他列，橫向位置就是該列的值，途中經過的列也會一併設定。MIDI Learn 與 MOD ROUTE 模式下不可用。</td></tr>
 <tr><td class="k">狀態列</td><td>NN FPS、SURFACES n、EXTERNAL DISPLAY、RENDERER OFFLINE，之後接著來源狀態。載入失敗以紅字顯示 PHOTO LOAD FAILED、VIDEO LOAD FAILED、MODEL READ FAILED 或 MODEL LOAD FAILED。相機顯示 CAMERA OFF、CAMERA STARTING、CAMERA WAITING、CAMERA NO FRAMES（運作中但超過 2 秒沒有畫面），或相機停止的原因，例如 CAMERA IN USE、NO CAMERA INPUT。紅色的相機狀態點一下即可重新連接相機；PERMISSION DENIED 不能點，需到系統設定開啟相機權限。影片顯示 VIDEO FAILED 或 VIDEO STALLED。</td></tr>
 <tr><td class="k">VISUAL ON / OFF</td><td>預覽左上角的開關。OFF 時停止畫面、相機與影片；各處預覽顯示黑底「VISUAL OFF」，外接螢幕為黑畫面，錄音時不寫 VISUAL 輸出。此開關屬於全 app，並存入 SETUP PRESET。畫面固定 30 fps。</td></tr>
@@ -971,7 +971,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">RANDOM</td><td>把已開啟的站的所有連續參數各自隨機設到 RANGE 設定的區間內；MIX 條、WARP SPEED 與 GLIDE TIME 不動，關閉的站不處理。預設區間與加入 RANGE 前 RANDOM 的抽值範圍相同，例如各站 BRIGHTNESS 為 1 至 4，FEEDBACK 的 SMOOTH 與 BRIGHT 各 0 至 0.3，四站 WARP DEPTH 各 0 至 0.3。SMOOTH、BRIGHT 與 WARP DEPTH 的區間上限最高 0.3；無論區間怎麼設，SMOOTH 加 BRIGHT 不超過 0.3，四站 WARP DEPTH 合計不超過 0.3。MESH 開啟且使用內建模型時，RANDOM 也會立即換成另一個內建模型；載入的 .obj 模型不會被換掉。只改基底值，MOTION 與 MOD ROUTE 的值維持不變。PERFORM 工具列與 PERFORM VISUAL 視窗的 RANDOM 用同一組區間。RANDOM 可由 MIDI 控制器觸發：開啟 LEARN，點 RANDOM，再按控制器。也可放進 PERFORM 頁作為按鍵型控制，在 GLOBAL 群組的 VISUAL RANDOM。MOD ROUTE 也能觸發 RANDOM：MOD 模式下點 VISUAL 頁或 PERFORM 工具列的 RANDOM，開啟 MOD ROUTE 面板，有 OFF 與 15 個來源，AMOUNT 位置顯示「TRIGGER &gt;= 5V」；來源由下往上越過 5V 時觸發一次。此設定屬於全 app。</td></tr>
 <tr><td class="k">RANGE</td><td>VISUAL 頁 RANDOM 右側的開關，設定每個參數被 RANDOM 抽值的區間。開啟後，會被 RANDOM 抽的橫桿在原位置改為區間桿，桿面寫參數名與「下限 - 上限」；MIX、WARP SPEED 等不被抽的橫桿不變。CHROMASCOPE 的 LEVEL 1 至 8 改為 8 支直向區間桿，可一指橫掃。拖曳時依按下位置離下限或上限哪一端較近，只移動那一端，且不會越過另一端。點兩下回到預設區間。再按 RANGE 離開，橫桿恢復原本的操作。區間存在裝置上，與其他 VISUAL 參數相同，不隨 bank、專案或 SETUP PRESET。RANGE 只在 VISUAL 頁，PERFORM VISUAL 視窗沒有；RANGE 本身不能指派 MIDI 或 PERFORM。開啟 RANGE 時 GLIDE TIME 標題移到時間格上方。</td></tr>
 <tr><td class="k">GLIDE TIME</td><td>MINUTES（0 至 999）與 SECONDS（0 至 59）兩格。橫向拖曳設值；點一下不拖曳可用鍵盤輸入數字。總時間為兩者相加。參數在這段時間內從目前值平滑滑到隨機值，滑動中 GLIDE TIME 顯示倒數；MESH 模型則立即切換。MOD ROUTE、MIDI Learn 與 PERFORM 頁控制的是總秒數，最長 86400 秒。</td></tr>
-<tr><td class="k">WARP SPEED</td><td>0 至 1，預設 1，即原本的 MAX SPEED。RANDOM 不改變此值。</td></tr>
+<tr><td class="k">WARP SPEED</td><td>0 至 1，預設 0，即原本的 MAX SPEED。RANDOM 不改變此值。設為 0 時整個 WARP 關閉：不計算光流、不扭曲畫面，各站的 WARP DEPTH 無作用。光流計算在 PERFORM 頁佔用大量處理器時間；iPad 或 Mac 效能不足、畫面或聲音不順時，把 WARP SPEED 轉到 0 即可關閉。</td></tr>
 </table>
 
 <h3>音訊驅動與調變</h3>
