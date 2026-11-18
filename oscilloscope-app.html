@@ -96,6 +96,7 @@
   --f-body: "Noto Sans TC", "Noto Sans JP", "PingFang TC", "Microsoft JhengHei", sans-serif;
   color-scheme: dark;
 }
+:root[lang="ja"] { --f-body: "Noto Sans JP", "Noto Sans TC", "Hiragino Sans", "Yu Gothic", sans-serif; }
 :root[data-theme="light"] {
   --bg: oklch(0.95 0.006 70);
   --rack: oklch(0.985 0.004 80);
@@ -235,29 +236,29 @@ html.locked .menu, html.locked #huepop { touch-action: pan-y; }
   <div class="word"><a href="software.html" aria-label="MADZINE Software">OSCILLOSCOPE</a></div>
   <div class="barR">
     <button class="pill" id="pill" hidden></button>
-    <button class="ico big" id="micBtn" aria-pressed="false" aria-label="麥克風"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5.5" y="1.5" width="5" height="8" rx="2.5"/><path d="M3 7.5a5 5 0 0 0 10 0M8 12.5v2M5.5 14.5h5"/></svg></button>
+    <button class="ico big" id="micBtn" aria-pressed="false" aria-label="麥克風" data-t-aria="mic"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5.5" y="1.5" width="5" height="8" rx="2.5"/><path d="M3 7.5a5 5 0 0 0 10 0M8 12.5v2M5.5 14.5h5"/></svg></button>
     <button id="huebtn" type="button" aria-label="Hue" aria-haspopup="dialog" aria-controls="huepop" aria-expanded="false"><canvas id="hueicon" aria-hidden="true"></canvas></button>
     <button class="ico big" id="fsBtn" aria-label="全螢幕" hidden><svg class="enter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5"/></svg><svg class="exit" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4v5H4M15 4v5h5M20 15h-5v5M4 15h5v5"/></svg></button>
-    <button class="ico big" id="gearBtn" aria-expanded="false" aria-controls="menu" aria-label="設定"><svg viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd"><path d="M19.20 10.27 L22.51 10.59 L22.51 13.41 L19.20 13.73 L18.31 15.87 L20.43 18.43 L18.43 20.43 L15.87 18.31 L13.73 19.20 L13.41 22.51 L10.59 22.51 L10.27 19.20 L8.13 18.31 L5.57 20.43 L3.57 18.43 L5.69 15.87 L4.80 13.73 L1.49 13.41 L1.49 10.59 L4.80 10.27 L5.69 8.13 L3.57 5.57 L5.57 3.57 L8.13 5.69 L10.27 4.80 L10.59 1.49 L13.41 1.49 L13.73 4.80 L15.87 5.69 L18.43 3.57 L20.43 5.57 L18.31 8.13 Z M12 15.4a3.4 3.4 0 1 0 0-6.8a3.4 3.4 0 1 0 0 6.8Z"/></svg></button>
+    <button class="ico big" id="gearBtn" aria-expanded="false" aria-controls="menu" aria-label="設定" data-t-aria="settings"><svg viewBox="0 0 24 24" fill="currentColor" fill-rule="evenodd"><path d="M19.20 10.27 L22.51 10.59 L22.51 13.41 L19.20 13.73 L18.31 15.87 L20.43 18.43 L18.43 20.43 L15.87 18.31 L13.73 19.20 L13.41 22.51 L10.59 22.51 L10.27 19.20 L8.13 18.31 L5.57 20.43 L3.57 18.43 L5.69 15.87 L4.80 13.73 L1.49 13.41 L1.49 10.59 L4.80 10.27 L5.69 8.13 L3.57 5.57 L5.57 3.57 L8.13 5.69 L10.27 4.80 L10.59 1.49 L13.41 1.49 L13.73 4.80 L15.87 5.69 L18.43 3.57 L20.43 5.57 L18.31 8.13 Z M12 15.4a3.4 3.4 0 1 0 0-6.8a3.4 3.4 0 1 0 0 6.8Z"/></svg></button>
   </div>
   <div id="huepop" role="dialog" aria-label="Hue" hidden><canvas id="huewheel"></canvas></div>
   <div class="menu" id="menu" hidden>
     <div class="group">
       <div class="eyebrow">Signal</div>
-      <div class="seg" id="srcSeg" role="group" aria-label="訊號來源">
-        <button data-src="mic">麥克風</button>
-        <button data-src="file">音訊檔</button>
-        <button data-src="sine">正弦</button>
-        <button data-src="square">方波</button>
-        <button data-src="saw">鋸齒</button>
-        <button data-src="tri">三角</button>
-        <button data-src="chord">和弦</button>
-        <button data-src="noise">噪音</button>
+      <div class="seg" id="srcSeg" role="group" aria-label="訊號來源" data-t-aria="srcGroup">
+        <button data-src="mic" data-t="srcMic">麥克風</button>
+        <button data-src="file" data-t="srcFile">音訊檔</button>
+        <button data-src="sine" data-t="srcSine">正弦</button>
+        <button data-src="square" data-t="srcSquare">方波</button>
+        <button data-src="saw" data-t="srcSaw">鋸齒</button>
+        <button data-src="tri" data-t="srcTri">三角</button>
+        <button data-src="chord" data-t="srcChord">和弦</button>
+        <button data-src="noise" data-t="srcNoise">噪音</button>
       </div>
       <input type="file" id="fileIn" accept="audio/*" hidden>
       <div class="row">
-        <div class="slider"><label for="freq">頻率</label><input type="range" id="freq" min="0" max="1000" value="450"><output id="freqOut">220 Hz<small>A3</small></output></div>
-        <div class="slider"><label for="gain">振幅</label><input type="range" id="gain" min="0" max="100" value="60"><output id="gainOut">0.60</output></div>
+        <div class="slider"><label for="freq" data-t="freq">頻率</label><input type="range" id="freq" min="0" max="1000" value="450"><output id="freqOut">220 Hz<small>A3</small></output></div>
+        <div class="slider"><label for="gain" data-t="gain">振幅</label><input type="range" id="gain" min="0" max="100" value="60"><output id="gainOut">0.60</output></div>
         <button class="btn" id="audioBtn" aria-pressed="false"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 6h3l4-3v10l-4-3H2z"/><path d="M11.5 5.5a3.5 3.5 0 0 1 0 5"/></svg>播放</button>
       </div>
       <div class="status" id="status"></div>
@@ -265,16 +266,24 @@ html.locked .menu, html.locked #huepop { touch-action: pan-y; }
     <div class="group">
       <div class="eyebrow">View</div>
       <div class="row">
-        <div class="slider"><label for="ygain">Y 增益</label><input type="range" id="ygain" min="0" max="100" value="25"><output id="ygainOut">1.0×</output></div>
-        <div class="slider"><label for="kcomp">分量數</label><input type="range" id="kcomp" min="1" max="48" value="12"><output id="kcompOut">12</output></div>
+        <div class="slider"><label for="ygain" data-t="ygain">Y 增益</label><input type="range" id="ygain" min="0" max="100" value="25"><output id="ygainOut">1.0×</output></div>
+        <div class="slider"><label for="kcomp" data-t="kcomp">分量數</label><input type="range" id="kcomp" min="1" max="48" value="12"><output id="kcompOut">12</output></div>
       </div>
       <div class="row">
-        <button class="btn" id="tComp" aria-pressed="true">分量線</button>
-        <button class="btn" id="tRecon" aria-pressed="true">分量和</button>
-        <button class="btn" id="tLog" aria-pressed="true">對數頻率</button>
+        <button class="btn" id="tComp" aria-pressed="true" data-t="tComp">分量線</button>
+        <button class="btn" id="tRecon" aria-pressed="true" data-t="tRecon">分量和</button>
+        <button class="btn" id="tLog" aria-pressed="true" data-t="tLog">對數頻率</button>
         <button class="btn" id="themeBtn">白底</button>
       </div>
       <div class="status" id="fsHint"></div>
+    </div>
+    <div class="group">
+      <div class="eyebrow">Language</div>
+      <div class="seg" id="langSeg" role="group" aria-label="Language">
+        <button data-lang="zh-TW" lang="zh-TW">中</button>
+        <button data-lang="en" lang="en">EN</button>
+        <button data-lang="ja" lang="ja">JP</button>
+      </div>
     </div>
   </div>
 </header>
@@ -282,8 +291,8 @@ html.locked .menu, html.locked #huepop { touch-action: pan-y; }
 <main class="deck" id="deck">
   <section class="panel" data-id="scope">
     <header class="ph">
-      <button class="ico grip" aria-label="拖曳換位置"><svg viewBox="0 0 10 14" fill="currentColor"><circle cx="2.5" cy="2" r="1.4"/><circle cx="7.5" cy="2" r="1.4"/><circle cx="2.5" cy="7" r="1.4"/><circle cx="7.5" cy="7" r="1.4"/><circle cx="2.5" cy="12" r="1.4"/><circle cx="7.5" cy="12" r="1.4"/></svg></button>
-      <h2>Oscilloscope<span class="ja">示波器</span></h2>
+      <button class="ico grip" aria-label="拖曳換位置" data-t-aria="grip"><svg viewBox="0 0 10 14" fill="currentColor"><circle cx="2.5" cy="2" r="1.4"/><circle cx="7.5" cy="2" r="1.4"/><circle cx="2.5" cy="7" r="1.4"/><circle cx="7.5" cy="7" r="1.4"/><circle cx="2.5" cy="12" r="1.4"/><circle cx="7.5" cy="12" r="1.4"/></svg></button>
+      <h2>Oscilloscope<span class="ja" data-t="subScope">示波器</span></h2>
       <div class="ro" id="roScope"></div>
     </header>
     <canvas id="cScope"></canvas>
@@ -291,8 +300,8 @@ html.locked .menu, html.locked #huepop { touch-action: pan-y; }
 
   <section class="panel" data-id="spec">
     <header class="ph">
-      <button class="ico grip" aria-label="拖曳換位置"><svg viewBox="0 0 10 14" fill="currentColor"><circle cx="2.5" cy="2" r="1.4"/><circle cx="7.5" cy="2" r="1.4"/><circle cx="2.5" cy="7" r="1.4"/><circle cx="7.5" cy="7" r="1.4"/><circle cx="2.5" cy="12" r="1.4"/><circle cx="7.5" cy="12" r="1.4"/></svg></button>
-      <h2>Spectrum<span class="ja">頻譜</span></h2>
+      <button class="ico grip" aria-label="拖曳換位置" data-t-aria="grip"><svg viewBox="0 0 10 14" fill="currentColor"><circle cx="2.5" cy="2" r="1.4"/><circle cx="7.5" cy="2" r="1.4"/><circle cx="2.5" cy="7" r="1.4"/><circle cx="7.5" cy="7" r="1.4"/><circle cx="2.5" cy="12" r="1.4"/><circle cx="7.5" cy="12" r="1.4"/></svg></button>
+      <h2>Spectrum<span class="ja" data-t="subSpec">頻譜</span></h2>
       <div class="ro" id="roSpec"></div>
     </header>
     <canvas id="cSpec"></canvas>
@@ -300,8 +309,8 @@ html.locked .menu, html.locked #huepop { touch-action: pan-y; }
 
   <section class="panel flip" data-id="flip">
     <header class="ph">
-      <button class="ico grip" aria-label="拖曳換位置"><svg viewBox="0 0 10 14" fill="currentColor"><circle cx="2.5" cy="2" r="1.4"/><circle cx="7.5" cy="2" r="1.4"/><circle cx="2.5" cy="7" r="1.4"/><circle cx="7.5" cy="7" r="1.4"/><circle cx="2.5" cy="12" r="1.4"/><circle cx="7.5" cy="12" r="1.4"/></svg></button>
-      <h2>Fourier Box<span class="ja">3D 翻轉</span></h2>
+      <button class="ico grip" aria-label="拖曳換位置" data-t-aria="grip"><svg viewBox="0 0 10 14" fill="currentColor"><circle cx="2.5" cy="2" r="1.4"/><circle cx="7.5" cy="2" r="1.4"/><circle cx="2.5" cy="7" r="1.4"/><circle cx="7.5" cy="7" r="1.4"/><circle cx="2.5" cy="12" r="1.4"/><circle cx="7.5" cy="12" r="1.4"/></svg></button>
+      <h2>Fourier Box<span class="ja" data-t="subFlip">3D 翻轉</span></h2>
       <div class="ro" id="roFlip"></div>
     </header>
     <canvas id="cFlip"></canvas>
@@ -316,6 +325,70 @@ const $$ = s => [...document.querySelectorAll(s)];
 const root = document.documentElement;
 const TAU = Math.PI * 2;
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------------- language (zh-TW / en / ja) ---------------- */
+// shares the site's madzine-lang key; ?lang= overrides
+const I18N = {
+  'zh-TW': {
+    mic: '麥克風', settings: '設定', srcGroup: '訊號來源', grip: '拖曳換位置',
+    srcMic: '麥克風', srcFile: '音訊檔', srcSine: '正弦', srcSquare: '方波', srcSaw: '鋸齒', srcTri: '三角', srcChord: '和弦', srcNoise: '噪音',
+    freq: '頻率', gain: '振幅', ygain: 'Y 增益', kcomp: '分量數', tComp: '分量線', tRecon: '分量和', tLog: '對數頻率',
+    themeLight: '白底', themeDark: '黑底', play: '播放', mute: '靜音',
+    subScope: '示波器', subSpec: '頻譜', subFlip: '3D 翻轉',
+    stPickFile: '請選一個音訊檔。', stPlaying: '播放中：{n}（循環）', stMicIn: '麥克風輸入中，不送到喇叭。',
+    stMicDenied: '這個環境不允許麥克風。把 HTML 檔存到電腦用瀏覽器開啟即可。', pillMicNA: '麥克風不可用',
+    stSynth: '合成訊號，按「播放」出聲。', stDecoding: '解碼中：{n}', stDecodeFail: '無法解碼 {n}，請換一個 WAV / MP3 / M4A 檔。',
+    roComps: '{n} 個分量', fsEnter: '全螢幕', fsExit: '離開全螢幕',
+    fsHint: '全螢幕：在 Safari 按「分享」，選「加入主畫面」，再從主畫面開啟。', pillTap: '點一下畫面啟動麥克風',
+  },
+  en: {
+    mic: 'Microphone', settings: 'Settings', srcGroup: 'Signal source', grip: 'Drag to reorder',
+    srcMic: 'Mic', srcFile: 'File', srcSine: 'Sine', srcSquare: 'Square', srcSaw: 'Saw', srcTri: 'Triangle', srcChord: 'Chord', srcNoise: 'Noise',
+    freq: 'Freq', gain: 'Level', ygain: 'Y gain', kcomp: 'Partials', tComp: 'Partial lines', tRecon: 'Partial sum', tLog: 'Log freq',
+    themeLight: 'Light', themeDark: 'Dark', play: 'Play', mute: 'Mute',
+    subScope: '', subSpec: '', subFlip: '',
+    stPickFile: 'Choose an audio file.', stPlaying: 'Playing: {n} (loop)', stMicIn: 'Mic input, not sent to the speakers.',
+    stMicDenied: 'The microphone is not allowed here. Save the HTML file to your computer and open it in a browser.', pillMicNA: 'Mic unavailable',
+    stSynth: 'Synthesized signal. Press Play to hear it.', stDecoding: 'Decoding: {n}', stDecodeFail: 'Could not decode {n}. Try a WAV / MP3 / M4A file.',
+    roComps: '{n} partials', fsEnter: 'Full screen', fsExit: 'Exit full screen',
+    fsHint: 'Full screen: in Safari tap Share, choose Add to Home Screen, then open it from the Home Screen.', pillTap: 'Tap the screen to start the mic',
+  },
+  ja: {
+    mic: 'マイク', settings: '設定', srcGroup: '信号ソース', grip: 'ドラッグで並べ替え',
+    srcMic: 'マイク', srcFile: 'ファイル', srcSine: 'サイン', srcSquare: '矩形', srcSaw: 'ノコギリ', srcTri: '三角', srcChord: '和音', srcNoise: 'ノイズ',
+    freq: '周波数', gain: '振幅', ygain: 'Y ゲイン', kcomp: '成分数', tComp: '成分線', tRecon: '成分の和', tLog: '対数周波数',
+    themeLight: 'ライト', themeDark: 'ダーク', play: '再生', mute: 'ミュート',
+    subScope: '波形', subSpec: 'スペクトル', subFlip: '3D 回転',
+    stPickFile: '音声ファイルを選んでください。', stPlaying: '再生中：{n}（ループ）', stMicIn: 'マイク入力中。スピーカーには出しません。',
+    stMicDenied: 'この環境ではマイクを使えません。HTML ファイルをパソコンに保存してブラウザで開いてください。', pillMicNA: 'マイク使用不可',
+    stSynth: '合成信号です。「再生」で音が出ます。', stDecoding: 'デコード中：{n}', stDecodeFail: '{n} をデコードできません。WAV / MP3 / M4A ファイルを使ってください。',
+    roComps: '成分 {n} 個', fsEnter: '全画面', fsExit: '全画面を終了',
+    fsHint: '全画面：Safari の「共有」から「ホーム画面に追加」を選び、ホーム画面から開いてください。', pillTap: '画面をタップしてマイクを開始',
+  },
+};
+let lang = 'zh-TW';
+{
+  let q = null; try { q = new URLSearchParams(location.search).get('lang'); } catch (e) {}
+  let saved = null; try { saved = localStorage.getItem('madzine-lang'); } catch (e) {}
+  const nav = (navigator.language || '').toLowerCase();
+  const alias = { zh: 'zh-TW', 'zh-tw': 'zh-TW', jp: 'ja', ja: 'ja', en: 'en' };
+  const pick = v => v && (I18N[v] ? v : alias[String(v).toLowerCase()]);
+  lang = pick(q) || pick(saved) || (nav.startsWith('zh') ? 'zh-TW' : nav.startsWith('ja') ? 'ja' : 'en');
+}
+const t = (k, vars) => { let v = (I18N[lang] && I18N[lang][k]); if (v == null) v = I18N['zh-TW'][k] || k; if (vars) for (const n in vars) v = v.split('{' + n + '}').join(vars[n]); return v; };
+const langHooks = [];
+function applyLang() {
+  root.lang = lang;
+  $$('[data-t]').forEach(el => { const v = t(el.dataset.t); el.textContent = v; if (el.classList.contains('ja')) el.hidden = !v; });
+  $$('[data-t-aria]').forEach(el => el.setAttribute('aria-label', t(el.dataset.tAria)));
+  $$('#langSeg button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === lang)));
+  langHooks.forEach(fn => fn());
+}
+function setLang(l) {
+  if (!I18N[l] || l === lang) return;
+  lang = l; try { localStorage.setItem('madzine-lang', l); } catch (e) {}
+  applyLang();
+}
 
 /* ---------------- state ---------------- */
 const state = {
@@ -387,8 +460,10 @@ let lastGen = 'sine';
 let ac = null, analyser = null, srcGain = null, outGain = null, liveNodes = [], micStream = null, fileBuffer = null, fileName = '';
 const statusEl = $('#status');
 const pillEl = $('#pill');
-function setStatus(t, warn) { statusEl.textContent = t; statusEl.classList.toggle('warn', !!warn); }
-function setPill(t, warn) { pillEl.hidden = !t; pillEl.textContent = t || ''; pillEl.classList.toggle('warn', !!warn); }
+let statusMsg = null, pillMsg = null;
+function setStatus(k, warn, vars) { statusMsg = k ? { k, vars } : null; statusEl.textContent = k ? t(k, vars) : ''; statusEl.classList.toggle('warn', !!warn); }
+function setPill(k, warn) { pillMsg = k || null; pillEl.hidden = !k; pillEl.textContent = k ? t(k) : ''; pillEl.classList.toggle('warn', !!warn); }
+langHooks.push(() => { if (statusMsg) statusEl.textContent = t(statusMsg.k, statusMsg.vars); if (pillMsg) pillEl.textContent = t(pillMsg); });
 const usesAudioGraph = () => !!ac && (state.audible || state.src === 'file' || state.src === 'mic');
 
 async function ensureContext() {
@@ -426,26 +501,26 @@ async function buildSource() {
     for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
     const n = ac.createBufferSource(); n.buffer = b; n.loop = true; n.connect(srcGain); n.start(); liveNodes.push(n);
   } else if (s === 'file') {
-    if (!fileBuffer) { setStatus('請選一個音訊檔。'); return; }
+    if (!fileBuffer) { setStatus('stPickFile'); return; }
     const n = ac.createBufferSource(); n.buffer = fileBuffer; n.loop = true; n.connect(srcGain); n.start(); liveNodes.push(n);
-    setStatus(`播放中：${fileName}（循環）`);
+    setStatus('stPlaying', false, { n: fileName });
   } else if (s === 'mic') {
     try {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('no-md');
       micStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
       const m = ac.createMediaStreamSource(micStream); m.connect(srcGain); liveNodes.push(m);
       outGain.gain.value = 0; state.audible = false; syncAudibleBtn();
-      setStatus('麥克風輸入中，不送到喇叭。'); setPill('');
+      setStatus('stMicIn'); setPill('');
     } catch (e) {
-      setStatus('這個環境不允許麥克風。把 HTML 檔存到電腦用瀏覽器開啟即可。', true);
-      setPill('麥克風不可用', true);
+      setStatus('stMicDenied', true);
+      setPill('pillMicNA', true);
       state.src = lastGen; syncSrcSeg(); syncMicBtn(); await buildSource();
     }
   }
 }
 function syncAudibleBtn() {
   const b = $('#audioBtn'); b.setAttribute('aria-pressed', String(state.audible));
-  b.lastChild.textContent = state.audible ? '靜音' : '播放';
+  b.lastChild.textContent = t(state.audible ? 'mute' : 'play');
 }
 async function setAudible(on) {
   state.audible = on;
@@ -457,7 +532,7 @@ async function setAudible(on) {
     if (state.audible && state.src !== 'file') setStatus('');
   } else if (ac) {
     outGain.gain.setTargetAtTime(0, ac.currentTime, 0.02);
-    if (state.src !== 'file' && state.src !== 'mic') setStatus('合成訊號，按「播放」出聲。');
+    if (state.src !== 'file' && state.src !== 'mic') setStatus('stSynth');
   }
   syncAudibleBtn();
 }
@@ -471,18 +546,18 @@ async function selectSource(s) {
   else if (ac) { stopLive(); }
   const gen = !needsGraph;
   $$('#freq, #gain').forEach(i => { i.disabled = !gen; });
-  if (gen) setStatus(state.audible ? '' : '合成訊號，按「播放」出聲。');
+  if (gen) setStatus(state.audible ? '' : 'stSynth');
 }
 $('#fileIn').addEventListener('change', async e => {
   const f = e.target.files && e.target.files[0]; if (!f) return;
   try {
     await ensureContext();
-    setStatus(`解碼中：${f.name}`);
+    setStatus('stDecoding', false, { n: f.name });
     fileBuffer = await ac.decodeAudioData(await f.arrayBuffer()); fileName = f.name;
     state.src = 'file'; syncSrcSeg(); await buildSource();
     if (!state.audible) await setAudible(true);
     $$('#freq, #gain').forEach(i => { i.disabled = true; });
-  } catch (err) { setStatus(`無法解碼 ${f.name}，請換一個 WAV / MP3 / M4A 檔。`, true); }
+  } catch (err) { setStatus('stDecodeFail', true, { n: f.name }); }
   e.target.value = '';
 });
 
@@ -805,7 +880,7 @@ function drawFlip() {
     line(pts, css.accent, 1.9, 1);
   }
   const deg = Math.round(state.theta);
-  $('#roFlip').innerHTML = `<b>${deg}°</b> · ${comps.length} 個分量`;
+  $('#roFlip').innerHTML = `<b>${deg}°</b> · ${t('roComps', { n: comps.length })}`;
 }
 
 /* ---------------- flip animation ---------------- */
@@ -850,6 +925,8 @@ function syncSrcSeg() { $$('#srcSeg button').forEach(b => b.setAttribute('aria-p
 syncSrcSeg();
 $('#srcSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; if (b.dataset.src === 'file' && state.src === 'file') { $('#fileIn').click(); return; } selectSource(b.dataset.src); });
 $('#audioBtn').addEventListener('click', () => setAudible(!state.audible));
+langHooks.push(syncAudibleBtn);
+$('#langSeg').addEventListener('click', e => { const b = e.target.closest('button'); if (b) setLang(b.dataset.lang); });
 
 // 3D canvas: a tap flips between the waveform view (0°) and the spectrum view (90°); a horizontal drag scrubs the angle
 {
@@ -951,9 +1028,9 @@ $('#audioBtn').addEventListener('click', () => setAudible(!state.audible));
   const standalone = () => matchMedia('(display-mode: standalone), (display-mode: fullscreen)').matches || navigator.standalone === true;
   const update = () => {
     btn.hidden = !available() || (standalone() && !active());   // API fullscreen also matches display-mode: fullscreen
-    btn.setAttribute('aria-label', active() ? '離開全螢幕' : '全螢幕');
+    btn.setAttribute('aria-label', t(active() ? 'fsExit' : 'fsEnter'));
     const ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    hint.textContent = (!available() && !standalone() && ios) ? '全螢幕：Safari 分享 → 加入主畫面，從主畫面開啟。' : '';
+    hint.textContent = (!available() && !standalone() && ios) ? t('fsHint') : '';
   };
   btn.addEventListener('click', () => {
     try {
@@ -966,14 +1043,16 @@ $('#audioBtn').addEventListener('click', () => setAudible(!state.audible));
   matchMedia('(display-mode: standalone)').addEventListener('change', lock);
   document.addEventListener('touchmove', e => { if (root.classList.contains('locked') && !e.target.closest('#menu, #huepop')) e.preventDefault(); }, { passive: false });
   update(); lock();
+  langHooks.push(update);
 }
 
 /* ---------------- theme ---------------- */
 {
   const b = $('#themeBtn');
-  const sync = () => { b.textContent = root.getAttribute('data-theme') === 'light' ? '黑底' : '白底'; };
+  const sync = () => { b.textContent = t(root.getAttribute('data-theme') === 'light' ? 'themeDark' : 'themeLight'); };
   b.addEventListener('click', () => { const t = root.getAttribute('data-theme') === 'light' ? 'dark' : 'light'; root.setAttribute('data-theme', t); try { localStorage.setItem('osc_theme', t); } catch (e) {} sync(); });
   sync();
+  langHooks.push(sync);
 }
 
 /* ---------------- layout ---------------- */
@@ -1002,6 +1081,7 @@ function applyLayout() {
   deck.addEventListener('pointerup', end); deck.addEventListener('pointercancel', end);
 }
 applyLayout();
+applyLang();
 readCss();
 
 /* ---------------- offline ---------------- */
@@ -1031,7 +1111,7 @@ $('#micBtn').addEventListener('click', () => selectSource(state.src === 'mic' ? 
       srcGain.connect(analyser); srcGain.connect(outGain); outGain.connect(ac.destination);
       await buildSource();
       if (state.src === 'mic' && ac.state !== 'running') {
-        setPill('點一下畫面啟動麥克風');
+        setPill('pillTap');
         const kick = async () => { try { await ac.resume(); } catch (e) {} if (ac.state === 'running') { setPill(''); document.removeEventListener('pointerdown', kick); document.removeEventListener('keydown', kick); } };
         document.addEventListener('pointerdown', kick); document.addEventListener('keydown', kick);
       }
