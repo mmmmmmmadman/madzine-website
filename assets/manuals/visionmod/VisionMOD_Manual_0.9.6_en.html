@@ -144,7 +144,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <table>
 <tr><td class="k">Signal Flow</td><td>Signal Flow: the module list, executed top to bottom; the same module kind can be instantiated multiple times with independent parameters</td></tr>
 <tr><td class="k">Drag to reorder</td><td>Drag to reorder: hold the grip icon and drag vertically to change the instance position in the signal flow (Fundamental Vision is pinned to the first slot)</td></tr>
-<tr><td class="k">Remove</td><td>Remove module: the first click shows \"Confirm?\" on the row; click the same X again to delete, or click elsewhere / press Esc to cancel</td></tr>
+<tr><td class="k">Remove</td><td>Remove module: the first click shows “Confirm?” on the row; click the same X again to delete, or click elsewhere / press Esc to cancel</td></tr>
 <tr><td class="k">Enable</td><td>Enable this instance: unchecking bypasses the instance (signal passes through to the next station) without affecting parameters or order. Exceptions: unchecking Stable Diffusion releases its model; re-checking Slow Motion clears the recording and starts again</td></tr>
 <tr><td class="k">Previous module</td><td>Switch to the previous module panel in the signal flow (wraps from the first to the last)</td></tr>
 <tr><td class="k">Next module</td><td>Switch to the next module panel in the signal flow (wraps from the last to the first)</td></tr>
@@ -156,14 +156,13 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">Module item</td><td>Click to append this module to the end of the signal flow, enabled; greyed out means only one is allowed and it already exists</td></tr>
 </table>
 <h3>Common station controls</h3>
-<p>Every station after Fundamental Vision shares the same header controls: an enable checkbox, Mix, Brightness, and a Position / Scale pad. Mix is the station dry/wet and is the only mix control; modules have no mix fader of their own. A newly added instance starts with Mix at 0, so adding a module does not change the picture until you raise Mix.</p>
-<div class="fig"><img src="img/triposr_panel.png" alt="A station panel (3D Model shown). The header row holds the enable checkbox and RESET; Mix, Brightness, and the Position / Scale pad are shared by all stations."></div>
-<div class="cap">A station panel (3D Model shown). The header row holds the enable checkbox and RESET; Mix, Brightness, and the Position / Scale pad are shared by all stations.</div>
+<p>Every station after Fundamental Vision shares the same controls. The panel header holds only the enable checkbox (some stations also have RESET). The mix, bright, and Position controls sit in each row of the Signal Flow list at the default window size, or at the bottom of each panel at a large window size; on screen they are labelled mix, bright, and Position. Mix is the station dry/wet and is the only mix control; modules have no mix fader of their own. A newly added instance starts with Mix at 0, so adding a module does not change the picture until you raise Mix.</p>
+<div class="fig"><img src="img/triposr_panel.png" alt="A station panel (3D Model shown). The header row holds the enable checkbox and RESET. The shared mix, bright, and Position controls are not in the header: they sit in the Signal Flow list rows at the default window size, or at the bottom of the panel at a large window size."></div>
+<div class="cap">A station panel (3D Model shown). The header row holds the enable checkbox and RESET. The shared mix, bright, and Position controls are not in the header: they sit in the Signal Flow list rows at the default window size, or at the bottom of the panel at a large window size.</div>
 <table>
 <tr><td class="k">Mix</td><td>Station dry/wet mix: 0 passes the previous station's output through, 1 is fully wet</td></tr>
 <tr><td class="k">Brightness</td><td>Output brightness gain of this station (0–4, double-click resets to 1)</td></tr>
 <tr><td class="k">Position / Scale</td><td>Position / Scale: drag to move, scroll to zoom (0.25–4), double-click to centre the position and return the zoom to 1</td></tr>
-<tr><td class="k">Mask icon</td><td>Click to open this module's brush-mask panel: painted areas can be removed or kept</td></tr>
 </table>
 <h3>Brush mask</h3>
 <p>Each module instance keeps its own mask, painted on the preview while the mask panel is open. The mask follows the visible picture: after the output aspect ratio is changed, the strokes stay at the same relative position in the picture. The strokes, the mode, and the brush settings are saved with the settings and in project files.</p>
@@ -174,6 +173,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">Noise</td><td>Brush noise amount (0–1); affects strokes painted afterwards only</td></tr>
 <tr><td class="k">Opacity</td><td>Brush opacity (0.05–1); affects strokes painted afterwards only</td></tr>
 <tr><td class="k">Clear</td><td>Clear the painted mask and return to the unmasked state; the mode and brush settings are kept</td></tr>
+<tr><td class="k">Mask icon</td><td>Click to open this module's brush-mask panel: painted areas can be removed or kept</td></tr>
 </table>
 <div class="fig"><img src="img/brush_mask.png" alt="The Brush Mask panel: Mode, Size, Softness, Noise, Opacity, and Clear."></div>
 <div class="cap">The Brush Mask panel: Mode, Size, Softness, Noise, Opacity, and Clear.</div>
@@ -211,11 +211,11 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <table>
 <tr><td class="k">File path</td><td>Path of the loaded file; drop a file onto the window to load (left half = Modifier, right half = Carrier)</td></tr>
 </table>
-<p>If the video or photo file cannot be found or read (for example the file was moved, or the project comes from another computer), the control window shows a message naming the slot. Drop the file onto the window again; the message disappears once the file can be read.</p>
-<div class="fig"><img src="img/source_missing.png" alt="The message shown when the Modifier video file cannot be found or read; Clear removes the file from the slot."></div>
-<div class="cap">The message shown when the Modifier video file cannot be found or read; Clear removes the file from the slot.</div>
+<p>If the video or photo file cannot be found or read (for example the file was moved, or the project comes from another computer), the control window shows a message naming the slot. Drop the file onto the window again; the message disappears once the file can be read. Clear dismisses the message; the file path stays in the slot.</p>
+<div class="fig"><img src="img/source_missing.png" alt="The message shown when the Modifier video file cannot be found or read; Clear dismisses the message; the file path stays in the slot."></div>
+<div class="cap">The message shown when the Modifier video file cannot be found or read; Clear dismisses the message; the file path stays in the slot.</div>
 <h3>Video sound</h3>
-<p>The Audio row plays the soundtrack of the Carrier or Modifier video on output channels 1-2 of the output device chosen in the SIGNAL window. Carrier or Modifier can be chosen only when that slot holds a video; otherwise the button is greyed out. When the chosen video has no sound track or it cannot be decoded, No audio track appears below the row. Playback follows Speed, so the pitch changes with the speed; at a speed of 0 or below the sound pauses, and it loops with the video. Only the first 10 minutes of the sound track are loaded; after that point the sound is silent. A CV Output route set to channel 1 or 2 overwrites the video sound on that channel.</p>
+<p>The Audio row plays the soundtrack of the Carrier or Modifier video on output channels 1-2 of the output device chosen in the SIGNAL window. Carrier or Modifier can be chosen only when that slot holds a video; otherwise the button is greyed out. When the chosen video has no sound track or it cannot be decoded, No audio track appears below the row. Playback follows Speed, so the pitch changes with the speed; at a speed of 0 or below the sound pauses, and it loops with the video. Only the first 10 minutes of the sound track are loaded; after that point the sound is silent. Channels 1-2 always carry the video sound: CV Output writes only to channel 3 and above, and a CV Output route set to channel 1 or 2 produces no output.</p>
 <div class="fig"><img src="img/fv_video_audio.png" alt="The Audio row (Off / Carrier / Modifier) and the Level fader in the Fundamental Vision panel."></div>
 <div class="cap">The Audio row (Off / Carrier / Modifier) and the Level fader in the Fundamental Vision panel.</div>
 <table>
@@ -226,27 +226,25 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 
 <!-- ============================================================ -->
 <h2 id="contour">4. Contour Scanner and CV Generator</h2>
-<p>Below the module panel, the main window shows the Contour Scanner module and the CV Generator. The scanner detects contours from the image; the CV Generator turns the scan, motion, colour, and hue distribution into modulation signals. The image they read is chosen with Contour Source in the SIGNAL window. The global action rows (PRESET, PLUGINS, OUTPUT, RANDOM, VIDEO, View Panic, MANUAL, Help) sit at the top of the Contour Scanner module.</p>
-<div class="fig"><img src="img/contour_cv.png" alt="The Contour Scanner and CV Generator block below the module panel."></div>
-<div class="cap">The Contour Scanner and CV Generator block below the module panel.</div>
+<p>The main window always shows the Contour Scanner module and the CV Generator. At the default window size they sit in the left column below the Signal Flow list; at a large window size they sit below Fundamental Vision. The scanner detects contours from the image; the CV Generator turns the scan, motion, colour, and hue distribution into modulation signals. The image they read is chosen with Contour Source in the SIGNAL window. The global action rows (PRESET, PLUGINS, OUTPUT, RANDOM, VIDEO, View Panic, MANUAL, Help) sit above the Contour Scanner. The contour preview with the draggable scan circle is in the SIGNAL window.</p>
+<div class="fig"><img src="img/contour_cv.png" alt="The Contour Scanner and CV Generator block (below the Signal Flow list at the default window size, below Fundamental Vision at a large window size)."></div>
+<div class="cap">The Contour Scanner and CV Generator block (below the Signal Flow list at the default window size, below Fundamental Vision at a large window size).</div>
 <h3>Contour Scanner</h3>
 <table>
 <tr><td class="k">Module</td><td>Contour Scanner module: detects contours from the image for the SEQ signals and the contour overlay</td></tr>
-<tr><td class="k">Preview</td><td>Contour preview: contour lines, the scan point and a draggable scan ROI circle</td></tr>
-<tr><td class="k">Scan ROI</td><td>Scan ROI circle: drag the centre to move the scan anchor, drag the edge to resize the scan range</td></tr>
 <tr><td class="k">Threshold</td><td>Contour edge detection threshold: higher keeps only stronger edges</td></tr>
 <tr><td class="k">Smoothing</td><td>Contour temporal smoothing: the value is the weight of the new frame; lower is slower and steadier, 100 disables smoothing</td></tr>
-<tr><td class="k">Stillness</td><td>Stillness: contour update gate (not the edge detection threshold):the image must change by more than this percent before contours are detected again. Higher holds the contour stiller and costs less CPU/GPU, lower reacts faster, 0 recomputes almost every frame</td></tr>
+<tr><td class="k">Stillness</td><td>Stillness: contour update gate (not the edge detection threshold): the image must change by more than this percent before contours are detected again. Higher holds the contour stiller and costs less CPU/GPU, lower reacts faster, 0 recomputes almost every frame</td></tr>
 <tr><td class="k">Contour Lock</td><td>Lock the current contour: detection stops and the scan keeps running along the locked contour; while locked, Threshold, Smoothing and Stillness are greyed out</td></tr>
 <tr><td class="k">Mix</td><td>Blend ratio of the contour overlay onto the image</td></tr>
 </table>
 <h3>CV Generator</h3>
 <table>
-<tr><td class="k">Module</td><td>CV Generator: derives modulation signals from the image (contour SEQ, Movement, Color)</td></tr>
+<tr><td class="k">Module</td><td>CV Generator: derives modulation signals from the image (contour SEQ, Movement, Color, Spectrum)</td></tr>
 <tr><td class="k">Scan Time</td><td>Contour scan period: time for one full scan pass (0.1-300 s); the white line on the track shows the current scan position</td></tr>
 <tr><td class="k">Smooth</td><td>Smoothing of the SEQ and Movement signals</td></tr>
-<tr><td class="k">Gain</td><td>Gain of the Movement signal (source: final output image)</td></tr>
-<tr><td class="k">Foreground</td><td>Foreground threshold: only pixels with alpha above this value count toward Movement and Color CV</td></tr>
+<tr><td class="k">Gain</td><td>Gain of the Movement signal (source: the image chosen with Contour Source in the SIGNAL window)</td></tr>
+<tr><td class="k">Foreground</td><td>Foreground threshold: only pixels with alpha above this value count toward Movement, Color, and Spectrum CV</td></tr>
 </table>
 
 <!-- ============================================================ -->
@@ -413,7 +411,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 
 <!-- ============================================================ -->
 <h2 id="plugin">14. Plugin</h2>
-<p>Runs a third-party fragment shader as a station. Plugins are single .wgsl files read from the plugin folder (default ~/.visionmod/plugins/, top level only). The folder is chosen with the PLUGINS row in the main window and is rescanned automatically when it changes. The Plugin panel has a dropdown for choosing the plugin; Automatic uses the first plugin in the list that runs correctly, and plugins that fail to compile are listed with their status but cannot be selected. Below it are a built-in Displace fader (displaces the input image using the Modifier image; 0 turns it off) and the faders declared by the selected plugin. When no plugin is available the station passes the image through.</p>
+<p>Runs a third-party fragment shader as a station. Plugins are single .wgsl files read from the plugin folder (default ~/.visionmod/plugins/, top level only). The folder is chosen with the PLUGINS row in the main window. It is scanned at launch, when a different folder is chosen, and when RESCAN is pressed; the folder is not watched, so after adding or editing a plugin file, press RESCAN. The Plugin panel has a dropdown for choosing the plugin; Automatic uses the first plugin in the list that runs correctly, and plugins that fail to compile are listed with their status but cannot be selected. Below it are a built-in Displace fader (displaces the input image using the Modifier image; 0 turns it off) and the faders declared by the selected plugin. When no plugin is available the station passes the image through.</p>
 <div class="fig"><img src="img/plugin_panel.png" alt="Plugin panel: the plugin dropdown (Automatic shown, with the running plugin named), the built-in Displace fader, and the faders declared by the plugin."></div>
 <div class="cap">Plugin panel: the plugin dropdown (Automatic shown, with the running plugin named), the built-in Displace fader, and the faders declared by the plugin.</div>
 <table>
@@ -432,9 +430,9 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 
 <!-- ============================================================ -->
 <h2 id="global">15. Global Actions</h2>
-<p>The action rows at the top of the Contour Scanner module apply to the whole program.</p>
-<div class="fig"><img src="img/global_actions.png" alt="The global action rows: PRESET (SAVE / SAVE AS / LOAD) with the current project file name, PLUGINS (FOLDER / DEFAULT / RESCAN) with the plugin folder, IMPORT OLD SETTINGS, OUTPUT + WINDOW, RANDOM, VIDEO, View Panic, MANUAL, and Help. In the Mac App Store build the purchase row sits above PRESET."></div>
-<div class="cap">The global action rows: PRESET (SAVE / SAVE AS / LOAD) with the current project file name, PLUGINS (FOLDER / DEFAULT / RESCAN) with the plugin folder, IMPORT OLD SETTINGS, OUTPUT + WINDOW, RANDOM, VIDEO, View Panic, MANUAL, and Help. In the Mac App Store build the purchase row sits above PRESET.</div>
+<p>The action rows above the Contour Scanner apply to the whole program.</p>
+<div class="fig"><img src="img/global_actions.png" alt="The global action rows: PRESET (SAVE / SAVE AS / LOAD) with the current project file name, PLUGINS (FOLDER / DEFAULT / RESCAN) with the plugin folder, IMPORT OLD SETTINGS (Mac App Store build only), OUTPUT + WINDOW, RANDOM, VIDEO, View Panic, MANUAL, and Help. In the Mac App Store build the purchase row sits above PRESET."></div>
+<div class="cap">The global action rows: PRESET (SAVE / SAVE AS / LOAD) with the current project file name, PLUGINS (FOLDER / DEFAULT / RESCAN) with the plugin folder, IMPORT OLD SETTINGS (Mac App Store build only), OUTPUT + WINDOW, RANDOM, VIDEO, View Panic, MANUAL, and Help. In the Mac App Store build the purchase row sits above PRESET.</div>
 <div class="fig"><img src="img/load_confirm.png" alt="The OVERWRITE / CANCEL confirmation shown before LOAD applies a project file."></div>
 <div class="cap">The OVERWRITE / CANCEL confirmation shown before LOAD applies a project file.</div>
 <div class="fig"><img src="img/output_window.png" alt="The main output window with a second output window added by OUTPUT + WINDOW floating on top of it."></div>
@@ -470,7 +468,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">RANDOM</td><td>RANDOM button: press to re-randomize the random-enabled parameters of enabled modules within their ranges</td></tr>
 <tr><td class="k">EDIT / DONE</td><td>EDIT: enter random edit mode, where every randomizable parameter shows its random on/off switch and random range in place so all can be edited at once; non-randomizable parameters are greyed out. Press the same button (DONE) to leave</td></tr>
 <tr><td class="k">Glide time</td><td>Glide time: time for parameters to glide to the new values (minutes:seconds); 0 jumps immediately. Drag up or down to adjust, click to type; shows the remaining time while gliding</td></tr>
-<tr><td class="k">Trigger source</td><td>Random trigger source: randomizes once each time a selected modulation source rises above 5V. Click the dot to open the source list; multiple sources can be selected, click again to deselect</td></tr>
+<tr><td class="k">Trigger source</td><td>Random trigger source: randomizes once each time a selected modulation source rises to 5V or above. Click the dot to open the source list; multiple sources can be selected, click again to deselect</td></tr>
 </table>
 <p>Typed values go up to 999 minutes and 59 seconds. Parameters that are not randomized: the modules Stable Diffusion, Contour Scanner, and CV Generator; on/off switches, dropdowns (except the 3D Model preset), Position / Scale, masks, files, and sources; and Brightness, Speed, and Audio Level of Fundamental Vision. For a plugin, only the parameters it declares as modulatable are randomized, within the range it declares. Feedback Smooth and Bright are picked together so that their sum stays at 0.3 or below. In 3D Model, RANDOM switches to a different built-in preset at once, without gliding; it does not change the mesh while an OBJ file is in use or while No Preset is selected.</p>
 <h3>Random range editing</h3>
@@ -497,7 +495,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <h3>Contour Source and Contour Style</h3>
 <p>The Contour Source row below the preview selects the image that the Contour Scanner scans. Movement, Color, and Spectrum are taken from the same image. The options are Final Output, Input (Matted), and the modules in the Signal Flow list in their order; when a module kind appears more than once, its entries are numbered #1, #2, and so on, and a disabled module is marked (off). The button at the right end of the row opens Contour Style, which sets how the contour lines are drawn. Contour Source and Contour Style are saved with the settings and in project files.</p>
 <table>
-<tr><td class="k">Contour Source</td><td>Image source for contour scanning: Final Output, Input (Matted) = the image after both inputs are mixed, color corrected and matted, or the image after any module in the pipeline (disabled modules are marked (off) and give the image from before them); if the selected module is removed, the source returns to Final Output automatically; the Movement signal follows the same source</td></tr>
+<tr><td class="k">Contour Source</td><td>Image source for contour scanning: Final Output, Input (Matted) = the image after both inputs are mixed, color corrected and matted, or the image after any module in the pipeline (disabled modules are marked (off) and give the image from before them); if the selected module is removed, the source returns to Final Output automatically; the Movement, Color, and Spectrum signals all follow the same source</td></tr>
 <tr><td class="k">Contour Style</td><td>Contour line style: Width is the line thickness (1 to 30 pixels); for Color, drag the outer ring of the hue wheel to choose the hue and drag the center circle up or down to set the saturation (saturation 0 is white); Brush: Flat draws straight segments, Round adds round joins and ends, Dots draws only dots without connecting lines; Dot Spacing appears only with the Dots brush and sets how many contour points are skipped between dots (1 to 64)</td></tr>
 </table>
 <h3>CV meters</h3>
@@ -505,11 +503,11 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">Module</td><td>CV Meter: shows the ten modulation signals derived from the image (contour SEQ 1 / 2, Movement, Color R / G / B / Sat, Spectrum Warm / Neutral / Cool)</td></tr>
 <tr><td class="k">Sequence 1</td><td>SEQ1 sequence signal: horizontal distance between the moving scan point and the anchor (0-10V, smoothed); the fill shows the current output</td></tr>
 <tr><td class="k">Sequence 2</td><td>SEQ2 sequence signal: vertical distance between the moving scan point and the anchor (0-10V, smoothed); the fill shows the current output</td></tr>
-<tr><td class="k">Movement</td><td>Movement energy: mean frame-to-frame luma difference of the final output image, scaled by Gain (0-10V, smoothed)</td></tr>
-<tr><td class="k">Color Red</td><td>Average red of the final output image foreground (per the contour source selector, 0-10V), usable as a modulation source and CV output</td></tr>
-<tr><td class="k">Color Green</td><td>Average green of the final output image foreground (per the contour source selector, 0-10V), usable as a modulation source and CV output</td></tr>
-<tr><td class="k">Color Blue</td><td>Average blue of the final output image foreground (per the contour source selector, 0-10V), usable as a modulation source and CV output</td></tr>
-<tr><td class="k">Color Saturation</td><td>Average saturation of the final output image foreground (per the contour source selector, HSV S, 0-10V), usable as a modulation source and CV output</td></tr>
+<tr><td class="k">Movement</td><td>Movement energy: mean frame-to-frame luma difference of the image chosen with Contour Source in the SIGNAL window, scaled by Gain (0-10V, smoothed)</td></tr>
+<tr><td class="k">Color Red</td><td>Average red of the foreground of the image chosen with Contour Source in the SIGNAL window (0-10V), usable as a modulation source and CV output</td></tr>
+<tr><td class="k">Color Green</td><td>Average green of the foreground of the image chosen with Contour Source in the SIGNAL window (0-10V), usable as a modulation source and CV output</td></tr>
+<tr><td class="k">Color Blue</td><td>Average blue of the foreground of the image chosen with Contour Source in the SIGNAL window (0-10V), usable as a modulation source and CV output</td></tr>
+<tr><td class="k">Color Saturation</td><td>Average saturation of the foreground of the image chosen with Contour Source in the SIGNAL window (HSV S, 0-10V), usable as a modulation source and CV output</td></tr>
 <tr><td class="k">Spectrum Warm</td><td>Share of warm hues (red, orange, yellow) in the image foreground (0-10V); grey and dark areas are not counted</td></tr>
 <tr><td class="k">Spectrum Neutral</td><td>Share of neutral hues (green) in the image foreground (0-10V); grey and dark areas are not counted</td></tr>
 <tr><td class="k">Spectrum Cool</td><td>Share of cool hues (cyan, blue, purple) in the image foreground (0-10V); grey and dark areas are not counted</td></tr>
@@ -541,9 +539,9 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 
 <!-- ============================================================ -->
 <h2 id="modulation">18. Modulation and MIDI Learn</h2>
-<p>Modulatable faders have a small dot on the left of the label. Left-click the dot to switch the connection on or off; right-click it to open the popup, pick one Source from the grid, and set Amount. Amount is bipolar (-1 to 1, centre 0), so a source can push the parameter either way. Each parameter holds one connection.</p>
-<div class="fig"><img src="img/modulation_source.png" alt="Modulation source signals are generated continuously from the live image, audio, and the built-in LFOs."></div>
-<div class="cap">Modulation source signals are generated continuously from the live image, audio, and the built-in LFOs.</div>
+<p>Modulatable faders have a small dot on the left of the label. Left-click the dot to connect or disconnect. Disconnecting deletes the Source and Amount; connecting again starts from Sequence 1 with Amount 0. Right-click the dot to open the popup, pick one Source from the grid, and set Amount. Amount is bipolar (-1 to 1, centre 0), so a source can push the parameter either way. Each parameter holds one connection.</p>
+<div class="fig"><img src="img/modulation_source.png" alt="The CV Meter in the SIGNAL window shows the modulation source signals generated from the live image (Sequence 1/2, Movement, Color, Spectrum) as they update."></div>
+<div class="cap">The CV Meter in the SIGNAL window shows the modulation source signals generated from the live image (Sequence 1/2, Movement, Color, Spectrum) as they update.</div>
 <div class="fig"><img src="img/modulation_adjust.png" alt="Right-click a modulation dot to open the popup: choose a source, then drag Amount."></div>
 <div class="cap">Right-click a modulation dot to open the popup: choose a source, then drag Amount.</div>
 <table>
@@ -563,8 +561,8 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 </table>
 <h3>MIDI Learn</h3>
 <p>Faders that support MIDI have a binding dot on the right of the value. Right-click the fader and choose MIDI Learn, then move a control on your MIDI device; the dot turns to the accent colour when bound. The same menu shows the bound channel and CC and offers Clear Binding. While it is waiting for a control, the menu also offers Cancel MIDI Learn. Only 7-bit Control Change messages are learned. Removing a module removes its bindings. MIDI mappings are saved in project files, and LOAD replaces the current mappings with those in the file. The RANDOM button and the RANDOM glide time can also be bound; see Visual Random.</p>
-<div class="fig"><img src="img/midi_learn.png" alt="Right-click a fader to open the MIDI Learn menu. The binding dot to the right of the value shows the binding state."></div>
-<div class="cap">Right-click a fader to open the MIDI Learn menu. The binding dot to the right of the value shows the binding state.</div>
+<div class="fig"><img src="img/midi_learn.png" alt="Right-click a fader to open the MIDI Learn menu. The binding dot to the right of the value shows the binding state. A bound control shows "Bound: Ch / CC" at the top of its right-click menu."></div>
+<div class="cap">Right-click a fader to open the MIDI Learn menu. The binding dot to the right of the value shows the binding state. A bound control shows "Bound: Ch / CC" at the top of its right-click menu.</div>
 <table>
 <tr><td class="k">MIDI Learn</td><td>MIDI Learn: click, then move a knob or fader on the MIDI controller; the next CC received is bound to this parameter</td></tr>
 <tr><td class="k">Clear Binding</td><td>Clear Binding: remove the MIDI binding of this parameter</td></tr>

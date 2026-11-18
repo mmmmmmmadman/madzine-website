@@ -156,14 +156,13 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">Module item</td><td>點選即把該模組加到訊號流最後面並啟用；灰色表示該模組只能有一個且已存在</td></tr>
 </table>
 <h3>各站共通控制</h3>
-<p>Fundamental Vision 之後的每一站共用相同的標頭控制：啟用勾選框、Mix、Brightness 與 Position / Scale 拖曳區。Mix 是該站的 dry/wet，也是唯一的混合控制，模組內沒有自己的 mix 推桿。新加入的 instance Mix 從 0 開始，因此加入模組當下不會改變畫面，拉高 Mix 才會生效。</p>
-<div class="fig"><img src="img/triposr_panel.png" alt="模組面板（圖為 3D Model）。標頭列有啟用勾選框與 RESET；Mix、Brightness 與 Position / Scale 拖曳區為所有站共用。"></div>
-<div class="cap">模組面板（圖為 3D Model）。標頭列有啟用勾選框與 RESET；Mix、Brightness 與 Position / Scale 拖曳區為所有站共用。</div>
+<p>Fundamental Vision 之後的每一站共用相同的控制。面板標頭只有啟用勾選框（部分站另有 RESET）。mix、bright 與 Position 三個控制在預設視窗大小時位於訊號流列表的每一列，大視窗時位於各面板底部；畫面上的標籤為 mix、bright 與 Position。Mix 是該站的 dry/wet，也是唯一的混合控制，模組內沒有自己的 mix 推桿。新加入的 instance Mix 從 0 開始，因此加入模組當下不會改變畫面，拉高 Mix 才會生效。</p>
+<div class="fig"><img src="img/triposr_panel.png" alt="模組面板（圖為 3D Model）。標頭列有啟用勾選框與 RESET。所有站共用的 mix、bright 與 Position 不在標頭：預設視窗大小時位於訊號流列表各列，大視窗時位於面板底部。"></div>
+<div class="cap">模組面板（圖為 3D Model）。標頭列有啟用勾選框與 RESET。所有站共用的 mix、bright 與 Position 不在標頭：預設視窗大小時位於訊號流列表各列，大視窗時位於面板底部。</div>
 <table>
 <tr><td class="k">Mix</td><td>該站 dry/wet 混合：0 直通上一站輸出、1 全效果</td></tr>
 <tr><td class="k">Brightness</td><td>該站輸出亮度增益（0–4，雙擊回 1）</td></tr>
 <tr><td class="k">Position / Scale</td><td>位置／縮放：拖曳移動、滾輪縮放（0.25–4）、雙擊位置歸零並把縮放回到 1</td></tr>
-<tr><td class="k">Mask icon</td><td>點開啟該模組的筆刷遮罩面板：畫出的區域可設為移除或保留</td></tr>
 </table>
 <h3>筆刷遮罩</h3>
 <p>每個模組 instance 各有自己的遮罩，遮罩面板開啟時在預覽畫面上繪製。遮罩跟著可見畫面：改變輸出比例後，筆跡留在畫面中同一相對位置。筆跡、模式與筆刷設定會隨設定與專案檔一起儲存。</p>
@@ -171,12 +170,13 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">關閉／刪除／保留</td><td>遮罩模式（點擊依序切換）：關閉／刪除（塗過的區域移除）／保留（只留塗過的區域）。在預覽畫面上拖曳繪製；筆跡、模式與筆刷設定會存檔，重開程式或載入專案檔後還原</td></tr>
 <tr><td class="k">粗細</td><td>筆刷粗細（0.01–0.30）；只影響之後畫的筆畫</td></tr>
 <tr><td class="k">模糊度</td><td>筆刷邊緣模糊度（0–1）；只影響之後畫的筆畫</td></tr>
-<tr><td class="k">躁點</td><td>筆刷躁點量（0–1）；只影響之後畫的筆畫</td></tr>
+<tr><td class="k">噪點</td><td>筆刷噪點量（0–1）；只影響之後畫的筆畫</td></tr>
 <tr><td class="k">透明度</td><td>筆刷不透明度（0.05–1）；只影響之後畫的筆畫</td></tr>
 <tr><td class="k">清除</td><td>清除已畫的遮罩，回到未遮罩狀態；模式與筆刷設定不變</td></tr>
+<tr><td class="k">Mask icon</td><td>點開啟該模組的筆刷遮罩面板：畫出的區域可設為移除或保留</td></tr>
 </table>
-<div class="fig"><img src="img/brush_mask.png" alt="筆刷遮罩面板：模式、粗細、模糊度、躁點、透明度與清除。"></div>
-<div class="cap">筆刷遮罩面板：模式、粗細、模糊度、躁點、透明度與清除。</div>
+<div class="fig"><img src="img/brush_mask.png" alt="筆刷遮罩面板：模式、粗細、模糊度、噪點、透明度與清除。"></div>
+<div class="cap">筆刷遮罩面板：模式、粗細、模糊度、噪點、透明度與清除。</div>
 
 <!-- ============================================================ -->
 <h2 id="fundamental">3. Fundamental Vision（基礎視覺）</h2>
@@ -211,11 +211,11 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <table>
 <tr><td class="k">File path</td><td>目前載入的檔案路徑；把檔案拖進視窗即載入（左半放 Modifier、右半放 Carrier）</td></tr>
 </table>
-<p>影片或照片檔找不到或沒有讀取權限時（例如檔案被移走，或專案來自另一台電腦），控制視窗會顯示提示並標明是哪一個槽。把檔案重新拖進視窗即可；檔案可以讀取後提示消失。</p>
-<div class="fig"><img src="img/source_missing.png" alt="Modifier 影片檔找不到或無法讀取時顯示的訊息；Clear 會把該檔從槽中移除。"></div>
-<div class="cap">Modifier 影片檔找不到或無法讀取時顯示的訊息；Clear 會把該檔從槽中移除。</div>
+<p>影片或照片檔找不到或沒有讀取權限時（例如檔案被移走，或專案來自另一台電腦），控制視窗會顯示提示並標明是哪一個槽。把檔案重新拖進視窗即可；檔案可以讀取後提示消失。Clear 只關閉提示，檔案路徑仍留在槽中。</p>
+<div class="fig"><img src="img/source_missing.png" alt="Modifier 影片檔找不到或無法讀取時顯示的訊息；Clear 只關閉訊息，檔案路徑仍留在槽中。"></div>
+<div class="cap">Modifier 影片檔找不到或無法讀取時顯示的訊息；Clear 只關閉訊息，檔案路徑仍留在槽中。</div>
 <h3>影片聲音</h3>
-<p>Audio 列把 Carrier 或 Modifier 影片的音軌播放到 SIGNAL 視窗所選輸出裝置的第 1-2 聲道。該槽是影片時才能選 Carrier 或 Modifier，否則按鈕為灰色。所選影片沒有音軌或無法解碼時，列下方顯示 No audio track。播放速度跟著 Speed，音高隨速度改變；速度為 0 或以下時聲音暫停，並跟著影片循環。音軌只載入前 10 分鐘，之後為無聲。CV Output 路由指到第 1 或第 2 聲道時，會覆寫該聲道的影片聲音。</p>
+<p>Audio 列把 Carrier 或 Modifier 影片的音軌播放到 SIGNAL 視窗所選輸出裝置的第 1-2 聲道。該槽是影片時才能選 Carrier 或 Modifier，否則按鈕為灰色。所選影片沒有音軌或無法解碼時，列下方顯示 No audio track。播放速度跟著 Speed，音高隨速度改變；速度為 0 或以下時聲音暫停，並跟著影片循環。音軌只載入前 10 分鐘，之後為無聲。第 1-2 聲道永遠是影片聲音：CV Output 只寫到第 3 聲道起，路由指到第 1 或第 2 聲道時不會輸出。</p>
 <div class="fig"><img src="img/fv_video_audio.png" alt="Fundamental Vision 面板中的 Audio 列（Off / Carrier / Modifier）與 Level 推桿。"></div>
 <div class="cap">Fundamental Vision 面板中的 Audio 列（Off / Carrier / Modifier）與 Level 推桿。</div>
 <table>
@@ -226,14 +226,12 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 
 <!-- ============================================================ -->
 <h2 id="contour">4. Contour Scanner 與 CV Generator</h2>
-<p>主視窗在模組面板下方固定顯示 Contour Scanner 與 CV Generator。掃描器從畫面偵測輪廓；CV Generator 把掃描、動態、顏色與色相分布轉成調變訊號。它們讀取的畫面由 SIGNAL 視窗的輪廓來源選擇。全域動作列（PRESET、PLUGINS、OUTPUT、RANDOM、VIDEO、視覺重啟、說明書、說明）位於 Contour Scanner 面板頂端。</p>
-<div class="fig"><img src="img/contour_cv.png" alt="模組面板下方的 Contour Scanner 與 CV Generator 區塊。"></div>
-<div class="cap">模組面板下方的 Contour Scanner 與 CV Generator 區塊。</div>
+<p>主視窗固定顯示 Contour Scanner 與 CV Generator。預設視窗大小時位於左欄訊號流列表下方；大視窗時位於 Fundamental Vision 下方。掃描器從畫面偵測輪廓；CV Generator 把掃描、動態、顏色與色相分布轉成調變訊號。它們讀取的畫面由 SIGNAL 視窗的輪廓來源選擇。全域動作列（PRESET、PLUGINS、OUTPUT、RANDOM、VIDEO、視覺重啟、說明書、說明）位於 Contour Scanner 上方。可拖曳掃描圈的輪廓預覽在 SIGNAL 視窗。</p>
+<div class="fig"><img src="img/contour_cv.png" alt="Contour Scanner 與 CV Generator 區塊（預設視窗大小時在訊號流列表下方，大視窗時在 Fundamental Vision 下方）。"></div>
+<div class="cap">Contour Scanner 與 CV Generator 區塊（預設視窗大小時在訊號流列表下方，大視窗時在 Fundamental Vision 下方）。</div>
 <h3>Contour Scanner</h3>
 <table>
 <tr><td class="k">Module</td><td>輪廓掃描模組：從畫面偵測輪廓，產生 SEQ 訊號與輪廓疊加顯示</td></tr>
-<tr><td class="k">Preview</td><td>輪廓預覽：輪廓線 + 掃描點 + 可拖曳的掃描範圍圓（ROI）</td></tr>
-<tr><td class="k">Scan ROI</td><td>掃描範圍圓：拖曳圓心移動掃描錨點，拖曳圓邊調整掃描範圍</td></tr>
 <tr><td class="k">Threshold</td><td>輪廓邊緣偵測門檻：值越高只保留越強的邊緣</td></tr>
 <tr><td class="k">Smoothing</td><td>輪廓時間平滑：數值為新畫面的比重，越低輪廓變化越慢越穩，100 為不平滑</td></tr>
 <tr><td class="k">Stillness</td><td>Stillness：輪廓更新閘門（非邊緣偵測門檻）：畫面要變化超過本值百分比才重新偵測輪廓。調高則輪廓保持得更靜止、CPU/GPU 負擔更低；調低反應更靈敏，調 0 則幾乎每幀都重算</td></tr>
@@ -242,11 +240,11 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 </table>
 <h3>CV Generator</h3>
 <table>
-<tr><td class="k">Module</td><td>CV Generator：從畫面衍生調變訊號（輪廓 SEQ、Movement 動能、Color）</td></tr>
+<tr><td class="k">Module</td><td>CV Generator：從畫面衍生調變訊號（輪廓 SEQ、Movement 動能、Color、Spectrum）</td></tr>
 <tr><td class="k">Scan Time</td><td>輪廓掃描週期：掃描走完一輪的時間（0.1-300 秒）；軌道上的白線顯示當前掃描位置</td></tr>
 <tr><td class="k">Smooth</td><td>SEQ 與 Movement 訊號的平滑程度</td></tr>
-<tr><td class="k">Gain</td><td>Movement 動能訊號的增益（來源：最終輸出畫面）</td></tr>
-<tr><td class="k">Foreground</td><td>前景門檻：只有透明度高於本值的像素才計入 Movement 與 Color CV</td></tr>
+<tr><td class="k">Gain</td><td>Movement 動能訊號的增益（來源：SIGNAL 視窗輪廓來源選單所選的畫面）</td></tr>
+<tr><td class="k">Foreground</td><td>前景門檻：只有透明度高於本值的像素才計入 Movement、Color 與 Spectrum CV</td></tr>
 </table>
 
 <!-- ============================================================ -->
@@ -332,7 +330,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <div class="fig"><img src="img/triposr_obj_loaded.png" alt="透過 OBJ File 列載入的 OBJ 檔。"></div>
 <div class="cap">透過 OBJ File 列載入的 OBJ 檔。</div>
 <table>
-<tr><td class="k">Enable</td><td>啟用3D 模型：顯示載入的 OBJ 檔或內建幾何體的 3D 模型</td></tr>
+<tr><td class="k">Enable</td><td>啟用 3D 模型：顯示載入的 OBJ 檔或內建幾何體的 3D 模型</td></tr>
 <tr><td class="k">RESET</td><td>還原 3D 模型全部參數至預設值、移除已載入的模型（OBJ 檔與內建幾何體）並斷開調變</td></tr>
 <tr><td class="k">Rotate Y</td><td>相機繞模型水平環繞的角度（0–360°）</td></tr>
 <tr><td class="k">Rotate X</td><td>相機繞模型垂直環繞的角度（0–360°）</td></tr>
@@ -413,7 +411,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 
 <!-- ============================================================ -->
 <h2 id="plugin">14. Plugin（外掛）</h2>
-<p>把第三方 fragment shader 當作一站執行。外掛是單一 .wgsl 檔，從外掛資料夾讀取（預設 ~/.visionmod/plugins/，只掃第一層）。資料夾由主視窗的 PLUGINS 列選擇，變更後自動重新掃描。Plugin 面板有一個下拉選單用來選擇外掛；「自動」使用清單中第一個可正常執行的外掛，編譯失敗的外掛會列出狀態但不能選。下方是內建的 Displace 推桿（以 Modifier 畫面推動輸入畫面位移，0 為關閉）與所選外掛宣告的參數推桿。沒有可用外掛時，該站讓畫面原樣通過。</p>
+<p>把第三方 fragment shader 當作一站執行。外掛是單一 .wgsl 檔，從外掛資料夾讀取（預設 ~/.visionmod/plugins/，只掃第一層）。資料夾由主視窗的 PLUGINS 列選擇。只在啟動時、選了不同資料夾時與按 RESCAN 時掃描；程式不監看資料夾，新增或修改外掛檔後請按 RESCAN。Plugin 面板有一個下拉選單用來選擇外掛；「自動」使用清單中第一個可正常執行的外掛，編譯失敗的外掛會列出狀態但不能選。下方是內建的 Displace 推桿（以 Modifier 畫面推動輸入畫面位移，0 為關閉）與所選外掛宣告的參數推桿。沒有可用外掛時，該站讓畫面原樣通過。</p>
 <div class="fig"><img src="img/plugin_panel.png" alt="Plugin 面板：外掛下拉選單（圖為「自動」，並顯示正在執行的外掛名稱）、內建 Displace 推桿，以及外掛宣告的參數推桿。"></div>
 <div class="cap">Plugin 面板：外掛下拉選單（圖為「自動」，並顯示正在執行的外掛名稱）、內建 Displace 推桿，以及外掛宣告的參數推桿。</div>
 <table>
@@ -432,9 +430,9 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 
 <!-- ============================================================ -->
 <h2 id="global">15. 全域動作</h2>
-<p>Contour Scanner 面板頂端的動作列作用於整個程式。</p>
-<div class="fig"><img src="img/global_actions.png" alt="全域動作列：PRESET（SAVE / SAVE AS / LOAD）與目前專案檔名、PLUGINS（FOLDER / DEFAULT / RESCAN）與外掛資料夾、匯入舊版設定、OUTPUT + WINDOW、RANDOM、VIDEO、視覺重啟、說明書與說明。Mac App Store 版的購買列位於 PRESET 上方。"></div>
-<div class="cap">全域動作列：PRESET（SAVE / SAVE AS / LOAD）與目前專案檔名、PLUGINS（FOLDER / DEFAULT / RESCAN）與外掛資料夾、匯入舊版設定、OUTPUT + WINDOW、RANDOM、VIDEO、視覺重啟、說明書與說明。Mac App Store 版的購買列位於 PRESET 上方。</div>
+<p>Contour Scanner 上方的動作列作用於整個程式。</p>
+<div class="fig"><img src="img/global_actions.png" alt="全域動作列：PRESET（SAVE / SAVE AS / LOAD）與目前專案檔名、PLUGINS（FOLDER / DEFAULT / RESCAN）與外掛資料夾、匯入舊版設定（僅 Mac App Store 版）、OUTPUT + WINDOW、RANDOM、VIDEO、視覺重啟、說明書與說明。Mac App Store 版的購買列位於 PRESET 上方。"></div>
+<div class="cap">全域動作列：PRESET（SAVE / SAVE AS / LOAD）與目前專案檔名、PLUGINS（FOLDER / DEFAULT / RESCAN）與外掛資料夾、匯入舊版設定（僅 Mac App Store 版）、OUTPUT + WINDOW、RANDOM、VIDEO、視覺重啟、說明書與說明。Mac App Store 版的購買列位於 PRESET 上方。</div>
 <div class="fig"><img src="img/load_confirm.png" alt="LOAD 套用專案檔之前顯示的「覆蓋載入 / 取消」確認。"></div>
 <div class="cap">LOAD 套用專案檔之前顯示的「覆蓋載入 / 取消」確認。</div>
 <div class="fig"><img src="img/output_window.png" alt="主輸出視窗，以及用 OUTPUT + WINDOW 新增、浮在其上的第二個輸出視窗。"></div>
@@ -470,7 +468,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">RANDOM</td><td>RANDOM 鈕：按下後已啟用模組中開啟隨機的參數在各自範圍內重新抽值</td></tr>
 <tr><td class="k">EDIT / DONE</td><td>EDIT：進入隨機編輯模式，所有可隨機的參數原地顯示隨機開關與隨機範圍，可一次編輯；不可隨機的參數顯示為灰色；再按同一顆鈕（DONE）離開</td></tr>
 <tr><td class="k">滑動時間</td><td>滑動時間：參數滑到新值所需的時間（分:秒），0 為立即跳到新值；上下拖曳調整、點擊以鍵盤輸入；滑動中顯示剩餘時間</td></tr>
-<tr><td class="k">觸發來源</td><td>隨機觸發來源：所選調變來源超過 5V 時觸發一次隨機；點擊圓點開啟來源選單，可複選，再點一次取消</td></tr>
+<tr><td class="k">觸發來源</td><td>隨機觸發來源：所選調變來源上升到 5V 以上時觸發一次隨機；點擊圓點開啟來源選單，可複選，再點一次取消</td></tr>
 </table>
 <p>鍵盤輸入的上限為 999 分 59 秒。不會被隨機的參數：Stable Diffusion、Contour Scanner、CV Generator 這三個模組；開關、下拉選單（3D 模型的 preset 除外）、Position / Scale、遮罩、檔案與來源；以及 Fundamental Vision 的 Brightness、Speed 與 Audio Level。外掛只隨機它宣告為可調變的參數，範圍取外掛宣告的範圍。Feedback 的 Smooth 與 Bright 一起抽值，兩者總和維持在 0.3 以下。3D 模型的 RANDOM 會立即換成另一個內建 preset，不滑動；使用 OBJ 檔或選擇 No Preset 時不更換網格。</p>
 <h3>隨機範圍編輯</h3>
@@ -497,7 +495,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <h3>輪廓來源與輪廓樣式</h3>
 <p>預覽下方的輪廓來源列選擇 Contour Scanner 掃描的畫面，Movement、Color 與 Spectrum 也取自同一畫面。選項為最終輸出、輸入（去背後），以及依訊號流列表順序排列的各模組；同一種模組有多份時加上 #1、#2 等編號，停用的模組標示 (off)。列右端的按鈕開啟輪廓樣式，設定輪廓線的畫法。輪廓來源與輪廓樣式會隨設定與專案檔一起儲存。</p>
 <table>
-<tr><td class="k">輪廓來源</td><td>輪廓掃描的影像來源：可選最終輸出、輸入（去背後）= 兩輸入混合、色彩校正、去背後的畫面，或管線中任一模組處理後的畫面（停用的模組標 (off)，取到的是它上游的畫面）；選中的模組被刪除時自動回到最終輸出；Movement 訊號跟隨同一來源</td></tr>
+<tr><td class="k">輪廓來源</td><td>輪廓掃描的影像來源：可選最終輸出、輸入（去背後）= 兩輸入混合、色彩校正、去背後的畫面，或管線中任一模組處理後的畫面（停用的模組標 (off)，取到的是它上游的畫面）；選中的模組被刪除時自動回到最終輸出；Movement、Color 與 Spectrum 訊號都跟隨同一來源</td></tr>
 <tr><td class="k">輪廓樣式</td><td>輪廓線樣式：線寬為輪廓線粗細（1 到 30 像素）；顏色用色相環外環拖曳選色相、中央圓上下拖曳調飽和度（飽和度 0 為白色）；筆刷「平直」為直線段、「圓頭」為線段加圓形接點與端點、「點狀」只畫圓點不連線；點距只在點狀筆刷時出現，每隔幾個輪廓點畫一顆圓點（1 到 64）</td></tr>
 </table>
 <h3>CV meter</h3>
@@ -505,11 +503,11 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">Module</td><td>CV Meter：顯示從畫面衍生的 10 條調變訊號（輪廓 SEQ 1／2、Movement、Color R／G／B／Sat、Spectrum Warm／Neutral／Cool）</td></tr>
 <tr><td class="k">Sequence 1</td><td>SEQ1 序列訊號：掃描點沿輪廓移動時與錨點的水平距離（0-10V，已平滑）；填色即當前輸出</td></tr>
 <tr><td class="k">Sequence 2</td><td>SEQ2 序列訊號：掃描點沿輪廓移動時與錨點的垂直距離（0-10V，已平滑）；填色即當前輸出</td></tr>
-<tr><td class="k">Movement</td><td>Movement 動能：最終輸出畫面前後幀亮度差的平均 ×Gain（0-10V，已平滑）</td></tr>
-<tr><td class="k">Color Red</td><td>最終輸出畫面（依輪廓來源選單）前景的平均紅色量（0-10V），可作 modulation source 與 CV 輸出</td></tr>
-<tr><td class="k">Color Green</td><td>最終輸出畫面（依輪廓來源選單）前景的平均綠色量（0-10V），可作 modulation source 與 CV 輸出</td></tr>
-<tr><td class="k">Color Blue</td><td>最終輸出畫面（依輪廓來源選單）前景的平均藍色量（0-10V），可作 modulation source 與 CV 輸出</td></tr>
-<tr><td class="k">Color Saturation</td><td>最終輸出畫面（依輪廓來源選單）前景的平均飽和度（HSV S，0-10V），可作 modulation source 與 CV 輸出</td></tr>
+<tr><td class="k">Movement</td><td>Movement 動能：SIGNAL 視窗輪廓來源選單所選畫面的前後幀亮度差平均 ×Gain（0-10V，已平滑）</td></tr>
+<tr><td class="k">Color Red</td><td>SIGNAL 視窗輪廓來源選單所選畫面前景的平均紅色量（0-10V），可作 modulation source 與 CV 輸出</td></tr>
+<tr><td class="k">Color Green</td><td>SIGNAL 視窗輪廓來源選單所選畫面前景的平均綠色量（0-10V），可作 modulation source 與 CV 輸出</td></tr>
+<tr><td class="k">Color Blue</td><td>SIGNAL 視窗輪廓來源選單所選畫面前景的平均藍色量（0-10V），可作 modulation source 與 CV 輸出</td></tr>
+<tr><td class="k">Color Saturation</td><td>SIGNAL 視窗輪廓來源選單所選畫面前景的平均飽和度（HSV S，0-10V），可作 modulation source 與 CV 輸出</td></tr>
 <tr><td class="k">Spectrum Warm</td><td>畫面前景中暖色（紅橙黃）佔的比例（0-10V），灰與暗部不計</td></tr>
 <tr><td class="k">Spectrum Neutral</td><td>畫面前景中中性色（綠）佔的比例（0-10V），灰與暗部不計</td></tr>
 <tr><td class="k">Spectrum Cool</td><td>畫面前景中冷色（青藍紫）佔的比例（0-10V），灰與暗部不計</td></tr>
@@ -541,9 +539,9 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 
 <!-- ============================================================ -->
 <h2 id="modulation">18. 調變與 MIDI Learn</h2>
-<p>可調變的推桿在標籤左側有一個小圓點。左鍵點圓點切換連線開關；右鍵開啟 popup，從網格選一個 Source 並設定 Amount。Amount 為雙極（-1 至 1，中點 0），來源可把參數往任一方向推。每個參數只保留一條連線。</p>
-<div class="fig"><img src="img/modulation_source.png" alt="調變來源訊號從即時畫面、音訊與內建 LFO 連續生成。"></div>
-<div class="cap">調變來源訊號從即時畫面、音訊與內建 LFO 連續生成。</div>
+<p>可調變的推桿在標籤左側有一個小圓點。左鍵點圓點接上或斷開連線。斷開會刪除 Source 與 Amount，再次接上從 Sequence 1、Amount 0 開始。右鍵開啟 popup，從網格選一個 Source 並設定 Amount。Amount 為雙極（-1 至 1，中點 0），來源可把參數往任一方向推。每個參數只保留一條連線。</p>
+<div class="fig"><img src="img/modulation_source.png" alt="SIGNAL 視窗的 CV Meter 即時顯示從畫面產生的調變來源訊號（Sequence 1/2、Movement、Color、Spectrum）。"></div>
+<div class="cap">SIGNAL 視窗的 CV Meter 即時顯示從畫面產生的調變來源訊號（Sequence 1/2、Movement、Color、Spectrum）。</div>
 <div class="fig"><img src="img/modulation_adjust.png" alt="右鍵點調變圓點開啟 popup：選擇來源，再拖曳 Amount。"></div>
 <div class="cap">右鍵點調變圓點開啟 popup：選擇來源，再拖曳 Amount。</div>
 <table>
@@ -563,8 +561,8 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 </table>
 <h3>MIDI Learn</h3>
 <p>支援 MIDI 的推桿在數值右側有一個綁定圓點。右鍵點推桿選 MIDI Learn，再動一下 MIDI 裝置上的控制器；綁定後圓點變成強調色。同一選單會顯示已綁定的通道與 CC，並提供 Clear Binding。等待控制器期間，選單另有「取消 MIDI Learn」。只學習 7-bit Control Change 訊息。移除模組時，該模組的綁定一併移除。MIDI 對應會存進專案檔，LOAD 會以檔內的對應取代現有對應。RANDOM 按鈕與 RANDOM 滑動時間也可綁定，見「Visual Random」。</p>
-<div class="fig"><img src="img/midi_learn.png" alt="右鍵點推桿開啟 MIDI Learn 選單。數值右側的綁定圓點顯示綁定狀態。"></div>
-<div class="cap">右鍵點推桿開啟 MIDI Learn 選單。數值右側的綁定圓點顯示綁定狀態。</div>
+<div class="fig"><img src="img/midi_learn.png" alt="右鍵點推桿開啟 MIDI Learn 選單。數值右側的綁定圓點顯示綁定狀態。已綁定的控制項，右鍵選單第一行會顯示「Bound: Ch / CC」。"></div>
+<div class="cap">右鍵點推桿開啟 MIDI Learn 選單。數值右側的綁定圓點顯示綁定狀態。已綁定的控制項，右鍵選單第一行會顯示「Bound: Ch / CC」。</div>
 <table>
 <tr><td class="k">MIDI Learn</td><td>MIDI Learn：點選後操作 MIDI 控制器上的旋鈕或推桿，收到的下一個 CC 即綁定到此參數</td></tr>
 <tr><td class="k">Clear Binding</td><td>Clear Binding：解除此參數的 MIDI 綁定</td></tr>

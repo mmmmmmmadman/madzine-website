@@ -126,7 +126,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">HUE</td><td>HUE カラーホイールパネルを開閉し、UI のアクセントカラーを調整</td></tr>
 <tr><td class="k">SIGNAL</td><td>SIGNAL フローティングウィンドウを開閉（輪郭プレビュー + 10 本の CV メーター + 音声入力メーター + CV Output ルーティング + LFO）</td></tr>
 <tr><td class="k">Language</td><td>UI 言語を切替（EN／日／中）。ホバー説明も連動し、選択は保存されます</td></tr>
-<tr><td class="k">SD status</td><td>SD サービス状態：起動中は SD Loading、完了後は使用中のアクセラレーションを表示</td></tr>
+<tr><td class="k">SD status</td><td>SD サービス状態：起動中は SD Loading、完了後は使用中のアクセラレーションバックエンドを表示</td></tr>
 </table>
 <h3>HUE ホイール</h3>
 <table>
@@ -156,14 +156,13 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">Module item</td><td>クリックでこのモジュールをシグナルフローの末尾に追加して有効化。グレー表示は 1 つまでのモジュールが既に存在することを示す</td></tr>
 </table>
 <h3>各 station 共通コントロール</h3>
-<p>Fundamental Vision 以降の各 station は同じヘッダーコントロールを共有します：有効チェックボックス、Mix、Brightness、Position / Scale パッド。Mix はその station の dry/wet で、唯一のミックスコントロールです。モジュール内に独自の mix フェーダーはありません。新規追加した instance の Mix は 0 から始まるため、追加した時点では画面は変わらず、Mix を上げると効果が現れます。</p>
-<div class="fig"><img src="img/triposr_panel.png" alt="station パネル（図は 3D Model）。ヘッダー行に有効チェックボックスと RESET。Mix、Brightness、Position / Scale パッドは全 station 共通です。"></div>
-<div class="cap">station パネル（図は 3D Model）。ヘッダー行に有効チェックボックスと RESET。Mix、Brightness、Position / Scale パッドは全 station 共通です。</div>
+<p>Fundamental Vision 以降の各 station は同じコントロールを共有します。パネルのヘッダーにあるのは有効チェックボックスのみです（一部の station には RESET もあります）。mix・bright・Position の 3 コントロールは、既定のウィンドウサイズではシグナルフロー一覧の各行に、大きなウィンドウサイズでは各パネルの下部にあります。画面上のラベルは mix、bright、Position です。Mix はその station の dry/wet で、唯一のミックスコントロールです。モジュール内に独自の mix フェーダーはありません。新規追加した instance の Mix は 0 から始まるため、追加した時点では画面は変わらず、Mix を上げると効果が現れます。</p>
+<div class="fig"><img src="img/triposr_panel.png" alt="station パネル（図は 3D Model）。ヘッダー行に有効チェックボックスと RESET。全 station 共通の mix・bright・Position はヘッダーにはなく、既定のウィンドウサイズではシグナルフロー一覧の各行、大きなウィンドウサイズではパネル下部にあります。"></div>
+<div class="cap">station パネル（図は 3D Model）。ヘッダー行に有効チェックボックスと RESET。全 station 共通の mix・bright・Position はヘッダーにはなく、既定のウィンドウサイズではシグナルフロー一覧の各行、大きなウィンドウサイズではパネル下部にあります。</div>
 <table>
 <tr><td class="k">Mix</td><td>ステーションの dry/wet 混合：0 で前段出力を素通し、1 で全効果</td></tr>
 <tr><td class="k">Brightness</td><td>このステーションの出力輝度ゲイン（0–4、ダブルクリックで 1 に戻る）</td></tr>
 <tr><td class="k">Position / Scale</td><td>位置／拡大：ドラッグで移動、スクロールで拡大（0.25–4）、ダブルクリックで位置を中央に戻し拡大率を 1 に戻す</td></tr>
-<tr><td class="k">Mask icon</td><td>クリックでこのモジュールのブラシマスクパネルを開く：塗った範囲を除去または保持に設定できます</td></tr>
 </table>
 <h3>ブラシマスク</h3>
 <p>各モジュール instance は個別のマスクを持ち、マスクパネルを開いている間にプレビュー上で描画します。マスクは表示されている画面に追従し、出力のアスペクト比を変えても、描いた内容は画面内の同じ相対位置に残ります。描いた内容、モード、ブラシ設定は設定およびプロジェクトファイルに保存されます。</p>
@@ -174,6 +173,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">ノイズ</td><td>ブラシのノイズ量（0–1）。以降に描くストロークにのみ反映</td></tr>
 <tr><td class="k">不透明度</td><td>ブラシの不透明度（0.05–1）。以降に描くストロークにのみ反映</td></tr>
 <tr><td class="k">クリア</td><td>描いたマスクを消去して未マスク状態に戻す。モードとブラシ設定は維持</td></tr>
+<tr><td class="k">Mask icon</td><td>クリックでこのモジュールのブラシマスクパネルを開く：塗った範囲を除去または保持に設定できます</td></tr>
 </table>
 <div class="fig"><img src="img/brush_mask.png" alt="ブラシマスクパネル：モード、太さ、ぼかし、ノイズ、不透明度、クリア。"></div>
 <div class="cap">ブラシマスクパネル：モード、太さ、ぼかし、ノイズ、不透明度、クリア。</div>
@@ -211,11 +211,11 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <table>
 <tr><td class="k">File path</td><td>読み込み中のファイルパス。ウィンドウへドロップで読み込み（左半分＝Modifier、右半分＝Carrier）</td></tr>
 </table>
-<p>動画または写真ファイルが見つからない、または読み取り権限がない場合（ファイルが移動された、別のコンピュータのプロジェクトを開いた等）、コントロールウィンドウにスロット名付きのメッセージが表示されます。ファイルをウィンドウにドロップし直してください。読み取れるようになるとメッセージは消えます。</p>
-<div class="fig"><img src="img/source_missing.png" alt="Modifier の動画ファイルが見つからない、または読み取れないときに表示されるメッセージ。Clear でそのファイルをスロットから外します。"></div>
-<div class="cap">Modifier の動画ファイルが見つからない、または読み取れないときに表示されるメッセージ。Clear でそのファイルをスロットから外します。</div>
+<p>動画または写真ファイルが見つからない、または読み取り権限がない場合（ファイルが移動された、別のコンピュータのプロジェクトを開いた等）、コントロールウィンドウにスロット名付きのメッセージが表示されます。ファイルをウィンドウにドロップし直してください。読み取れるようになるとメッセージは消えます。Clear はメッセージを閉じるだけで、ファイルパスはスロットに残ります。</p>
+<div class="fig"><img src="img/source_missing.png" alt="Modifier の動画ファイルが見つからない、または読み取れないときに表示されるメッセージ。Clear はメッセージを閉じるだけで、ファイルパスはスロットに残ります。"></div>
+<div class="cap">Modifier の動画ファイルが見つからない、または読み取れないときに表示されるメッセージ。Clear はメッセージを閉じるだけで、ファイルパスはスロットに残ります。</div>
 <h3>動画の音声</h3>
-<p>Audio 行は Carrier または Modifier の動画の音声を、SIGNAL ウィンドウで選んだ出力デバイスのチャンネル 1-2 に再生します。Carrier／Modifier はそのスロットが動画のときのみ選択でき、それ以外はボタンがグレー表示になります。選んだ動画に音声トラックがない、またはデコードできない場合、行の下に No audio track と表示されます。再生は Speed に追従し、速度に応じて音程も変わります。速度が 0 以下のときは音声が一時停止し、動画と一緒にループします。音声トラックは最初の 10 分のみ読み込まれ、それ以降は無音です。CV Output のルートをチャンネル 1 または 2 に設定すると、そのチャンネルの動画音声は上書きされます。</p>
+<p>Audio 行は Carrier または Modifier の動画の音声を、SIGNAL ウィンドウで選んだ出力デバイスのチャンネル 1-2 に再生します。Carrier／Modifier はそのスロットが動画のときのみ選択でき、それ以外はボタンがグレー表示になります。選んだ動画に音声トラックがない、またはデコードできない場合、行の下に No audio track と表示されます。再生は Speed に追従し、速度に応じて音程も変わります。速度が 0 以下のときは音声が一時停止し、動画と一緒にループします。音声トラックは最初の 10 分のみ読み込まれ、それ以降は無音です。チャンネル 1-2 は常に動画音声です。CV Output はチャンネル 3 以降にのみ書き込み、ルートをチャンネル 1 または 2 に設定しても出力されません。</p>
 <div class="fig"><img src="img/fv_video_audio.png" alt="Fundamental Vision パネルの Audio 行（Off / Carrier / Modifier）と Level フェーダー。"></div>
 <div class="cap">Fundamental Vision パネルの Audio 行（Off / Carrier / Modifier）と Level フェーダー。</div>
 <table>
@@ -226,14 +226,12 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 
 <!-- ============================================================ -->
 <h2 id="contour">4. Contour Scanner と CV Generator</h2>
-<p>メインウィンドウのモジュールパネルの下には Contour Scanner と CV Generator が表示されます。スキャナーは映像から輪郭を検出し、CV Generator はスキャン・動き・色・色相分布をモジュレーション信号に変換します。読み取る映像は SIGNAL ウィンドウの輪郭ソースで選びます。グローバル操作行（PRESET、PLUGINS、OUTPUT、RANDOM、VIDEO、ビジュアル再起動、説明書、ヘルプ）は Contour Scanner パネルの上部にあります。</p>
-<div class="fig"><img src="img/contour_cv.png" alt="モジュールパネルの下にある Contour Scanner と CV Generator ブロック。"></div>
-<div class="cap">モジュールパネルの下にある Contour Scanner と CV Generator ブロック。</div>
+<p>メインウィンドウには Contour Scanner と CV Generator が常に表示されます。既定のウィンドウサイズでは左列のシグナルフロー一覧の下、大きなウィンドウサイズでは Fundamental Vision の下にあります。スキャナーは映像から輪郭を検出し、CV Generator はスキャン・動き・色・色相分布をモジュレーション信号に変換します。読み取る映像は SIGNAL ウィンドウの輪郭ソースで選びます。グローバル操作行（PRESET、PLUGINS、OUTPUT、RANDOM、VIDEO、ビジュアル再起動、説明書、ヘルプ）は Contour Scanner の上にあります。スキャン円をドラッグできる輪郭プレビューは SIGNAL ウィンドウにあります。</p>
+<div class="fig"><img src="img/contour_cv.png" alt="Contour Scanner と CV Generator ブロック（既定のウィンドウサイズではシグナルフロー一覧の下、大きなウィンドウサイズでは Fundamental Vision の下）。"></div>
+<div class="cap">Contour Scanner と CV Generator ブロック（既定のウィンドウサイズではシグナルフロー一覧の下、大きなウィンドウサイズでは Fundamental Vision の下）。</div>
 <h3>Contour Scanner</h3>
 <table>
 <tr><td class="k">Module</td><td>輪郭スキャナーモジュール：映像から輪郭を検出し、SEQ 信号と輪郭オーバーレイを生成</td></tr>
-<tr><td class="k">Preview</td><td>輪郭プレビュー：輪郭線＋走査点＋ドラッグ可能な走査範囲円（ROI）</td></tr>
-<tr><td class="k">Scan ROI</td><td>走査範囲円：中心をドラッグで走査アンカー移動、縁をドラッグで走査範囲を調整</td></tr>
 <tr><td class="k">Threshold</td><td>輪郭エッジ検出の閾値：高いほど強いエッジのみ残します</td></tr>
 <tr><td class="k">Smoothing</td><td>輪郭の時間方向スムージング：値は新しいフレームの比重。低いほど変化が遅く安定し、100 でスムージングなし</td></tr>
 <tr><td class="k">Stillness</td><td>Stillness：輪郭の更新ゲート（エッジ検出の閾値ではありません）：画面がこの値（％）を超えて変化したときだけ輪郭を再検出します。高いほど輪郭は静止したまま保たれ CPU／GPU の負荷も下がり、低いほど反応が速くなり、0 ではほぼ毎フレーム再計算します</td></tr>
@@ -242,11 +240,11 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 </table>
 <h3>CV Generator</h3>
 <table>
-<tr><td class="k">Module</td><td>CV Generator：映像からモジュレーション信号を生成（輪郭 SEQ、Movement、Color）</td></tr>
+<tr><td class="k">Module</td><td>CV Generator：映像からモジュレーション信号を生成（輪郭 SEQ、Movement、Color、Spectrum）</td></tr>
 <tr><td class="k">Scan Time</td><td>輪郭走査周期：走査が一巡する時間（0.1-300 秒）。トラック上の白線が現在の走査位置</td></tr>
 <tr><td class="k">Smooth</td><td>SEQ と Movement 信号の平滑度</td></tr>
-<tr><td class="k">Gain</td><td>Movement 信号のゲイン（ソース：最終出力画面）</td></tr>
-<tr><td class="k">Foreground</td><td>前景閾値：アルファがこの値を超えるピクセルのみ Movement と Color CV に算入します</td></tr>
+<tr><td class="k">Gain</td><td>Movement 信号のゲイン（ソース：SIGNAL ウィンドウの輪郭ソースで選んだ映像）</td></tr>
+<tr><td class="k">Foreground</td><td>前景閾値：アルファがこの値を超えるピクセルのみ Movement、Color、Spectrum CV に算入します</td></tr>
 </table>
 
 <!-- ============================================================ -->
@@ -262,7 +260,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">Prompt</td><td>AI 生成のテキストプロンプト（望む画風を記述）</td></tr>
 <tr><td class="k">LoRA</td><td>LoRA ファイル（.safetensors）を選択して Stable Diffusion（Windows 版は Stream Diffusion）に適用</td></tr>
 <tr><td class="k">LoRA X</td><td>選択中の LoRA ファイルを解除し、LoRA を使用しない</td></tr>
-<tr><td class="k">Status</td><td>SD サービス状態：起動中は SD Loading、完了後は使用中のアクセラレーションを表示</td></tr>
+<tr><td class="k">Status</td><td>SD サービス状態：起動中は SD Loading、完了後は使用中のアクセラレーションバックエンドを表示</td></tr>
 </table>
 <p>Enable をオフにして再度オンにしたとき、再起動後、LOAD 後のいずれもプロンプトは保持されます。再起動後と LOAD 後、Stable Diffusion はオフになり、オンにしたとき Mix は 0 から始まります。LoRA ファイルが見つからない、または読み取り権限がない場合、LoRA 行にメッセージが表示され、その LoRA なしで生成されます。ファイルを選び直すとメッセージは消えます。</p>
 
@@ -273,14 +271,14 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <div class="cap">Chromascope パネル：Audio、Base Hue、Hue Spread、Curve と Angle とそれぞれの Spread、Level 1 から 8 のフェーダー。</div>
 <table>
 <tr><td class="k">Enable</td><td>Chromascope カラー効果を有効化</td></tr>
-<tr><td class="k">Audio</td><td>Chromascope 波形の倍率（0 から 5）：0 で線なし、3 までは倍率のみ、3 から 5 は波形全体を持ち上げ線が太くなります</td></tr>
-<tr><td class="k">Base Hue</td><td>Chromascope 基準色相</td></tr>
-<tr><td class="k">Hue Spread</td><td>Chromascope 八層間の色相の広がり：第 k 層の色相 = 基準色相 + 広がり × k / 有効層数</td></tr>
-<tr><td class="k">Curve</td><td>Chromascope 第一層の波形の曲がり具合；大きいほど線がまばらになり中央で曲がります</td></tr>
-<tr><td class="k">Curve Spread</td><td>Chromascope 層ごとの曲がり具合の増減（正負）：第 k 層 = カーブ + k × この値</td></tr>
-<tr><td class="k">Angle</td><td>Chromascope 第一層の波形の向きの角度（0 から 360 度）</td></tr>
-<tr><td class="k">Angle Spread</td><td>Chromascope 層ごとの角度の増加量：第 k 層 = 角度 + k × この値</td></tr>
-<tr><td class="k">Level 1 to 8</td><td>Chromascope この層の明るさ（同じ番号の音声入力に対応）。層は前のモジュールの出力の明るさで分けられ、画面を等分するものではありません。0 でこの層を外し、残りの層で明るさの範囲を分け直します</td></tr>
+<tr><td class="k">Audio</td><td>Chromascope の波形の倍率（0 から 5）：0 で線なし、3 までは倍率のみ、3 から 5 は波形全体を持ち上げ線が太くなります</td></tr>
+<tr><td class="k">Base Hue</td><td>Chromascope の基準色相</td></tr>
+<tr><td class="k">Hue Spread</td><td>Chromascope の八層間の色相の広がり：第 k 層の色相 = 基準色相 + 広がり × k / 有効層数</td></tr>
+<tr><td class="k">Curve</td><td>Chromascope の第一層の波形の曲がり具合；大きいほど線がまばらになり中央で曲がります</td></tr>
+<tr><td class="k">Curve Spread</td><td>Chromascope の層ごとの曲がり具合の増減（正負）：第 k 層 = カーブ + k × この値</td></tr>
+<tr><td class="k">Angle</td><td>Chromascope の第一層の波形の向きの角度（0 から 360 度）</td></tr>
+<tr><td class="k">Angle Spread</td><td>Chromascope の層ごとの角度の増加量：第 k 層 = 角度 + k × この値</td></tr>
+<tr><td class="k">Level 1 to 8</td><td>Chromascope のこの層の明るさ（同じ番号の音声入力に対応）。層は前のモジュールの出力の明るさで分けられ、画面を等分するものではありません。0 でこの層を外し、残りの層で明るさの範囲を分け直します</td></tr>
 </table>
 
 <!-- ============================================================ -->
@@ -413,7 +411,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 
 <!-- ============================================================ -->
 <h2 id="plugin">14. Plugin（プラグイン）</h2>
-<p>サードパーティの fragment shader を station として実行します。プラグインは単一の .wgsl ファイルで、プラグインフォルダ（既定 ~/.visionmod/plugins/、最上位のみ）から読み込みます。フォルダはメインウィンドウの PLUGINS 行で選択し、変更時に自動で再スキャンされます。Plugin パネルにはプラグインを選ぶドロップダウンがあります。「自動」はリスト内で最初に正常に動作するプラグインを使い、コンパイルに失敗したプラグインは状態付きで表示されますが選択できません。その下に内蔵の Displace フェーダー（Modifier 映像で入力映像を変位、0 でオフ）と、選択したプラグインが宣言したパラメータのフェーダーが並びます。使えるプラグインがない場合、station は映像をそのまま通過させます。</p>
+<p>サードパーティの fragment shader を station として実行します。プラグインは単一の .wgsl ファイルで、プラグインフォルダ（既定 ~/.visionmod/plugins/、最上位のみ）から読み込みます。フォルダはメインウィンドウの PLUGINS 行で選択します。スキャンは起動時、別のフォルダを選んだとき、RESCAN を押したときのみ行われます。フォルダは監視されないため、プラグインファイルを追加・編集した後は RESCAN を押してください。Plugin パネルにはプラグインを選ぶドロップダウンがあります。「自動」はリスト内で最初に正常に動作するプラグインを使い、コンパイルに失敗したプラグインは状態付きで表示されますが選択できません。その下に内蔵の Displace フェーダー（Modifier 映像で入力映像を変位、0 でオフ）と、選択したプラグインが宣言したパラメータのフェーダーが並びます。使えるプラグインがない場合、station は映像をそのまま通過させます。</p>
 <div class="fig"><img src="img/plugin_panel.png" alt="Plugin パネル：プラグインのドロップダウン（図は「自動」、実行中のプラグイン名を表示）、内蔵 Displace フェーダー、プラグインが宣言したフェーダー。"></div>
 <div class="cap">Plugin パネル：プラグインのドロップダウン（図は「自動」、実行中のプラグイン名を表示）、内蔵 Displace フェーダー、プラグインが宣言したフェーダー。</div>
 <table>
@@ -432,9 +430,9 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 
 <!-- ============================================================ -->
 <h2 id="global">15. グローバル操作</h2>
-<p>Contour Scanner パネル上部の操作行はプログラム全体に作用します。</p>
-<div class="fig"><img src="img/global_actions.png" alt="グローバル操作行：PRESET（SAVE / SAVE AS / LOAD）と現在のプロジェクトファイル名、PLUGINS（FOLDER / DEFAULT / RESCAN）とプラグインフォルダ、旧設定をインポート、OUTPUT + WINDOW、RANDOM、VIDEO、ビジュアル再起動、説明書、ヘルプ。Mac App Store 版では購入行が PRESET の上にあります。"></div>
-<div class="cap">グローバル操作行：PRESET（SAVE / SAVE AS / LOAD）と現在のプロジェクトファイル名、PLUGINS（FOLDER / DEFAULT / RESCAN）とプラグインフォルダ、旧設定をインポート、OUTPUT + WINDOW、RANDOM、VIDEO、ビジュアル再起動、説明書、ヘルプ。Mac App Store 版では購入行が PRESET の上にあります。</div>
+<p>Contour Scanner の上にある操作行はプログラム全体に作用します。</p>
+<div class="fig"><img src="img/global_actions.png" alt="グローバル操作行：PRESET（SAVE / SAVE AS / LOAD）と現在のプロジェクトファイル名、PLUGINS（FOLDER / DEFAULT / RESCAN）とプラグインフォルダ、旧設定をインポート（Mac App Store 版のみ）、OUTPUT + WINDOW、RANDOM、VIDEO、ビジュアル再起動、説明書、ヘルプ。Mac App Store 版では購入行が PRESET の上にあります。"></div>
+<div class="cap">グローバル操作行：PRESET（SAVE / SAVE AS / LOAD）と現在のプロジェクトファイル名、PLUGINS（FOLDER / DEFAULT / RESCAN）とプラグインフォルダ、旧設定をインポート（Mac App Store 版のみ）、OUTPUT + WINDOW、RANDOM、VIDEO、ビジュアル再起動、説明書、ヘルプ。Mac App Store 版では購入行が PRESET の上にあります。</div>
 <div class="fig"><img src="img/load_confirm.png" alt="LOAD がプロジェクトファイルを適用する前に表示される「上書き読込 / キャンセル」の確認。"></div>
 <div class="cap">LOAD がプロジェクトファイルを適用する前に表示される「上書き読込 / キャンセル」の確認。</div>
 <div class="fig"><img src="img/output_window.png" alt="メイン出力ウィンドウと、OUTPUT + WINDOW で追加されその上に浮かぶ 2 つ目の出力ウィンドウ。"></div>
@@ -470,7 +468,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">RANDOM</td><td>RANDOM ボタン：押すと有効なモジュールのランダムがオンのパラメーターをそれぞれの範囲内で再抽選</td></tr>
 <tr><td class="k">EDIT / DONE</td><td>EDIT：ランダム編集モードに入り、ランダム対象にできるすべてのパラメーターがその場でランダムのオン/オフとランダム範囲を表示し、まとめて編集可能。対象外のパラメーターはグレー表示。同じボタン（DONE）を押すと終了</td></tr>
 <tr><td class="k">グライド時間</td><td>グライド時間：パラメーターが新しい値へ移行するまでの時間（分:秒）。0 で即座に切替。上下ドラッグで調整、クリックでキーボード入力。移行中は残り時間を表示</td></tr>
-<tr><td class="k">トリガーソース</td><td>ランダムトリガーソース：選択したモジュレーションソースが 5V を超えるたびにランダムを 1 回実行。ドットをクリックでソース一覧を開く。複数選択可、もう一度クリックで解除</td></tr>
+<tr><td class="k">トリガーソース</td><td>ランダムトリガーソース：選択したモジュレーションソースが 5V 以上に達するたびにランダムを 1 回実行。ドットをクリックでソース一覧を開く。複数選択可、もう一度クリックで解除</td></tr>
 </table>
 <p>キーボード入力の上限は 999 分 59 秒です。ランダムにならないパラメータ：Stable Diffusion、Contour Scanner、CV Generator の 3 モジュール。スイッチ、ドロップダウン（3D モデルのプリセットを除く）、Position / Scale、マスク、ファイル、ソース。Fundamental Vision の Brightness、Speed、Audio Level。プラグインは、モジュレーション可能と宣言されたパラメータのみを、宣言された範囲内でランダムにします。Feedback の Smooth と Bright は合計が 0.3 以下になるよう同時に抽選されます。3D モデルでは RANDOM で別の内蔵プリセットに即座に切り替わり、グライドしません。OBJ ファイル使用中、または No Preset 選択中はメッシュを変更しません。</p>
 <h3>ランダム範囲の編集</h3>
@@ -497,7 +495,7 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <h3>輪郭ソースと輪郭スタイル</h3>
 <p>プレビューの下の輪郭ソース行で、Contour Scanner がスキャンする映像を選びます。Movement、Color、Spectrum も同じ映像から取得します。選択肢は最終出力、入力（マット後）、シグナルフロー一覧の順に並んだ各モジュールです。同種のモジュールが複数ある場合は #1、#2 などの番号が付き、無効なモジュールには (off) が付きます。行の右端のボタンで輪郭スタイルを開き、輪郭線の描き方を設定します。輪郭ソースと輪郭スタイルは設定およびプロジェクトファイルに保存されます。</p>
 <table>
-<tr><td class="k">輪郭ソース</td><td>輪郭スキャンの映像ソース：最終出力、入力（マット後）= 2 つの入力を合成し色補正と背景除去を行った後の映像、またはパイプライン内の任意のモジュール処理後の映像を選択（無効なモジュールは (off) 表示、その上流の映像を取得）。選択中のモジュールを削除すると自動で最終出力に戻ります。Movement 信号も同じソースに従います</td></tr>
+<tr><td class="k">輪郭ソース</td><td>輪郭スキャンの映像ソース：最終出力、入力（マット後）= 2 つの入力を合成し色補正と背景除去を行った後の映像、またはパイプライン内の任意のモジュール処理後の映像を選択（無効なモジュールは (off) 表示、その上流の映像を取得）。選択中のモジュールを削除すると自動で最終出力に戻ります。Movement、Color、Spectrum 信号もすべて同じソースに従います</td></tr>
 <tr><td class="k">輪郭スタイル</td><td>輪郭線スタイル：線幅は輪郭線の太さ（1〜30 ピクセル）。色は色相環の外周をドラッグして色相を選び、中央の円を上下にドラッグして彩度を調整（彩度 0 は白）。ブラシ：フラットは直線の線分、ラウンドは線分に丸い接合部と端点を追加、ドットは線でつながず点だけを描画。ドット間隔はドットブラシのときのみ表示され、何個の輪郭点ごとに 1 つの点を描くかを設定（1〜64）</td></tr>
 </table>
 <h3>CV メーター</h3>
@@ -505,11 +503,11 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 <tr><td class="k">Module</td><td>CV Meter：映像から生成した 10 本のモジュレーション信号を表示（輪郭 SEQ 1／2、Movement、Color R／G／B／Sat、Spectrum Warm／Neutral／Cool）</td></tr>
 <tr><td class="k">Sequence 1</td><td>SEQ1 シーケンス信号：輪郭上を動く走査点とアンカーの水平距離（0-10V、平滑済み）。塗りが現在の出力値</td></tr>
 <tr><td class="k">Sequence 2</td><td>SEQ2 シーケンス信号：輪郭上を動く走査点とアンカーの垂直距離（0-10V、平滑済み）。塗りが現在の出力値</td></tr>
-<tr><td class="k">Movement</td><td>Movement エネルギー：最終出力画面のフレーム間輝度差の平均 ×Gain（0-10V、平滑済み）</td></tr>
-<tr><td class="k">Color Red</td><td>最終出力画面（輪郭ソース選択に従う）前景の平均赤量（0-10V）。モジュレーションソース／CV 出力に使用可</td></tr>
-<tr><td class="k">Color Green</td><td>最終出力画面（輪郭ソース選択に従う）前景の平均緑量（0-10V）。モジュレーションソース／CV 出力に使用可</td></tr>
-<tr><td class="k">Color Blue</td><td>最終出力画面（輪郭ソース選択に従う）前景の平均青量（0-10V）。モジュレーションソース／CV 出力に使用可</td></tr>
-<tr><td class="k">Color Saturation</td><td>最終出力画面（輪郭ソース選択に従う）前景の平均彩度（HSV S、0-10V）。モジュレーションソース／CV 出力に使用可</td></tr>
+<tr><td class="k">Movement</td><td>Movement エネルギー：SIGNAL ウィンドウの輪郭ソースで選んだ映像のフレーム間輝度差の平均 ×Gain（0-10V、平滑済み）</td></tr>
+<tr><td class="k">Color Red</td><td>SIGNAL ウィンドウの輪郭ソースで選んだ映像の前景の平均赤量（0-10V）。モジュレーションソース／CV 出力に使用可</td></tr>
+<tr><td class="k">Color Green</td><td>SIGNAL ウィンドウの輪郭ソースで選んだ映像の前景の平均緑量（0-10V）。モジュレーションソース／CV 出力に使用可</td></tr>
+<tr><td class="k">Color Blue</td><td>SIGNAL ウィンドウの輪郭ソースで選んだ映像の前景の平均青量（0-10V）。モジュレーションソース／CV 出力に使用可</td></tr>
+<tr><td class="k">Color Saturation</td><td>SIGNAL ウィンドウの輪郭ソースで選んだ映像の前景の平均彩度（HSV S、0-10V）。モジュレーションソース／CV 出力に使用可</td></tr>
 <tr><td class="k">Spectrum Warm</td><td>画面前景に占める暖色（赤・橙・黄）の割合（0-10V）。灰色と暗部は算入しません</td></tr>
 <tr><td class="k">Spectrum Neutral</td><td>画面前景に占める中性色（緑）の割合（0-10V）。灰色と暗部は算入しません</td></tr>
 <tr><td class="k">Spectrum Cool</td><td>画面前景に占める寒色（シアン・青・紫）の割合（0-10V）。灰色と暗部は算入しません</td></tr>
@@ -541,9 +539,9 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 
 <!-- ============================================================ -->
 <h2 id="modulation">18. モジュレーションと MIDI Learn</h2>
-<p>モジュレーション可能なフェーダーはラベル左に小さな点があります。左クリックで接続のオン／オフ、右クリックでポップアップを開き、グリッドから Source を 1 つ選んで Amount を設定します。Amount はバイポーラ（-1〜1、中心 0）で、ソースはパラメータをどちらの方向にも動かせます。各パラメータは 1 本の接続を保持します。</p>
-<div class="fig"><img src="img/modulation_source.png" alt="モジュレーションソース信号は映像、音声、内蔵 LFO から連続生成されます。"></div>
-<div class="cap">モジュレーションソース信号は映像、音声、内蔵 LFO から連続生成されます。</div>
+<p>モジュレーション可能なフェーダーはラベル左に小さな点があります。左クリックで接続／切断します。切断すると Source と Amount は削除され、再接続すると Sequence 1・Amount 0 から始まります。右クリックでポップアップを開き、グリッドから Source を 1 つ選んで Amount を設定します。Amount はバイポーラ（-1〜1、中心 0）で、ソースはパラメータをどちらの方向にも動かせます。各パラメータは 1 本の接続を保持します。</p>
+<div class="fig"><img src="img/modulation_source.png" alt="SIGNAL ウィンドウの CV Meter は、映像から生成されるモジュレーションソース信号（Sequence 1/2、Movement、Color、Spectrum）をリアルタイムで表示します。"></div>
+<div class="cap">SIGNAL ウィンドウの CV Meter は、映像から生成されるモジュレーションソース信号（Sequence 1/2、Movement、Color、Spectrum）をリアルタイムで表示します。</div>
 <div class="fig"><img src="img/modulation_adjust.png" alt="モジュレーション点を右クリックしてポップアップを開き、ソースを選んで Amount をドラッグします。"></div>
 <div class="cap">モジュレーション点を右クリックしてポップアップを開き、ソースを選んで Amount をドラッグします。</div>
 <table>
@@ -563,8 +561,8 @@ footer { margin-top:80px; padding-top:24px; border-top:1px solid #2A2A2A; font-s
 </table>
 <h3>MIDI Learn</h3>
 <p>MIDI 対応フェーダーは値の右にバインディング点があります。フェーダーを右クリックして MIDI Learn を選び、MIDI 機器のコントロールを動かすとバインドされ、点がアクセント色になります。同じメニューにバインド済みのチャンネルと CC が表示され、Clear Binding も選べます。コントロール待ちの間は、メニューに「MIDI Learn をキャンセル」も表示されます。学習対象は 7-bit Control Change のみです。モジュールを削除すると、そのモジュールのバインドも削除されます。MIDI 割り当てはプロジェクトファイルに保存され、LOAD は現在の割り当てをファイル内の割り当てに置き換えます。RANDOM ボタンと RANDOM のグライド時間もバインドできます（「Visual Random」参照）。</p>
-<div class="fig"><img src="img/midi_learn.png" alt="フェーダーを右クリックして MIDI Learn メニューを開きます。値の右のバインディング点がバインド状態を示します。"></div>
-<div class="cap">フェーダーを右クリックして MIDI Learn メニューを開きます。値の右のバインディング点がバインド状態を示します。</div>
+<div class="fig"><img src="img/midi_learn.png" alt="フェーダーを右クリックして MIDI Learn メニューを開きます。値の右のバインディング点がバインド状態を示します。割り当て済みのコントロールは、右クリックメニューの先頭に「Bound: Ch / CC」が表示されます。"></div>
+<div class="cap">フェーダーを右クリックして MIDI Learn メニューを開きます。値の右のバインディング点がバインド状態を示します。割り当て済みのコントロールは、右クリックメニューの先頭に「Bound: Ch / CC」が表示されます。</div>
 <table>
 <tr><td class="k">MIDI Learn</td><td>MIDI Learn：クリック後に MIDI コントローラーのノブやフェーダーを動かすと、次に受信した CC がこのパラメータに割り当てられる</td></tr>
 <tr><td class="k">Clear Binding</td><td>Clear Binding：このパラメータの MIDI 割り当てを解除</td></tr>
