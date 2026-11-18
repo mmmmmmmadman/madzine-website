@@ -140,6 +140,8 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); ou
 .pill { font-family: var(--f-display); font-size: 15px; letter-spacing: 0.04em; color: var(--ink-dim); border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; max-width: 60vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .pill.warn { color: var(--danger); border-color: color-mix(in oklch, var(--danger) 50%, transparent); }
 .pill:hover { background: var(--accent-soft); }
+/* narrow screens: the hint sits just under the title bar instead of widening it */
+@media (max-width: 640px) { .pill { position: absolute; top: calc(100% + 4px); right: 0; max-width: calc(100vw - 32px); z-index: 5; background: var(--bg); } }
 .menu {
   position: absolute; right: 0; top: calc(100% + 6px); z-index: 20; width: min(520px, 100%);
   background: var(--rack); border: 1px solid var(--line); border-radius: 6px; box-shadow: 0 12px 32px rgb(0 0 0 / 0.28);
@@ -336,7 +338,7 @@ const I18N = {
     themeLight: '白底', themeDark: '黑底', play: '播放', mute: '靜音',
     subScope: '示波器', subSpec: '頻譜', subFlip: '3D 翻轉',
     stPickFile: '請選一個音訊檔。', stPlaying: '播放中：{n}（循環）', stMicIn: '麥克風輸入中，不送到喇叭。',
-    stMicDenied: '這個環境不允許麥克風。把 HTML 檔存到電腦用瀏覽器開啟即可。', pillMicNA: '麥克風不可用',
+    stMicDenied: '瀏覽器沒有允許使用麥克風。請到瀏覽器的網站設定允許麥克風，再重新整理頁面。', pillMicNA: '麥克風不可用',
     stSynth: '合成訊號，按「播放」出聲。', stDecoding: '解碼中：{n}', stDecodeFail: '無法解碼 {n}，請換一個 WAV / MP3 / M4A 檔。',
     roComps: '{n} 個分量', fsEnter: '全螢幕', fsExit: '離開全螢幕',
     fsHint: '全螢幕：在 Safari 按「分享」，選「加入主畫面」，再從主畫面開啟。', pillTap: '點一下畫面啟動麥克風',
@@ -348,7 +350,7 @@ const I18N = {
     themeLight: 'Light', themeDark: 'Dark', play: 'Play', mute: 'Mute',
     subScope: '', subSpec: '', subFlip: '',
     stPickFile: 'Choose an audio file.', stPlaying: 'Playing: {n} (loop)', stMicIn: 'Mic input, not sent to the speakers.',
-    stMicDenied: 'The microphone is not allowed here. Save the HTML file to your computer and open it in a browser.', pillMicNA: 'Mic unavailable',
+    stMicDenied: 'The browser has not allowed the microphone. Allow it in the browser\'s site settings, then reload the page.', pillMicNA: 'Mic unavailable',
     stSynth: 'Synthesized signal. Press Play to hear it.', stDecoding: 'Decoding: {n}', stDecodeFail: 'Could not decode {n}. Try a WAV / MP3 / M4A file.',
     roComps: '{n} partials', fsEnter: 'Full screen', fsExit: 'Exit full screen',
     fsHint: 'Full screen: in Safari tap Share, choose Add to Home Screen, then open it from the Home Screen.', pillTap: 'Tap the screen to start the mic',
@@ -360,7 +362,7 @@ const I18N = {
     themeLight: 'ライト', themeDark: 'ダーク', play: '再生', mute: 'ミュート',
     subScope: '波形', subSpec: 'スペクトル', subFlip: '3D 回転',
     stPickFile: '音声ファイルを選んでください。', stPlaying: '再生中：{n}（ループ）', stMicIn: 'マイク入力中。スピーカーには出しません。',
-    stMicDenied: 'この環境ではマイクを使えません。HTML ファイルをパソコンに保存してブラウザで開いてください。', pillMicNA: 'マイク使用不可',
+    stMicDenied: 'ブラウザがマイクを許可していません。ブラウザのサイト設定でマイクを許可し、ページを再読み込みしてください。', pillMicNA: 'マイク使用不可',
     stSynth: '合成信号です。「再生」で音が出ます。', stDecoding: 'デコード中：{n}', stDecodeFail: '{n} をデコードできません。WAV / MP3 / M4A ファイルを使ってください。',
     roComps: '成分 {n} 個', fsEnter: '全画面', fsExit: '全画面を終了',
     fsHint: '全画面：Safari の「共有」から「ホーム画面に追加」を選び、ホーム画面から開いてください。', pillTap: '画面をタップしてマイクを開始',
@@ -464,6 +466,12 @@ let statusMsg = null, pillMsg = null;
 function setStatus(k, warn, vars) { statusMsg = k ? { k, vars } : null; statusEl.textContent = k ? t(k, vars) : ''; statusEl.classList.toggle('warn', !!warn); }
 function setPill(k, warn) { pillMsg = k || null; pillEl.hidden = !k; pillEl.textContent = k ? t(k) : ''; pillEl.classList.toggle('warn', !!warn); }
 langHooks.push(() => { if (statusMsg) statusEl.textContent = t(statusMsg.k, statusMsg.vars); if (pillMsg) pillEl.textContent = t(pillMsg); });
+let micHeard = false, micKicked = false, micWaitTimer = 0, micHits = 0;function armMicWait() {
+  micHeard = false; micKicked = false; micHits = 0; clearTimeout(micWaitTimer);
+  micWaitTimer = setTimeout(() => { if (state.src === 'mic' && !micHeard) setPill('pillTap'); }, 700);
+}
+const micWake = () => { if (state.src === 'mic' && !micHeard && ac) { try { const p = ac.resume(); if (p && p.catch) p.catch(() => {}); } catch (e) {} } };
+document.addEventListener('pointerdown', micWake, true); document.addEventListener('keydown', micWake, true);
 const usesAudioGraph = () => !!ac && (state.audible || state.src === 'file' || state.src === 'mic');
 
 async function ensureContext() {
@@ -510,7 +518,7 @@ async function buildSource() {
       micStream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false } });
       const m = ac.createMediaStreamSource(micStream); m.connect(srcGain); liveNodes.push(m);
       outGain.gain.value = 0; state.audible = false; syncAudibleBtn();
-      setStatus('stMicIn'); setPill('');
+      setStatus('stMicIn'); setPill(''); armMicWait();
     } catch (e) {
       setStatus('stMicDenied', true);
       setPill('pillMicNA', true);
@@ -602,7 +610,15 @@ function findTrigger() {
   return best;
 }
 function analyze() {
-  if (usesAudioGraph()) { analyser.getFloatTimeDomainData(timeBuf); sampleRate = ac.sampleRate; }
+  if (usesAudioGraph()) {
+    analyser.getFloatTimeDomainData(timeBuf); sampleRate = ac.sampleRate;
+    if (state.src === 'mic' && micStream && !micHeard) {
+      // sustained sound (about 10 frames in a row), not the one-off click when the stream connects
+      let live = false; for (let i = NBUF - 512; i < NBUF; i++) if (Math.abs(timeBuf[i]) > 1e-7) { live = true; break; }
+      micHits = live ? micHits + 1 : 0; if (micHits >= 10) micHeard = true;
+      if (micHeard && pillMsg === 'pillTap') setPill('');
+    }
+  }
   else { synthFill(timeBuf); sampleRate = 48000; }
   segStart = findTrigger();
   prevSeg.set(seg); havePrev = true;
@@ -1097,7 +1113,11 @@ gear.addEventListener('click', () => { openMenu(menu.hidden); if (!menu.hidden) 
 pillEl.addEventListener('click', () => openMenu(true));
 document.addEventListener('pointerdown', e => { if (!menu.hidden && !e.target.closest('#menu, #gearBtn, #pill')) openMenu(false); if (!menu.hidden && e.target.closest('#huebtn')) openMenu(false); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') openMenu(false); });
-$('#micBtn').addEventListener('click', () => selectSource(state.src === 'mic' ? lastGen : 'mic'));
+$('#micBtn').addEventListener('click', () => {
+  // first tap while the mic is still waiting for sound wakes it instead of turning it off
+  if (state.src === 'mic' && !micHeard && !micKicked) { micKicked = true; if (!micStream) selectSource('mic'); return; }
+  selectSource(state.src === 'mic' ? lastGen : 'mic');
+});
 
 /* mic first: open the context now; if the browser keeps it suspended until a gesture, resume on the first tap */
 (async () => {
@@ -1110,11 +1130,6 @@ $('#micBtn').addEventListener('click', () => selectSource(state.src === 'mic' ? 
       srcGain = ac.createGain(); outGain = ac.createGain(); outGain.gain.value = 0;
       srcGain.connect(analyser); srcGain.connect(outGain); outGain.connect(ac.destination);
       await buildSource();
-      if (state.src === 'mic' && ac.state !== 'running') {
-        setPill('pillTap');
-        const kick = async () => { try { await ac.resume(); } catch (e) {} if (ac.state === 'running') { setPill(''); document.removeEventListener('pointerdown', kick); document.removeEventListener('keydown', kick); } };
-        document.addEventListener('pointerdown', kick); document.addEventListener('keydown', kick);
-      }
     }
   } else selectSource(state.src);
   $$('#freq, #gain').forEach(i => { i.disabled = state.src === 'mic' || state.src === 'file'; });
