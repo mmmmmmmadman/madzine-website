@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MADZINE — MADZINE AU Bundle</title>
+  <meta name="description" content="一個 app 內含四個 AUv3 外掛：MOD HUB、Universal Rhythm、ChaosTrio、Oscilloscope">
+  <link rel="stylesheet" href="css/tokens.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .bg-hero {
+      position: relative;
+      height: 50vh;
+      display: flex;
+      align-items: flex-end;
+      overflow: hidden;
+    }
+    .bg-hero__img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.35;
+    }
+    .bg-hero__gradient {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 30%, var(--surface-base) 100%);
+    }
+    .bg-hero__content {
+      position: relative;
+      z-index: 1;
+      padding: var(--space-16) var(--padding-page-x) var(--space-8);
+      max-width: var(--content-narrow);
+      margin: 0 auto;
+      width: 100%;
+    }
+    .bg-hero__content h1 {
+      font-size: var(--text-4xl);
+      margin-bottom: var(--space-3);
+    }
+    .bg-hero__content .card__tag {
+      margin-bottom: var(--space-4);
+    }
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-12);
+      align-items: start;
+    }
+    .col-text {
+      position: sticky;
+      top: var(--space-16);
+    }
+    .col-right {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-8);
+    }
+    .video-frame {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-default);
+      overflow: hidden;
+    }
+    .video-frame iframe {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+    .col-right > #main-image {
+      width: 100%;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-default);
+      transition: opacity var(--duration-slow) var(--ease-default);
+      cursor: pointer;
+    }
+    .thumb-strip {
+      display: flex;
+      gap: var(--space-3);
+      flex-wrap: wrap;
+    }
+    .thumb-strip__item {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      flex-shrink: 0;
+      border-radius: var(--radius-sm);
+      border: 2px solid var(--border-default);
+      cursor: pointer;
+      opacity: 0.6;
+      transition:
+        opacity var(--duration-normal) var(--ease-default),
+        border-color var(--duration-normal) var(--ease-default);
+    }
+    .thumb-strip__item:hover {
+      opacity: 0.85;
+    }
+    .thumb-strip__item.active {
+      opacity: 1;
+      border-color: var(--color-primary);
+    }
+    .feature-list {
+      padding-left: var(--space-6);
+      margin-top: var(--space-4);
+    }
+    .feature-list li {
+      margin-bottom: var(--space-2);
+      font-size: var(--text-base);
+      color: var(--text-secondary);
+    }
+    .launch-btn {
+      display: inline-block;
+      margin-top: var(--space-6);
+      padding: var(--space-3) var(--space-8);
+      font-size: var(--text-base);
+      font-weight: 600;
+      color: white;
+      background: var(--color-primary);
+      border: none;
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      transition: opacity var(--duration-normal) var(--ease-default);
+    }
+    .launch-btn:hover {
+      opacity: 0.85;
+    }
+    .launch-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-4);
+    }
+    .launch-row .launch-btn {
+      margin-top: 0;
+    }
+    .launch-btn--disabled {
+      color: var(--text-tertiary);
+      background: var(--surface-raised);
+      border: 1px solid var(--border-default);
+      cursor: default;
+      user-select: none;
+    }
+    .launch-btn--disabled:hover {
+      opacity: 1;
+    }
+    .tech-table {
+      margin-top: var(--space-4);
+      font-size: var(--text-base);
+    }
+    .tech-table dt {
+      color: var(--text-tertiary);
+      margin-top: var(--space-3);
+    }
+    .tech-table dd {
+      margin-left: 0;
+      color: var(--text-primary);
+    }
+    @media (max-width: 768px) {
+      .bg-hero {
+        height: auto;
+        min-height: 50vh;
+      }
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+      .col-text {
+        position: static;
+      }
+      .thumb-strip {
+        flex-wrap: wrap;
+      }
+      .thumb-strip__item {
+        width: 80px;
+        height: 80px;
+      }
+    }
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      background: oklch(0.10 0.005 55 / 0.92);
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .lightbox.is-open {
+      display: flex;
+    }
+    .lightbox img {
+      max-width: 90vw;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: var(--radius-sm);
+    }
+    .bottom-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-3) var(--space-6);
+      border-top: 1px solid var(--border-default);
+      font-size: var(--text-sm);
+    }
+    .bottom-bar__copyright { color: var(--text-tertiary); }
+    .bottom-bar__nav { display: flex; align-items: center; gap: var(--space-6); }
+    .bottom-bar__nav a { color: var(--text-secondary); text-decoration: none; transition: color var(--duration-normal) var(--ease-default); }
+    .bottom-bar__nav a:hover { color: var(--color-primary); }
+    .bottom-bar__controls { display: flex; align-items: center; gap: var(--space-4); }
+  </style>
+</head>
+<body>
+
+  <!-- Hero background -->
+  <div class="bg-hero">
+    <img class="bg-hero__img" src="assets/images/software/AUBundle_unirhythm_drums.jpg" alt="MADZINE AU Bundle">
+    <div class="bg-hero__gradient"></div>
+    <div class="bg-hero__content">
+      <a href="software.html" class="section__back" style="color: var(--text-primary);">
+        <span data-i18n="common.back">返回</span>
+      </a>
+      <h1>MADZINE AU Bundle</h1>
+      <p class="card__tag" data-i18n="apps.aubundle.platform">iOS, iPadOS, macOS</p>
+      <p data-i18n="apps.aubundle.desc">一個 app 內含四個 AUv3 外掛：MOD HUB、Universal Rhythm、ChaosTrio、Oscilloscope</p>
+    </div>
+  </div>
+
+  <!-- Two-column: text + screenshots + features + tech -->
+  <main>
+    <section class="section">
+      <div class="container">
+        <div class="two-col">
+          <div class="col-text">
+            <h2 data-i18n="common.intro">功能介紹</h2>
+            <p class="intro-text" data-i18n-html="apps.aubundle.intro">MADZINE AU Bundle 是一個 app，內含四個 AUv3 外掛，在宿主中顯示為六個項目：MOD HUB（MIDI 版、CV 版）、Universal Rhythm（MIDI 版、內建鼓組版）、ChaosTrio、Oscilloscope。需要支援 AUv3 的宿主 app。</p>
+          </div>
+
+          <div class="col-right">
+            <div class="video-frame">
+              <iframe src="https://www.youtube.com/embed/9CLq_p6OgKQ?rel=0&modestbranding=1&iv_load_policy=3&playsinline=1"
+                      title="MADZINE AU Bundle"
+                      allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowfullscreen></iframe>
+            </div>
+
+            <img id="main-image" src="assets/images/software/AUBundle_modhub_sequencer.jpg" alt="MOD HUB Sequencer">
+            <!-- Thumbnail strip under main image -->
+            <div class="thumb-strip">
+              <img class="thumb-strip__item active"
+                   src="assets/images/software/AUBundle_modhub_sequencer.jpg"
+                   alt="MOD HUB Sequencer"
+                   data-full="assets/images/software/AUBundle_modhub_sequencer.jpg"
+                   onclick="switchImage(this)">
+              <img class="thumb-strip__item"
+                   src="assets/images/software/AUBundle_modhub_lfo.jpg"
+                   alt="MOD HUB LFO and DRAW"
+                   data-full="assets/images/software/AUBundle_modhub_lfo.jpg"
+                   onclick="switchImage(this)">
+              <img class="thumb-strip__item"
+                   src="assets/images/software/AUBundle_unirhythm_drums.jpg"
+                   alt="Universal Rhythm Drums"
+                   data-full="assets/images/software/AUBundle_unirhythm_drums.jpg"
+                   onclick="switchImage(this)">
+              <img class="thumb-strip__item"
+                   src="assets/images/software/AUBundle_unirhythm_sampler.jpg"
+                   alt="Universal Rhythm Sampler Slices"
+                   data-full="assets/images/software/AUBundle_unirhythm_sampler.jpg"
+                   onclick="switchImage(this)">
+              <img class="thumb-strip__item"
+                   src="assets/images/software/AUBundle_chaostrio_full.jpg"
+                   alt="ChaosTrio Full View"
+                   data-full="assets/images/software/AUBundle_chaostrio_full.jpg"
+                   onclick="switchImage(this)">
+              <img class="thumb-strip__item"
+                   src="assets/images/software/AUBundle_chaostrio_simple.jpg"
+                   alt="ChaosTrio Simple View"
+                   data-full="assets/images/software/AUBundle_chaostrio_simple.jpg"
+                   onclick="switchImage(this)">
+              <img class="thumb-strip__item"
+                   src="assets/images/software/AUBundle_oscilloscope_overview.jpg"
+                   alt="Oscilloscope Overview"
+                   data-full="assets/images/software/AUBundle_oscilloscope_overview.jpg"
+                   onclick="switchImage(this)">
+              <img class="thumb-strip__item"
+                   src="assets/images/software/AUBundle_oscilloscope_fourier.jpg"
+                   alt="Oscilloscope Fourier Box"
+                   data-full="assets/images/software/AUBundle_oscilloscope_fourier.jpg"
+                   onclick="switchImage(this)">
+            </div>
+
+            <div class="launch-row">
+              <a href="https://apps.apple.com/app/id6838268376" target="_blank" rel="noopener" class="launch-btn" data-i18n="apps.aubundle.appstore">前往 App Store</a>
+              <span class="launch-btn launch-btn--disabled" aria-disabled="true" data-i18n="apps.aubundle.mac">Mac 版即將推出</span>
+            </div>
+
+            <div>
+              <h2 data-i18n="common.features">特色一覽</h2>
+              <ul class="feature-list">
+                <li data-i18n="apps.aubundle.features.format">一個 app 內含四個 AUv3 外掛，在宿主中顯示為六個項目</li>
+                <li data-i18n="apps.aubundle.features.modhub">MOD HUB：8 stage 音序器（A / B 兩組 + CROSSFADE）、六個 LFO、DRAW 手繪，混合送到四個輸出（MIDI 版 / CV 版）</li>
+                <li data-i18n="apps.aubundle.features.unirhythm">Universal Rhythm：四角色、九軌道、九種節奏風格，單步調整 velocity / probability / decay / ratchet（MIDI 版 / 內建鼓組版）</li>
+                <li data-i18n="apps.aubundle.features.sampler">鼓組版 sampler：讀取音訊檔、切片、粒子合成播放，MULTI-OUTPUT 分軌輸出</li>
+                <li data-i18n="apps.aubundle.features.chaostrio">ChaosTrio：三個 slot，DELAY / weiii Documenta / KARPLUS，五種接法，Lorenz chaos 調變</li>
+                <li data-i18n="apps.aubundle.features.oscilloscope">Oscilloscope：示波器、頻譜參考曲線、FOURIER BOX 3D 顯示，音訊直通</li>
+                <li data-i18n="apps.aubundle.features.help">英文 / 繁體中文 / 日文說明模式</li>
+                <li data-i18n="apps.aubundle.features.theme">黑底 / 白底，可選主要配色</li>
+                <li data-i18n="apps.aubundle.features.automation">參數可被宿主 automation 與 MIDI CC 控制</li>
+              </ul>
+            </div>
+
+            <div>
+              <h2 data-i18n="common.tech">技術資訊</h2>
+              <dl class="tech-table">
+                <dt data-i18n="apps.aubundle.tech.format">格式</dt>
+                <dd>AUv3</dd>
+                <dt data-i18n="common.platform">平台</dt>
+                <dd data-i18n="apps.aubundle.tech.platformDetail">iOS / iPadOS（已上架）、macOS（審核中）</dd>
+                <dt data-i18n="apps.aubundle.tech.requirementLabel">需求</dt>
+                <dd data-i18n="apps.aubundle.tech.requirement">支援 AUv3 的宿主 app</dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <img id="lightbox-img" src="" alt="">
+  </div>
+
+  <!-- Bottom Bar -->
+  <div class="bottom-bar">
+    <span class="bottom-bar__copyright" data-i18n="footer.copyright">&copy; 2025 MADZINE. 保留所有權利。</span>
+    <nav class="bottom-bar__nav">
+      <a href="index.html" data-i18n="nav.home">首頁</a>
+      <a href="software.html" data-i18n="nav.software">軟體</a>
+      <a href="works.html" data-i18n="nav.works">作品</a>
+      <a href="contact.html" data-i18n="nav.contact">聯絡</a>
+      <a href="open-call.html" data-i18n="nav.opencall">Open Call</a>
+    </nav>
+    <div class="bottom-bar__controls">
+      <div class="lang-switcher">
+        <button class="lang-btn" data-lang="zh-TW" onclick="I18N.setLang('zh-TW')">中</button>
+        <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
+        <button class="lang-btn" data-lang="ja" onclick="I18N.setLang('ja')">JP</button>
+      </div>
+      <button id="mode-toggle" class="mode-toggle" aria-label="切換深色模式">☽</button>
+    </div>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    function switchImage(thumb) {
+      var mainImg = document.getElementById('main-image');
+      mainImg.src = thumb.dataset.full;
+      mainImg.alt = thumb.alt;
+      var allThumbs = document.querySelectorAll('.thumb-strip__item');
+      for (var i = 0; i < allThumbs.length; i++) {
+        allThumbs[i].classList.remove('active');
+      }
+      thumb.classList.add('active');
+    }
+
+    document.getElementById('main-image').addEventListener('click', function() {
+      var lb = document.getElementById('lightbox');
+      document.getElementById('lightbox-img').src = this.src;
+      document.getElementById('lightbox-img').alt = this.alt;
+      lb.classList.add('is-open');
+    });
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('is-open');
+    }
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeLightbox();
+    });
+  </script>
+</body>
+</html>

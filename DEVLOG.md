@@ -1,5 +1,18 @@
 # MADZINE Website 開發紀錄
 
+## 2026-11-25
+
+### 新增 MADZINE AU Bundle 介紹頁
+
+- 新增 `aubundle.html`：結構與 class 完整複製 visionmod.html（hero、YouTube `.video-frame`、thumb-strip 截圖切換、lightbox、`.launch-btn`、技術資訊表、手機版 `.bg-hero { height: auto; min-height: 50vh }`），樣式為本頁行內 CSS，`.launch-btn` 連同樣式一起帶入
+- YouTube 影片 `9CLq_p6OgKQ`，位置同 VisionMod 頁（右欄最上方）
+- 下載鈕兩顆並排（新增 `.launch-row`）：「前往 App Store」連 `https://apps.apple.com/app/id6838268376`；Mac 版為不可點的 `<span>`（新增 `.launch-btn--disabled`：surface-raised 底、text-tertiary 字、cursor default），三語 Mac 版即將推出 / Mac version coming soon / Mac 版 近日公開
+- 截圖 8 張，取自 App Store iPad 13 吋版（2752×2064）壓成 1600 寬 JPEG q82，存 `assets/images/software/AUBundle_*.jpg`：MOD HUB（sequencer、lfo）、Universal Rhythm（drums、sampler）、ChaosTrio（full、simple）、Oscilloscope（overview、fourier）。ChaosTrio 來源為 `FeatureRef/ChaosTrio/ChaosTrio-AU/appstore/screenshots/ipad_13/`（Commercial 下查無）。hero 背景用 Universal Rhythm drums
+- `software.html` 在 Vision MOD 下方新增一列（`data-preview="aubundle"`，預覽圖 ChaosTrio full）
+- `js/i18n.js` 三語新增 `apps.aubundle`（name / desc / platform / appstore / mac / intro 六段 / features 九條 / tech）。不寫價格；用詞依規定（粒子合成、granular synthesis、グラニュラー合成）
+- 平台標籤寫 iOS, iPadOS, macOS；技術資訊註明 iOS / iPadOS 已上架、macOS 審核中
+- 驗證：無頭 Chromium 1280×800 與 390×844 三語：無橫向溢出、零 console error、App Store 連結正確、Mac 鈕顯示停用樣式、縮圖切換與 lightbox（含 Esc）正常；software.html 新列位置與預覽圖載入正常。YouTube 在測試中被擋，影片畫面未在本機確認
+
 ## 2026-11-18
 
 ### Oscilloscope 手機 Chrome 麥克風沒訊號
