@@ -1,5 +1,29 @@
 # MADZINE Website 開發紀錄
 
+## 2026-11-28
+
+### 導覽、語言切換、明暗切換從頁尾移到頁首（全站 54 頁）
+
+- 改動：各頁 `.bottom-bar` 內的 nav、`.lang-switcher`、`#mode-toggle` 移到 `<body>` 後第一個元素 `<div class="top-bar">`（nav 改 class `top-bar__nav`，控制區改 `top-bar__controls`）；版權 `.bottom-bar__copyright` 留在頁尾。所有 id / data-i18n / data-lang / onclick 不變，main.js 與 i18n.js 未改。用 `div` 不用 `header`，因 main.js HeaderScroll 以 `querySelector('header')` 抓元素。index.html 原本無 nav，只移控制區。jazzarchitect 頁寫死英文的 nav 原樣搬移；research-* 頁語言鈕跳頁行為不變（監聽在 DOMContentLoaded 綁定，與位置無關）
+- 各頁行內 `.bottom-bar__nav` / `.bottom-bar__controls` 規則移除（共用樣式改在 `css/style.css` 的 top-bar 區塊，取代 2026-10-25 頁尾區塊中相關規則）。layout-* 示意頁頂端有固定的 `.layout-tag`（40px），該系列頁 top-bar 另加 `margin-top: var(--space-10)` 避免被蓋住
+- 不用 position: fixed / sticky，top-bar 留在文件流中（WebKit bug 146067、209470、235684、300523）
+- 頂端距離用加法不用 max()：`padding-top: calc(var(--space-6) + var(--space-1) + env(safe-area-inset-top, 0px))`。理由：本站未設 viewport-fit=cover，env() 為 0，加法不多佔空間；日後若加 cover，沒有事實可確認 Safari 頂端保留帶是否隨 inset 下移，用加法可保證安全區之下仍有 28px，max() 在 inset ≥ 28 時會把這 28px 吃掉。左右也加上 safe-area-inset-left / right
+- 觸控目標：nav 連結、語言鈕、明暗鈕高度皆 44px（`calc(var(--space-10) + var(--space-1))`），字級沿用 text-sm（≥16px）。只用 tokens.css 的 token，無 zoom，未新增符號（明暗鈕原有符號照舊）
+- 手機（≤640px）nav 改 `display: contents`，連結與控制區在同一個流中折行，左對齊；避免日文 390 寬時「Open Call」單獨成一行被撐開。≤480px 左右內距縮小
+- 驗證：無頭 Chromium（手機尺寸用 iPhone 13 觸控模擬）works、index、software、contact、open-call、honki、research-worldrhythm 7 頁 × 390×844 / 375×667 / 320×568 / 1280×800 × 中 / EN / JP × 亮 / 暗 共 168 組：所有頂端可點元素 top = 28.0px、最小高度 44.0px、字級 ≥16px 且單行、版權字級 ≥14px、無橫向溢出、position 非 fixed/sticky、頁尾已無控制項、點語言鈕語言切換（research 頁為跳頁）、點明暗鈕模式切換。手機 top-bar 高 129px（兩列），日文 320 寬 177px（三列，連結兩列＋控制區一列，無單字斷行）；1280 寬 81px 單列
+- console：6 組出現 Chromium 的「Permissions policy violation: compute-pressure」，只在含 YouTube 內嵌的 honki / open-call 間歇出現，同頁重跑 8 次為零，判定來自 YouTube iframe、與本次改動無關；其餘零 console error
+- 已知現象：桌機 nav 從頁面邊緣（24px）起排，不對齊內容容器
+- 未在實機 iPhone / iPad Safari 驗證
+
+### 作品列表長標題在手機上折行（治本 2026-10-25 遺留的溢出）
+
+- 症狀：iPhone 直式時作品列表長標題超出畫面、整頁可橫向捲動。根因：各頁行內 `.works-v1__row-title { white-space: nowrap; }`，640px 以下沒有解除。修前量測 320 寬時頁面被撐到 356–522px（最長為 works-audiovisual「Motions and Pictures and Motion Pictures」），390 寬時 works / music / performance / audiovisual / dance 五頁仍溢出，日文 tutorial 也溢出
+- 修法：只在 `css/style.css` 末尾追加 `/* works row title wrap (2026-11-28) */` 一段，`@media (max-width: 640px)` 內 `.works-v1__row .works-v1__row-title` 改 `white-space: normal`、`overflow-wrap: anywhere`、`min-width: 0`、`max-width: 100%`；`.works-v1__row-desc` 同加 `min-width: 0`、`overflow-wrap: anywhere`。用兩個 class 的選擇器提高權重，蓋過在 style.css 之後載入的各頁行內單 class 規則，不用 `!important`、不改任何 HTML。選 `anywhere` 而非 `break-word`：中日文與空格處照常斷行，只有單一字比整行還寬時才在字內斷；且 `anywhere` 會計入最小內容寬度，flex 子元素可確實縮
+- 適用頁面（共用規則一次生效）：works、works-music、works-performance、works-audiovisual、works-interactive、works-tutorial、works-dance，以及同樣使用此列表的 software.html。桌機維持單行
+- works.html 的 `.residency__venue` / `.residency__city` / `.residency__month` 量測無溢出（手機版本來就 `width: 100%` 可折行），未改
+- 驗證：無頭 Chromium 8 頁 × 320×568 / 375×667 / 390×844 / 1280×800 × 中 / EN / JP 共 96 組：頁面寬度皆等於視窗寬、所有標題與長文字欄位右緣 ≤ 視窗寬、手機上長標題為兩行（例：dance 320 寬 4 筆、390 寬 3 筆）、1280 寬所有標題單行、零 console error
+- 已知現象（未處理）：中日文括號內可在字間斷行，例如 320 寬「Tiger Arrives Dancing (虎來跳舞)」斷在「虎來 / 跳舞)」，屬中日文正常斷行
+
 ## 2026-11-25
 
 ### 新增 MADZINE AU Bundle 介紹頁

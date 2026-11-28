@@ -203,11 +203,6 @@
     .bottom-bar__copyright {
       color: var(--text-tertiary);
     }
-    .bottom-bar__controls {
-      display: flex;
-      align-items: center;
-      gap: var(--space-4);
-    }
     @media (max-width: 640px) {
       .bottom-bar {
         flex-direction: column;
@@ -219,6 +214,25 @@
   </style>
 </head>
 <body>
+
+  <!-- Top Bar: nav + language + mode (moved from bottom bar 2026-11-28) -->
+  <div class="top-bar">
+    <nav class="top-bar__nav">
+      <a href="index.html">Home</a>
+      <a href="software.html">Software</a>
+      <a href="works.html">Works</a>
+      <a href="contact.html">Contact</a>
+      <a href="open-call.html">Open Call</a>
+    </nav>
+    <div class="top-bar__controls">
+      <div class="lang-switcher">
+        <button class="lang-btn" data-lang="zh-TW" onclick="I18N.setLang('zh-TW')">中</button>
+        <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
+        <button class="lang-btn" data-lang="ja" onclick="I18N.setLang('ja')">JP</button>
+      </div>
+      <button id="mode-toggle" class="mode-toggle" aria-label="Toggle dark mode">☽</button>
+    </div>
+  </div>
 
   <article class="paper">
 
@@ -788,21 +802,6 @@ cmake --build . --config Release</pre>
   <!-- Bottom Bar -->
   <div class="bottom-bar">
     <span class="bottom-bar__copyright">&copy; 2025 MADZINE. All rights reserved.</span>
-    <nav class="bottom-bar__nav">
-      <a href="index.html">Home</a>
-      <a href="software.html">Software</a>
-      <a href="works.html">Works</a>
-      <a href="contact.html">Contact</a>
-      <a href="open-call.html">Open Call</a>
-    </nav>
-    <div class="bottom-bar__controls">
-      <div class="lang-switcher">
-        <button class="lang-btn" data-lang="zh-TW" onclick="I18N.setLang('zh-TW')">中</button>
-        <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
-        <button class="lang-btn" data-lang="ja" onclick="I18N.setLang('ja')">JP</button>
-      </div>
-      <button id="mode-toggle" class="mode-toggle" aria-label="Toggle dark mode">☽</button>
-    </div>
   </div>
 
   <script src="js/i18n.js"></script>

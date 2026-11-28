@@ -802,8 +802,9 @@ main {
 }
 
 /* ==========================================================================
-   Bottom bar — mobile: let the three groups wrap instead of squeezing the
-   nav links into one character per line (2026-10-25, Open Call link added)
+   Bottom bar — mobile: allow wrapping (2026-10-25). Since 2026-11-28 the
+   bottom bar only holds the copyright line; nav + language + mode moved to
+   .top-bar below.
    ========================================================================== */
 
 @media (max-width: 640px) {
@@ -811,11 +812,113 @@ main {
     flex-wrap: wrap;
     gap: var(--space-3) var(--space-4);
   }
-  .bottom-bar__nav {
-    flex-wrap: wrap;
-    row-gap: var(--space-2);
+}
+
+/* ==========================================================================
+   Top bar (2026-11-28): page nav + language switcher + dark mode toggle.
+   - Normal document flow, scrolls away with the page. No position: fixed /
+     sticky: WebKit bugs 146067 / 209470 / 235684 / 300523 misplace tap
+     coordinates of fixed top bars after the Safari toolbar resizes.
+   - Interactive boxes start >= 28px from the top plus the safe-area inset:
+     iPhone Safari keeps roughly the top 24px of taps for itself.
+   - Every link / button has a 44px touch box (padding, not larger text).
+   - Links never break inside a word; groups wrap instead (2026-10-25 fix).
+   ========================================================================== */
+
+.top-bar {
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-6);
+  padding:
+    calc(var(--space-6) + var(--space-1) + env(safe-area-inset-top, 0px))
+    calc(var(--space-6) + env(safe-area-inset-right, 0px))
+    var(--space-2)
+    calc(var(--space-6) + env(safe-area-inset-left, 0px));
+  border-bottom: 1px solid var(--border-default);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+}
+
+.top-bar__nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 var(--space-2);
+  margin-left: calc(-1 * var(--space-2));
+}
+
+.top-bar__nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: calc(var(--space-10) + var(--space-1));
+  padding: 0 var(--space-2);
+  white-space: nowrap;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color var(--duration-normal) var(--ease-default);
+}
+
+.top-bar__nav a:hover {
+  color: var(--color-primary);
+}
+
+.top-bar__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+.top-bar .lang-btn {
+  min-width: calc(var(--space-10) + var(--space-1));
+  min-height: calc(var(--space-10) + var(--space-1));
+  padding: 0 var(--space-2);
+}
+
+.top-bar .mode-toggle {
+  width: calc(var(--space-10) + var(--space-1));
+  height: calc(var(--space-10) + var(--space-1));
+}
+
+/* Phones: links and controls share one wrapping row flow, so a link that
+   does not fit (e.g. Japanese "Open Call") joins the controls row instead of
+   opening a third row. */
+@media (max-width: 640px) {
+  .top-bar {
+    column-gap: 0;
+    justify-content: flex-start;
+    padding-left: calc(var(--space-4) + env(safe-area-inset-left, 0px));
   }
-  .bottom-bar__nav a {
-    white-space: nowrap;
+  .top-bar__nav {
+    display: contents;
+  }
+}
+
+@media (max-width: 480px) {
+  .top-bar {
+    padding-left: calc(var(--space-2) + env(safe-area-inset-left, 0px));
+    padding-right: calc(var(--space-4) + env(safe-area-inset-right, 0px));
+  }
+}
+
+/* works row title wrap (2026-11-28)
+   Work list titles are nowrap in each page's inline <style> (desktop keeps
+   one line). On phones long titles pushed the page wider than the screen.
+   Two-class selectors outrank the inline single-class rules that load after
+   this file. overflow-wrap: anywhere only breaks inside a word when a single
+   word is still wider than the line; CJK and spaces break normally first. */
+@media (max-width: 640px) {
+  .works-v1__row .works-v1__row-title {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    min-width: 0;
+    max-width: 100%;
+  }
+  .works-v1__row .works-v1__row-desc {
+    min-width: 0;
+    overflow-wrap: anywhere;
   }
 }

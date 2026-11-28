@@ -190,13 +190,28 @@
       font-size: var(--text-sm);
     }
     .bottom-bar__copyright { color: var(--text-tertiary); }
-    .bottom-bar__nav { display: flex; align-items: center; gap: var(--space-6); }
-    .bottom-bar__nav a { color: var(--text-secondary); text-decoration: none; transition: color var(--duration-normal) var(--ease-default); }
-    .bottom-bar__nav a:hover { color: var(--color-primary); }
-    .bottom-bar__controls { display: flex; align-items: center; gap: var(--space-4); }
   </style>
 </head>
 <body>
+
+  <!-- Top Bar: nav + language + mode (moved from bottom bar 2026-11-28) -->
+  <div class="top-bar">
+    <nav class="top-bar__nav">
+      <a href="index.html" data-i18n="nav.home">首頁</a>
+      <a href="software.html" data-i18n="nav.software">軟體</a>
+      <a href="works.html" data-i18n="nav.works">作品</a>
+      <a href="contact.html" data-i18n="nav.contact">聯絡</a>
+      <a href="open-call.html" data-i18n="nav.opencall">Open Call</a>
+    </nav>
+    <div class="top-bar__controls">
+      <div class="lang-switcher">
+        <button class="lang-btn" data-lang="zh-TW" onclick="I18N.setLang('zh-TW')">中</button>
+        <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
+        <button class="lang-btn" data-lang="ja" onclick="I18N.setLang('ja')">JP</button>
+      </div>
+      <button id="mode-toggle" class="mode-toggle" aria-label="切換深色模式">☽</button>
+    </div>
+  </div>
 
   <!-- Hero background -->
   <div class="bg-hero">
@@ -309,21 +324,6 @@
   <!-- Bottom Bar -->
   <div class="bottom-bar">
     <span class="bottom-bar__copyright" data-i18n="footer.copyright">&copy; 2025 MADZINE. 保留所有權利。</span>
-    <nav class="bottom-bar__nav">
-      <a href="index.html" data-i18n="nav.home">首頁</a>
-      <a href="software.html" data-i18n="nav.software">軟體</a>
-      <a href="works.html" data-i18n="nav.works">作品</a>
-      <a href="contact.html" data-i18n="nav.contact">聯絡</a>
-      <a href="open-call.html" data-i18n="nav.opencall">Open Call</a>
-    </nav>
-    <div class="bottom-bar__controls">
-      <div class="lang-switcher">
-        <button class="lang-btn" data-lang="zh-TW" onclick="I18N.setLang('zh-TW')">中</button>
-        <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
-        <button class="lang-btn" data-lang="ja" onclick="I18N.setLang('ja')">JP</button>
-      </div>
-      <button id="mode-toggle" class="mode-toggle" aria-label="切換深色模式">☽</button>
-    </div>
   </div>
 
   <script src="js/i18n.js"></script>

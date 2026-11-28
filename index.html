@@ -145,11 +145,6 @@
       color: var(--text-tertiary);
     }
 
-    .bottom-bar__controls {
-      display: flex;
-      align-items: center;
-      gap: var(--space-4);
-    }
 
     /* ── Responsive ── */
 
@@ -196,6 +191,18 @@
 </head>
 <body>
 
+  <!-- Top Bar: nav + language + mode (moved from bottom bar 2026-11-28) -->
+  <div class="top-bar">
+    <div class="top-bar__controls">
+      <div class="lang-switcher">
+        <button class="lang-btn" data-lang="zh-TW" onclick="I18N.setLang('zh-TW')">中</button>
+        <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
+        <button class="lang-btn" data-lang="ja" onclick="I18N.setLang('ja')">JP</button>
+      </div>
+      <button id="mode-toggle" class="mode-toggle" aria-label="切換深色模式">☽</button>
+    </div>
+  </div>
+
   <main>
     <div class="v7">
       <!-- Top Half: Brand -->
@@ -233,14 +240,6 @@
   <!-- Bottom Bar -->
   <div class="bottom-bar">
     <span class="bottom-bar__copyright" data-i18n="footer.copyright">&copy; 2025 MADZINE. 保留所有權利。</span>
-    <div class="bottom-bar__controls">
-      <div class="lang-switcher">
-        <button class="lang-btn" data-lang="zh-TW" onclick="I18N.setLang('zh-TW')">中</button>
-        <button class="lang-btn" data-lang="en" onclick="I18N.setLang('en')">EN</button>
-        <button class="lang-btn" data-lang="ja" onclick="I18N.setLang('ja')">JP</button>
-      </div>
-      <button id="mode-toggle" class="mode-toggle" aria-label="切換深色模式">☽</button>
-    </div>
   </div>
 
   <script src="js/i18n.js"></script>
