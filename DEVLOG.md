@@ -2,6 +2,12 @@
 
 ## 2026-11-28
 
+### AU Bundle 頁：Mac 版已上架
+
+- App Store Connect 查得 macOS 1.0 為 READY_FOR_SALE。刪除不可點的「Mac 版即將推出」鈕（三語 `apps.aubundle.mac` 一併刪除）；iOS 與 Mac 是同一筆 app 紀錄，原「前往 App Store」連結兩平台共用
+- 技術資訊平台改為 iOS / iPadOS、macOS（皆已上架）／(both available)／（いずれも配信中）
+- `.launch-btn--disabled` 樣式保留未刪
+
 ### 明暗切換鈕的太陽圖示改為白色
 
 - 使用者回報太陽圖示是黃色、很醜。原因：按鈕內容是 U+2600 字元，iPhone 把它畫成黃色 emoji

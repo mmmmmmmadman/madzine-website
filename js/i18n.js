@@ -72,7 +72,6 @@ const I18N = {
           desc: '一個 app 內含四個 AUv3 外掛：MOD HUB、Universal Rhythm、ChaosTrio、Oscilloscope',
           platform: 'iOS, iPadOS, macOS',
           appstore: '前往 App Store',
-          mac: 'Mac 版即將推出',
           intro: 'MADZINE AU Bundle 是一個 app，內含四個 AUv3 外掛，在宿主中顯示為六個項目：MOD HUB（MIDI 版、CV 版）、Universal Rhythm（MIDI 版、內建鼓組版）、ChaosTrio、Oscilloscope。需要支援 AUv3 的宿主 app。<br><br>MOD HUB 是 CV / MIDI Modulation 訊號產生器，移植自 HONKI app。內含 8 stage MARF 風格音序器（A / B 兩組，可 CROSSFADE）、六個 LFO，以及 DRAW 手繪後可再修改的波形；mixer 把各來源混合送到四個輸出。MIDI 版送出 MIDI CC 與音符，並有 SCALE 量化；CV 版以音訊速率輸出控制訊號。<br><br>Universal Rhythm 是移植自 VCV Rack 與 HONKI 的 MADZINE 招牌節奏工作站。四個角色（Timeline / Foundation / Groove / Lead）、九個軌道，九種節奏風格可任意指定給四個角色。每一步可調整 velocity、probability、decay、ratchet，也可鎖定音符。MIDI 版在 MIDI channel 10 送出音符；鼓組版內建鼓聲，sampler 可讀取音訊檔、切片並以粒子合成播放，MULTI-OUTPUT 可分軌送到宿主的不同聲道。<br><br>ChaosTrio 是三個 slot 同時運作的複合效果器。每個 slot 可選 DELAY（Delay / Reverb）、weiii Documenta（移植自 VCV Rack 的取樣粒子效果器）、KARPLUS（基於 Karplus Strong 合成法的 Reverb）。slot 之間有五種接法，位置可更換；每個效果有自己的 mix、level 與 chaos 量，以 Lorenz chaos 調變。畫面分 SIMPLE / FULL 兩種。<br><br>Oscilloscope 包含示波器（含 trigger）、頻譜（可載入參考曲線），以及 FOURIER BOX：以 3D 示波器顯示波形與泛音的關聯。三個面板可拖曳換位置，音訊直通。<br><br>四個外掛都內建英文、繁體中文、日文說明模式，點到的功能會顯示說明；可切換黑底 / 白底並選擇主要配色；參數可被宿主 automation 與 MIDI CC 控制。',
           features: {
             format: '一個 app 內含四個 AUv3 外掛，在宿主中顯示為六個項目',
@@ -87,7 +86,7 @@ const I18N = {
           },
           tech: {
             format: '格式',
-            platformDetail: 'iOS / iPadOS（已上架）、macOS（審核中）',
+            platformDetail: 'iOS / iPadOS、macOS（皆已上架）',
             requirementLabel: '需求',
             requirement: '支援 AUv3 的宿主 app'
           }
@@ -626,7 +625,6 @@ const I18N = {
           desc: 'One app with four AUv3 plug-ins: MOD HUB, Universal Rhythm, ChaosTrio and Oscilloscope',
           platform: 'iOS, iPadOS, macOS',
           appstore: 'View on the App Store',
-          mac: 'Mac version coming soon',
           intro: 'MADZINE AU Bundle is one app containing four AUv3 plug-ins, which appear in the host as six items: MOD HUB (MIDI and CV versions), Universal Rhythm (MIDI and built-in drum kit versions), ChaosTrio and Oscilloscope. Requires a host app that supports AUv3.<br><br>MOD HUB is a CV / MIDI modulation signal generator, ported from the HONKI app. It has an 8-stage MARF-style sequencer (two sets, A / B, with CROSSFADE), six LFOs, and DRAW waveforms that can be edited after drawing; a mixer combines the sources into four outputs. The MIDI version sends MIDI CC and notes, with SCALE quantization; the CV version outputs control signals at audio rate.<br><br>Universal Rhythm is the MADZINE signature rhythm workstation, ported from VCV Rack and HONKI. Four roles (Timeline / Foundation / Groove / Lead), nine tracks, and nine rhythm styles that can be assigned freely to the four roles. Each step has its own velocity, probability, decay and ratchet, and notes can be locked. The MIDI version sends notes on MIDI channel 10; the drum kit version has built-in drum sounds, and its sampler loads audio files, slices them and plays them back with granular synthesis. MULTI-OUTPUT sends tracks to separate channels in the host.<br><br>ChaosTrio is a compound effect with three slots running at the same time. Each slot can be DELAY (Delay / Reverb), weiii Documenta (a sampling granular effect ported from VCV Rack) or KARPLUS (a reverb based on Karplus-Strong synthesis). There are five ways to connect the slots, and their positions can be swapped; each effect has its own mix, level and chaos amount, modulated by Lorenz chaos. Two views: SIMPLE and FULL.<br><br>Oscilloscope includes an oscilloscope (with trigger), a spectrum analyzer (reference curves can be loaded), and FOURIER BOX, a 3D oscilloscope that shows how a waveform relates to its overtones. The three panels can be rearranged by dragging, and audio passes through.<br><br>All four plug-ins have a built-in help mode in English, Traditional Chinese and Japanese that explains whichever control you tap; dark or light background with a selectable main color; parameters can be controlled by host automation and MIDI CC.',
           features: {
             format: 'One app, four AUv3 plug-ins, shown as six items in the host',
@@ -641,7 +639,7 @@ const I18N = {
           },
           tech: {
             format: 'Format',
-            platformDetail: 'iOS / iPadOS (available), macOS (in review)',
+            platformDetail: 'iOS / iPadOS, macOS (both available)',
             requirementLabel: 'Requirements',
             requirement: 'A host app that supports AUv3'
           }
@@ -1180,7 +1178,6 @@ const I18N = {
           desc: '1 つのアプリに 4 つの AUv3 プラグイン：MOD HUB、Universal Rhythm、ChaosTrio、Oscilloscope',
           platform: 'iOS, iPadOS, macOS',
           appstore: 'App Store で見る',
-          mac: 'Mac 版 近日公開',
           intro: 'MADZINE AU Bundle は 4 つの AUv3 プラグインを収めた 1 つのアプリで、ホストでは 6 項目として表示されます：MOD HUB（MIDI 版、CV 版）、Universal Rhythm（MIDI 版、内蔵ドラムキット版）、ChaosTrio、Oscilloscope。AUv3 対応のホストアプリが必要です。<br><br>MOD HUB は CV / MIDI モジュレーション信号ジェネレーターで、HONKI アプリから移植しました。8 ステージの MARF 風シーケンサー（A / B の 2 組、CROSSFADE 可）、6 つの LFO、手描き後に修正できる DRAW 波形を備え、ミキサーで各ソースを混ぜて 4 つの出力へ送ります。MIDI 版は MIDI CC とノートを送り、SCALE クオンタイズがあります。CV 版はオーディオレートで制御信号を出力します。<br><br>Universal Rhythm は VCV Rack と HONKI から移植した MADZINE の看板リズムワークステーションです。4 つのロール（Timeline / Foundation / Groove / Lead）、9 トラック、9 種類のリズムスタイルを 4 つのロールに自由に割り当てられます。ステップごとに velocity、probability、decay、ratchet を調整でき、ノートをロックすることもできます。MIDI 版は MIDI チャンネル 10 でノートを送ります。ドラムキット版はドラム音源を内蔵し、サンプラーでオーディオファイルを読み込み、スライスしてグラニュラー合成で再生できます。MULTI-OUTPUT でトラックをホストの別チャンネルへ送れます。<br><br>ChaosTrio は 3 つのスロットが同時に動く複合エフェクトです。各スロットで DELAY（Delay / Reverb）、weiii Documenta（VCV Rack から移植したサンプリング・グラニュラーエフェクト）、KARPLUS（Karplus-Strong 合成法にもとづくリバーブ）を選べます。スロット間の接続は 5 種類、位置の入れ替えも可能。エフェクトごとに mix、level、chaos 量を持ち、Lorenz chaos で変調します。画面は SIMPLE / FULL の 2 種類。<br><br>Oscilloscope はオシロスコープ（トリガー付き）、スペクトラム（参照カーブを読み込み可）、そして波形と倍音の関係を 3D オシロスコープで表示する FOURIER BOX を備えます。3 つのパネルはドラッグで並べ替えでき、オーディオはスルーで出力されます。<br><br>4 つのプラグインすべてに英語・繁体字中国語・日本語のヘルプモードを内蔵し、触れた機能の説明が表示されます。黒背景 / 白背景とメインカラーを選べ、パラメーターはホストのオートメーションと MIDI CC で操作できます。',
           features: {
             format: '1 つのアプリに 4 つの AUv3 プラグイン、ホストでは 6 項目として表示',
@@ -1195,7 +1192,7 @@ const I18N = {
           },
           tech: {
             format: 'フォーマット',
-            platformDetail: 'iOS / iPadOS（配信中）、macOS（審査中）',
+            platformDetail: 'iOS / iPadOS、macOS（いずれも配信中）',
             requirementLabel: '動作要件',
             requirement: 'AUv3 対応のホストアプリ'
           }
