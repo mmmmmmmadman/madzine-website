@@ -9,6 +9,8 @@
 const DarkMode = {
   STORAGE_KEY: 'madzine-mode',
   ATTR: 'data-mode',
+  SUN_SVG: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.5" fill="currentColor"/><path d="M12 1.5v2.5M12 20v2.5M1.5 12H4M20 12h2.5M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M4.6 19.4l1.8-1.8M17.6 6.4l1.8-1.8"/></svg>',
+  MOON_SVG: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg>',
 
   init() {
     const saved = localStorage.getItem(this.STORAGE_KEY);
@@ -34,7 +36,8 @@ const DarkMode = {
     const btn = document.getElementById('mode-toggle');
     if (btn) {
       btn.setAttribute('aria-label', mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode');
-      btn.textContent = mode === 'dark' ? '\u2600' : '\u263E';
+      /* SVG drawn in currentColor: iPhone renders the U+2600 sun as a yellow emoji */
+      btn.innerHTML = mode === 'dark' ? this.SUN_SVG : this.MOON_SVG;
     }
   }
 };

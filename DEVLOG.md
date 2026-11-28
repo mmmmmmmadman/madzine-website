@@ -2,6 +2,12 @@
 
 ## 2026-11-28
 
+### 明暗切換鈕的太陽圖示改為白色
+
+- 使用者回報太陽圖示是黃色、很醜。原因：按鈕內容是 U+2600 字元，iPhone 把它畫成黃色 emoji
+- `js/main.js` 的 `DarkMode._apply` 改放內嵌 SVG（太陽、月亮各一，stroke/fill 用 currentColor），顏色跟著按鈕原本的文字色（深色模式為淺色）。依規定不再用 Unicode 符號
+- 驗證：無頭 Chromium iPhone 13 模擬，深淺兩模式皆為 SVG、深色模式太陽為淺色、點擊切換正常、零錯誤。未在實機確認
+
 ### 導覽、語言切換、明暗切換從頁尾移到頁首（全站 54 頁）
 
 - 改動：各頁 `.bottom-bar` 內的 nav、`.lang-switcher`、`#mode-toggle` 移到 `<body>` 後第一個元素 `<div class="top-bar">`（nav 改 class `top-bar__nav`，控制區改 `top-bar__controls`）；版權 `.bottom-bar__copyright` 留在頁尾。所有 id / data-i18n / data-lang / onclick 不變，main.js 與 i18n.js 未改。用 `div` 不用 `header`，因 main.js HeaderScroll 以 `querySelector('header')` 抓元素。index.html 原本無 nav，只移控制區。jazzarchitect 頁寫死英文的 nav 原樣搬移；research-* 頁語言鈕跳頁行為不變（監聽在 DOMContentLoaded 綁定，與位置無關）
