@@ -6,7 +6,9 @@
 
 - 使用者回報太陽圖示是黃色、很醜。原因：按鈕內容是 U+2600 字元，iPhone 把它畫成黃色 emoji
 - `js/main.js` 的 `DarkMode._apply` 改放內嵌 SVG（太陽、月亮各一，stroke/fill 用 currentColor），顏色跟著按鈕原本的文字色（深色模式為淺色）。依規定不再用 Unicode 符號
-- 驗證：無頭 Chromium iPhone 13 模擬，深淺兩模式皆為 SVG、深色模式太陽為淺色、點擊切換正常、零錯誤。未在實機確認
+- 驗證：無頭 Chromium iPhone 13 模擬，深淺兩模式皆為 SVG、深色模式太陽為淺色、點擊切換正常、零錯誤。上線後使用者回覆「可以了」
+- 本段取代下方「頁首」段落中「明暗鈕原有符號照舊」的描述
+- commit `9940405`
 
 ### 導覽、語言切換、明暗切換從頁尾移到頁首（全站 54 頁）
 
@@ -19,7 +21,9 @@
 - 驗證：無頭 Chromium（手機尺寸用 iPhone 13 觸控模擬）works、index、software、contact、open-call、honki、research-worldrhythm 7 頁 × 390×844 / 375×667 / 320×568 / 1280×800 × 中 / EN / JP × 亮 / 暗 共 168 組：所有頂端可點元素 top = 28.0px、最小高度 44.0px、字級 ≥16px 且單行、版權字級 ≥14px、無橫向溢出、position 非 fixed/sticky、頁尾已無控制項、點語言鈕語言切換（research 頁為跳頁）、點明暗鈕模式切換。手機 top-bar 高 129px（兩列），日文 320 寬 177px（三列，連結兩列＋控制區一列，無單字斷行）；1280 寬 81px 單列
 - console：6 組出現 Chromium 的「Permissions policy violation: compute-pressure」，只在含 YouTube 內嵌的 honki / open-call 間歇出現，同頁重跑 8 次為零，判定來自 YouTube iframe、與本次改動無關；其餘零 console error
 - 已知現象：桌機 nav 從頁面邊緣（24px）起排，不對齊內容容器
-- 未在實機 iPhone / iPad Safari 驗證
+- 決策依據（改動前調查）：(1) 本站 2026-10-22 Modular Fighters 實機結論：iPhone Safari 螢幕最上緣約 24px 的點擊留給 Safari，按鈕需從 28px 起；(2) 上列 WebKit bug 皆為 fixed 頂部列在工具列伸縮後點擊座標錯位，iOS 26 仍有類似回報（300523）
+- 未在實機 iPhone / iPad Safari 逐項量測
+- commit `8ae8c68`（與下段標題折行同一筆）
 
 ### 作品列表長標題在手機上折行（治本 2026-10-25 遺留的溢出）
 
